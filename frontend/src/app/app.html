@@ -1,2 +1,21 @@
-<h1 class="bg-amber-300">hello</h1>
-<button class="btn btn-primary">Button</button>
+<div class="navbar bg-base-100">
+  <div class="flex-1">
+    <a class="btn btn-ghost normal-case text-xl" routerLink="/books">Book Tracking System</a>
+  </div>
+  <div class="flex-none">
+    <ul class="menu menu-horizontal px-1">
+      <li><a routerLink="/authors">Authors</a></li>
+    </ul>
+    <a class="btn btn-square btn-ghost" routerLink="/authors/new">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </a>
+    <a class="btn btn-square btn-ghost" routerLink="/books/new">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </a>
+  </div>
+</div>
+<router-outlet></router-outlet>

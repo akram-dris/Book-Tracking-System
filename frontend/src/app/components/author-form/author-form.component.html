@@ -1,0 +1,34 @@
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-3xl font-bold">{{ isEditMode ? 'Edit' : 'Create' }} Author</h1>
+    <a class="btn btn-ghost" routerLink="/authors">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </a>
+  </div>
+  <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="max-w-lg mx-auto">
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Name</span>
+      </label>
+      <input type="text" formControlName="name" class="input input-bordered w-full" />
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Bio</span>
+      </label>
+      <textarea formControlName="bio" class="textarea textarea-bordered w-full"></textarea>
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Author Image</span>
+      </label>
+      <input type="file" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
+    </div>
+    <div class="form-control mt-6">
+      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Create' }}</button>
+    </div>
+  </form>
+</div>

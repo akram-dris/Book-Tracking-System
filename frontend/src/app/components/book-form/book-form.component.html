@@ -1,0 +1,43 @@
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-3xl font-bold">{{ isEditMode ? 'Edit' : 'Create' }} Book</h1>
+    <a class="btn btn-ghost" routerLink="/books">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </a>
+  </div>
+  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="max-w-lg mx-auto">
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Title</span>
+      </label>
+      <input type="text" formControlName="title" class="input input-bordered w-full" />
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Author</span>
+      </label>
+      <select formControlName="authorId" class="select select-bordered w-full">
+        <option [ngValue]="null" disabled>Select an author</option>
+        <option *ngFor="let author of authors" [ngValue]="author.id">{{ author.name }}</option>
+      </select>
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Total Pages</span>
+      </label>
+      <input type="number" formControlName="totalPages" class="input input-bordered w-full" />
+    </div>
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Book Cover</span>
+      </label>
+      <input type="file" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
+    </div>
+    <div class="form-control mt-6">
+      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Create' }}</button>
+    </div>
+  </form>
+</div>
