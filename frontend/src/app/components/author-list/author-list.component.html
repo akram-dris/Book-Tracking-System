@@ -1,0 +1,20 @@
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-4">Author List</h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let author of authors" class="card card-compact w-96 bg-base-100 shadow-xl">
+      <figure *ngIf="author.imageUrl"><img [src]="rootUrl + author.imageUrl" alt="{{ author.name }}" /></figure>
+      <div class="card-body">
+        <h2 class="card-title">{{ author.name }}</h2>
+        <p>{{ author.bio }}</p>
+        <div class="card-actions justify-end">
+          <button class="btn btn-primary" [routerLink]="['/authors/edit', author.id]">Edit</button>
+          <button class="btn btn-secondary" (click)="deleteAuthor(author.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="authors.length === 0" class="text-center text-gray-500 mt-8">
+    No authors found.
+  </div>
+</div>

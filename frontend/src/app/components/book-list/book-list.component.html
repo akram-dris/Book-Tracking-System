@@ -1,0 +1,17 @@
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-4">Book List</h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let book of books" class="card card-compact w-96 bg-base-100 shadow-xl">
+      <figure><img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" /></figure>
+      <div class="card-body">
+        <h2 class="card-title">{{ book.title }}</h2>
+                <p>{{ book.author?.name }}</p>
+        <div class="card-actions justify-end">
+          <button class="btn btn-primary" [routerLink]="['/books/edit', book.id]">Edit</button>
+          <button class="btn btn-secondary" (click)="deleteBook(book.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
