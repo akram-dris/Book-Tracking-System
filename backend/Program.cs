@@ -12,10 +12,27 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 // Add DbContext
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+// Add repository and service
+builder.Services.AddScoped<BookTrackingSystem.Repository.IBookRepository, BookTrackingSystem.Repository.BookRepository>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IBookService, BookTrackingSystem.Services.BookService>();
+builder.Services.AddScoped<BookTrackingSystem.Repository.IAuthorRepository, BookTrackingSystem.Repository.AuthorRepository>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IAuthorService, BookTrackingSystem.Services.AuthorService>();
 
 // Add Swagger generation
 builder.Services.AddSwaggerGen(c =>
@@ -43,7 +60,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app.UseAuthorization();
+
+app.UseCors("AllowAll");
 
 app.MapControllers();
 
