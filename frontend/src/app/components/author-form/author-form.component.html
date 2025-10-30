@@ -8,27 +8,52 @@
       </svg>
     </a>
   </div>
-  <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="max-w-lg mx-auto">
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Name</span>
-      </label>
-      <input type="text" formControlName="name" class="input input-bordered w-full" />
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Bio</span>
-      </label>
-      <textarea formControlName="bio" class="textarea textarea-bordered w-full"></textarea>
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Author Image</span>
-      </label>
-      <input type="file" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
-    </div>
-    <div class="form-control mt-6">
-      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Create' }}</button>
-    </div>
-  </form>
-</div>
+  <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="max-w-3xl mx-auto p-6 bg-base-100 shadow-xl rounded-lg">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Author Image</span>
+          </label>
+          <div class="border-2 border-dashed border-base-300 rounded-lg p-6 flex items-center justify-start cursor-pointer hover:border-primary transition-colors duration-200 relative w-48 h-48" (click)="fileInput.click()">
+            <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
+            <div *ngIf="!imagePreviewUrl" class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-base-content mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="text-base-content">Upload File</p>
+            </div>
+            <div *ngIf="imagePreviewUrl" class="absolute inset-0 w-full h-full">
+              <img [src]="imagePreviewUrl" alt="Author Image Preview" class="w-full h-full object-cover rounded-lg" />
+              <button (click)="removeImage($event)" class="btn btn-circle btn-sm absolute top-2 right-2 bg-red-500 text-white border-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Name</span>
+            </label>
+            <input type="text" formControlName="name" class="input input-bordered w-full" placeholder="Author Name" />
+            <div *ngIf="authorForm.get('name')?.invalid && authorForm.get('name')?.touched" class="text-error text-sm mt-1">
+              Author Name is required.
+            </div>
+          </div>
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text">Bio</span>
+            </label>
+            <textarea formControlName="bio" class="textarea textarea-bordered w-full" placeholder="Author Biography"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-control mt-6">
+        <button type="submit" class="btn btn-primary" [disabled]="authorForm.invalid || isLoading">
+          <span *ngIf="isLoading" class="loading loading-spinner"></span>
+          {{ isEditMode ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
