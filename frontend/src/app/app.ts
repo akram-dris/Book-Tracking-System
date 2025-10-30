@@ -9,4 +9,9 @@ import { RouterOutlet, RouterModule } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('frontend');
+  isSidebarCollapsed = false;
+
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
 }
