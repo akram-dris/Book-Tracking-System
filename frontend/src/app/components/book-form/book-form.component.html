@@ -8,36 +8,68 @@
       </svg>
     </a>
   </div>
-  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="max-w-lg mx-auto">
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Title</span>
-      </label>
-      <input type="text" formControlName="title" class="input input-bordered w-full" />
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Author</span>
-      </label>
-      <select formControlName="authorId" class="select select-bordered w-full">
-        <option [ngValue]="null" disabled>Select an author</option>
-        <option *ngFor="let author of authors" [ngValue]="author.id">{{ author.name }}</option>
-      </select>
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Total Pages</span>
-      </label>
-      <input type="number" formControlName="totalPages" class="input input-bordered w-full" />
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Book Cover</span>
-      </label>
-      <input type="file" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
+  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="max-w-3xl mx-auto p-6 bg-base-100 shadow-xl rounded-lg">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Book Cover</span>
+        </label>
+        <div class="border-2 border-dashed border-base-300 rounded-lg p-6 flex items-center justify-start cursor-pointer hover:border-primary transition-colors duration-200 relative w-48 h-72" (click)="fileInput.click()">
+          <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
+          <div *ngIf="!imagePreviewUrl" class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-base-content mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <p class="text-base-content">Upload File</p>
+          </div>
+          <div *ngIf="imagePreviewUrl" class="absolute inset-0 w-full h-full">
+            <img [src]="imagePreviewUrl" alt="Book Cover Preview" class="w-full h-full object-cover rounded-lg" />
+            <button (click)="removeImage($event)" class="btn btn-circle btn-sm absolute top-2 right-2 bg-red-500 text-white border-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Title</span>
+          </label>
+          <input type="text" formControlName="title" class="input input-bordered w-full" placeholder="Book Title" />
+          <div *ngIf="bookForm.get('title')?.invalid && bookForm.get('title')?.touched" class="text-error text-sm mt-1">
+            Title is required.
+          </div>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Author</span>
+          </label>
+          <select formControlName="authorId" class="select select-bordered w-full">
+            <option [ngValue]="null" disabled>Select an author</option>
+            <option *ngFor="let author of authors" [ngValue]="author.id">{{ author.name }}</option>
+          </select>
+          <div *ngIf="bookForm.get('authorId')?.invalid && bookForm.get('authorId')?.touched" class="text-error text-sm mt-1">
+            Author is required.
+          </div>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Total Pages</span>
+          </label>
+          <input type="number" formControlName="totalPages" class="input input-bordered w-full" placeholder="Number of Pages" />
+          <div *ngIf="bookForm.get('totalPages')?.invalid && bookForm.get('totalPages')?.touched" class="text-error text-sm mt-1">
+            Total Pages is required and must be a positive number.
+          </div>
+        </div>
+      </div>
     </div>
     <div class="form-control mt-6">
-      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Create' }}</button>
+      <button type="submit" class="btn btn-primary" [disabled]="bookForm.invalid || isLoading">
+        <span *ngIf="isLoading" class="loading loading-spinner"></span>
+        {{ isEditMode ? 'Update' : 'Create' }}
+      </button>
     </div>
   </form>
 </div>

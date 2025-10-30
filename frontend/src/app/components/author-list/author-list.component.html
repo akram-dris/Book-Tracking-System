@@ -1,16 +1,17 @@
 
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-4">Author List</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div *ngFor="let author of authors" class="card card-compact w-96 bg-base-100 shadow-xl">
-      <figure *ngIf="author.imageUrl"><img [src]="rootUrl + author.imageUrl" alt="{{ author.name }}" /></figure>
-      <div class="card-body">
-        <h2 class="card-title">{{ author.name }}</h2>
-        <p>{{ author.bio }}</p>
-        <div class="card-actions justify-end">
-          <button class="btn btn-primary" [routerLink]="['/authors/edit', author.id]">Edit</button>
-          <button class="btn btn-secondary" (click)="deleteAuthor(author.id)">Delete</button>
-        </div>
+  <div class="flex justify-between items-center mb-4">
+  <h1 class="text-3xl font-bold">Authors</h1>
+  <a routerLink="/authors/new" class="btn btn-primary">Add Author</a>
+</div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div *ngFor="let author of authors" class="card group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out cursor-pointer hover:scale-105" [routerLink]="['/authors', author.id]">
+      <figure class="overflow-hidden">
+        <img *ngIf="author.imageUrl" [src]="rootUrl + author.imageUrl" alt="{{ author.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ease-in-out hover:blur-md hover:brightness-75" />
+      </figure>
+      <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+        <h2 class="text-white text-lg font-bold text-center">{{ author.name }}</h2>
+        <p class="text-gray-200 text-center">{{ author.bio }}</p>
       </div>
     </div>
   </div>
