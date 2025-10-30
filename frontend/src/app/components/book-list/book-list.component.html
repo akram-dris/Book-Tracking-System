@@ -5,13 +5,13 @@
     <a routerLink="/books/new" class="btn btn-primary">Add Book</a>
 </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <div *ngFor="let book of books" class="card group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out" [routerLink]="['/books', book.id]">
+    <div *ngFor="let book of books" class="card group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out cursor-pointer hover:scale-105" [routerLink]="['/books', book.id]">
       <figure class="overflow-hidden">
-        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out" />
+        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ease-in-out hover:blur-md hover:brightness-75" />
       </figure>
-      <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-        <h2 class="text-white text-lg font-bold">{{ book.title }}</h2>
-        <p class="text-gray-300">{{ book.author?.name }}</p>
+      <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+        <h2 class="text-white text-lg font-bold text-center">{{ book.title }}</h2>
+        <p class="text-gray-200 text-center">{{ book.author?.name }}</p>
       </div>
     </div>
   </div>
