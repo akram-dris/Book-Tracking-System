@@ -15,8 +15,12 @@ export class BookService {
 
   constructor(private http: HttpClient) { }
 
-  getBooks(): Observable<GetBook[]> {
-    return this.http.get<GetBook[]>(this.apiUrl);
+  getBooks(tagId: number | null = null): Observable<GetBook[]> {
+    let url = this.apiUrl;
+    if (tagId) {
+      url += `?tagId=${tagId}`;
+    }
+    return this.http.get<GetBook[]>(url);
   }
 
   getBook(id: number): Observable<GetBook> {
@@ -48,5 +52,9 @@ export class BookService {
 
   deleteBook(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+  assignTags(bookId: number, tagIds: number[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${bookId}/tags`, tagIds);
   }
 }

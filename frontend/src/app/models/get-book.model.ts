@@ -1,5 +1,6 @@
 
 import { GetAuthor } from './get-author.model';
+import { GetTag } from './get-tag.model';
 
 export interface GetBook {
     id: number;
@@ -10,4 +11,5 @@ export interface GetBook {
     createdAt: Date;
     updatedAt: Date;
     author?: GetAuthor;
+    tags?: GetTag[];
 }

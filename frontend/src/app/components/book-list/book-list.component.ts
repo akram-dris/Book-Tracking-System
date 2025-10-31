@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 export class BookListComponent implements OnInit {
   books: GetBook[] = [];
   rootUrl: string = environment.rootUrl;
+  selectedTagId: number | null = null;
 
   constructor(private bookService: BookService) { }
 
@@ -23,12 +24,17 @@ export class BookListComponent implements OnInit {
     this.loadBooks();
   }
 
-  loadBooks(): void {
-    this.bookService.getBooks().subscribe(data => {
+  loadBooks(tagId: number | null = null): void {
+    this.bookService.getBooks(tagId).subscribe(data => {
       this.books = data;
       console.log('Books loaded:', this.books);
       this.books.forEach(book => console.log('Book ImageUrl:', book.imageUrl));
     });
+  }
+
+  filterBooksByTag(tagId: number | null): void {
+    this.selectedTagId = tagId;
+    this.loadBooks(this.selectedTagId);
   }
 
   deleteBook(id: number): void {

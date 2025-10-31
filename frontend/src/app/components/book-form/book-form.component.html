@@ -63,6 +63,19 @@
             Total Pages is required and must be a positive number.
           </div>
         </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Tags</span>
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <div *ngFor="let tag of tags" class="form-control">
+              <label class="label cursor-pointer">
+                <input type="checkbox" [value]="tag.id" (change)="onTagChange($event)" [checked]="isChecked(tag.id)" class="checkbox" />
+                <span class="label-text ml-2">{{ tag.name }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="form-control mt-6">
