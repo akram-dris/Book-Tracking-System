@@ -33,6 +33,12 @@ builder.Services.AddScoped<BookTrackingSystem.Repository.IBookRepository, BookTr
 builder.Services.AddScoped<BookTrackingSystem.Services.IBookService, BookTrackingSystem.Services.BookService>();
 builder.Services.AddScoped<BookTrackingSystem.Repository.IAuthorRepository, BookTrackingSystem.Repository.AuthorRepository>();
 builder.Services.AddScoped<BookTrackingSystem.Services.IAuthorService, BookTrackingSystem.Services.AuthorService>();
+builder.Services.AddScoped<BookTrackingSystem.Repository.ITagRepository, BookTrackingSystem.Repository.TagRepository>();
+builder.Services.AddScoped<BookTrackingSystem.Services.ITagService, BookTrackingSystem.Services.TagService>();
+builder.Services.AddScoped<BookTrackingSystem.Repository.IBookTagAssignmentRepository, BookTrackingSystem.Repository.BookTagAssignmentRepository>();
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
 
 // Add Swagger generation
 builder.Services.AddSwaggerGen(c =>
