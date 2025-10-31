@@ -6,6 +6,7 @@ import { AuthorFormComponent } from './components/author-form/author-form.compon
 
 import { AuthorDetailsComponent } from './components/author-details/author-details';
 import { BookDetailsComponent } from './components/book-details/book-details';
+import { TagManagementComponent } from './components/tag-management/tag-management.component';
 
 export const routes: Routes = [
     { path: 'books', component: BookListComponent },
@@ -16,5 +17,6 @@ export const routes: Routes = [
     { path: 'authors/new', component: AuthorFormComponent },
     { path: 'authors/edit/:id', component: AuthorFormComponent },
     { path: 'authors/:id', component: AuthorDetailsComponent },
+    { path: 'tags', component: TagManagementComponent },
     { path: '', redirectTo: '/books', pathMatch: 'full' }
 ];

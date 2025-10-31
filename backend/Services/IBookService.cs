@@ -1,14 +1,16 @@
 
-using BookTrackingSystem.Models;
+using BookTrackingSystem.DTOs;
+using Microsoft.AspNetCore.Http;
 
 namespace BookTrackingSystem.Services
 {
     public interface IBookService
     {
-        Task<IEnumerable<Book>> GetBooksAsync();
-        Task<Book?> GetBookAsync(int id);
-        Task<Book> AddBookAsync(Book book);
-        Task<Book> UpdateBookAsync(Book book);
+        Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null);
+        Task<BookDto?> GetBookAsync(int id);
+        Task<BookDto> AddBookAsync(CreateBookDto book, IFormFile? imageFile);
+        Task<BookDto> UpdateBookAsync(int id, UpdateBookDto book, IFormFile? imageFile);
         Task DeleteBookAsync(int id);
+        Task AssignTagsAsync(int bookId, IEnumerable<int> tagIds);
     }
 }

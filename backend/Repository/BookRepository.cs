@@ -14,9 +14,20 @@ namespace BookTrackingSystem.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Book>> GetBooksAsync()
+        public async Task<IEnumerable<Book>> GetBooksAsync(int? tagId = null)
         {
-            return await _context.Books.Include(b => b.Author).ToListAsync();
+            var query = _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments)
+                    .ThenInclude(bta => bta.BookTag)
+                .AsQueryable();
+
+            if (tagId.HasValue)
+            {
+                query = query.Where(b => b.BookTagAssignments.Any(bta => bta.TagId == tagId.Value));
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Book?> GetBookAsync(int id)

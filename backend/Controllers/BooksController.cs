@@ -4,7 +4,6 @@ using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookTrackingSystem.DTOs;
-using Microsoft.AspNetCore.Hosting;
 
 namespace BookTrackingSystem.Controllers
 {
@@ -14,42 +13,18 @@ namespace BookTrackingSystem.Controllers
     {
         private readonly IBookService _bookService;
         private readonly ILogger<BooksController> _logger;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BooksController(IBookService bookService, ILogger<BooksController> logger, IWebHostEnvironment webHostEnvironment)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger)
         {
             _bookService = bookService;
             _logger = logger;
-            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] int? tagId = null)
         {
-            var books = await _bookService.GetBooksAsync();
-            var bookDtos = new List<BookDto>();
-            foreach (var book in books)
-            {
-                bookDtos.Add(new BookDto
-                {
-                    Id = book.Id,
-                    AuthorId = book.AuthorId,
-                    Title = book.Title,
-                    TotalPages = book.TotalPages,
-                    ImageUrl = book.ImageUrl,
-                    CreatedAt = book.CreatedAt,
-                    UpdatedAt = book.UpdatedAt,
-                    Author = book.Author != null ? new AuthorDto
-                    {
-                        Id = book.Author.Id,
-                        Name = book.Author.Name,
-                        Bio = book.Author.Bio,
-                        CreatedAt = book.Author.CreatedAt,
-                        UpdatedAt = book.Author.UpdatedAt
-                    } : null
-                });
-            }
-            return Ok(bookDtos);
+            var books = await _bookService.GetBooksAsync(tagId);
+            return Ok(books);
         }
 
         [HttpGet("{id}")]
@@ -60,25 +35,7 @@ namespace BookTrackingSystem.Controllers
             {
                 return NotFound();
             }
-            var bookDto = new BookDto
-            {
-                Id = book.Id,
-                AuthorId = book.AuthorId,
-                Title = book.Title,
-                TotalPages = book.TotalPages,
-                ImageUrl = book.ImageUrl,
-                CreatedAt = book.CreatedAt,
-                UpdatedAt = book.UpdatedAt,
-                Author = book.Author != null ? new AuthorDto
-                {
-                    Id = book.Author.Id,
-                    Name = book.Author.Name,
-                    Bio = book.Author.Bio,
-                    CreatedAt = book.Author.CreatedAt,
-                    UpdatedAt = book.Author.UpdatedAt
-                } : null
-            };
-            return Ok(bookDto);
+            return Ok(book);
         }
 
         [HttpPost]
@@ -87,42 +44,8 @@ namespace BookTrackingSystem.Controllers
         {
             try
             {
-                string? imageUrl = null;
-                if (createBookDto.ImageFile != null)
-                {
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + createBookDto.ImageFile.FileName;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await createBookDto.ImageFile.CopyToAsync(fileStream);
-                    }
-                    imageUrl = "/images/books/" + uniqueFileName;
-                }
-
-                var book = new Book
-                {
-                    AuthorId = createBookDto.AuthorId,
-                    Title = createBookDto.Title,
-                    TotalPages = createBookDto.TotalPages,
-                    ImageUrl = imageUrl
-                };
-                var newBook = await _bookService.AddBookAsync(book);
-                var bookDto = new BookDto
-                {
-                    Id = newBook.Id,
-                    AuthorId = newBook.AuthorId,
-                    Title = newBook.Title,
-                    TotalPages = newBook.TotalPages,
-                    ImageUrl = newBook.ImageUrl,
-                    CreatedAt = newBook.CreatedAt,
-                    UpdatedAt = newBook.UpdatedAt
-                };
-                return CreatedAtAction(nameof(GetBook), new { id = bookDto.Id }, bookDto);
+                var newBook = await _bookService.AddBookAsync(createBookDto, createBookDto.ImageFile);
+                return CreatedAtAction(nameof(GetBook), new { id = newBook.Id }, newBook);
             }
             catch (Exception ex)
             {
@@ -140,52 +63,33 @@ namespace BookTrackingSystem.Controllers
                 return BadRequest();
             }
 
-            var existingBook = await _bookService.GetBookAsync(id);
-            if (existingBook == null)
+            try
             {
-                return NotFound();
+                var updatedBook = await _bookService.UpdateBookAsync(id, updateBookDto, updateBookDto.ImageFile);
+                if (updatedBook == null)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-
-            existingBook.AuthorId = updateBookDto.AuthorId;
-            existingBook.Title = updateBookDto.Title;
-            existingBook.TotalPages = updateBookDto.TotalPages;
-            existingBook.UpdatedAt = DateTime.UtcNow;
-
-            if (updateBookDto.ImageFile != null)
+            catch (Exception ex)
             {
-                // Delete old image if exists
-                if (!string.IsNullOrEmpty(existingBook.ImageUrl))
-                {
-                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingBook.ImageUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
-                }
-
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + updateBookDto.ImageFile.FileName;
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await updateBookDto.ImageFile.CopyToAsync(fileStream);
-                }
-                existingBook.ImageUrl = "/images/books/" + uniqueFileName;
+                _logger.LogError(ex, "Error updating book");
+                return StatusCode(500, "Internal server error");
             }
-
-            await _bookService.UpdateBookAsync(existingBook);
-
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
             await _bookService.DeleteBookAsync(id);
+            return NoContent();
+        }
+
+        [HttpPost("{bookId}/tags")]
+        public async Task<IActionResult> AssignTags(int bookId, [FromBody] IEnumerable<int> tagIds)
+        {
+            await _bookService.AssignTagsAsync(bookId, tagIds);
             return NoContent();
         }
     }

@@ -13,6 +13,11 @@
         <h2 class="text-white text-lg font-bold text-center">{{ book.title }}</h2>
         <p class="text-gray-200 text-center">{{ book.author?.name }}</p>
       </div>
+      <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let tag of book.tags" class="badge badge-primary">{{ tag.name }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

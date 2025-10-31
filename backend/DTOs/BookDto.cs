@@ -13,5 +13,6 @@ namespace BookTrackingSystem.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public AuthorDto? Author { get; set; }
+        public ICollection<TagDto>? Tags { get; set; }
     }
 }
