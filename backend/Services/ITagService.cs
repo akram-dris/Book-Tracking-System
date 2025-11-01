@@ -8,7 +8,7 @@ namespace BookTrackingSystem.Services
     public interface ITagService
     {
         Task<IEnumerable<TagDto>> GetAllTagsAsync();
-        Task<TagDto> GetTagByIdAsync(int id);
+        Task<TagDto?> GetTagByIdAsync(int id);
         Task<TagDto> CreateTagAsync(CreateTagDto createTagDto);
         Task<TagDto> UpdateTagAsync(int id, UpdateTagDto updateTagDto);
         Task DeleteTagAsync(int id);

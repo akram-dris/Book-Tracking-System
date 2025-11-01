@@ -21,7 +21,7 @@ namespace BookTrackingSystem.Repository
             return await _context.BookTags.ToListAsync();
         }
 
-        public async Task<BookTag> GetByIdAsync(int id)
+        public async Task<BookTag?> GetByIdAsync(int id)
         {
             return await _context.BookTags.FindAsync(id);
         }
