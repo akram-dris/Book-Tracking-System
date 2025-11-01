@@ -8,6 +8,7 @@ import { NgFor, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { switchMap, finalize } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
+import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -18,7 +19,7 @@ import { GetTag } from '../../models/get-tag.model';
 @Component({
   selector: 'app-book-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, NgFor, CommonModule],
+  imports: [ReactiveFormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule],
   templateUrl: './book-form.component.html',
   styleUrls: ['./book-form.component.css']
 })
@@ -31,6 +32,10 @@ export class BookFormComponent implements OnInit {
   selectedFile: File | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
   isLoading = false;
+
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  showCropper = false;
 
   constructor(
     private fb: FormBuilder,
@@ -60,7 +65,6 @@ export class BookFormComponent implements OnInit {
       tags: this.tagService.getTags(),
       book: book$
     }).subscribe(({ authors, tags, book }) => {
-      console.log('Data loaded from forkJoin:', { authors, tags, book });
       this.authors = authors;
       this.tags = tags;
 
@@ -69,13 +73,11 @@ export class BookFormComponent implements OnInit {
         if (book.imageUrl) {
           this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
         }
-                          if (book.tags) {
-                            console.log('book.tags:', book.tags);
-                            const tagIds = book.tags.map(t => t.id);
-                            console.log('Extracted tagIds:', tagIds);
-                            this.bookForm.setControl('tagIds', this.fb.array(tagIds || []));
-                            console.log('Book tags set in form:', this.bookForm.get('tagIds')?.value);
-                          }      }
+        if (book.tags) {
+          const tagIds = book.tags.map(t => t.id);
+          this.bookForm.setControl('tagIds', this.fb.array(tagIds || []));
+        }
+      }
     });
   }
 
@@ -95,24 +97,51 @@ export class BookFormComponent implements OnInit {
 
   isChecked(tagId: number): boolean {
     const tagIds = this.bookForm.get('tagIds') as FormArray;
-    const result = tagIds.value.includes(tagId);
-    console.log(`[DEBUG] isChecked: tagId=${tagId}, form.tagIds=${JSON.stringify(tagIds.value)}, result=${result}`);
-    return result;
+    return tagIds.value.includes(tagId);
   }
 
   onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    if (event.blob) {
       const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreviewUrl = reader.result;
+      reader.readAsDataURL(event.blob);
+      reader.onloadend = () => {
+        this.croppedImage = reader.result;
       };
-      reader.readAsDataURL(file);
     } else {
-      this.selectedFile = null;
-      this.imagePreviewUrl = null;
+      console.error('Cropped image blob data is not available.');
     }
+  }
+
+  saveCroppedImage() {
+    if (this.croppedImage) {
+      this.imagePreviewUrl = this.croppedImage;
+      this.selectedFile = this.base64ToFile(this.croppedImage, this.imageChangedEvent.target.files[0].name);
+      this.showCropper = false;
+    } else {
+      console.error('Cropped image is not available to save.');
+    }
+  }
+
+  cancelCropping() {
+    this.showCropper = false;
+    this.imageChangedEvent = null;
+  }
+
+  base64ToFile(data: any, filename: string): File {
+    const arr = data.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   }
 
   removeImage(event: Event): void {

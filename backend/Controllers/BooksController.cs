@@ -13,11 +13,13 @@ namespace BookTrackingSystem.Controllers
     {
         private readonly IBookService _bookService;
         private readonly ILogger<BooksController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BooksController(IBookService bookService, ILogger<BooksController> logger)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _bookService = bookService;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -65,6 +67,48 @@ namespace BookTrackingSystem.Controllers
 
             try
             {
+                var existingBook = await _bookService.GetBookAsync(id);
+                if (existingBook == null)
+                {
+                    return NotFound();
+                }
+
+                // Handle image update or removal
+                if (updateBookDto.ImageFile != null)
+                {
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(existingBook.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingBook.ImageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + updateBookDto.ImageFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await updateBookDto.ImageFile.CopyToAsync(fileStream);
+                    }
+                    existingBook.ImageUrl = "/images/books/" + uniqueFileName;
+                }
+                else if (!string.IsNullOrEmpty(existingBook.ImageUrl)) // If no new image is provided, but an old one exists
+                {
+                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingBook.ImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                    existingBook.ImageUrl = null; // Set ImageUrl to null
+                }
+
                 var updatedBook = await _bookService.UpdateBookAsync(id, updateBookDto, updateBookDto.ImageFile);
                 if (updatedBook == null)
                 {
