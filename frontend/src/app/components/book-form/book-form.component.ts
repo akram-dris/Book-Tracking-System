@@ -7,6 +7,7 @@ import { TagService } from '../../services/tag.service';
 import { NgFor, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { switchMap, finalize } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -49,60 +50,54 @@ export class BookFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadAuthors();
-    this.loadTags();
     this.bookId = this.route.snapshot.params['id'];
-    if (this.bookId) {
-      this.isEditMode = true;
-      this.bookService.getBook(this.bookId).subscribe((data: GetBook) => {
-        this.bookForm.patchValue(data);
-        if (data.imageUrl) {
-          this.imagePreviewUrl = environment.rootUrl + data.imageUrl;
-        }
-        if (data.tags) {
-          const tagIds = data.tags.map(t => t.id);
-          this.bookForm.setControl('tagIds', this.fb.array(tagIds || []));
-        }
-      });
-    }
-  }
+    this.isEditMode = !!this.bookId;
 
-  loadTags(): void {
-    this.tagService.getTags().subscribe({
-      next: (tags) => {
-        this.tags = tags;
-      },
-      error: (err) => {
-        console.error('Error loading tags', err);
-      }
+    const book$ = this.isEditMode ? this.bookService.getBook(this.bookId!) : of(null);
+
+    forkJoin({
+      authors: this.authorService.getAuthors(),
+      tags: this.tagService.getTags(),
+      book: book$
+    }).subscribe(({ authors, tags, book }) => {
+      console.log('Data loaded from forkJoin:', { authors, tags, book });
+      this.authors = authors;
+      this.tags = tags;
+
+      if (this.isEditMode && book) {
+        this.bookForm.patchValue(book);
+        if (book.imageUrl) {
+          this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
+        }
+                          if (book.tags) {
+                            console.log('book.tags:', book.tags);
+                            const tagIds = book.tags.map(t => t.id);
+                            console.log('Extracted tagIds:', tagIds);
+                            this.bookForm.setControl('tagIds', this.fb.array(tagIds || []));
+                            console.log('Book tags set in form:', this.bookForm.get('tagIds')?.value);
+                          }      }
     });
   }
 
   onTagChange(event: any) {
     const tagIds = <FormArray>this.bookForm.get('tagIds');
+    const tagId = parseInt(event.target.value, 10);
 
     if (event.target.checked) {
-      tagIds.push(new FormControl(event.target.value));
+      tagIds.push(new FormControl(tagId));
     } else {
-      const index = tagIds.controls.findIndex(x => x.value == event.target.value);
-      tagIds.removeAt(index);
+      const index = tagIds.controls.findIndex(x => x.value === tagId);
+      if (index !== -1) {
+        tagIds.removeAt(index);
+      }
     }
   }
 
   isChecked(tagId: number): boolean {
     const tagIds = this.bookForm.get('tagIds') as FormArray;
-    return tagIds.value.includes(tagId);
-  }
-
-  loadAuthors(): void {
-    this.authorService.getAuthors().subscribe({
-      next: (authors) => {
-        this.authors = authors;
-      },
-      error: (err) => {
-        console.error('Error loading authors', err);
-      }
-    });
+    const result = tagIds.value.includes(tagId);
+    console.log(`[DEBUG] isChecked: tagId=${tagId}, form.tagIds=${JSON.stringify(tagIds.value)}, result=${result}`);
+    return result;
   }
 
   onFileSelected(event: any): void {

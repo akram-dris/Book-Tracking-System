@@ -32,7 +32,11 @@ namespace BookTrackingSystem.Repository
 
         public async Task<Book?> GetBookAsync(int id)
         {
-            return await _context.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments)
+                    .ThenInclude(bta => bta.BookTag)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book> AddBookAsync(Book book)
