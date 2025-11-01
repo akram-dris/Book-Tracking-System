@@ -120,6 +120,7 @@ namespace BookTrackingSystem.Controllers
             existingAuthor.Bio = updateAuthorDto.Bio;
             existingAuthor.UpdatedAt = DateTime.UtcNow;
 
+            // Handle image update or removal
             if (updateAuthorDto.ImageFile != null)
             {
                 // Delete old image if exists
@@ -144,6 +145,15 @@ namespace BookTrackingSystem.Controllers
                     await updateAuthorDto.ImageFile.CopyToAsync(fileStream);
                 }
                 existingAuthor.ImageUrl = "/images/authors/" + uniqueFileName;
+            }
+            else if (!string.IsNullOrEmpty(existingAuthor.ImageUrl)) // If no new image is provided, but an old one exists
+            {
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingAuthor.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+                existingAuthor.ImageUrl = null; // Set ImageUrl to null
             }
 
             await _authorService.UpdateAuthorAsync(existingAuthor);
