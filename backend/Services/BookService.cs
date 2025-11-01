@@ -53,7 +53,7 @@ namespace BookTrackingSystem.Services
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
@@ -92,7 +92,7 @@ namespace BookTrackingSystem.Services
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {

@@ -72,7 +72,7 @@ namespace BookTrackingSystem.Controllers
                     {
                         Directory.CreateDirectory(uploadsFolder);
                     }
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + createAuthorDto.ImageFile.FileName;
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(createAuthorDto.ImageFile.FileName);
                     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
@@ -138,8 +138,7 @@ namespace BookTrackingSystem.Controllers
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + updateAuthorDto.ImageFile.FileName;
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(updateAuthorDto.ImageFile.FileName);                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await updateAuthorDto.ImageFile.CopyToAsync(fileStream);
