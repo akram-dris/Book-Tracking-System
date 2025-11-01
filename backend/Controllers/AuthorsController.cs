@@ -164,6 +164,22 @@ namespace BookTrackingSystem.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
+            var authorToDelete = await _authorService.GetAuthorAsync(id);
+            if (authorToDelete == null)
+            {
+                return NotFound();
+            }
+
+            // Delete image file if it exists
+            if (!string.IsNullOrEmpty(authorToDelete.ImageUrl))
+            {
+                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, authorToDelete.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
             await _authorService.DeleteAuthorAsync(id);
             return NoContent();
         }

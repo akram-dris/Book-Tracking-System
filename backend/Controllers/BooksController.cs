@@ -126,6 +126,22 @@ namespace BookTrackingSystem.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
+            var bookToDelete = await _bookService.GetBookAsync(id);
+            if (bookToDelete == null)
+            {
+                return NotFound();
+            }
+
+            // Delete image file if it exists
+            if (!string.IsNullOrEmpty(bookToDelete.ImageUrl))
+            {
+                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, bookToDelete.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
             await _bookService.DeleteBookAsync(id);
             return NoContent();
         }
