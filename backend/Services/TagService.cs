@@ -25,10 +25,14 @@ namespace BookTrackingSystem.Services
             return _mapper.Map<IEnumerable<TagDto>>(tags);
         }
 
-        public async Task<TagDto> GetTagByIdAsync(int id)
+        public async Task<TagDto?> GetTagByIdAsync(int id)
         {
             var tag = await _tagRepository.GetByIdAsync(id);
-            return _mapper.Map<TagDto>(tag);
+            if (tag == null)
+            {
+                return null;
+            }
+            return _mapper.Map<TagDto>(tag)!;
         }
 
         public async Task<TagDto> CreateTagAsync(CreateTagDto createTagDto)
@@ -40,14 +44,11 @@ namespace BookTrackingSystem.Services
 
         public async Task<TagDto> UpdateTagAsync(int id, UpdateTagDto updateTagDto)
         {
-            var tag = await _tagRepository.GetByIdAsync(id);
-            if (tag == null)
-            {
-                return null;
-            }
+            var tag = await _tagRepository.GetByIdAsync(id)!;
+
 
             _mapper.Map(updateTagDto, tag);
-            var updatedTag = await _tagRepository.UpdateAsync(tag);
+            var updatedTag = await _tagRepository.UpdateAsync(tag!);
             return _mapper.Map<TagDto>(updatedTag);
         }
 

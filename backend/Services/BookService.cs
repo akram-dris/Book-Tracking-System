@@ -39,7 +39,11 @@ namespace BookTrackingSystem.Services
         public async Task<BookDto?> GetBookAsync(int id)
         {
             var book = await _bookRepository.GetBookAsync(id);
-            return _mapper.Map<BookDto>(book);
+            if (book == null)
+            {
+                return null;
+            }
+            return _mapper.Map<BookDto>(book)!;
         }
 
         public async Task<BookDto> AddBookAsync(CreateBookDto createBookDto, IFormFile? imageFile)
@@ -53,7 +57,7 @@ namespace BookTrackingSystem.Services
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
@@ -69,16 +73,12 @@ namespace BookTrackingSystem.Services
         public async Task<BookDto> UpdateBookAsync(int id, UpdateBookDto updateBookDto, IFormFile? imageFile)
         {
             var book = await _bookRepository.GetBookAsync(id);
-            if (book == null)
-            {
-                return null;
-            }
 
             _mapper.Map(updateBookDto, book);
 
             if (imageFile != null)
             {
-                if (!string.IsNullOrEmpty(book.ImageUrl))
+                if (!string.IsNullOrEmpty(book!.ImageUrl))
                 {
                     var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, book.ImageUrl.TrimStart('/'));
                     if (File.Exists(oldImagePath))
@@ -92,7 +92,7 @@ namespace BookTrackingSystem.Services
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
@@ -101,7 +101,7 @@ namespace BookTrackingSystem.Services
                 book.ImageUrl = "/images/books/" + uniqueFileName;
             }
 
-            var updatedBook = await _bookRepository.UpdateBookAsync(book);
+            var updatedBook = await _bookRepository.UpdateBookAsync(book!);
             return _mapper.Map<BookDto>(updatedBook);
         }
 

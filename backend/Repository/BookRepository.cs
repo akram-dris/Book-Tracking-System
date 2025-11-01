@@ -18,13 +18,13 @@ namespace BookTrackingSystem.Repository
         {
             var query = _context.Books
                 .Include(b => b.Author)
-                .Include(b => b.BookTagAssignments)
+                .Include(b => b.BookTagAssignments!)
                     .ThenInclude(bta => bta.BookTag)
                 .AsQueryable();
 
             if (tagId.HasValue)
             {
-                query = query.Where(b => b.BookTagAssignments.Any(bta => bta.TagId == tagId.Value));
+                query = query.Where(b => b.BookTagAssignments != null && b.BookTagAssignments.Any(bta => bta.TagId == tagId.Value));
             }
 
             return await query.ToListAsync();
@@ -32,7 +32,11 @@ namespace BookTrackingSystem.Repository
 
         public async Task<Book?> GetBookAsync(int id)
         {
-            return await _context.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments!)
+                    .ThenInclude(bta => bta.BookTag)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book> AddBookAsync(Book book)

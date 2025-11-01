@@ -7,11 +7,12 @@ import { GetAuthor } from '../../models/get-author.model';
 import { UpdateAuthor } from '../../models/update-author.model';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-author-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule, ImageCropperModule],
   templateUrl: './author-form.component.html',
   styleUrls: ['./author-form.component.css']
 })
@@ -22,6 +23,10 @@ export class AuthorFormComponent implements OnInit {
   selectedFile: File | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
   isLoading = false;
+
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  showCropper = false;
 
   constructor(
     private fb: FormBuilder,
@@ -50,18 +55,47 @@ export class AuthorFormComponent implements OnInit {
   }
 
   onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    if (event.blob) {
       const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreviewUrl = reader.result;
+      reader.readAsDataURL(event.blob);
+      reader.onloadend = () => {
+        this.croppedImage = reader.result;
       };
-      reader.readAsDataURL(file);
     } else {
-      this.selectedFile = null;
-      this.imagePreviewUrl = null;
+      console.error('Cropped image blob data is not available.');
     }
+  }
+
+  saveCroppedImage() {
+    if (this.croppedImage) {
+      this.imagePreviewUrl = this.croppedImage;
+      this.selectedFile = this.base64ToFile(this.croppedImage, this.imageChangedEvent.target.files[0].name);
+      this.showCropper = false;
+    } else {
+      console.error('Cropped image is not available to save.');
+    }
+  }
+
+  cancelCropping() {
+    this.showCropper = false;
+    this.imageChangedEvent = null;
+  }
+
+  base64ToFile(data: any, filename: string): File {
+    const arr = data.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   }
 
   removeImage(event: Event): void {
@@ -80,7 +114,6 @@ export class AuthorFormComponent implements OnInit {
       }
 
       if (this.isEditMode && this.authorId) {
-        console.log('Updating author with data:', authorData);
         this.authorService.updateAuthor(this.authorId, authorData as UpdateAuthor).subscribe(() => {
           this.router.navigate(['/authors']);
           this.isLoading = false;

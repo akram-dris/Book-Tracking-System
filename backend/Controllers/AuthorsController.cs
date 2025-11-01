@@ -72,7 +72,7 @@ namespace BookTrackingSystem.Controllers
                     {
                         Directory.CreateDirectory(uploadsFolder);
                     }
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + createAuthorDto.ImageFile.FileName;
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(createAuthorDto.ImageFile.FileName);
                     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
@@ -120,6 +120,7 @@ namespace BookTrackingSystem.Controllers
             existingAuthor.Bio = updateAuthorDto.Bio;
             existingAuthor.UpdatedAt = DateTime.UtcNow;
 
+            // Handle image update or removal
             if (updateAuthorDto.ImageFile != null)
             {
                 // Delete old image if exists
@@ -137,13 +138,21 @@ namespace BookTrackingSystem.Controllers
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + updateAuthorDto.ImageFile.FileName;
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(updateAuthorDto.ImageFile.FileName);                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await updateAuthorDto.ImageFile.CopyToAsync(fileStream);
                 }
                 existingAuthor.ImageUrl = "/images/authors/" + uniqueFileName;
+            }
+            else if (!string.IsNullOrEmpty(existingAuthor.ImageUrl)) // If no new image is provided, but an old one exists
+            {
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingAuthor.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+                existingAuthor.ImageUrl = null; // Set ImageUrl to null
             }
 
             await _authorService.UpdateAuthorAsync(existingAuthor);
@@ -154,6 +163,22 @@ namespace BookTrackingSystem.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
+            var authorToDelete = await _authorService.GetAuthorAsync(id);
+            if (authorToDelete == null)
+            {
+                return NotFound();
+            }
+
+            // Delete image file if it exists
+            if (!string.IsNullOrEmpty(authorToDelete.ImageUrl))
+            {
+                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, authorToDelete.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
             await _authorService.DeleteAuthorAsync(id);
             return NoContent();
         }

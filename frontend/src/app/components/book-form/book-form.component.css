@@ -1,0 +1,3 @@
+:host ::ng-deep .ngx-ic-cropper {
+  pointer-events: none;
+}

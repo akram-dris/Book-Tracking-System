@@ -10,7 +10,7 @@ namespace BookTrackingSystem.Profiles
         public MappingProfile()
         {
             CreateMap<Book, BookDto>()
-                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.BookTagAssignments.Select(bta => bta.BookTag)));
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.BookTagAssignments != null ? src.BookTagAssignments.Select(bta => bta.BookTag) : Enumerable.Empty<BookTag>()));
             CreateMap<Author, AuthorDto>();
             CreateMap<CreateBookDto, Book>();
             CreateMap<UpdateBookDto, Book>();
