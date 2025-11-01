@@ -6,6 +6,7 @@ import { AuthorService } from '../../services/author.service';
 import { TagService } from '../../services/tag.service';
 import { NgFor, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { switchMap, finalize } from 'rxjs/operators';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -135,22 +136,20 @@ export class BookFormComponent implements OnInit {
       }
 
       if (this.isEditMode && this.bookId) {
-        this.bookService.updateBook(this.bookId, bookData as UpdateBook).subscribe(() => {
-          this.bookService.assignTags(this.bookId!, bookData.tagIds).subscribe(() => {
-            this.router.navigate(['/books']);
-            this.isLoading = false;
-          });
-        }, () => {
-          this.isLoading = false;
+        this.bookService.updateBook(this.bookId, bookData as UpdateBook).pipe(
+          switchMap(() => this.bookService.assignTags(this.bookId!, bookData.tagIds)),
+          finalize(() => this.isLoading = false)
+        ).subscribe({
+          next: () => this.router.navigate(['/books']),
+          error: (err) => console.error(err)
         });
       } else {
-        this.bookService.addBook(bookData as CreateBook).subscribe((newBook) => {
-          this.bookService.assignTags(newBook.id, bookData.tagIds).subscribe(() => {
-            this.router.navigate(['/books']);
-            this.isLoading = false;
-          });
-        }, () => {
-          this.isLoading = false;
+        this.bookService.addBook(bookData as CreateBook).pipe(
+          switchMap((newBook) => this.bookService.assignTags(newBook.id, bookData.tagIds)),
+          finalize(() => this.isLoading = false)
+        ).subscribe({
+          next: () => this.router.navigate(['/books']),
+          error: (err) => console.error(err)
         });
       }
     }

@@ -40,7 +40,7 @@ export class BookService {
 
   updateBook(id: number, book: UpdateBook): Observable<any> {
     const formData = new FormData();
-    formData.append('id', book.id.toString());
+    formData.append('id', id.toString());
     formData.append('authorId', book.authorId.toString());
     formData.append('title', book.title);
     formData.append('totalPages', book.totalPages.toString());
