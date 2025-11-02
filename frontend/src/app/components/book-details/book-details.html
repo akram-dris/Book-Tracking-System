@@ -23,6 +23,10 @@
           <button (click)="openPlanAndGoalModal()" class="btn btn-primary">Plan to Read</button>
         </div>
         <div *ngIf="book.status === ReadingStatus.CurrentlyReading">
+          <div class="mb-4">
+            <p class="text-sm text-gray-500">Current Page: {{ currentPage }} / {{ book.totalPages }}</p>
+            <progress class="progress progress-primary w-full" [value]="progress" max="100"></progress>
+          </div>
           <button (click)="openAddSessionModal()" class="btn btn-primary">Add Session</button>
         </div>
         <div *ngIf="book.status === ReadingStatus.Planning">

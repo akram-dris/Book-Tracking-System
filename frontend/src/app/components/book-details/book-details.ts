@@ -31,6 +31,8 @@ export class BookDetailsComponent implements OnInit {
   isAddSessionModalOpen: boolean = false; // Existing property
   isPlanAndGoalModalOpen: boolean = false; // New property
   currentBookId: number | null = null; // Existing property
+  currentPage: number = 0; // New property
+  progress: number = 0; // New property
 
   constructor(
     private route: ActivatedRoute,
@@ -55,12 +57,14 @@ export class BookDetailsComponent implements OnInit {
         this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
           next: sessions => {
             this.readingSessions = sessions;
+            this.calculateProgress(); // Calculate progress after sessions are loaded
             console.log('BookDetailsComponent ngOnInit - readingSessions loaded:', this.readingSessions);
           },
           error: err => {
             if (err.status === 404) {
               console.log('BookDetailsComponent ngOnInit - No reading sessions found for bookId:', id);
               this.readingSessions = []; // Ensure it's an empty array
+              this.calculateProgress(); // Calculate progress even if no sessions
             } else {
               console.error('BookDetailsComponent ngOnInit - Error fetching reading sessions:', err);
             }
@@ -143,6 +147,7 @@ export class BookDetailsComponent implements OnInit {
     if (this.book) {
       this.readingSessionService.getReadingSessionsForBook(this.book.id).subscribe(sessions => {
         this.readingSessions = sessions;
+        this.calculateProgress(); // Recalculate progress after sessions are refreshed
         console.log('BookDetailsComponent handleAddSessionSaved - Refreshed readingSessions:', this.readingSessions);
       });
       // Also refresh the book to get the latest current page
@@ -174,6 +179,21 @@ export class BookDetailsComponent implements OnInit {
         console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
       });
     }
+  }
+
+  private calculateProgress(): void {
+    if (this.book && this.readingSessions.length > 0) {
+      this.currentPage = this.readingSessions.reduce((sum, session) => sum + session.pagesRead, 0);
+      if (this.book.totalPages && this.book.totalPages > 0) {
+        this.progress = (this.currentPage / this.book.totalPages) * 100;
+      } else {
+        this.progress = 0;
+      }
+    } else {
+      this.currentPage = 0;
+      this.progress = 0;
+    }
+    console.log('BookDetailsComponent calculateProgress - currentPage:', this.currentPage, 'progress:', this.progress);
   }
 
   getGoalClass(pagesRead: number): string {

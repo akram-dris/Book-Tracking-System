@@ -8,8 +8,6 @@ import { AuthorDetailsComponent } from './components/author-details/author-detai
 import { BookDetailsComponent } from './components/book-details/book-details';
 import { TagManagementComponent } from './components/tag-management/tag-management.component';
 import { SessionLogComponent } from './components/session-log/session-log.component';
-import { SetGoalComponent } from './components/set-goal/set-goal.component'; // Import the new component
-
 export const routes: Routes = [
     { path: 'books', component: BookListComponent },
     { path: 'books/new', component: BookFormComponent },
@@ -21,6 +19,5 @@ export const routes: Routes = [
     { path: 'authors/:id', component: AuthorDetailsComponent },
     { path: 'tags', component: TagManagementComponent },
     { path: 'sessions/log', component: SessionLogComponent },
-    { path: 'books/:bookId/set-goal', component: SetGoalComponent }, // New route for setting goals
     { path: '', redirectTo: '/books', pathMatch: 'full' }
 ];
