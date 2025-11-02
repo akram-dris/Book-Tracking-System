@@ -134,7 +134,7 @@ namespace BookTrackingSystem.Services
             }
         }
 
-        public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null)
+        public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null)
         {
             var book = await _bookRepository.GetBookAsync(bookId);
             if (book != null)
@@ -144,7 +144,21 @@ namespace BookTrackingSystem.Services
                 {
                     book.StartedReadingDate = startedReadingDate.Value;
                 }
+                if (completedDate.HasValue)
+                {
+                    book.CompletedDate = completedDate.Value;
+                }
                 await _bookRepository.UpdateBookAsync(book);
+            }
+        }
+
+        public async Task UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate)
+        {
+            var book = await _bookRepository.GetBookAsync(bookId);
+            if (book != null)
+            {
+                book.CompletedDate = completedDate;
+                await _bookRepository.UpdateBookAsync(book); // Ensure the book is updated in the repository
             }
         }
     }

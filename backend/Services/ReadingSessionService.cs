@@ -8,11 +8,15 @@ namespace BookTrackingSystem.Services
     public class ReadingSessionService : IReadingSessionService
     {
         private readonly IReadingSessionRepository _readingSessionRepository;
+        private readonly IBookRepository _bookRepository; // New
+        private readonly IBookService _bookService; // New
         private readonly IMapper _mapper;
 
-        public ReadingSessionService(IReadingSessionRepository readingSessionRepository, IMapper mapper)
+        public ReadingSessionService(IReadingSessionRepository readingSessionRepository, IBookRepository bookRepository, IBookService bookService, IMapper mapper)
         {
             _readingSessionRepository = readingSessionRepository;
+            _bookRepository = bookRepository;
+            _bookService = bookService;
             _mapper = mapper;
         }
 
@@ -32,20 +36,24 @@ namespace BookTrackingSystem.Services
         {
             var existingSession = await _readingSessionRepository.GetReadingSessionByBookAndDateAsync(readingSessionDto.BookId, readingSessionDto.Date);
 
+            ReadingSession resultSession;
+
             if (existingSession != null)
             {
                 // Aggregate pages if a session for this book and date already exists
                 existingSession.PagesRead += readingSessionDto.PagesRead;
-                var updatedSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
-                return _mapper.Map<ReadingSessionDto>(updatedSession);
+                resultSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
             }
             else
             {
                 // Create a new session if none exists for this book and date
                 var readingSession = _mapper.Map<ReadingSession>(readingSessionDto);
                 var newReadingSession = await _readingSessionRepository.AddReadingSessionAsync(readingSession);
-                return _mapper.Map<ReadingSessionDto>(newReadingSession);
+                resultSession = newReadingSession;
             }
+
+            await CheckBookCompletion(readingSessionDto.BookId);
+            return _mapper.Map<ReadingSessionDto>(resultSession);
         }
 
         public async Task<ReadingSessionDto> UpdateReadingSessionAsync(int id, UpdateReadingSessionDto readingSessionDto)
@@ -68,12 +76,40 @@ namespace BookTrackingSystem.Services
 
             _mapper.Map(readingSessionDto, existingSession);
             var updatedReadingSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
+            await CheckBookCompletion(updatedReadingSession.BookId);
             return _mapper.Map<ReadingSessionDto>(updatedReadingSession);
         }
 
         public async Task DeleteReadingSessionAsync(int id)
         {
+            var sessionToDelete = await _readingSessionRepository.GetReadingSessionAsync(id);
+            if (sessionToDelete == null)
+            {
+                throw new KeyNotFoundException($"Reading session with ID {id} not found.");
+            }
+
             await _readingSessionRepository.DeleteReadingSessionAsync(id);
+            await CheckBookCompletion(sessionToDelete.BookId);
+        }
+
+        private async Task CheckBookCompletion(int bookId)
+        {
+            var book = await _bookRepository.GetBookAsync(bookId);
+            if (book == null) return;
+
+            var allSessions = await _readingSessionRepository.GetReadingSessionsForBookAsync(bookId);
+            var totalPagesRead = allSessions.Sum(s => s.PagesRead);
+
+            if (totalPagesRead >= book.TotalPages && book.Status != Models.Enums.ReadingStatus.Completed)
+            {
+                // Mark as completed
+                await _bookService.UpdateBookStatusAsync(bookId, Models.Enums.ReadingStatus.Completed, book.StartedReadingDate, DateTime.UtcNow);
+            }
+            else if (totalPagesRead < book.TotalPages && book.Status == Models.Enums.ReadingStatus.Completed)
+            {
+                // Revert from completed if pages read drop below total pages
+                await _bookService.UpdateBookStatusAsync(bookId, Models.Enums.ReadingStatus.CurrentlyReading, book.StartedReadingDate, null);
+            }
         }
     }
 }

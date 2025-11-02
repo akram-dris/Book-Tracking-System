@@ -12,7 +12,8 @@ namespace BookTrackingSystem.Profiles
             CreateMap<Book, BookDto>()
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.BookTagAssignments != null ? src.BookTagAssignments.Select(bta => bta.BookTag) : Enumerable.Empty<BookTag>()))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-                .ForMember(dest => dest.StartedReadingDate, opt => opt.MapFrom(src => src.StartedReadingDate));
+                .ForMember(dest => dest.StartedReadingDate, opt => opt.MapFrom(src => src.StartedReadingDate))
+                .ForMember(dest => dest.CompletedDate, opt => opt.MapFrom(src => src.CompletedDate)); // New mapping
             CreateMap<Author, AuthorDto>();
             CreateMap<CreateBookDto, Book>();
             CreateMap<UpdateBookDto, Book>();

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { ReadingSessionService } from '../../services/reading-session.service';
+import { ReadingStatus } from '../../models/enums/reading-status.enum'; // New import
 
 @Component({
   selector: 'app-reading-log-modal',
@@ -15,8 +16,11 @@ export class ReadingLogModalComponent implements OnInit {
   @Input() bookId: number | null = null;
   @Input() readingGoal: GetReadingGoal | null = null;
   @Input() totalPages: number | null = null;
+  @Input() bookStatus: ReadingStatus | null = null; // New input
   @Output() close = new EventEmitter<void>();
   @Output() sessionDeleted = new EventEmitter<void>(); // New output event
+
+  ReadingStatus = ReadingStatus; // Expose enum to template
 
   readingSessions: GetReadingSession[] = [];
   isLoading = false;

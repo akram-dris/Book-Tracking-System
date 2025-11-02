@@ -12,6 +12,7 @@ namespace BookTrackingSystem.Models
         public string? ImageUrl { get; set; }
         public ReadingStatus Status { get; set; } = ReadingStatus.NotReading; // Add Status property
         public DateTime? StartedReadingDate { get; set; } // New property
+        public DateTime? CompletedDate { get; set; } // New property for completion date
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public Author? Author { get; set; }

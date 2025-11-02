@@ -12,6 +12,7 @@ export interface GetBook {
     imageUrl?: string;
     status: ReadingStatus; // Add status property
     startedReadingDate?: Date; // New property
+    completedDate?: Date; // New property
     createdAt: Date;
     updatedAt: Date;
     author?: GetAuthor;

@@ -38,6 +38,12 @@
         </div>
         <div *ngIf="book.status === ReadingStatus.Completed">
           <p class="text-green-500 font-bold">You have completed this book!</p>
+          <p *ngIf="book.startedReadingDate" class="text-sm text-gray-500">
+            Started: {{ book.startedReadingDate | date:'shortDate' }}
+          </p>
+          <p *ngIf="book.completedDate" class="text-sm text-gray-500">
+            Completed: {{ book.completedDate | date:'shortDate' }}
+          </p>
         </div>
         <div *ngIf="readingGoal" class="mt-4">
           <h3 class="text-xl font-bold">Your Goals:</h3>
@@ -47,8 +53,8 @@
         </div>
       </div>
 
-      <!-- Show Logs Button (only visible when CurrentlyReading) -->
-      <div *ngIf="book.status === ReadingStatus.CurrentlyReading" class="flex justify-between items-center mb-4">
+      <!-- Show Logs Button (visible when CurrentlyReading or Completed) -->
+      <div *ngIf="book.status === ReadingStatus.CurrentlyReading || book.status === ReadingStatus.Completed" class="flex justify-between items-center mb-4">
         <h3 class="text-2xl font-bold">Reading Sessions</h3>
         <button (click)="openReadingLogModal()" class="btn btn-sm btn-outline">Show Logs</button>
       </div>
@@ -76,6 +82,7 @@
                        [bookId]="currentBookId"
                        [readingGoal]="readingGoal"
                        [totalPages]="book.totalPages"
+                       [bookStatus]="book.status"
                        (close)="closeReadingLogModal()"
                        (sessionDeleted)="handleReadingLogDeleted()">
 </app-reading-log-modal>

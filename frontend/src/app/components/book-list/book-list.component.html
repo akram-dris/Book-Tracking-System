@@ -22,6 +22,10 @@
             <progress class="progress progress-primary w-full" [value]="book.progressPercentage" max="100"></progress>
             <p class="text-gray-300 text-center text-sm">{{ book.progressPercentage | number:'1.0-0' }}%</p>
           </div>
+          <div *ngIf="book.startedReadingDate" class="text-gray-300 text-center text-sm mt-2">
+            {{ book.startedReadingDate | date:'shortDate' }}
+            <span *ngIf="book.completedDate"> - {{ book.completedDate | date:'shortDate' }}</span>
+          </div>
         </div>
         <div></div> <!-- Spacer to push content up -->
       </div>
