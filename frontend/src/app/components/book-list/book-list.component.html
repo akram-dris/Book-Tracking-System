@@ -10,10 +10,20 @@
       <figure class="overflow-hidden w-full h-full">
         <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" class="w-full h-full object-cover flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ease-in-out hover:blur-md hover:brightness-75" />
       </figure>
-      <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-        <h2 class="text-white text-lg font-bold text-center">{{ book.title }}</h2>
-        <p class="text-gray-200 text-center">{{ book.author?.name }}</p>
-        <p class="text-gray-300 text-center text-sm mt-2">Status: {{ book.status }}</p>
+      <div class="absolute inset-0 flex flex-col justify-between items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
+           [ngClass]="getStatusClass(book.status) + ' bg-opacity-50'">
+        <div class="w-full text-right">
+          <span class="badge text-white {{ getStatusClass(book.status) }}">{{ book.statusName }}</span>
+        </div>
+        <div class="flex flex-col justify-center items-center flex-grow">
+          <h2 class="text-white text-lg font-bold text-center">{{ book.title }}</h2>
+          <p class="text-gray-200 text-center">{{ book.author?.name }}</p>
+          <div *ngIf="book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined" class="w-full mt-2">
+            <progress class="progress progress-primary w-full" [value]="book.progressPercentage" max="100"></progress>
+            <p class="text-gray-300 text-center text-sm">{{ book.progressPercentage | number:'1.0-0' }}%</p>
+          </div>
+        </div>
+        <div></div> <!-- Spacer to push content up -->
       </div>
       <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
         <div class="flex flex-wrap gap-2">
