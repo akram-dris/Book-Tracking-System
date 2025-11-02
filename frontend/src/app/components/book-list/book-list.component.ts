@@ -25,10 +25,11 @@ export class BookListComponent implements OnInit {
   }
 
   loadBooks(tagId: number | null = null): void {
+    console.log('BookListComponent - Loading books with tagId:', tagId);
     this.bookService.getBooks(tagId).subscribe(data => {
       this.books = data;
-      console.log('Books loaded:', this.books);
-      this.books.forEach(book => console.log('Book ImageUrl:', book.imageUrl));
+      console.log('BookListComponent - Books loaded:', this.books);
+      this.books.forEach(book => console.log('BookListComponent - Book ImageUrl:', book.imageUrl, 'Status:', book.status));
     });
   }
 

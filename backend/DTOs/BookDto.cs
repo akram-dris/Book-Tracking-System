@@ -10,6 +10,8 @@ namespace BookTrackingSystem.DTOs
         public string Title { get; set; } = string.Empty;
         public int TotalPages { get; set; }
         public string? ImageUrl { get; set; }
+        public Models.Enums.ReadingStatus Status { get; set; }
+        public DateTime? StartedReadingDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public AuthorDto? Author { get; set; }

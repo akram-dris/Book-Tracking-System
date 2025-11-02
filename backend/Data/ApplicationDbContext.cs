@@ -20,6 +20,7 @@ namespace BookTrackingSystem.Data
         public DbSet<ReadingProgress> ReadingProgresses { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<ReadingGoal> ReadingGoals { get; set; } // Add this line
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -89,6 +90,12 @@ namespace BookTrackingSystem.Data
                 .WithOne(n => n.ReadingSession)
                 .HasForeignKey<Note>(n => n.SessionId)
                 .IsRequired(false);
+
+            // Configure one-to-one relationship between Book and ReadingGoal
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.ReadingGoal) // Assuming ReadingGoal is a navigation property in Book
+                .WithOne(rg => rg.Book)
+                .HasForeignKey<ReadingGoal>(rg => rg.BookId);
         }
     }
 }
