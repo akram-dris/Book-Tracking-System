@@ -1,5 +1,5 @@
 export interface CreateReadingSession {
   bookId: number;
-  sessionDate: Date;
+  date: Date; // Changed from sessionDate to date
   pagesRead: number;
 }

@@ -15,6 +15,7 @@ export class ReadingSessionService {
   constructor(private http: HttpClient) { }
 
   getReadingSessionsForBook(bookId: number): Observable<GetReadingSession[]> {
+    console.log(`Fetching reading sessions for bookId: ${bookId}`);
     return this.http.get<GetReadingSession[]>(`${this.apiUrl}/book/${bookId}`);
   }
 
@@ -31,6 +32,7 @@ export class ReadingSessionService {
   }
 
   deleteReadingSession(id: number): Observable<any> {
+    console.log(`Deleting reading session with ID: ${id}`);
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

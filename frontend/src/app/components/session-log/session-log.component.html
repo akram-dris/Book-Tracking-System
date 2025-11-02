@@ -10,9 +10,9 @@
       </div>
 
       <div class="mb-4">
-        <label for="sessionDate" class="block text-sm font-medium text-base-content">Date</label>
-        <input type="date" id="sessionDate" formControlName="sessionDate" class="input input-bordered w-full mt-1" />
-        <div *ngIf="sessionForm.get('sessionDate')?.invalid && sessionForm.get('sessionDate')?.touched" class="text-error text-sm mt-1">
+        <label for="date" class="block text-sm font-medium text-base-content">Date</label>
+        <input type="date" id="date" formControlName="date" class="input input-bordered w-full mt-1" />
+        <div *ngIf="sessionForm.get('date')?.invalid && sessionForm.get('date')?.touched" class="text-error text-sm mt-1">
           Date is required.
         </div>
       </div>

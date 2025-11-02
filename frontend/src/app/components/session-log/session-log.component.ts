@@ -31,7 +31,7 @@ export class SessionLogComponent implements OnInit {
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
-      sessionDate: [this.formatDate(new Date()), Validators.required]
+      date: [this.formatDate(new Date()), Validators.required] // Changed sessionDate to date
     });
   }
 
@@ -102,7 +102,7 @@ export class SessionLogComponent implements OnInit {
       this.isLoading = true;
       const newSession: CreateReadingSession = {
         bookId: this.bookId,
-        sessionDate: new Date(this.sessionForm.value.sessionDate),
+        date: new Date(this.sessionForm.value.date), // Changed sessionDate to date
         pagesRead: this.sessionForm.value.pagesRead
       };
 

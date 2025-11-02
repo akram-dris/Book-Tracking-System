@@ -47,30 +47,10 @@
         </div>
       </div>
 
-      <!-- Reading Sessions List (only visible when CurrentlyReading) -->
-      <div *ngIf="book.status === ReadingStatus.CurrentlyReading">
-        <div>
-          <h3 class="text-2xl font-bold mb-4">Reading Sessions</h3>
-          <div *ngIf="readingSessions.length > 0; else noSessions" class="overflow-x-auto">
-            <table class="table w-full">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Pages Read</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let session of readingSessions" [ngClass]="getGoalClass(session.pagesRead)">
-                  <td>{{ session.sessionDate | date:'shortDate' }}</td>
-                  <td>{{ session.pagesRead }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <ng-template #noSessions>
-            <p>No reading sessions logged for this book yet.</p>
-          </ng-template>
-        </div>
+      <!-- Show Logs Button (only visible when CurrentlyReading) -->
+      <div *ngIf="book.status === ReadingStatus.CurrentlyReading" class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-bold">Reading Sessions</h3>
+        <button (click)="openReadingLogModal()" class="btn btn-sm btn-outline">Show Logs</button>
       </div>
     </div>
   </div>
@@ -91,3 +71,11 @@
                  (sessionSaved)="handleAddSessionSaved()"
                  (close)="closeAddSessionModal()">
 </app-session-log>
+
+<app-reading-log-modal *ngIf="isReadingLogModalOpen && currentBookId && book"
+                       [bookId]="currentBookId"
+                       [readingGoal]="readingGoal"
+                       [totalPages]="book.totalPages"
+                       (close)="closeReadingLogModal()"
+                       (sessionDeleted)="handleReadingLogDeleted()">
+</app-reading-log-modal>
