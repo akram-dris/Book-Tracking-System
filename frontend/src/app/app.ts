@@ -1,10 +1,18 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
-import { StreakIndicatorComponent } from './components/streak-sidebar/streak-indicator';
+import { SidebarComponent } from './components/layout/sidebar/sidebar';
+import { HeaderComponent } from './components/layout/header/header';
+import { BreadcrumbComponent } from './components/layout/breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterModule, StreakIndicatorComponent],
+  imports: [
+    RouterOutlet, 
+    RouterModule, 
+    SidebarComponent,
+    HeaderComponent,
+    BreadcrumbComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -14,5 +22,10 @@ export class App {
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  onAddBook() {
+    // TODO: Navigate to add book page or open dialog
+    console.log('Add book clicked');
   }
 }

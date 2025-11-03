@@ -1,0 +1,23 @@
+<nav class="breadcrumbs text-sm px-6 py-2 bg-base-100">
+  <ul class="flex items-center gap-2">
+    <li>
+      <a routerLink="/" class="flex items-center gap-1 text-base-content/70 hover:text-primary transition-colors">
+        <ng-icon name="heroHome" size="1rem"></ng-icon>
+        <span>Home</span>
+      </a>
+    </li>
+    
+    @for (breadcrumb of breadcrumbs; track breadcrumb.url; let isLast = $last) {
+      <li class="flex items-center gap-2">
+        <ng-icon name="heroChevronRight" size="0.875rem" class="text-base-content/40"></ng-icon>
+        @if (isLast) {
+          <span class="text-base-content font-medium">{{ breadcrumb.label }}</span>
+        } @else {
+          <a [routerLink]="breadcrumb.url" class="text-base-content/70 hover:text-primary transition-colors">
+            {{ breadcrumb.label }}
+          </a>
+        }
+      </li>
+    }
+  </ul>
+</nav>
