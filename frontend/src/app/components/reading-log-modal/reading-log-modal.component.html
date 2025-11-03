@@ -24,7 +24,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let session of readingSessions">
-            <td>{{ session.date | date:'shortDate' }}</td>
+            <td>{{ session.date | date:'dd/MM/yyyy' }}</td>
             <td>{{ session.pagesRead }}</td>
             <td [ngClass]="getGoalStatusClass(session.pagesRead)">{{ getGoalStatus(session.pagesRead) }}</td>
             <td>{{ getPercentage(session.pagesRead) }}</td>

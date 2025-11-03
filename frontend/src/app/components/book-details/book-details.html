@@ -30,7 +30,7 @@
           <button (click)="openAddSessionModal()" class="btn btn-primary">Add Session</button>
         </div>
         <div *ngIf="book.status === ReadingStatus.Planning">
-          <p class="text-lg font-semibold">Planned Start Date: {{ book.startedReadingDate | date:'shortDate' }}</p>
+          <p class="text-lg font-semibold">Planned Start Date: {{ book.startedReadingDate | date:'dd/MM/yyyy' }}</p>
           <div class="flex mt-2">
             <button (click)="startReadingFromPlanning()" class="btn btn-primary mr-2">Start Reading</button>
             <button (click)="openPlanAndGoalModal()" class="btn btn-secondary">Edit Plan/Goals</button>
@@ -39,10 +39,10 @@
         <div *ngIf="book.status === ReadingStatus.Completed">
           <p class="text-green-500 font-bold">You have completed this book!</p>
           <p *ngIf="book.startedReadingDate" class="text-sm text-gray-500">
-            Started: {{ book.startedReadingDate | date:'shortDate' }}
+            Started: {{ book.startedReadingDate | date:'dd/MM/yyyy' }}
           </p>
           <p *ngIf="book.completedDate" class="text-sm text-gray-500">
-            Completed: {{ book.completedDate | date:'shortDate' }}
+            Completed: {{ book.completedDate | date:'dd/MM/yyyy' }}
           </p>
         </div>
         <div *ngIf="readingGoal" class="mt-4">
