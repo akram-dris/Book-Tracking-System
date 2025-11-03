@@ -59,10 +59,16 @@ export class BookService {
     return this.http.post<any>(`${this.apiUrl}/${bookId}/tags`, tagIds);
   }
 
-  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date): Observable<any> {
+  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date, completedDate?: Date, summary?: string): Observable<any> {
     const body: any = { status: status };
     if (startedReadingDate) {
       body.startedReadingDate = startedReadingDate.toISOString();
+    }
+    if (completedDate) {
+      body.completedDate = completedDate.toISOString();
+    }
+    if (summary) {
+      body.summary = summary;
     }
     return this.http.put<any>(`${this.apiUrl}/${bookId}/status`, body);
   }

@@ -13,6 +13,7 @@ namespace BookTrackingSystem.DTOs
         public Models.Enums.ReadingStatus Status { get; set; }
         public DateTime? StartedReadingDate { get; set; }
         public DateTime? CompletedDate { get; set; } // New property
+        public string? Summary { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public AuthorDto? Author { get; set; }

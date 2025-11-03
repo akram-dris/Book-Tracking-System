@@ -157,7 +157,7 @@ namespace BookTrackingSystem.Controllers
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateBookStatus(int id, [FromBody] UpdateBookStatusDto updateBookStatusDto)
         {
-            await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate);
+            await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate, updateBookStatusDto.CompletedDate, updateBookStatusDto.Summary);
             return NoContent();
         }
     }

@@ -134,7 +134,7 @@ namespace BookTrackingSystem.Services
             }
         }
 
-        public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null)
+        public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null, string? summary = null)
         {
             var book = await _bookRepository.GetBookAsync(bookId);
             if (book != null)
@@ -147,6 +147,10 @@ namespace BookTrackingSystem.Services
                 if (completedDate.HasValue)
                 {
                     book.CompletedDate = completedDate.Value;
+                }
+                if (!string.IsNullOrEmpty(summary))
+                {
+                    book.Summary = summary;
                 }
                 await _bookRepository.UpdateBookAsync(book);
             }

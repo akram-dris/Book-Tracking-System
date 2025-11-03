@@ -35,6 +35,9 @@ export class BookDetailsComponent implements OnInit {
   currentBookId: number | null = null; // Existing property
   currentPage: number = 0; // New property
   progress: number = 0; // New property
+  isSummaryMode: boolean = false;
+  isEditingSummary: boolean = false;
+  summaryForm: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +48,9 @@ export class BookDetailsComponent implements OnInit {
     private location: Location,
     private fb: FormBuilder
   ) {
-    // sessionLogForm and logSession() are removed as session logging is now handled by a modal
+    this.summaryForm = this.fb.group({
+      summary: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
@@ -59,6 +64,9 @@ export class BookDetailsComponent implements OnInit {
       this.bookService.getBook(+id).subscribe(book => {
         this.book = book;
         this.currentBookId = book.id; // Assign book.id to currentBookId
+        if (this.book.summary) {
+          this.summaryForm.patchValue({ summary: this.book.summary });
+        }
         console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
         this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
           next: sessions => {
@@ -92,6 +100,58 @@ export class BookDetailsComponent implements OnInit {
         });
       });
     }
+  }
+
+  toggleSummaryMode(): void {
+    this.isSummaryMode = !this.isSummaryMode;
+    if (!this.isSummaryMode) {
+      this.isEditingSummary = false;
+      this.summaryForm.reset();
+      if (this.book?.summary) {
+        this.summaryForm.patchValue({ summary: this.book.summary });
+      }
+    }
+  }
+
+  createSummary(): void {
+    this.isSummaryMode = true;
+    this.isEditingSummary = true;
+    this.summaryForm.reset();
+  }
+
+  editSummary(): void {
+    this.isEditingSummary = true;
+  }
+
+  cancelSummaryEdit(): void {
+    this.isEditingSummary = false;
+    if (this.book?.summary) {
+      this.summaryForm.patchValue({ summary: this.book.summary });
+    } else {
+      this.summaryForm.reset();
+    }
+  }
+
+  saveSummary(): void {
+    console.log('saveSummary called');
+    console.log('summaryForm valid:', this.summaryForm.valid);
+    console.log('book exists:', !!this.book);
+    if (this.summaryForm.valid && this.book) {
+      const summaryText = this.summaryForm.get('summary')?.value;
+      const startedDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : undefined;
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
+        this.book!.status = ReadingStatus.Summarized;
+        this.book!.completedDate = new Date();
+        this.book!.summary = summaryText;
+        this.isEditingSummary = false;
+        console.log('BookDetailsComponent saveSummary - Book summary updated');
+      });
+    }
+  }
+
+  showSummary(): void {
+    this.isSummaryMode = true;
+    this.isEditingSummary = false;
   }
 
   startReading(): void {
@@ -158,8 +218,11 @@ export class BookDetailsComponent implements OnInit {
   markAsCompleted(): void {
     console.log('BookDetailsComponent markAsCompleted - book:', this.book);
     if (this.book) {
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed).subscribe(() => {
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, this.book.startedReadingDate, new Date()).subscribe(() => {
         this.book!.status = ReadingStatus.Completed;
+        this.book!.completedDate = new Date();
+        this.isSummaryMode = true;
+        this.isEditingSummary = true;
         console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
       });
     }

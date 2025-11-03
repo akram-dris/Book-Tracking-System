@@ -7,3 +7,11 @@
 .card:hover .badge {
     opacity: 1;
 }
+
+.status-summarized {
+    background-color: #facc15; /* yellow-500 */
+}
+
+.card:hover .status-summarized {
+    background-color: #eab308; /* yellow-600 on hover */
+}
