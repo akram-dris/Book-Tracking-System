@@ -1,0 +1,59 @@
+.streak-indicator-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.flame-icon {
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+}
+
+.flame-icon path {
+  fill: #a0aec0; /* gray-500 */
+  transition: fill 0.3s ease;
+}
+
+.streak-indicator-container.active .flame-icon path {
+  fill: #f6ad55; /* orange-400 */
+}
+
+.streak-indicator-container.active .flame-icon {
+  animation: flicker 1.5s infinite;
+}
+
+.streak-indicator-container:hover {
+  background-color: #f7fafc; /* gray-100 */
+}
+
+.current-streak {
+  margin-left: 8px;
+  font-weight: bold;
+  font-size: 1.1em;
+  line-height: 1;
+  color: #4a5568; /* gray-700 */
+}
+
+.streak-indicator-container.active .current-streak {
+  color: #f6ad55; /* orange-400 */
+}
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}

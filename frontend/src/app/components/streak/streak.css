@@ -1,0 +1,33 @@
+.streak-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.streak-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.streak-label {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.streak-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2em;
+  color: #555;
+}
