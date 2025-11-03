@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { GetTag } from '../models/get-tag.model';
 import { CreateTag } from '../models/create-tag.model';
+import { UpdateTag } from '../models/update-tag.model'; // New import
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,10 @@ export class TagService {
 
   createTag(tag: CreateTag): Observable<GetTag> {
     return this.http.post<GetTag>(this.apiUrl, tag);
+  }
+
+  updateTag(id: number, tag: UpdateTag): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, tag);
   }
 
   getTagUsageCounts(): Observable<{ [key: number]: number }> {

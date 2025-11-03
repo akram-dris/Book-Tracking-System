@@ -3,10 +3,10 @@
   <h1 class="text-3xl font-bold mb-6">Tag Management</h1>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <!-- Add New Tag Form -->
+    <!-- Add New Tag / Edit Tag Form -->
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <h2 class="card-title">Add New Tag</h2>
+        <h2 class="card-title">{{ isEditingTag ? 'Edit Tag' : 'Add New Tag' }}</h2>
         <form [formGroup]="tagForm" (ngSubmit)="onSubmit()">
           <div class="form-control mb-4">
             <label class="label">
@@ -17,10 +17,13 @@
               Tag Name is required.
             </div>
           </div>
-          <div class="form-control mt-6">
+          <div class="form-control mt-6 flex flex-row justify-end space-x-2">
+            <button *ngIf="isEditingTag" type="button" class="btn btn-ghost" (click)="cancelEdit()">
+              Cancel
+            </button>
             <button type="submit" class="btn btn-primary" [disabled]="tagForm.invalid || isLoading">
               <span *ngIf="isLoading" class="loading loading-spinner"></span>
-              Add Tag
+              {{ isEditingTag ? 'Update Tag' : 'Add Tag' }}
             </button>
           </div>
         </form>
@@ -42,12 +45,24 @@
             </thead>
             <tbody>
               <tr *ngFor="let tag of tags">
-                <td>{{ tag.name }}</td>
+                <td>
+                  <ng-container *ngIf="isEditingTag && editingTagId === tag.id; else tagNameDisplay">
+                    <input type="text" [formControl]="nameControl" class="input input-bordered input-sm w-full" />
+                  </ng-container>
+                  <ng-template #tagNameDisplay>
+                    {{ tag.name }}
+                  </ng-template>
+                </td>
                 <td>{{ tagUsageCounts[tag.id] || 0 }}</td>
                 <td>
-                  <button class="btn btn-error btn-sm" (click)="deleteTag(tag.id)">
-                    Delete
-                  </button>
+                  <div class="flex space-x-2">
+                    <button class="btn btn-info btn-sm" (click)="editTag(tag)" [disabled]="isEditingTag">
+                      Edit
+                    </button>
+                    <button class="btn btn-error btn-sm" (click)="deleteTag(tag.id)" [disabled]="isEditingTag">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
