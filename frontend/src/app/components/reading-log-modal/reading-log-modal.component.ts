@@ -4,11 +4,13 @@ import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { ReadingStatus } from '../../models/enums/reading-status.enum'; // New import
+import { NoteModalComponent } from '../note-modal/note-modal.component'; // New import
+import { UpdateReadingSession } from '../../models/update-reading-session.model'; // New import
 
 @Component({
   selector: 'app-reading-log-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NoteModalComponent], // Updated imports
   templateUrl: './reading-log-modal.component.html',
   styleUrls: ['./reading-log-modal.component.css']
 })
@@ -24,6 +26,8 @@ export class ReadingLogModalComponent implements OnInit {
 
   readingSessions: GetReadingSession[] = [];
   isLoading = false;
+  isNoteModalOpen: boolean = false; // New property
+  selectedSessionForNote: GetReadingSession | null = null; // New property
 
   constructor(private readingSessionService: ReadingSessionService) { }
 
@@ -100,6 +104,37 @@ export class ReadingLogModalComponent implements OnInit {
       return percentage.toFixed(2) + '%';
     }
     return '0.00%';
+  }
+
+  viewEditNote(session: GetReadingSession): void {
+    this.selectedSessionForNote = session;
+    this.isNoteModalOpen = true;
+  }
+
+  handleNoteSaved(updatedSession: GetReadingSession): void {
+    if (updatedSession.id) {
+      const updateDto: UpdateReadingSession = {
+        bookId: updatedSession.bookId,
+        date: updatedSession.date,
+        pagesRead: updatedSession.pagesRead,
+        summary: updatedSession.summary
+      };
+      this.readingSessionService.updateReadingSession(updatedSession.id, updateDto).subscribe({
+        next: () => {
+          console.log('Note saved successfully.');
+          this.loadSessions(); // Refresh the list
+          this.closeNoteModal();
+        },
+        error: (err) => {
+          console.error('Error saving note:', err);
+        }
+      });
+    }
+  }
+
+  closeNoteModal(): void {
+    this.isNoteModalOpen = false;
+    this.selectedSessionForNote = null;
   }
 
   onClose(): void {

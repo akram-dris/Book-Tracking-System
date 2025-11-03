@@ -11,5 +11,6 @@ namespace BookTrackingSystem.DTOs
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Pages read must be at least 1.")]
         public int PagesRead { get; set; }
+        public string? Summary { get; set; } // New property
     }
 }

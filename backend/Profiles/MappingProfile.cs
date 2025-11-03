@@ -24,9 +24,12 @@ namespace BookTrackingSystem.Profiles
             CreateMap<UpdateTagDto, BookTag>();
 
             // ReadingSession Mappings
-            CreateMap<ReadingSession, ReadingSessionDto>();
-            CreateMap<CreateReadingSessionDto, ReadingSession>();
-            CreateMap<UpdateReadingSessionDto, ReadingSession>();
+            CreateMap<ReadingSession, ReadingSessionDto>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary)); // New mapping
+            CreateMap<CreateReadingSessionDto, ReadingSession>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary)); // New mapping
+            CreateMap<UpdateReadingSessionDto, ReadingSession>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary)); // New mapping
 
             // ReadingGoal Mappings
             CreateMap<ReadingGoal, ReadingGoalDto>();

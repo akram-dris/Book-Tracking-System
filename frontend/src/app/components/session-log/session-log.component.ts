@@ -3,7 +3,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { CreateReadingSession } from '../../models/create-reading-session.model';
+import { UpdateReadingSession } from '../../models/update-reading-session.model'; // New import
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
+import { GetReadingSession } from '../../models/get-reading-session.model'; // New import
 
 @Component({
   selector: 'app-session-log',
@@ -24,6 +26,7 @@ export class SessionLogComponent implements OnInit {
   currentPage: number = 0; // To be calculated
   progress: number = 0; // To be calculated
   currentPagesRead: number = 0; // New property to track pages read input
+  existingSession: GetReadingSession | null = null; // New property
 
   constructor(
     private fb: FormBuilder,
@@ -31,19 +34,36 @@ export class SessionLogComponent implements OnInit {
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
-      date: [this.formatDate(new Date()), Validators.required] // Changed sessionDate to date
+      date: [this.formatDate(new Date()), Validators.required],
+      summary: ['']
     });
   }
 
   ngOnInit(): void {
     console.log('SessionLogComponent ngOnInit - bookId:', this.bookId, 'readingGoal:', this.readingGoal, 'totalPages:', this.totalPages);
     if (this.bookId) {
+      // Fetch all sessions to calculate current progress
       this.readingSessionService.getReadingSessionsForBook(this.bookId).subscribe(sessions => {
         this.currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
         if (this.totalPages && this.totalPages > 0) {
           this.progress = (this.currentPage / this.totalPages) * 100;
         }
         console.log('SessionLogComponent ngOnInit - currentPage:', this.currentPage, 'progress:', this.progress);
+      });
+
+      // Check for existing session for today's date
+      const today = this.formatDate(new Date());
+      this.readingSessionService.getReadingSessionsForBook(this.bookId).subscribe(sessions => {
+        this.existingSession = sessions.find(session => this.formatDate(new Date(session.date)) === today) || null;
+
+        if (this.existingSession) {
+          this.sessionForm.patchValue({
+            pagesRead: null, // User will enter additional pages
+            date: this.formatDate(new Date(this.existingSession.date)),
+            summary: this.existingSession.summary || ''
+          });
+          this.currentPagesRead = this.existingSession.pagesRead; // Keep track of total pages read for goal feedback
+        }
       });
     }
 
@@ -100,28 +120,53 @@ export class SessionLogComponent implements OnInit {
   onSubmit(): void {
     if (this.sessionForm.valid && this.bookId) {
       this.isLoading = true;
-      const newSession: CreateReadingSession = {
+      const sessionData = {
         bookId: this.bookId,
-        date: new Date(this.sessionForm.value.date), // Changed sessionDate to date
-        pagesRead: this.sessionForm.value.pagesRead
+        date: new Date(this.sessionForm.value.date),
+        pagesRead: this.sessionForm.value.pagesRead,
+        summary: this.sessionForm.value.summary
       };
 
-      this.readingSessionService.addReadingSession(newSession).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.sessionSaved.emit();
-          this.close.emit();
-        },
-        error: (err) => {
-          this.isLoading = false;
-          console.error('Error logging reading session', err);
-          if (err.status === 409) {
-            alert('A reading session for this book on this date already exists.');
-          } else {
-            alert('Failed to log reading session. Please try again.');
+      if (this.existingSession) {
+        // Update existing session
+        const updateSession: UpdateReadingSession = {
+          bookId: sessionData.bookId,
+          date: sessionData.date,
+          pagesRead: this.existingSession.pagesRead + (sessionData.pagesRead || 0), // Aggregate pages
+          summary: sessionData.summary // Use the summary from the form
+        };
+        this.readingSessionService.updateReadingSession(this.existingSession.id, updateSession).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.sessionSaved.emit();
+            this.close.emit();
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error('Error updating reading session', err);
+            alert('Failed to update reading session. Please try again.');
           }
-        }
-      });
+        });
+      } else {
+        // Add new session
+        const newSession: CreateReadingSession = sessionData;
+        this.readingSessionService.addReadingSession(newSession).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.sessionSaved.emit();
+            this.close.emit();
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error('Error logging reading session', err);
+            if (err.status === 409) {
+              alert('A reading session for this book on this date already exists.');
+            } else {
+              alert('Failed to log reading session. Please try again.');
+            }
+          }
+        });
+      }
     }
   }
 

@@ -26,6 +26,11 @@
         </div>
       </div>
 
+      <div class="mb-4">
+        <label for="summary" class="block text-sm font-medium text-base-content">Notes / Summary</label>
+        <textarea id="summary" formControlName="summary" class="textarea textarea-bordered w-full mt-1" placeholder="Optional notes about this session..."></textarea>
+      </div>
+
       <div *ngIf="readingGoal" class="mb-4">
         <h4 class="text-md font-semibold mb-2">Goals:</h4>
         <p [ngClass]="getGoalLevelClass('low')">
@@ -42,7 +47,7 @@
       <div class="modal-action">
         <button type="submit" class="btn btn-primary" [disabled]="sessionForm.invalid || isLoading">
           <span *ngIf="isLoading" class="loading loading-spinner"></span>
-          Log Session
+          {{ existingSession ? 'Update Session' : 'Log Session' }}
         </button>
         <button type="button" class="btn" (click)="onCancel()">Cancel</button>
       </div>
