@@ -1,0 +1,35 @@
+<div class="stats shadow-md bg-base-200 w-full mb-6">
+  <div class="stat">
+    <div class="stat-figure text-primary">
+      <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+    </div>
+    <div class="stat-title">Total Books</div>
+    <div class="stat-value text-primary">{{ stats().total }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-secondary">
+      <ng-icon name="heroClock" size="2rem"></ng-icon>
+    </div>
+    <div class="stat-title">Currently Reading</div>
+    <div class="stat-value text-secondary">{{ stats().currentlyReading }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-success">
+      <ng-icon name="heroCheckCircle" size="2rem"></ng-icon>
+    </div>
+    <div class="stat-title">Completed</div>
+    <div class="stat-value text-success">{{ stats().completed }}</div>
+    <div class="stat-desc">Includes Summarized</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-base-content/40">
+      <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+    </div>
+    <div class="stat-title">To Read</div>
+    <div class="stat-value">{{ stats().toRead }}</div>
+    <div class="stat-desc">Planning + Not Reading</div>
+  </div>
+</div>

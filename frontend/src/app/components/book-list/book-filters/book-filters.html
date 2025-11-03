@@ -1,0 +1,84 @@
+<div class="mb-6">
+  <!-- Filter Toggle Button -->
+  <button 
+    (click)="toggleFilters()" 
+    class="btn btn-outline btn-sm gap-2"
+  >
+    <ng-icon name="heroFunnel" size="1rem"></ng-icon>
+    <span>{{ isExpanded ? 'Hide Filters' : 'Show Filters' }}</span>
+  </button>
+
+  <!-- Filter Panel -->
+  @if (isExpanded) {
+    <div class="card bg-base-200 shadow-md mt-4 p-6 animate-in fade-in duration-200">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Status Filter -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Status</span>
+          </label>
+          <select 
+            class="select select-bordered w-full"
+            [(ngModel)]="currentFilters.status"
+          >
+            <option [ngValue]="undefined">All Statuses</option>
+            @for (status of statusOptions; track status.value) {
+              <option [ngValue]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Author Filter -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Author</span>
+          </label>
+          <select 
+            class="select select-bordered w-full"
+            [(ngModel)]="currentFilters.authorId"
+          >
+            <option [ngValue]="undefined">All Authors</option>
+            @for (author of authors; track author.id) {
+              <option [ngValue]="author.id">{{ author.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Tags Filter -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium">Tag</span>
+          </label>
+          <select 
+            class="select select-bordered w-full"
+            [(ngModel)]="currentFilters.tagId"
+          >
+            <option [ngValue]="undefined">All Tags</option>
+            @for (tag of tags; track tag.id) {
+              <option [ngValue]="tag.id">{{ tag.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter Actions -->
+      <div class="flex justify-end gap-2 mt-4">
+        <app-button 
+          [variant]="'ghost'" 
+          [size]="'sm'"
+          [icon]="'heroXMark'"
+          (clicked)="clearFilters()"
+        >
+          Clear
+        </app-button>
+        <app-button 
+          [variant]="'primary'" 
+          [size]="'sm'"
+          (clicked)="applyFilters()"
+        >
+          Apply Filters
+        </app-button>
+      </div>
+    </div>
+  }
+</div>
