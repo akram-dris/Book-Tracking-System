@@ -40,6 +40,7 @@ builder.Services.AddScoped<BookTrackingSystem.Repository.IReadingSessionReposito
 builder.Services.AddScoped<BookTrackingSystem.Services.IReadingSessionService, BookTrackingSystem.Services.ReadingSessionService>();
 builder.Services.AddScoped<BookTrackingSystem.Repository.IReadingGoalRepository, BookTrackingSystem.Repository.ReadingGoalRepository>();
 builder.Services.AddScoped<BookTrackingSystem.Services.IReadingGoalService, BookTrackingSystem.Services.ReadingGoalService>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IHeatmapService, BookTrackingSystem.Services.HeatmapService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
