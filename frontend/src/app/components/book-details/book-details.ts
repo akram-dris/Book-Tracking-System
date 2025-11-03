@@ -2,35 +2,215 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from '../../services/book.service';
+import { ReadingSessionService } from '../../services/reading-session.service';
+import { ReadingGoalService } from '../../services/reading-goal.service';
 import { GetBook } from '../../models/get-book.model';
+import { GetReadingSession } from '../../models/get-reading-session.model';
+import { GetReadingGoal } from '../../models/get-reading-goal.model';
+import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { environment } from '../../../environments/environment';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { SessionLogComponent } from '../session-log/session-log.component';
+import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component'; // New import
+import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component'; // New import
 
 @Component({
   selector: 'app-book-details',
-  imports: [CommonModule, RouterModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, SessionLogComponent, PlanAndGoalModalComponent, ReadingLogModalComponent], // Updated imports
   templateUrl: './book-details.html',
   styleUrls: ['./book-details.css']
 })
 export class BookDetailsComponent implements OnInit {
   book: GetBook | undefined;
+  readingSessions: GetReadingSession[] = [];
+  readingGoal: GetReadingGoal | null = null;
   rootUrl = environment.rootUrl;
+  ReadingStatus = ReadingStatus;
+  isAddSessionModalOpen: boolean = false; // Existing property
+  isPlanAndGoalModalOpen: boolean = false; // New property
+  isReadingLogModalOpen: boolean = false; // New property
+  currentBookId: number | null = null; // Existing property
+  currentPage: number = 0; // New property
+  progress: number = 0; // New property
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private bookService: BookService,
-    private location: Location
-  ) { }
+    private readingSessionService: ReadingSessionService,
+    private readingGoalService: ReadingGoalService,
+    private location: Location,
+    private fb: FormBuilder
+  ) {
+    // sessionLogForm and logSession() are removed as session logging is now handled by a modal
+  }
 
   ngOnInit(): void {
+    this.refreshBookData();
+  }
+
+  refreshBookData(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    console.log('BookDetailsComponent refreshBookData - Route ID:', id);
     if (id) {
       this.bookService.getBook(+id).subscribe(book => {
         this.book = book;
+        this.currentBookId = book.id; // Assign book.id to currentBookId
+        console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
+        this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
+          next: sessions => {
+            this.readingSessions = sessions;
+            this.calculateProgress(); // Calculate progress after sessions are loaded
+            console.log('BookDetailsComponent refreshBookData - readingSessions loaded:', this.readingSessions);
+          },
+          error: err => {
+            if (err.status === 404) {
+              console.log('BookDetailsComponent refreshBookData - No reading sessions found for bookId:', id);
+              this.readingSessions = []; // Ensure it's an empty array
+              this.calculateProgress(); // Calculate progress even if no sessions
+            } else {
+              console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', err);
+            }
+          }
+        });
+        this.readingGoalService.getReadingGoalForBook(+id).subscribe({
+          next: goal => {
+            this.readingGoal = goal;
+            console.log('BookDetailsComponent refreshBookData - readingGoal loaded:', this.readingGoal);
+          },
+          error: err => {
+            if (err.status === 404) {
+              console.log('BookDetailsComponent refreshBookData - No reading goal found for bookId:', id);
+              this.readingGoal = null; // Ensure it's null
+            } else {
+              console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', err);
+            }
+          }
+        });
       });
     }
+  }
+
+  startReading(): void {
+    console.log('BookDetailsComponent startReading - book:', this.book);
+    if (this.book) {
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(() => {
+        this.book!.status = ReadingStatus.CurrentlyReading;
+        this.book!.startedReadingDate = new Date(); // Set started reading date
+        console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
+        this.router.navigate(['/books', this.book!.id, 'set-goal']);
+      });
+    }
+  }
+
+  openPlanAndGoalModal(): void {
+    console.log('BookDetailsComponent openPlanAndGoalModal - currentBookId:', this.currentBookId);
+    if (this.currentBookId) {
+      this.isPlanAndGoalModalOpen = true;
+    } else {
+      console.error('BookDetailsComponent openPlanAndGoalModal - Cannot open Plan and Goal modal: currentBookId is null/undefined.');
+    }
+  }
+
+  closePlanAndGoalModal(): void {
+    console.log('BookDetailsComponent closePlanAndGoalModal');
+    this.isPlanAndGoalModalOpen = false;
+  }
+
+  handlePlanAndGoalSaved(): void {
+    console.log('BookDetailsComponent handlePlanAndGoalSaved - Plan and Goal saved, refreshing data for bookId:', this.book?.id);
+    this.closePlanAndGoalModal();
+    this.refreshBookData(); // Refresh all book-related data
+  }
+
+  openAddSessionModal(): void {
+    console.log('BookDetailsComponent openAddSessionModal - Opening AddSessionModal for bookId:', this.currentBookId);
+    this.isAddSessionModalOpen = true;
+  }
+
+  closeAddSessionModal(): void {
+    console.log('BookDetailsComponent closeAddSessionModal');
+    this.isAddSessionModalOpen = false;
+  }
+
+  handleAddSessionSaved(): void {
+    console.log('BookDetailsComponent handleAddSessionSaved - Session saved, refreshing data for bookId:', this.book?.id);
+    this.closeAddSessionModal();
+    this.refreshBookData(); // Refresh all book-related data
+  }
+
+  startReadingFromPlanning(): void {
+    console.log('BookDetailsComponent startReadingFromPlanning - book:', this.book);
+    if (this.book) {
+      const startDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : new Date(); // Use book.startedReadingDate
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(() => {
+        this.book!.status = ReadingStatus.CurrentlyReading;
+        this.book!.startedReadingDate = startDate;
+        console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
+        // No navigation needed, stay on the same page
+      });
+    }
+  }
+
+  markAsCompleted(): void {
+    console.log('BookDetailsComponent markAsCompleted - book:', this.book);
+    if (this.book) {
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed).subscribe(() => {
+        this.book!.status = ReadingStatus.Completed;
+        console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
+      });
+    }
+  }
+
+  private calculateProgress(): void {
+    if (this.book && this.readingSessions.length > 0) {
+      this.currentPage = this.readingSessions.reduce((sum, session) => sum + session.pagesRead, 0);
+      if (this.book.totalPages && this.book.totalPages > 0) {
+        this.progress = (this.currentPage / this.book.totalPages) * 100;
+      } else {
+        this.progress = 0;
+      }
+    } else {
+      this.currentPage = 0;
+      this.progress = 0;
+    }
+    console.log('BookDetailsComponent calculateProgress - currentPage:', this.currentPage, 'progress:', this.progress);
+  }
+
+  getGoalClass(pagesRead: number): string {
+    if (!this.readingGoal) {
+      return '';
+    }
+    if (pagesRead >= this.readingGoal.highGoal) {
+      return 'text-red-500 font-bold';
+    } else if (pagesRead >= this.readingGoal.mediumGoal) {
+      return 'text-blue-500 font-bold';
+    } else if (pagesRead >= this.readingGoal.lowGoal) {
+      return 'text-green-500 font-bold';
+    }
+    return '';
+  }
+
+  handleReadingLogDeleted(): void {
+    console.log('BookDetailsComponent handleReadingLogDeleted - Reading session deleted, refreshing book data.');
+    this.refreshBookData(); // Refresh all book-related data
+  }
+
+  openReadingLogModal(): void {
+    console.log('BookDetailsComponent openReadingLogModal - currentBookId:', this.currentBookId);
+    if (this.currentBookId) {
+      this.isReadingLogModalOpen = true;
+    } else {
+      console.error('BookDetailsComponent openReadingLogModal - Cannot open Reading Log modal: currentBookId is null/undefined.');
+    }
+  }
+
+  closeReadingLogModal(): void {
+    console.log('BookDetailsComponent closeReadingLogModal');
+    this.isReadingLogModalOpen = false;
   }
 
   deleteBook(): void {

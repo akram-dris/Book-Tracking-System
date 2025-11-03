@@ -4,6 +4,7 @@ using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Enums;
 
 namespace BookTrackingSystem.Controllers
 {
@@ -150,6 +151,13 @@ namespace BookTrackingSystem.Controllers
         public async Task<IActionResult> AssignTags(int bookId, [FromBody] IEnumerable<int> tagIds)
         {
             await _bookService.AssignTagsAsync(bookId, tagIds);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateBookStatus(int id, [FromBody] UpdateBookStatusDto updateBookStatusDto)
+        {
+            await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate);
             return NoContent();
         }
     }

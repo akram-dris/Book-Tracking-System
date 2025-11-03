@@ -36,6 +36,10 @@ builder.Services.AddScoped<BookTrackingSystem.Services.IAuthorService, BookTrack
 builder.Services.AddScoped<BookTrackingSystem.Repository.ITagRepository, BookTrackingSystem.Repository.TagRepository>();
 builder.Services.AddScoped<BookTrackingSystem.Services.ITagService, BookTrackingSystem.Services.TagService>();
 builder.Services.AddScoped<BookTrackingSystem.Repository.IBookTagAssignmentRepository, BookTrackingSystem.Repository.BookTagAssignmentRepository>();
+builder.Services.AddScoped<BookTrackingSystem.Repository.IReadingSessionRepository, BookTrackingSystem.Repository.ReadingSessionRepository>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IReadingSessionService, BookTrackingSystem.Services.ReadingSessionService>();
+builder.Services.AddScoped<BookTrackingSystem.Repository.IReadingGoalRepository, BookTrackingSystem.Repository.ReadingGoalRepository>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IReadingGoalService, BookTrackingSystem.Services.ReadingGoalService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));

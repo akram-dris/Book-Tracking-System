@@ -1,5 +1,6 @@
 
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace BookTrackingSystem.Services
@@ -12,5 +13,7 @@ namespace BookTrackingSystem.Services
         Task<BookDto> UpdateBookAsync(int id, UpdateBookDto book, IFormFile? imageFile);
         Task DeleteBookAsync(int id);
         Task AssignTagsAsync(int bookId, IEnumerable<int> tagIds);
+        Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null);
+        Task UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate);
     }
 }

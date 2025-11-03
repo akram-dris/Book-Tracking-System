@@ -1,0 +1,55 @@
+<div class="modal modal-open">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Plan Reading & Set Goals</h3>
+
+    <form [formGroup]="planAndGoalForm" (ngSubmit)="onSubmit()" class="py-4">
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Target Start Date</span>
+        </label>
+        <input type="date" formControlName="targetStartDate" class="input input-bordered w-full">
+        <label class="label" *ngIf="planAndGoalForm.controls['targetStartDate'].invalid && planAndGoalForm.controls['targetStartDate'].touched">
+          <span class="label-text-alt text-error">Target start date is required.</span>
+        </label>
+      </div>
+
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Low Goal (pages)</span>
+        </label>
+        <input type="number" formControlName="lowGoal" class="input input-bordered w-full" placeholder="e.g., 50">
+        <label class="label" *ngIf="planAndGoalForm.controls['lowGoal'].invalid && planAndGoalForm.controls['lowGoal'].touched">
+          <span class="label-text-alt text-error">Low goal is required and must be at least 1.</span>
+        </label>
+      </div>
+
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Medium Goal (pages)</span>
+        </label>
+        <input type="number" formControlName="mediumGoal" class="input input-bordered w-full" placeholder="e.g., 100">
+        <label class="label" *ngIf="planAndGoalForm.controls['mediumGoal'].invalid && planAndGoalForm.controls['mediumGoal'].touched">
+          <span class="label-text-alt text-error">Medium goal is required and must be at least 1.</span>
+        </label>
+      </div>
+
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">High Goal (pages)</span>
+        </label>
+        <input type="number" formControlName="highGoal" class="input input-bordered w-full" placeholder="e.g., 200">
+        <label class="label" *ngIf="planAndGoalForm.controls['highGoal'].invalid && planAndGoalForm.controls['highGoal'].touched">
+          <span class="label-text-alt text-error">High goal is required and must be at least 1.</span>
+        </label>
+      </div>
+
+      <div class="modal-action">
+        <button type="submit" class="btn btn-primary" [disabled]="planAndGoalForm.invalid || isLoading">
+          <span *ngIf="isLoading" class="loading loading-spinner"></span>
+          Confirm Plan & Goals
+        </button>
+        <button type="button" class="btn" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

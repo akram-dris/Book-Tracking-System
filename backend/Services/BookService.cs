@@ -2,6 +2,7 @@
 using AutoMapper;
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Enums;
 using BookTrackingSystem.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -130,6 +131,34 @@ namespace BookTrackingSystem.Services
                     };
                     await _bookTagAssignmentRepository.AddAsync(newAssignment);
                 }
+            }
+        }
+
+        public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null)
+        {
+            var book = await _bookRepository.GetBookAsync(bookId);
+            if (book != null)
+            {
+                book.Status = status;
+                if (startedReadingDate.HasValue)
+                {
+                    book.StartedReadingDate = startedReadingDate.Value;
+                }
+                if (completedDate.HasValue)
+                {
+                    book.CompletedDate = completedDate.Value;
+                }
+                await _bookRepository.UpdateBookAsync(book);
+            }
+        }
+
+        public async Task UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate)
+        {
+            var book = await _bookRepository.GetBookAsync(bookId);
+            if (book != null)
+            {
+                book.CompletedDate = completedDate;
+                await _bookRepository.UpdateBookAsync(book); // Ensure the book is updated in the repository
             }
         }
     }

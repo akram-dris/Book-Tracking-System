@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { GetBook } from '../models/get-book.model';
 import { CreateBook } from '../models/create-book.model';
 import { UpdateBook } from '../models/update-book.model';
+import { ReadingStatus } from '../models/enums/reading-status.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -56,5 +57,13 @@ export class BookService {
 
   assignTags(bookId: number, tagIds: number[]): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${bookId}/tags`, tagIds);
+  }
+
+  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date): Observable<any> {
+    const body: any = { status: status };
+    if (startedReadingDate) {
+      body.startedReadingDate = startedReadingDate.toISOString();
+    }
+    return this.http.put<any>(`${this.apiUrl}/${bookId}/status`, body);
   }
 }

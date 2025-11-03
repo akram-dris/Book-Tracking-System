@@ -1,6 +1,5 @@
 
-using System;
-using System.Collections.Generic;
+using BookTrackingSystem.Models.Enums;
 
 namespace BookTrackingSystem.Models
 {
@@ -11,6 +10,9 @@ namespace BookTrackingSystem.Models
         public string Title { get; set; } = string.Empty;
         public int TotalPages { get; set; }
         public string? ImageUrl { get; set; }
+        public ReadingStatus Status { get; set; } = ReadingStatus.NotReading; // Add Status property
+        public DateTime? StartedReadingDate { get; set; } // New property
+        public DateTime? CompletedDate { get; set; } // New property for completion date
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public Author? Author { get; set; }
@@ -19,5 +21,6 @@ namespace BookTrackingSystem.Models
         public ICollection<ReadingTarget>? ReadingTargets { get; set; }
         public ICollection<ReadingProgress>? ReadingProgresses { get; set; }
         public ICollection<Note>? Notes { get; set; }
+        public ReadingGoal? ReadingGoal { get; set; } // Add this line
     }
 }
