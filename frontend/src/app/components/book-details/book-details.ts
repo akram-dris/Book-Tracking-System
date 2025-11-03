@@ -139,8 +139,8 @@ export class BookDetailsComponent implements OnInit {
     if (this.summaryForm.valid && this.book) {
       const summaryText = this.summaryForm.get('summary')?.value;
       const startedDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : undefined;
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, startedDate, new Date(), summaryText).subscribe(() => {
-        this.book!.status = ReadingStatus.Completed;
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
+        this.book!.status = ReadingStatus.Summarized;
         this.book!.completedDate = new Date();
         this.book!.summary = summaryText;
         this.isEditingSummary = false;

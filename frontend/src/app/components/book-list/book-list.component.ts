@@ -78,6 +78,8 @@ export class BookListComponent implements OnInit {
         return 'Currently Reading';
       case ReadingStatus.Completed:
         return 'Completed';
+      case ReadingStatus.Summarized:
+        return 'Summarized';
       default:
         return 'Unknown';
     }
@@ -98,6 +100,8 @@ export class BookListComponent implements OnInit {
         return 'bg-green-500'; // Example color for Currently Reading
       case ReadingStatus.Completed:
         return 'bg-purple-500'; // Example color for Completed
+      case ReadingStatus.Summarized:
+        return 'status-summarized'; // Custom class for Summarized
       default:
         return 'bg-gray-500';
     }

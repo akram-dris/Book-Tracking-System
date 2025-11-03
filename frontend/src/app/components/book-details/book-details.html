@@ -38,7 +38,7 @@
             <button (click)="openPlanAndGoalModal()" class="btn btn-secondary">Edit Plan/Goals</button>
           </div>
         </div>
-        <div *ngIf="book.status === ReadingStatus.Completed">
+        <div *ngIf="book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized">
           <p class="text-green-500 font-bold">You have completed this book!</p>
           <p *ngIf="book.startedReadingDate" class="text-sm text-gray-500">
             Started: {{ book.startedReadingDate | date:'dd/MM/yyyy' }}
@@ -47,8 +47,8 @@
             Completed: {{ book.completedDate | date:'dd/MM/yyyy' }}
           </p>
           <div class="mt-4">
-            <button *ngIf="!book.summary" (click)="createSummary()" class="btn btn-info mr-2">Create Summary</button>
-            <button *ngIf="book.summary && !isSummaryMode" (click)="showSummary()" class="btn btn-info mr-2">Show Summary</button>
+            <button *ngIf="book.status === ReadingStatus.Completed && !book.summary" (click)="createSummary()" class="btn btn-info mr-2">Create Summary</button>
+            <button *ngIf="book.status === ReadingStatus.Summarized && book.summary && !isSummaryMode" (click)="showSummary()" class="btn btn-info mr-2">Show Summary</button>
           </div>
         </div>
         <div *ngIf="readingGoal" class="mt-4">

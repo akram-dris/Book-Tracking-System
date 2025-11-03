@@ -5,6 +5,7 @@ namespace BookTrackingSystem.Models.Enums
         NotReading,
         Planning,
         CurrentlyReading,
-        Completed
+        Completed,
+        Summarized
     }
 }

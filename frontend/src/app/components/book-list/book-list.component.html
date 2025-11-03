@@ -8,10 +8,9 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
     <div *ngFor="let book of books" class="card group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out cursor-pointer hover:scale-105" [routerLink]="['/books', book.id]">
       <figure class="overflow-hidden w-full h-full">
-        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" class="w-full h-full object-cover flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ease-in-out hover:blur-md hover:brightness-75" />
+        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" class="w-full h-full object-cover flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ease-in-out group-hover:blur-lg group-hover:brightness-50" />
       </figure>
-      <div class="absolute inset-0 flex flex-col justify-between items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100"
-           [ngClass]="getStatusClass(book.status) + ' bg-opacity-50'">
+      <div class="absolute inset-0 flex flex-col justify-between items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 bg-opacity-50">
         <div class="w-full text-right">
           <span class="badge text-white {{ getStatusClass(book.status) }}">{{ book.statusName }}</span>
         </div>
