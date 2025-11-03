@@ -11,5 +11,6 @@ namespace BookTrackingSystem.Repository
         Task DeleteReadingSessionAsync(int id);
         Task<ReadingSession?> GetReadingSessionByBookAndDateAsync(int bookId, DateTime date);
         Task<IEnumerable<ReadingSession>> GetReadingSessionsByYearAsync(int year);
+        Task<IEnumerable<ReadingSession>> GetAllReadingSessionsAsync();
     }
 }

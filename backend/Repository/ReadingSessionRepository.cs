@@ -66,5 +66,10 @@ namespace BookTrackingSystem.Repository
                                  .Where(rs => rs.Date.Year == year)
                                  .ToListAsync();
         }
+
+        public async Task<IEnumerable<ReadingSession>> GetAllReadingSessionsAsync()
+        {
+            return await _context.ReadingSessions.ToListAsync();
+        }
     }
 }
