@@ -1,0 +1,12 @@
+<div class="streak-container" *ngIf="!loading && streakData">
+  <div class="streak-item">
+    <span class="streak-label">Current Streak</span>
+    <span class="streak-value">{{ streakData.currentStreak }} days</span>
+  </div>
+  <div class="streak-item">
+    <span class="streak-label">Longest Streak</span>
+    <span class="streak-value">{{ streakData.longestStreak }} days</span>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-spinner">Loading streak data...</div>
