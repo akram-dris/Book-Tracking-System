@@ -13,6 +13,7 @@ export interface GetBook {
     status: ReadingStatus; // Add status property
     startedReadingDate?: Date; // New property
     completedDate?: Date; // New property
+    summary?: string;
     createdAt: Date;
     updatedAt: Date;
     author?: GetAuthor;

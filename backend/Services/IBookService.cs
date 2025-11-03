@@ -13,7 +13,7 @@ namespace BookTrackingSystem.Services
         Task<BookDto> UpdateBookAsync(int id, UpdateBookDto book, IFormFile? imageFile);
         Task DeleteBookAsync(int id);
         Task AssignTagsAsync(int bookId, IEnumerable<int> tagIds);
-        Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null);
+        Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null, string? summary = null);
         Task UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate);
     }
 }

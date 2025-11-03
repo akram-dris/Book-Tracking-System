@@ -13,10 +13,13 @@ namespace BookTrackingSystem.Profiles
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.BookTagAssignments != null ? src.BookTagAssignments.Select(bta => bta.BookTag) : Enumerable.Empty<BookTag>()))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.StartedReadingDate, opt => opt.MapFrom(src => src.StartedReadingDate))
-                .ForMember(dest => dest.CompletedDate, opt => opt.MapFrom(src => src.CompletedDate)); // New mapping
+                .ForMember(dest => dest.CompletedDate, opt => opt.MapFrom(src => src.CompletedDate)) // New mapping
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
             CreateMap<Author, AuthorDto>();
-            CreateMap<CreateBookDto, Book>();
-            CreateMap<UpdateBookDto, Book>();
+            CreateMap<CreateBookDto, Book>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
+            CreateMap<UpdateBookDto, Book>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
             CreateMap<CreateAuthorDto, Author>();
             CreateMap<UpdateAuthorDto, Author>();
             CreateMap<BookTag, TagDto>();
