@@ -8,6 +8,7 @@ import { AuthorDetailsComponent } from './components/author-details/author-detai
 import { BookDetailsComponent } from './components/book-details/book-details';
 import { TagManagementComponent } from './components/tag-management/tag-management.component';
 import { SessionLogComponent } from './components/session-log/session-log.component';
+import { HeatmapComponent } from './components/heatmap/heatmap';
 export const routes: Routes = [
     { path: 'books', component: BookListComponent },
     { path: 'books/new', component: BookFormComponent },
@@ -19,5 +20,6 @@ export const routes: Routes = [
     { path: 'authors/:id', component: AuthorDetailsComponent },
     { path: 'tags', component: TagManagementComponent },
     { path: 'sessions/log', component: SessionLogComponent },
+    { path: 'heatmap', component: HeatmapComponent },
     { path: '', redirectTo: '/books', pathMatch: 'full' }
 ];
