@@ -59,5 +59,12 @@ namespace BookTrackingSystem.Repository
                                  .FirstOrDefaultAsync(rs => rs.BookId == bookId &&
                                                             rs.Date.Date == normalizedDate);
         }
+
+        public async Task<IEnumerable<ReadingSession>> GetReadingSessionsByYearAsync(int year)
+        {
+            return await _context.ReadingSessions
+                                 .Where(rs => rs.Date.Year == year)
+                                 .ToListAsync();
+        }
     }
 }

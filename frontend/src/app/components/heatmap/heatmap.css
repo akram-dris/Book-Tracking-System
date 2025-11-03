@@ -1,0 +1,128 @@
+.heatmap-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.year-selector {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.year-selector label {
+  margin-right: 10px;
+  font-size: 1.1em;
+}
+
+.year-selector select {
+  padding: 8px 12px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2em;
+  color: #555;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust column width as needed */
+  gap: 20px;
+  justify-content: center;
+}
+
+.month-container {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.month-container h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #666;
+}
+
+.weekday-header {
+  padding: 5px 0;
+  font-size: 0.85em;
+}
+
+.month-weeks {
+  display: flex;
+  flex-direction: column;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.day-cell {
+  width: 30px; /* Fixed width for day cells */
+  height: 30px; /* Fixed height for day cells */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px; /* Small margin between cells */
+  border-radius: 3px;
+  font-size: 0.8em;
+  color: #333;
+  cursor: default;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.day-cell:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.other-month {
+  background-color: #f0f0f0;
+  color: #ccc;
+}
+
+/* Color scale for pages read */
+.day-0 {
+  background-color: #ebedf0;
+}
+
+.day-1-10 {
+  background-color: #9be9a8;
+}
+
+.day-11-25 {
+  background-color: #40c463;
+}
+
+.day-26-50 {
+  background-color: #30a14e;
+}
+
+.day-51-100 {
+  background-color: #216e39;
+}
+
+.day-100-plus {
+  background-color: #1a4b2a;
+  color: #fff;
+}

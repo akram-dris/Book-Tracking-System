@@ -1,0 +1,41 @@
+<div class="heatmap-container">
+  <h2>Reading Heatmap - {{ currentYear }}</h2>
+
+  <div class="year-selector">
+    <label for="year">Select Year:</label>
+    <select id="year" [(ngModel)]="currentYear" (change)="onYearChange()">
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">Loading heatmap data...</div>
+
+  <div *ngIf="!loading" class="calendar-grid">
+    <div class="month-container" *ngFor="let month of calendarMonths">
+      <h3>{{ month.monthName }}</h3>
+      <div class="weekdays">
+        <div class="weekday-header">Sun</div>
+        <div class="weekday-header">Mon</div>
+        <div class="weekday-header">Tue</div>
+        <div class="weekday-header">Wed</div>
+        <div class="weekday-header">Thu</div>
+        <div class="weekday-header">Fri</div>
+        <div class="weekday-header">Sat</div>
+      </div>
+      <div class="month-weeks">
+        <div class="week" *ngFor="let week of month.weeks">
+          <div
+            class="day-cell"
+            *ngFor="let day of week.days"
+            [class.current-month]="day.isCurrentMonth"
+            [class.other-month]="!day.isCurrentMonth"
+            [ngClass]="getDayClass(day.pagesRead)"
+            [title]="day.isCurrentMonth ? (day.date | date:'mediumDate') + ' - ' + day.pagesRead + ' pages' : ''"
+          >
+            <span *ngIf="day.isCurrentMonth">{{ day.dayOfMonth }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
