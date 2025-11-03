@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { NgFor } from '@angular/common';
@@ -11,33 +12,52 @@ import { BookFiltersComponent, BookFilters } from './book-filters/book-filters';
 import { BookStatsComponent, BookStatistics } from './book-stats/book-stats';
 import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash } from '@ng-icons/heroicons/outline';
 
 interface BookWithProgress extends GetBook {
   progressPercentage?: number;
   statusName?: string;
 }
 
+type SortOption = 'title' | 'dateAdded' | 'progress' | 'author';
+type ViewMode = 'grid' | 'list';
+
 @Component({
   selector: 'app-book-list',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    FormsModule, 
     NgFor, 
     RouterModule, 
     BookFiltersComponent, 
     BookStatsComponent,
     EmptyStateComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    NgIconComponent
   ],
   templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.css']
+  styleUrls: ['./book-list.component.css'],
+  viewProviders: [provideIcons({ heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash })]
 })
 export class BookListComponent implements OnInit {
   books: BookWithProgress[] = [];
+  displayedBooks: BookWithProgress[] = [];
   rootUrl: string = environment.rootUrl;
   selectedTagId: number | null = null;
   ReadingStatus = ReadingStatus;
   isLoading = true;
+
+  // View and sorting
+  viewMode: ViewMode = 'grid';
+  sortBy: SortOption = 'dateAdded';
+  sortOptions = [
+    { value: 'title' as SortOption, label: 'Title' },
+    { value: 'dateAdded' as SortOption, label: 'Date Added' },
+    { value: 'progress' as SortOption, label: 'Progress' },
+    { value: 'author' as SortOption, label: 'Author' }
+  ];
 
   // Statistics
   bookStats: BookStatistics = {
@@ -90,6 +110,7 @@ export class BookListComponent implements OnInit {
         console.log('BookListComponent - Book ImageUrl:', book.imageUrl, 'Status:', book.status, 'Progress:', book.progressPercentage);
       });
       
+      this.sortBooks();
       this.isLoading = false;
     });
   }
@@ -174,5 +195,37 @@ export class BookListComponent implements OnInit {
     this.bookService.deleteBook(id).subscribe(() => {
       this.loadBooks();
     });
+  }
+
+  // View and sorting methods
+  toggleView(mode: ViewMode): void {
+    this.viewMode = mode;
+  }
+
+  onSortChange(sortOption: SortOption): void {
+    this.sortBy = sortOption;
+    this.sortBooks();
+  }
+
+  sortBooks(): void {
+    switch (this.sortBy) {
+      case 'title':
+        this.books.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'author':
+        this.books.sort((a, b) => (a.author?.name || '').localeCompare(b.author?.name || ''));
+        break;
+      case 'progress':
+        this.books.sort((a, b) => (b.progressPercentage || 0) - (a.progressPercentage || 0));
+        break;
+      case 'dateAdded':
+      default:
+        this.books.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+    }
   }
 }
