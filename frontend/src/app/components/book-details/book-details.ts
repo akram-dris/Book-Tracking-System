@@ -24,7 +24,8 @@ import {
   heroChartBar,
   heroDocumentText,
   heroClipboardDocumentList,
-  heroPlus
+  heroPlus,
+  heroCalendar
 } from '@ng-icons/heroicons/outline';
 
 type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
@@ -53,7 +54,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
       heroChartBar,
       heroDocumentText,
       heroClipboardDocumentList,
-      heroPlus
+      heroPlus,
+      heroCalendar
     })
   ]
 })
