@@ -271,18 +271,29 @@
       <!-- Statistics Tab -->
       <div *ngIf="activeTab === 'statistics'">
         <h3 class="text-2xl font-bold mb-4">Reading Statistics</h3>
-        <div class="stats shadow w-full">
+        <div class="stats shadow-md bg-base-200 w-full">
           <div class="stat">
+            <div class="stat-figure text-primary">
+              <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+            </div>
             <div class="stat-title">Total Sessions</div>
             <div class="stat-value text-primary">{{ readingSessions.length }}</div>
           </div>
           <div class="stat">
+            <div class="stat-figure text-secondary">
+              <ng-icon name="heroDocumentText" size="2rem"></ng-icon>
+            </div>
             <div class="stat-title">Pages Read</div>
             <div class="stat-value text-secondary">{{ currentPage }}</div>
+            <div class="stat-desc">of {{ book.totalPages }} pages</div>
           </div>
           <div class="stat">
+            <div class="stat-figure text-success">
+              <ng-icon name="heroCheckCircle" size="2rem"></ng-icon>
+            </div>
             <div class="stat-title">Progress</div>
-            <div class="stat-value">{{ progress }}%</div>
+            <div class="stat-value text-success">{{ progress }}%</div>
+            <div class="stat-desc">{{ book.totalPages - currentPage }} pages remaining</div>
           </div>
         </div>
       </div>

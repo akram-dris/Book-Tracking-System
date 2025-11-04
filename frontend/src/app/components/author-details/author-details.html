@@ -1,20 +1,156 @@
-<div *ngIf="author" class="container mx-auto px-4 py-8 relative">
-  <button (click)="goBack()" class="absolute top-0 right-0 btn btn-square btn-ghost">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
-  <div class="flex flex-col md:flex-row">
-    <div class="md:w-1/3 w-full h-full overflow-hidden">
-      <img *ngIf="author.imageUrl" [src]="rootUrl + author.imageUrl" alt="{{ author.name }}" class="w-full h-full object-cover rounded-lg shadow-lg">
-    </div>
-    <div class="md:w-2/3 md:pl-8">
-      <h1 class="text-4xl font-bold mb-2">{{ author.name }}</h1>
-      <p class="text-gray-700 mb-4">{{ author.bio }}</p>
-      <div class="flex">
-        <a [routerLink]="['/authors/edit', author.id]" class="btn btn-primary mr-2">Edit</a>
-        <button (click)="deleteAuthor()" class="btn btn-secondary">Delete</button>
+<div *ngIf="author" class="min-h-screen bg-base-200">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-primary/20 to-secondary/20 relative">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Back Button -->
+      <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 mb-4">
+        <ng-icon name="heroArrowLeft" size="20"></ng-icon>
+        Back
+      </button>
+
+      <!-- Author Profile -->
+      <div class="flex flex-col md:flex-row gap-8 items-start">
+        <!-- Author Image -->
+        <div class="w-48 h-48 flex-shrink-0">
+          <div class="avatar">
+            <div class="w-48 rounded-2xl ring ring-primary ring-offset-base-100 ring-offset-4 shadow-2xl">
+              <img 
+                *ngIf="author.imageUrl" 
+                [src]="rootUrl + author.imageUrl" 
+                [alt]="author.name"
+                class="object-cover"
+              />
+              <div *ngIf="!author.imageUrl" class="bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                <span class="text-6xl font-bold text-white">{{ author.name.charAt(0).toUpperCase() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Author Info -->
+        <div class="flex-1">
+          <h1 class="text-5xl font-bold mb-4">{{ author.name }}</h1>
+          
+          <!-- Statistics Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
+              <div class="stat-figure text-primary">
+                <ng-icon name="heroBookOpen" size="32"></ng-icon>
+              </div>
+              <div class="stat-title text-xs">Total Books</div>
+              <div class="stat-value text-2xl text-primary">{{ totalBooks }}</div>
+            </div>
+            
+            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
+              <div class="stat-figure text-success">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-8 h-8 stroke-current">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="stat-title text-xs">Completed</div>
+              <div class="stat-value text-2xl text-success">{{ booksCompleted }}</div>
+            </div>
+            
+            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
+              <div class="stat-figure text-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-8 h-8 stroke-current">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+              <div class="stat-title text-xs">Reading</div>
+              <div class="stat-value text-2xl text-warning">{{ booksReading }}</div>
+            </div>
+            
+            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
+              <div class="stat-figure text-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-8 h-8 stroke-current">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <div class="stat-title text-xs">Pages Read</div>
+              <div class="stat-value text-2xl text-secondary">{{ totalPagesRead }}</div>
+            </div>
+          </div>
+
+          <!-- Biography Section -->
+          <div *ngIf="author.bio" class="card bg-base-100 shadow-md mb-6">
+            <div class="card-body p-4">
+              <h2 class="card-title text-lg flex items-center justify-between">
+                Biography
+                <button 
+                  *ngIf="author.bio && author.bio.length > 200"
+                  (click)="toggleBio()" 
+                  class="btn btn-ghost btn-xs"
+                >
+                  {{ bioExpanded ? 'Show Less' : 'Show More' }}
+                </button>
+              </h2>
+              <p class="text-base-content/70" [class.line-clamp-3]="!bioExpanded && author.bio && author.bio.length > 200">
+                {{ author.bio }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2">
+            <a [routerLink]="['/authors/edit', author.id]" class="btn btn-primary gap-2">
+              <ng-icon name="heroPencilSquare" size="20"></ng-icon>
+              Edit Author
+            </a>
+            <button (click)="deleteAuthor()" class="btn btn-error gap-2">
+              <ng-icon name="heroTrash" size="20"></ng-icon>
+              Delete
+            </button>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Books Section -->
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold mb-6">Books by {{ author.name }}</h2>
+    
+    <!-- Empty State -->
+    <div *ngIf="authorBooks.length === 0" class="text-center py-12">
+      <ng-icon name="heroBookOpen" size="64" class="text-base-content/30"></ng-icon>
+      <p class="text-xl text-base-content/50 mt-4">No books yet</p>
+      <a routerLink="/books/add" class="btn btn-primary mt-4">Add First Book</a>
+    </div>
+
+    <!-- Books Grid -->
+    <div *ngIf="authorBooks.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <a 
+        *ngFor="let book of authorBooks" 
+        [routerLink]="['/books', book.id]"
+        class="card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+      >
+        <!-- Book Cover -->
+        <figure class="relative aspect-[2/3] overflow-hidden bg-base-300">
+          <img 
+            *ngIf="book.imageUrl" 
+            [src]="rootUrl + book.imageUrl" 
+            [alt]="book.title"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          <div *ngIf="!book.imageUrl" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+            <ng-icon name="heroBookOpen" size="48" class="text-base-content/30"></ng-icon>
+          </div>
+          
+          <!-- Status Badge -->
+          <div class="absolute top-2 right-2">
+            <div class="badge badge-sm {{ getStatusClass(book.status) }} shadow-md">
+              {{ getStatusText(book.status) }}
+            </div>
+          </div>
+        </figure>
+
+        <!-- Book Info -->
+        <div class="card-body p-3">
+          <h3 class="card-title text-sm line-clamp-2" [title]="book.title">{{ book.title }}</h3>
+          <p class="text-xs text-base-content/60">{{ book.totalPages }} pages</p>
+        </div>
+      </a>
     </div>
   </div>
 </div>
