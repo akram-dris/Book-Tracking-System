@@ -12,11 +12,11 @@ import { HeatmapComponent } from './components/heatmap/heatmap';
 export const routes: Routes = [
     { path: 'books', component: BookListComponent },
     { path: 'books/new', component: BookFormComponent },
-    { path: 'books/edit/:id', component: BookFormComponent },
+    { path: 'books/:id/edit', component: BookFormComponent },
     { path: 'books/:id', component: BookDetailsComponent },
     { path: 'authors', component: AuthorListComponent },
     { path: 'authors/new', component: AuthorFormComponent },
-    { path: 'authors/edit/:id', component: AuthorFormComponent },
+    { path: 'authors/:id/edit', component: AuthorFormComponent },
     { path: 'authors/:id', component: AuthorDetailsComponent },
     { path: 'tags', component: TagManagementComponent },
     { path: 'sessions/log', component: SessionLogComponent },

@@ -15,6 +15,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } 
 import { SessionLogComponent } from '../session-log/session-log.component';
 import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component';
 import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { 
   heroArrowLeft, 
@@ -42,6 +43,7 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
     SessionLogComponent, 
     PlanAndGoalModalComponent, 
     ReadingLogModalComponent,
+    QuillModule,
     NgIconComponent
   ],
   templateUrl: './book-details.html',
@@ -79,6 +81,22 @@ export class BookDetailsComponent implements OnInit {
   
   // New properties for tabs
   activeTab: TabType = 'overview';
+  
+  // Notes editor
+  isEditingNotes: boolean = false;
+  notesForm: FormGroup;
+  
+  quillConfig = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'header': [1, 2, 3, false] }],
+      [{ 'color': [] }, { 'background': [] }],
+      ['link'],
+      ['clean']
+    ]
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -90,6 +108,9 @@ export class BookDetailsComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.summaryForm = this.fb.group({
+      summary: ['', Validators.required]
+    });
+    this.notesForm = this.fb.group({
       summary: ['', Validators.required]
     });
   }
@@ -345,6 +366,34 @@ export class BookDetailsComponent implements OnInit {
         return 'badge-info';
       default:
         return 'badge-ghost';
+    }
+  }
+
+  // Notes editor methods
+  openNotesEditor(): void {
+    this.isEditingNotes = true;
+    if (this.book?.summary) {
+      this.notesForm.patchValue({ summary: this.book.summary });
+    } else {
+      this.notesForm.reset();
+    }
+  }
+
+  cancelNotesEdit(): void {
+    this.isEditingNotes = false;
+    this.notesForm.reset();
+  }
+
+  saveNotes(): void {
+    if (this.notesForm.valid && this.book) {
+      const summaryText = this.notesForm.get('summary')?.value;
+      
+      // Update book summary
+      this.bookService.updateBookSummary(this.book.id, summaryText).subscribe(() => {
+        this.book!.summary = summaryText;
+        this.isEditingNotes = false;
+        console.log('Book notes updated successfully');
+      });
     }
   }
 }

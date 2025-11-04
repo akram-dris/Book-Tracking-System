@@ -1,16 +1,106 @@
 <div class="modal modal-open">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">{{ isReadOnly ? 'View Note' : 'Edit Note' }}</h3>
+  <div class="modal-box w-11/12 max-w-5xl max-h-[92vh] flex flex-col p-0">
+    <!-- Compact Header -->
+    <div class="px-6 py-3 border-b border-base-300 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">{{ getNoteTypeIcon() }}</span>
+        <h3 class="font-semibold text-base">{{ isReadOnly ? 'View Note' : 'Edit Note' }}</h3>
+      </div>
+      <button type="button" 
+              class="btn btn-ghost btn-circle btn-xs"
+              (click)="onClose()">
+        <ng-icon name="heroXMark" size="1.2rem"></ng-icon>
+      </button>
+    </div>
 
-    <form [formGroup]="noteForm" (ngSubmit)="onSubmit()" class="py-4">
-      <div class="mb-4">
-        <label for="summary" class="block text-sm font-medium text-base-content">Note / Summary</label>
-        <textarea id="summary" formControlName="summary" class="textarea textarea-bordered w-full mt-1" [attr.readonly]="isReadOnly ? true : null"></textarea>
+    <!-- Form Content -->
+    <form [formGroup]="noteForm" 
+          (ngSubmit)="onSubmit()" 
+          class="flex-1 flex flex-col overflow-hidden">
+      
+      <div class="flex-1 overflow-y-auto px-6 py-3 flex flex-col gap-3">
+        <!-- Compact Controls Row -->
+        <div class="flex items-center gap-3" *ngIf="!isReadOnly">
+          <!-- Note Type Buttons -->
+          <div class="flex gap-1">
+            <button type="button"
+                    class="btn btn-xs gap-1"
+                    [class.btn-primary]="noteForm.value.noteType === 'general'"
+                    [class.btn-ghost]="noteForm.value.noteType !== 'general'"
+                    (click)="noteForm.patchValue({ noteType: 'general' })">
+              <span class="text-sm">📝</span>
+              <span class="text-xs">General</span>
+            </button>
+            <button type="button"
+                    class="btn btn-xs gap-1"
+                    [class.btn-primary]="noteForm.value.noteType === 'quote'"
+                    [class.btn-ghost]="noteForm.value.noteType !== 'quote'"
+                    (click)="noteForm.patchValue({ noteType: 'quote' })">
+              <span class="text-sm">💬</span>
+              <span class="text-xs">Quote</span>
+            </button>
+            <button type="button"
+                    class="btn btn-xs gap-1"
+                    [class.btn-primary]="noteForm.value.noteType === 'thought'"
+                    [class.btn-ghost]="noteForm.value.noteType !== 'thought'"
+                    (click)="noteForm.patchValue({ noteType: 'thought' })">
+              <span class="text-sm">💭</span>
+              <span class="text-xs">Thought</span>
+            </button>
+            <button type="button"
+                    class="btn btn-xs gap-1"
+                    [class.btn-primary]="noteForm.value.noteType === 'question'"
+                    [class.btn-ghost]="noteForm.value.noteType !== 'question'"
+                    (click)="noteForm.patchValue({ noteType: 'question' })">
+              <span class="text-sm">❓</span>
+              <span class="text-xs">Question</span>
+            </button>
+          </div>
+
+          <!-- Page Number Input -->
+          <div class="flex items-center gap-2">
+            <ng-icon name="heroBookOpen" size="1rem" class="text-base-content/60"></ng-icon>
+            <input type="number" 
+                   formControlName="pageNumber"
+                   class="input input-bordered input-xs w-24"
+                   placeholder="Page #"
+                   min="1">
+          </div>
+        </div>
+
+        <!-- Rich Text Editor - Takes most space -->
+        <div class="form-control flex-1 flex flex-col min-h-0">
+          <div *ngIf="!isReadOnly" class="bg-base-100 rounded-lg border border-base-300 flex-1 flex flex-col">
+            <quill-editor formControlName="summary"
+                          [modules]="quillConfig"
+                          [styles]="{'height': '100%', 'display': 'flex', 'flex-direction': 'column', 'border': 'none'}"
+                          placeholder="Write your note here... You can use formatting options above.">
+            </quill-editor>
+          </div>
+
+          <div *ngIf="isReadOnly" 
+               class="bg-base-200 rounded-lg border border-base-300 p-4 prose max-w-none flex-1 overflow-y-auto"
+               [innerHTML]="noteForm.value.summary">
+          </div>
+        </div>
       </div>
 
-      <div class="modal-action">
-        <button type="button" class="btn" (click)="onClose()">{{ isReadOnly ? 'Close' : 'Cancel' }}</button>
-        <button *ngIf="!isReadOnly" type="submit" class="btn btn-primary" [disabled]="noteForm.invalid">Save Note</button>
+      <!-- Footer Actions -->
+      <div class="border-t border-base-300 px-6 py-3">
+        <div class="flex justify-end gap-2">
+          <button type="button" 
+                  class="btn btn-ghost btn-sm"
+                  (click)="onClose()">
+            {{ isReadOnly ? 'Close' : 'Cancel' }}
+          </button>
+          <button *ngIf="!isReadOnly" 
+                  type="submit" 
+                  class="btn btn-primary btn-sm gap-2"
+                  [disabled]="noteForm.invalid">
+            <ng-icon name="heroCheckCircle" size="1rem"></ng-icon>
+            Save Note
+          </button>
+        </div>
       </div>
     </form>
   </div>

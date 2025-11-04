@@ -93,7 +93,7 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-2 mb-6">
-              <button [routerLink]="['/books/edit', book.id]" class="btn btn-ghost btn-sm gap-2">
+              <button [routerLink]="['/books', book.id, 'edit']" class="btn btn-ghost btn-sm gap-2">
                 <ng-icon name="heroPencil" size="1rem"></ng-icon>
                 Edit
               </button>
@@ -259,13 +259,66 @@
 
       <!-- Notes Tab -->
       <div *ngIf="activeTab === 'notes'">
-        <h3 class="text-2xl font-bold mb-4">Notes & Summary</h3>
-        <div *ngIf="book.summary; else noNotes" class="prose max-w-none">
-          <p class="whitespace-pre-wrap">{{ book.summary }}</p>
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">Notes & Summary</h3>
+          <button (click)="openNotesEditor()" 
+                  class="btn btn-primary btn-sm gap-2">
+            <ng-icon [name]="book.summary ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
+            {{ book.summary ? 'Edit Notes' : 'Add Notes' }}
+          </button>
         </div>
-        <ng-template #noNotes>
-          <p class="text-center text-base-content/60 py-8">No notes or summary available yet.</p>
-        </ng-template>
+        
+        <div *ngIf="!isEditingNotes">
+          <div *ngIf="book.summary; else noNotes" 
+               class="prose max-w-none bg-base-100 rounded-lg p-6 border border-base-300"
+               [innerHTML]="book.summary">
+          </div>
+          <ng-template #noNotes>
+            <div class="text-center py-16">
+              <ng-icon name="heroDocumentText" size="4rem" class="text-base-content/20 mx-auto mb-4"></ng-icon>
+              <p class="text-base-content/60 text-lg">No notes or summary available yet.</p>
+              <p class="text-base-content/40 text-sm mt-2">Click "Add Notes" to get started!</p>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Rich Text Editor -->
+        <div *ngIf="isEditingNotes" class="bg-base-100 rounded-lg border border-base-300 p-6">
+          <form [formGroup]="notesForm" (ngSubmit)="saveNotes()">
+            <div class="mb-4">
+              <label class="label">
+                <span class="label-text font-semibold flex items-center gap-2">
+                  <ng-icon name="heroDocumentText" size="1.2rem"></ng-icon>
+                  Note Content
+                </span>
+                <span class="label-text-alt text-error" *ngIf="notesForm.get('summary')?.invalid && notesForm.get('summary')?.touched">
+                  Note content is required
+                </span>
+              </label>
+              <div class="bg-base-100 rounded-lg border border-base-300">
+                <quill-editor formControlName="summary"
+                              [modules]="quillConfig"
+                              [styles]="{'min-height': '300px', 'border': 'none'}"
+                              placeholder="Write your notes and summary here... You can use formatting options above.">
+                </quill-editor>
+              </div>
+            </div>
+            
+            <div class="flex justify-end gap-3 mt-6">
+              <button type="button" 
+                      class="btn btn-ghost"
+                      (click)="cancelNotesEdit()">
+                Cancel
+              </button>
+              <button type="submit" 
+                      class="btn btn-primary gap-2"
+                      [disabled]="notesForm.invalid">
+                <ng-icon name="heroCheckCircle" size="1.2rem"></ng-icon>
+                Save Notes
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- Statistics Tab -->
