@@ -64,9 +64,11 @@ export class BookListComponent implements OnInit {
   // Statistics
   bookStats: BookStatistics = {
     total: 0,
+    notReading: 0,
+    planning: 0,
     currentlyReading: 0,
     completed: 0,
-    toRead: 0
+    summarized: 0
   };
 
   constructor(
@@ -82,22 +84,27 @@ export class BookListComponent implements OnInit {
   loadBooks(tagId: number | null = null): void {
     this.isLoading = true;
     console.log('BookListComponent - Loading books with tagId:', tagId);
-    this.bookService.getBooks(tagId).subscribe(data => {
-      this.books = data.map(book => ({ ...book }));
-      console.log('BookListComponent - Books loaded:', this.books);
-
-      // Calculate statistics
-      this.calculateStats();
-
-      this.books.forEach(book => {
-        this.readingStatusService.getStatusDisplayName(book.status).subscribe(name => {
-          book.statusName = name;
+    
+    // First load all status info
+    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+      const statusMap = new Map(statuses.map(s => [s.value, s]));
+      
+      this.bookService.getBooks(tagId).subscribe(data => {
+        this.books = data.map(book => {
+          const statusInfo = statusMap.get(book.status);
+          return {
+            ...book,
+            statusName: statusInfo?.displayName || 'Unknown',
+            statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+          };
         });
-        this.readingStatusService.getStatusBadgeClass(book.status).subscribe(badgeClass => {
-          book.statusBadgeClass = badgeClass;
-        });
+        console.log('BookListComponent - Books loaded:', this.books);
 
-        if (book.id && book.totalPages && book.totalPages > 0) {
+        // Calculate statistics
+        this.calculateStats();
+
+        this.books.forEach(book => {
+          if (book.id && book.totalPages && book.totalPages > 0) {
           this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
             next: sessions => {
               const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
@@ -115,20 +122,26 @@ export class BookListComponent implements OnInit {
         } else {
           book.progressPercentage = 0;
         }
-        console.log('BookListComponent - Book ImageUrl:', book.imageUrl, 'Status:', book.status, 'Progress:', book.progressPercentage);
+          console.log('BookListComponent - Book ImageUrl:', book.imageUrl, 'Status:', book.status, 'Progress:', book.progressPercentage);
+        });
+        
+        this.sortBooks();
+        this.isLoading = false;
       });
-      
-      this.sortBooks();
-      this.isLoading = false;
     });
   }
 
   calculateStats(): void {
+    const summarizedCount = this.books.filter(b => b.status === ReadingStatus.Summarized).length;
+    const completedCount = this.books.filter(b => b.status === ReadingStatus.Completed).length;
+    
     this.bookStats = {
       total: this.books.length,
+      notReading: this.books.filter(b => b.status === ReadingStatus.NotReading).length,
+      planning: this.books.filter(b => b.status === ReadingStatus.Planning).length,
       currentlyReading: this.books.filter(b => b.status === ReadingStatus.CurrentlyReading).length,
-      completed: this.books.filter(b => b.status === ReadingStatus.Completed || b.status === ReadingStatus.Summarized).length,
-      toRead: this.books.filter(b => b.status === ReadingStatus.Planning || b.status === ReadingStatus.NotReading).length
+      completed: completedCount + summarizedCount, // Summarized books are also completed
+      summarized: summarizedCount
     };
   }
 

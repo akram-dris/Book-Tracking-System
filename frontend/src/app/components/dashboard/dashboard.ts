@@ -311,34 +311,43 @@ export class Dashboard implements OnInit {
 
   loadBooks(): Promise<void> {
     return new Promise((resolve) => {
-      this.bookService.getBooks().subscribe({
-        next: (books) => {
-          this.currentlyReading = books
-            .filter(b => b.status === ReadingStatus.CurrentlyReading)
-            .slice(0, 3);
-          this.recentBooks = books
-            .sort((a, b) => b.id - a.id)
-            .slice(0, 6);
+      this.readingStatusService.getAllStatuses().subscribe({
+        next: (statuses) => {
+          const statusMap = new Map(statuses.map(s => [s.value, s]));
           
-          // Load status info for all books
-          [...this.currentlyReading, ...this.recentBooks].forEach(book => {
-            this.readingStatusService.getStatusBadgeClass(book.status).subscribe(badgeClass => {
-              book.statusBadgeClass = badgeClass;
-            });
-            this.readingStatusService.getStatusDisplayName(book.status).subscribe(displayName => {
-              book.statusDisplayName = displayName;
-            });
+          this.bookService.getBooks().subscribe({
+            next: (books) => {
+              const booksWithStatus = books.map(book => {
+                const statusInfo = statusMap.get(book.status);
+                return {
+                  ...book,
+                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                  statusDisplayName: statusInfo?.displayName || 'Unknown'
+                };
+              });
+              
+              this.currentlyReading = booksWithStatus
+                .filter(b => b.status === ReadingStatus.CurrentlyReading)
+                .slice(0, 3);
+              this.recentBooks = booksWithStatus
+                .sort((a, b) => b.id - a.id)
+                .slice(0, 6);
+              
+              // Load progress for currently reading books
+              if (this.currentlyReading.length > 0) {
+                this.loadBookProgress(this.currentlyReading).then(() => resolve());
+              } else {
+                resolve();
+              }
+            },
+            error: (err) => {
+              console.error('Error loading books', err);
+              resolve();
+            }
           });
-          
-          // Load progress for currently reading books
-          if (this.currentlyReading.length > 0) {
-            this.loadBookProgress(this.currentlyReading).then(() => resolve());
-          } else {
-            resolve();
-          }
         },
         error: (err) => {
-          console.error('Error loading books', err);
+          console.error('Error loading status info', err);
           resolve();
         }
       });

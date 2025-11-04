@@ -64,19 +64,23 @@ export class AuthorDetailsComponent implements OnInit {
   }
 
   loadAuthorBooks(authorId: number): void {
-    this.bookService.getBooks().subscribe(books => {
-      this.authorBooks = books.filter(book => book.authorId === authorId);
+    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+      const statusMap = new Map(statuses.map(s => [s.value, s]));
       
-      this.authorBooks.forEach(book => {
-        this.readingStatusService.getStatusBadgeClass(book.status).subscribe(badgeClass => {
-          book.statusBadgeClass = badgeClass;
-        });
-        this.readingStatusService.getStatusDisplayName(book.status).subscribe(displayName => {
-          book.statusDisplayName = displayName;
-        });
+      this.bookService.getBooks().subscribe(books => {
+        this.authorBooks = books
+          .filter(book => book.authorId === authorId)
+          .map(book => {
+            const statusInfo = statusMap.get(book.status);
+            return {
+              ...book,
+              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+              statusDisplayName: statusInfo?.displayName || 'Unknown'
+            };
+          });
+        
+        this.calculateStatistics();
       });
-      
-      this.calculateStatistics();
     });
   }
 
