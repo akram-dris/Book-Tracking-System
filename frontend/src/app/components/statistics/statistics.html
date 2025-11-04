@@ -453,6 +453,21 @@
         </div>
       </div>
 
+      <!-- Status Over Time Chart (NEW) -->
+      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
+        <div class="card-body">
+          <h3 class="card-title">📈 Book Status Timeline (2025)</h3>
+          <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved throughout the year</p>
+          <div style="height: 400px;">
+            <canvas baseChart
+              [data]="statusTimelineChart"
+              [options]="lineChartOptions"
+              type="line">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.shortestBook">
           <div class="card-body">
@@ -475,8 +490,8 @@
 
       <div class="card bg-base-200 shadow-xl" *ngIf="statusChart">
         <div class="card-body">
-          <h3 class="card-title">📊 Books by Status</h3>
-          <div style="height: 300px;">
+          <h3 class="card-title">📊 Books by Status Distribution</h3>
+          <div style="height: 350px;">
             <canvas baseChart
               [data]="statusChart"
               [options]="doughnutChartOptions"

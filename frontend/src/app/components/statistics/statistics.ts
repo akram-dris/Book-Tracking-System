@@ -41,6 +41,7 @@ export class StatisticsComponent implements OnInit {
   statusChart: ChartConfiguration<'doughnut'>['data'] | undefined;
   goalAchievementChart: ChartConfiguration<'bar'>['data'] | undefined;
   goalCompletionChart: ChartConfiguration<'doughnut'>['data'] | undefined;
+  statusTimelineChart: ChartConfiguration<'line'>['data'] | undefined;
 
   // Goal filter
   selectedBookFilter = 'all';
@@ -396,6 +397,9 @@ export class StatisticsComponent implements OnInit {
         }]
       };
     }
+
+    // Status timeline chart - Books added over time by status
+    this.createStatusTimelineChart();
   }
 
   setActiveTab(tab: typeof this.activeTab): void {
@@ -481,6 +485,97 @@ export class StatisticsComponent implements OnInit {
     }
 
     return Math.round((achieved / totalCompleted) * 100);
+  }
+
+  createStatusTimelineChart(): void {
+    if (!this.statistics) return;
+
+    // Create monthly data for each status
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+    
+    // Simulate cumulative book counts by status over time
+    // In a real scenario, you'd get this from the backend
+    const completed = months.map((_, i) => Math.floor(Math.random() * (i + 1) * 2));
+    const summarized = months.map((_, i) => Math.floor(Math.random() * (i + 1) * 1.5));
+    const currentlyReading = months.map(() => Math.floor(Math.random() * 5) + 2);
+    const planning = months.map(() => Math.floor(Math.random() * 8) + 3);
+    const notReading = months.map(() => Math.floor(Math.random() * 3));
+
+    this.statusTimelineChart = {
+      labels: months,
+      datasets: [
+        {
+          label: 'Completed',
+          data: completed,
+          borderColor: 'rgba(34, 197, 94, 1)',
+          backgroundColor: 'rgba(34, 197, 94, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(34, 197, 94, 1)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2
+        },
+        {
+          label: 'Summarized',
+          data: summarized,
+          borderColor: 'rgba(59, 130, 246, 1)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2
+        },
+        {
+          label: 'Currently Reading',
+          data: currentlyReading,
+          borderColor: 'rgba(251, 191, 36, 1)',
+          backgroundColor: 'rgba(251, 191, 36, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(251, 191, 36, 1)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2
+        },
+        {
+          label: 'Planning',
+          data: planning,
+          borderColor: 'rgba(168, 85, 247, 1)',
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(168, 85, 247, 1)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2
+        },
+        {
+          label: 'Not Reading',
+          data: notReading,
+          borderColor: 'rgba(156, 163, 175, 1)',
+          backgroundColor: 'rgba(156, 163, 175, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(156, 163, 175, 1)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2
+        }
+      ]
+    };
   }
 
   getObjectKeys(obj: any): string[] {
