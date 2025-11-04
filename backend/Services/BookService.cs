@@ -165,5 +165,15 @@ namespace BookTrackingSystem.Services
                 await _bookRepository.UpdateBookAsync(book); // Ensure the book is updated in the repository
             }
         }
+
+        public async Task UpdateBookSummaryAsync(int bookId, string summary)
+        {
+            var book = await _bookRepository.GetBookAsync(bookId);
+            if (book != null)
+            {
+                book.Summary = summary;
+                await _bookRepository.UpdateBookAsync(book);
+            }
+        }
     }
 }
