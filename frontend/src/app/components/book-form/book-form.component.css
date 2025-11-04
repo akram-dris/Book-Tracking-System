@@ -1,3 +1,120 @@
-:host ::ng-deep .ngx-ic-cropper {
-  pointer-events: none;
+/* Custom ng-select sizing */
+:host ::ng-deep .ng-select-sm .ng-select-container {
+  min-height: 32px;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .ng-select-sm .ng-value-container {
+  padding: 0 8px;
+}
+
+:host ::ng-deep .ng-select-sm .ng-input input {
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .ng-select-sm .ng-dropdown-panel {
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .ng-select-sm .ng-option {
+  padding: 6px 8px;
+}
+
+/* Dark mode dropdown styling */
+:host ::ng-deep .ng-dropdown-panel {
+  background-color: #1a1a1a !important;
+  border: 1px solid oklch(var(--bc) / 0.2) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items {
+  background-color: #1a1a1a !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel .scroll-host {
+  background-color: #1a1a1a !important;
+}
+
+:host ::ng-deep .ng-option {
+  background-color: #1a1a1a !important;
+  color: white !important;
+}
+
+:host ::ng-deep .ng-option:hover {
+  background-color: #2a2a2a !important;
+  color: white !important;
+}
+
+:host ::ng-deep .ng-option.ng-option-selected {
+  background-color: oklch(var(--p) / 0.2) !important;
+  color: white !important;
+}
+
+:host ::ng-deep .ng-option.ng-option-marked {
+  background-color: #2a2a2a !important;
+  color: white !important;
+}
+
+:host ::ng-deep .ng-option.ng-option-disabled {
+  color: oklch(var(--bc) / 0.4) !important;
+}
+
+/* Input text color */
+:host ::ng-deep .ng-select .ng-input input {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .ng-select .ng-input input::placeholder {
+  color: oklch(var(--bc) / 0.5) !important;
+}
+
+/* Selected value text */
+:host ::ng-deep .ng-value {
+  color: white !important;
+}
+
+:host ::ng-deep .ng-value-label {
+  color: white !important;
+}
+
+/* Placeholder text */
+:host ::ng-deep .ng-placeholder {
+  color: oklch(var(--bc) / 0.6) !important;
+}
+
+/* Multi-select value labels */
+:host ::ng-deep .ng-value-container .ng-value {
+  background-color: oklch(var(--p) / 0.3) !important;
+  border: 1px solid oklch(var(--p) / 0.5) !important;
+}
+
+:host ::ng-deep .ng-value-container .ng-value .ng-value-label {
+  color: white !important;
+}
+
+/* Clear icon */
+:host ::ng-deep .ng-clear-wrapper {
+  color: oklch(var(--bc) / 0.6) !important;
+}
+
+:host ::ng-deep .ng-clear-wrapper:hover {
+  color: oklch(var(--er)) !important;
+}
+
+/* Arrow icon */
+:host ::ng-deep .ng-arrow-wrapper {
+  color: oklch(var(--bc) / 0.6) !important;
+}
+
+/* Search input in dropdown */
+:host ::ng-deep .ng-dropdown-panel .ng-search-box input {
+  background-color: #2a2a2a !important;
+  color: white !important;
+  border: 1px solid oklch(var(--bc) / 0.2) !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-search-box input:focus {
+  outline: none !important;
+  border-color: oklch(var(--p)) !important;
 }

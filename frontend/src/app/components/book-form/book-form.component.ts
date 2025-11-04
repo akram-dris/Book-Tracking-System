@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, FormControl, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BookService } from '../../services/book.service';
 import { AuthorService } from '../../services/author.service';
@@ -9,6 +9,10 @@ import { environment } from '../../../environments/environment';
 import { switchMap, finalize } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { NgxDropzoneModule } from 'ngx-dropzone';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroXMark, heroPhoto, heroPlus } from '@ng-icons/heroicons/outline';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -19,7 +23,8 @@ import { GetTag } from '../../models/get-tag.model';
 @Component({
   selector: 'app-book-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule],
+  imports: [ReactiveFormsModule, FormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent],
+  providers: [provideIcons({ heroXMark, heroPhoto, heroPlus })],
   templateUrl: './book-form.component.html',
   styleUrls: ['./book-form.component.css']
 })
@@ -36,6 +41,9 @@ export class BookFormComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
   showCropper = false;
+  
+  // For ng-select custom items
+  selectedTags: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -46,11 +54,11 @@ export class BookFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.bookForm = this.fb.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(1)]],
       authorId: [null, Validators.required],
       totalPages: [null, [Validators.required, Validators.min(1)]],
       imageFile: [null],
-      tagIds: this.fb.array([])
+      tagIds: [[]]
     });
   }
 
@@ -69,35 +77,57 @@ export class BookFormComponent implements OnInit {
       this.tags = tags;
 
       if (this.isEditMode && book) {
-        this.bookForm.patchValue(book);
+        this.bookForm.patchValue({
+          title: book.title,
+          authorId: book.authorId,
+          totalPages: book.totalPages
+        });
         if (book.imageUrl) {
           this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
         }
         if (book.tags) {
           const tagIds = book.tags.map(t => t.id);
-          this.bookForm.setControl('tagIds', this.fb.array(tagIds || []));
+          this.selectedTags = book.tags;
+          this.bookForm.patchValue({ tagIds: tagIds });
         }
       }
     });
   }
 
-  onTagChange(event: any) {
-    const tagIds = <FormArray>this.bookForm.get('tagIds');
-    const tagId = parseInt(event.target.value, 10);
-
-    if (event.target.checked) {
-      tagIds.push(new FormControl(tagId));
-    } else {
-      const index = tagIds.controls.findIndex(x => x.value === tagId);
-      if (index !== -1) {
-        tagIds.removeAt(index);
-      }
+  onTagsChange(tags: GetTag[]) {
+    const tagIds = tags.map(t => t.id);
+    this.bookForm.patchValue({ tagIds: tagIds });
+  }
+  
+  onAuthorChange(authorId: number | null) {
+    this.bookForm.patchValue({ authorId: authorId });
+  }
+  
+  // Handle file drop - show preview directly
+  onFilesAdded(files: File[]) {
+    if (files.length > 0) {
+      this.selectedFile = files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
     }
   }
 
-  isChecked(tagId: number): boolean {
-    const tagIds = this.bookForm.get('tagIds') as FormArray;
-    return tagIds.value.includes(tagId);
+  getSelectedAuthorImage(authorId: number): string | null {
+    const author = this.authors.find(a => a.id === authorId);
+    return author?.imageUrl ? environment.rootUrl + author.imageUrl : null;
+  }
+
+  getRootUrl(): string {
+    return environment.rootUrl;
+  }
+  
+  onFileRemoved() {
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
+    this.bookForm.patchValue({ imageFile: null });
   }
 
   onFileSelected(event: any): void {

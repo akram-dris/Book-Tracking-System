@@ -8,11 +8,14 @@ import { UpdateAuthor } from '../../models/update-author.model';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroScissors, heroXMark, heroInformationCircle, heroCheck } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-author-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule, ImageCropperModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule, ImageCropperModule, NgIconComponent],
+  viewProviders: [provideIcons({ heroScissors, heroXMark, heroInformationCircle, heroCheck })],
   templateUrl: './author-form.component.html',
   styleUrls: ['./author-form.component.css']
 })

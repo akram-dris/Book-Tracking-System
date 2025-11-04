@@ -163,3 +163,69 @@ h5 {
 h6 {
   @apply text-base;
 }
+/* ng-select Styles */
+@import '@ng-select/ng-select/themes/default.theme.css';
+
+.ng-select .ng-select-container {
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid hsl(var(--bc) / 0.2);
+  background-color: hsl(var(--b1));
+  transition: border-color 0.2s;
+}
+
+.ng-select .ng-select-container:hover {
+  border-color: hsl(var(--bc) / 0.3);
+}
+
+.ng-select.ng-select-focused .ng-select-container {
+  border-color: hsl(var(--p));
+  outline: none;
+}
+
+.ng-select .ng-select-container .ng-value-container {
+  padding: 0.375rem 0.75rem;
+}
+
+.ng-select .ng-placeholder {
+  color: hsl(var(--bc) / 0.5);
+}
+
+.ng-dropdown-panel {
+  background-color: hsl(var(--b1));
+  border: 2px solid hsl(var(--bc) / 0.2);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  margin-top: 0.25rem;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 15rem;
+}
+
+.ng-dropdown-panel .ng-option {
+  padding: 0.375rem 0.75rem;
+  transition: background-color 0.15s;
+}
+
+.ng-dropdown-panel .ng-option:hover {
+  background-color: hsl(var(--b2));
+}
+
+.ng-dropdown-panel .ng-option-selected {
+  background-color: hsl(var(--p) / 0.1);
+  font-weight: 500;
+}
+
+.ng-dropdown-panel .ng-option-marked {
+  background-color: hsl(var(--b2));
+}
+
+.ng-select-error .ng-select-container {
+  border-color: hsl(var(--er));
+}
+
+.ng-select-error .ng-select-container:hover,
+.ng-select-error.ng-select-focused .ng-select-container {
+  border-color: hsl(var(--er));
+}
