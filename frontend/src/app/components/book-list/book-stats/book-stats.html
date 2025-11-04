@@ -8,11 +8,27 @@
   </div>
 
   <div class="stat">
-    <div class="stat-figure text-secondary">
+    <div class="stat-figure text-base-content/40">
+      <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+    </div>
+    <div class="stat-title">Not Reading</div>
+    <div class="stat-value">{{ stats().notReading }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-info">
+      <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+    </div>
+    <div class="stat-title">Planning</div>
+    <div class="stat-value text-info">{{ stats().planning }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-warning">
       <ng-icon name="heroClock" size="2rem"></ng-icon>
     </div>
     <div class="stat-title">Currently Reading</div>
-    <div class="stat-value text-secondary">{{ stats().currentlyReading }}</div>
+    <div class="stat-value text-warning">{{ stats().currentlyReading }}</div>
   </div>
 
   <div class="stat">
@@ -21,15 +37,13 @@
     </div>
     <div class="stat-title">Completed</div>
     <div class="stat-value text-success">{{ stats().completed }}</div>
-    <div class="stat-desc">Includes Summarized</div>
   </div>
 
   <div class="stat">
-    <div class="stat-figure text-base-content/40">
-      <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+    <div class="stat-figure text-secondary">
+      <ng-icon name="heroCheckCircle" size="2rem"></ng-icon>
     </div>
-    <div class="stat-title">To Read</div>
-    <div class="stat-value">{{ stats().toRead }}</div>
-    <div class="stat-desc">Planning + Not Reading</div>
+    <div class="stat-title">Summarized</div>
+    <div class="stat-value text-secondary">{{ stats().summarized }}</div>
   </div>
 </div>

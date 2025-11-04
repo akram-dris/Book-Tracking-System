@@ -4,9 +4,11 @@ import { heroBookOpen, heroCheckCircle, heroClock } from '@ng-icons/heroicons/ou
 
 export interface BookStatistics {
   total: number;
+  notReading: number;
+  planning: number;
   currentlyReading: number;
   completed: number;
-  toRead: number;
+  summarized: number;
 }
 
 @Component({
@@ -18,5 +20,12 @@ export interface BookStatistics {
   viewProviders: [provideIcons({ heroBookOpen, heroCheckCircle, heroClock })]
 })
 export class BookStatsComponent {
-  stats = input<BookStatistics>({ total: 0, currentlyReading: 0, completed: 0, toRead: 0 });
+  stats = input<BookStatistics>({ 
+    total: 0, 
+    notReading: 0, 
+    planning: 0, 
+    currentlyReading: 0, 
+    completed: 0, 
+    summarized: 0 
+  });
 }

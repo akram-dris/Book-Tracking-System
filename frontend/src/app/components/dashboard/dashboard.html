@@ -292,8 +292,8 @@
                   <p class="text-sm font-medium truncate">{{ book.title }}</p>
                   <p class="text-xs text-base-content/60 truncate">{{ book.author?.name || 'Unknown' }}</p>
                 </div>
-                <span class="badge badge-sm" [ngClass]="getStatusClass(book.status)">
-                  {{ getStatusLabel(book.status) }}
+                <span class="badge badge-sm" [ngClass]="getStatusClass(book)">
+                  {{ getStatusLabel(book) }}
                 </span>
               </div>
             </div>
