@@ -15,5 +15,6 @@ namespace BookTrackingSystem.Services
         Task AssignTagsAsync(int bookId, IEnumerable<int> tagIds);
         Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null, string? summary = null);
         Task UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate);
+        Task UpdateBookSummaryAsync(int bookId, string summary);
     }
 }

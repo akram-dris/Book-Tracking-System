@@ -160,5 +160,18 @@ namespace BookTrackingSystem.Controllers
             await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate, updateBookStatusDto.CompletedDate, updateBookStatusDto.Summary);
             return NoContent();
         }
+
+        [HttpPut("{id}/summary")]
+        public async Task<IActionResult> UpdateBookSummary(int id, [FromBody] UpdateBookSummaryDto updateBookSummaryDto)
+        {
+            var book = await _bookService.GetBookAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            
+            await _bookService.UpdateBookSummaryAsync(id, updateBookSummaryDto.Summary);
+            return NoContent();
+        }
     }
 }

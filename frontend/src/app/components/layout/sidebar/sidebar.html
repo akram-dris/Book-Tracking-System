@@ -1,0 +1,55 @@
+<aside [class.w-16]="isCollapsed()" [class.w-64]="!isCollapsed()" 
+       class="flex flex-col h-full bg-base-200 border-r border-base-300 transition-all duration-300 ease-in-out">
+  <!-- Header -->
+  <div class="flex items-center justify-between p-4 border-b border-base-300">
+    @if (!isCollapsed()) {
+      <a routerLink="/" class="flex items-center gap-2 text-xl font-bold hover:text-primary transition-colors">
+        <ng-icon name="heroBookOpen" size="1.5rem"></ng-icon>
+        <span>BookTrack</span>
+      </a>
+    } @else {
+      <a routerLink="/" class="flex items-center justify-center w-full">
+        <ng-icon name="heroBookOpen" size="1.5rem" class="text-primary"></ng-icon>
+      </a>
+    }
+    
+    @if (!isCollapsed()) {
+      <button (click)="onToggle()" 
+              class="btn btn-ghost btn-sm btn-circle">
+        <ng-icon name="heroBars3" size="1.25rem"></ng-icon>
+      </button>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto">
+    <ul class="menu p-2 gap-1">
+      @for (item of navItems; track item.path) {
+        <li>
+          <a [routerLink]="item.path" 
+             routerLinkActive="active bg-primary text-primary-content"
+             [attr.data-tip]="isCollapsed() ? item.tooltip : null"
+             [class.tooltip]="isCollapsed()"
+             [class.tooltip-right]="isCollapsed()"
+             class="flex items-center gap-3 rounded-lg transition-all duration-200 hover:bg-base-300">
+            <ng-icon [name]="item.icon" size="1.25rem"></ng-icon>
+            @if (!isCollapsed()) {
+              <span class="font-medium">{{ item.label }}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Toggle Button (when collapsed) -->
+  @if (isCollapsed()) {
+    <div class="p-2 border-t border-base-300">
+      <button (click)="onToggle()" 
+              class="btn btn-ghost btn-sm btn-circle w-full"
+              aria-label="Expand sidebar">
+        <ng-icon name="heroBars3" size="1.25rem"></ng-icon>
+      </button>
+    </div>
+  }
+</aside>

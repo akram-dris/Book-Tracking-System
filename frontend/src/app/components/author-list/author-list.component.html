@@ -1,21 +1,143 @@
-
 <div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-4">
-  <h1 class="text-3xl font-bold">Authors</h1>
-  <a routerLink="/authors/new" class="btn btn-primary">Add Author</a>
-</div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <div *ngFor="let author of authors" class="card group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out cursor-pointer hover:scale-105" [routerLink]="['/authors', author.id]">
-      <figure class="overflow-hidden h-full w-full">
-        <img *ngIf="author.imageUrl" [src]="rootUrl + author.imageUrl" alt="{{ author.name }}" class="w-full h-full object-cover flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ease-in-out hover:blur-md hover:brightness-75" />
-      </figure>
-      <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-        <h2 class="text-white text-lg font-bold text-center">{{ author.name }}</h2>
-        <p class="text-gray-200 text-center">{{ author.bio }}</p>
-      </div>
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Authors</h1>
+    <a routerLink="/authors/new" class="btn btn-primary gap-2">
+      <ng-icon name="heroUserPlus" size="1.25rem"></ng-icon>
+      Add Author
+    </a>
+  </div>
+
+  <!-- Search & Sort Bar -->
+  <div class="flex flex-col sm:flex-row gap-4 mb-6">
+    <!-- Search -->
+    <div class="relative flex-1">
+      <ng-icon name="heroMagnifyingGlass" size="1.25rem" class="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50"></ng-icon>
+      <input 
+        type="text" 
+        placeholder="Search authors by name or bio..." 
+        class="input input-bordered w-full pl-10 pr-10"
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+      />
+      @if (searchQuery) {
+        <button 
+          class="btn btn-ghost btn-sm btn-circle absolute right-2 top-1/2 -translate-y-1/2"
+          (click)="clearSearch()"
+        >
+          <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+        </button>
+      }
+    </div>
+
+    <!-- Sort -->
+    <div class="flex items-center gap-2">
+      <ng-icon name="heroArrowsUpDown" size="1.25rem" class="text-base-content/70"></ng-icon>
+      <select 
+        class="select select-bordered w-full sm:w-48"
+        [(ngModel)]="sortBy"
+        (change)="onSortChange()"
+      >
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
     </div>
   </div>
-  <div *ngIf="authors.length === 0" class="text-center text-gray-500 mt-8">
-    No authors found.
+
+  <!-- Results Count -->
+  <div class="text-sm text-base-content/70 mb-4">
+    Showing {{ filteredAuthors.length }} of {{ authors.length }} authors
   </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="card bg-base-200 animate-pulse">
+          <figure class="h-64 bg-base-300"></figure>
+          <div class="card-body">
+            <div class="h-6 bg-base-300 rounded w-3/4"></div>
+            <div class="h-4 bg-base-300 rounded w-1/2 mt-2"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Authors Grid -->
+  @if (!isLoading && filteredAuthors.length > 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      @for (author of filteredAuthors; track author.id) {
+        <div 
+          class="card bg-base-200 group relative overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1" 
+          [routerLink]="['/authors', author.id]"
+        >
+          <!-- Author Image -->
+          <figure class="h-64 bg-base-300 relative overflow-hidden">
+            @if (author.imageUrl) {
+              <img 
+                [src]="rootUrl + author.imageUrl" 
+                [alt]="author.name" 
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                (error)="onImageError($event, author)"
+              />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                <span class="text-6xl font-bold text-base-content/30">{{ author.name.charAt(0) }}</span>
+              </div>
+            }
+            
+            <!-- Hover Overlay -->
+            <div class="absolute inset-0 bg-black/60 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              @if (author.bio) {
+                <p class="text-white text-sm line-clamp-3">{{ author.bio }}</p>
+              }
+            </div>
+          </figure>
+
+          <!-- Author Info -->
+          <div class="card-body p-4">
+            <h2 class="card-title text-lg">{{ author.name }}</h2>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-base-content/70">
+                {{ author.bookCount || 0 }} {{ (author.bookCount || 0) === 1 ? 'book' : 'books' }}
+              </span>
+              @if (author.createdAt) {
+                <span class="text-base-content/50 text-xs">
+                  Added {{ author.createdAt | date:'MMM yyyy' }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading && filteredAuthors.length === 0 && searchQuery) {
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-200 mb-4">
+        <ng-icon name="heroMagnifyingGlass" size="2rem" class="text-base-content/50"></ng-icon>
+      </div>
+      <h3 class="text-xl font-semibold mb-2">No authors found</h3>
+      <p class="text-base-content/70 mb-4">Try adjusting your search criteria</p>
+      <button class="btn btn-primary" (click)="clearSearch()">Clear Search</button>
+    </div>
+  }
+
+  @if (!isLoading && authors.length === 0) {
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-200 mb-4">
+        <ng-icon name="heroUserPlus" size="2rem" class="text-base-content/50"></ng-icon>
+      </div>
+      <h3 class="text-xl font-semibold mb-2">No authors yet</h3>
+      <p class="text-base-content/70 mb-4">Start by adding your first author</p>
+      <a routerLink="/authors/new" class="btn btn-primary gap-2">
+        <ng-icon name="heroUserPlus" size="1.25rem"></ng-icon>
+        Add Author
+      </a>
+    </div>
+  }
 </div>

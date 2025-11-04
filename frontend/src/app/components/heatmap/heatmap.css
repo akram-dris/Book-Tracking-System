@@ -1,128 +1,90 @@
-.heatmap-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.year-selector {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.year-selector label {
-  margin-right: 10px;
-  font-size: 1.1em;
-}
-
-.year-selector select {
-  padding: 8px 12px;
-  font-size: 1em;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.loading-spinner {
-  text-align: center;
-  padding: 50px;
-  font-size: 1.2em;
-  color: #555;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust column width as needed */
-  gap: 20px;
-  justify-content: center;
-}
-
-.month-container {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 10px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.month-container h3 {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #666;
-}
-
-.weekday-header {
-  padding: 5px 0;
-  font-size: 0.85em;
-}
-
-.month-weeks {
-  display: flex;
-  flex-direction: column;
-}
-
-.week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-}
-
+/* Day cell specific styles that need hover effects */
 .day-cell {
-  width: 30px; /* Fixed width for day cells */
-  height: 30px; /* Fixed height for day cells */
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2px; /* Small margin between cells */
-  border-radius: 3px;
-  font-size: 0.8em;
-  color: #333;
-  cursor: default;
-  transition: background-color 0.2s ease-in-out;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  min-width: 28px;
+  min-height: 28px;
 }
 
 .day-cell:hover {
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.day-cell.current-month:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.5rem;
+  padding: 0.75rem;
+  background-color: hsl(var(--b3));
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  white-space: pre-line;
+  text-align: center;
+  z-index: 50;
+  min-width: 150px;
+}
+
+.day-number {
+  position: relative;
+  z-index: 10;
 }
 
 .other-month {
-  background-color: #f0f0f0;
-  color: #ccc;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Color scale for pages read */
+/* Color scale for pages read - Enhanced with better gradients */
 .day-0 {
-  background-color: #ebedf0;
+  background-color: rgba(var(--bc) / 0.1);
+  color: rgba(var(--bc) / 0.4);
 }
 
 .day-1-10 {
-  background-color: #9be9a8;
+  background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+  color: #22543d;
 }
 
 .day-11-25 {
-  background-color: #40c463;
+  background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+  color: white;
 }
 
 .day-26-50 {
-  background-color: #30a14e;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
 }
 
 .day-51-100 {
-  background-color: #216e39;
+  background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+  color: white;
 }
 
 .day-100-plus {
-  background-color: #1a4b2a;
-  color: #fff;
+  background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(47, 133, 90, 0.4);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .day-cell {
+    min-width: 32px;
+    min-height: 32px;
+  }
 }

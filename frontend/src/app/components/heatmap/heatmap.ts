@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { HeatmapService } from '../../services/heatmap.service';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroChevronLeft, heroChevronRight } from '@ng-icons/heroicons/outline';
 
 interface CalendarDay {
   date: Date;
@@ -19,12 +22,37 @@ interface CalendarMonth {
   weeks: CalendarWeek[];
 }
 
+interface LegendItem {
+  label: string;
+  className: string;
+  range: string;
+}
+
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgIconComponent],
+  viewProviders: [provideIcons({ heroChevronLeft, heroChevronRight })],
   templateUrl: './heatmap.html',
   styleUrl: './heatmap.css',
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('staggerFade', [
+      transition(':enter', [
+        query('.month-container', [
+          style({ opacity: 0, transform: 'scale(0.95)' }),
+          stagger(50, [
+            animate('400ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class HeatmapComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
@@ -32,6 +60,16 @@ export class HeatmapComponent implements OnInit {
   heatmapData: { [key: string]: number } = {};
   calendarMonths: CalendarMonth[] = [];
   loading: boolean = false;
+  totalPages: number = 0;
+  totalDays: number = 0;
+  legendItems: LegendItem[] = [
+    { label: 'No activity', className: 'day-0', range: '0 pages' },
+    { label: 'Light', className: 'day-1-10', range: '1-10 pages' },
+    { label: 'Moderate', className: 'day-11-25', range: '11-25 pages' },
+    { label: 'Active', className: 'day-26-50', range: '26-50 pages' },
+    { label: 'Very Active', className: 'day-51-100', range: '51-100 pages' },
+    { label: 'Super Active', className: 'day-100-plus', range: '100+ pages' }
+  ];
 
   constructor(private heatmapService: HeatmapService) {
     this.generateYears();
@@ -53,6 +91,7 @@ export class HeatmapComponent implements OnInit {
     this.heatmapService.getHeatmapData(this.currentYear).subscribe({
       next: (data) => {
         this.heatmapData = data;
+        this.calculateStats();
         this.generateCalendarGrid();
         this.loading = false;
       },
@@ -63,7 +102,22 @@ export class HeatmapComponent implements OnInit {
     });
   }
 
+  calculateStats(): void {
+    this.totalPages = Object.values(this.heatmapData).reduce((sum, pages) => sum + pages, 0);
+    this.totalDays = Object.values(this.heatmapData).filter(pages => pages > 0).length;
+  }
+
   onYearChange(): void {
+    this.loadHeatmapData();
+  }
+
+  previousYear(): void {
+    this.currentYear--;
+    this.loadHeatmapData();
+  }
+
+  nextYear(): void {
+    this.currentYear++;
     this.loadHeatmapData();
   }
 
@@ -72,19 +126,18 @@ export class HeatmapComponent implements OnInit {
     const today = new Date();
 
     for (let month = 0; month < 12; month++) {
-      const monthName = new Date(this.currentYear, month, 1).toLocaleString('default', { month: 'long' });
+      const monthName = new Date(this.currentYear, month, 1).toLocaleString('default', { month: 'short' });
       const weeks: CalendarWeek[] = [];
       let currentWeek: CalendarDay[] = [];
 
       const firstDayOfMonth = new Date(this.currentYear, month, 1);
-      const startingDayOfWeek = firstDayOfMonth.getDay(); // 0 for Sunday, 1 for Monday
+      const startingDayOfWeek = firstDayOfMonth.getDay();
 
-      // Fill leading empty days of the first week
       for (let i = 0; i < startingDayOfWeek; i++) {
         currentWeek.push({
           date: new Date(this.currentYear, month, 1 - (startingDayOfWeek - i)),
           pagesRead: 0,
-          dayOfMonth: 0, // Placeholder for empty days
+          dayOfMonth: 0,
           isCurrentMonth: false,
         });
       }
@@ -110,13 +163,12 @@ export class HeatmapComponent implements OnInit {
         }
       }
 
-      // Fill trailing empty days of the last week
       if (currentWeek.length > 0) {
         while (currentWeek.length < 7) {
           currentWeek.push({
             date: new Date(this.currentYear, month, daysInMonth + (currentWeek.length - startingDayOfWeek)),
             pagesRead: 0,
-            dayOfMonth: 0, // Placeholder for empty days
+            dayOfMonth: 0,
             isCurrentMonth: false,
           });
         }
@@ -141,5 +193,11 @@ export class HeatmapComponent implements OnInit {
     } else {
       return 'day-100-plus';
     }
+  }
+
+  getTooltipText(day: CalendarDay): string {
+    if (!day.isCurrentMonth) return '';
+    const dateStr = day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    return `${dateStr}\n${day.pagesRead} pages read`;
   }
 }

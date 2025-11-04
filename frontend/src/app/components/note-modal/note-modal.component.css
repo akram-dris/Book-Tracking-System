@@ -1,0 +1,105 @@
+/* Quill Editor Styling for Dark Mode */
+::ng-deep .ql-toolbar {
+  background: hsl(var(--b2));
+  border: none !important;
+  border-bottom: 1px solid hsl(var(--bc) / 0.2) !important;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.5rem !important;
+}
+
+::ng-deep .ql-toolbar button {
+  width: 24px !important;
+  height: 24px !important;
+  padding: 2px !important;
+}
+
+::ng-deep .ql-toolbar .ql-picker-label {
+  padding: 2px 4px !important;
+}
+
+::ng-deep .ql-container {
+  border: none !important;
+  font-family: inherit;
+  font-size: 0.95rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .ql-editor {
+  flex: 1;
+  min-height: 400px;
+  color: hsl(var(--bc));
+  background: hsl(var(--b1));
+  padding: 1rem;
+}
+
+::ng-deep .ql-editor.ql-blank::before {
+  color: hsl(var(--bc) / 0.4);
+  font-style: normal;
+}
+
+::ng-deep .ql-stroke {
+  stroke: hsl(var(--bc) / 0.6);
+  stroke-width: 1.5 !important;
+}
+
+::ng-deep .ql-fill {
+  fill: hsl(var(--bc) / 0.6);
+}
+
+::ng-deep .ql-picker-label {
+  color: hsl(var(--bc) / 0.6);
+  font-size: 0.85rem;
+}
+
+::ng-deep .ql-toolbar button:hover,
+::ng-deep .ql-toolbar button:focus,
+::ng-deep .ql-toolbar button.ql-active {
+  color: hsl(var(--p));
+}
+
+::ng-deep .ql-toolbar button:hover .ql-stroke,
+::ng-deep .ql-toolbar button:focus .ql-stroke,
+::ng-deep .ql-toolbar button.ql-active .ql-stroke {
+  stroke: hsl(var(--p));
+}
+
+::ng-deep .ql-toolbar button:hover .ql-fill,
+::ng-deep .ql-toolbar button:focus .ql-fill,
+::ng-deep .ql-toolbar button.ql-active .ql-fill {
+  fill: hsl(var(--p));
+}
+
+/* Read-only note display */
+.prose {
+  color: hsl(var(--bc));
+}
+
+.prose p {
+  margin-bottom: 0.5rem;
+}
+
+.prose ul, .prose ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid hsl(var(--p));
+  padding-left: 1rem;
+  font-style: italic;
+  color: hsl(var(--bc) / 0.8);
+}
+
+.prose code {
+  background: hsl(var(--b3));
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+}
+
+.prose a {
+  color: hsl(var(--p));
+  text-decoration: underline;
+}

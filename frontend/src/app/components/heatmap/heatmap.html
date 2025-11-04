@@ -1,39 +1,101 @@
-<div class="heatmap-container">
-  <h2>Reading Heatmap - {{ currentYear }}</h2>
+<div class="p-6 max-w-7xl mx-auto" @fadeIn>
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+    <div>
+      <h2 class="text-3xl font-bold">📖 Reading Activity</h2>
+      <p class="text-base-content/70 mt-1">Your reading journey through the year</p>
+    </div>
 
-  <div class="year-selector">
-    <label for="year">Select Year:</label>
-    <select id="year" [(ngModel)]="currentYear" (change)="onYearChange()">
-      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-    </select>
+    <!-- Year Navigation -->
+    <div class="flex items-center gap-3">
+      <button 
+        class="btn btn-ghost btn-sm btn-circle"
+        (click)="previousYear()"
+        [disabled]="loading"
+      >
+        <ng-icon name="heroChevronLeft" size="20"></ng-icon>
+      </button>
+      
+      <select 
+        class="select select-bordered select-sm w-28"
+        [(ngModel)]="currentYear" 
+        (change)="onYearChange()"
+        [disabled]="loading"
+      >
+        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+      </select>
+      
+      <button 
+        class="btn btn-ghost btn-sm btn-circle"
+        (click)="nextYear()"
+        [disabled]="loading"
+      >
+        <ng-icon name="heroChevronRight" size="20"></ng-icon>
+      </button>
+    </div>
   </div>
 
-  <div *ngIf="loading" class="loading-spinner">Loading heatmap data...</div>
+  <!-- Stats Section -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" *ngIf="!loading" @fadeIn>
+    <div class="card bg-base-200 p-4 text-center">
+      <div class="text-3xl font-bold text-primary">{{ totalPages }}</div>
+      <div class="text-sm text-base-content/70 mt-1">Total Pages</div>
+    </div>
+    <div class="card bg-base-200 p-4 text-center">
+      <div class="text-3xl font-bold text-primary">{{ totalDays }}</div>
+      <div class="text-sm text-base-content/70 mt-1">Active Days</div>
+    </div>
+    <div class="card bg-base-200 p-4 text-center">
+      <div class="text-3xl font-bold text-primary">{{ totalPages > 0 ? (totalPages / totalDays | number:'1.0-0') : 0 }}</div>
+      <div class="text-sm text-base-content/70 mt-1">Avg Pages/Day</div>
+    </div>
+  </div>
 
-  <div *ngIf="!loading" class="calendar-grid">
-    <div class="month-container" *ngFor="let month of calendarMonths">
-      <h3>{{ month.monthName }}</h3>
-      <div class="weekdays">
-        <div class="weekday-header">Sun</div>
-        <div class="weekday-header">Mon</div>
-        <div class="weekday-header">Tue</div>
-        <div class="weekday-header">Wed</div>
-        <div class="weekday-header">Thu</div>
-        <div class="weekday-header">Fri</div>
-        <div class="weekday-header">Sat</div>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+    <p class="mt-4 text-base-content/70">Loading your reading data...</p>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
+    <div class="card bg-base-200 p-4" *ngFor="let month of calendarMonths">
+      <h3 class="text-center font-semibold text-lg mb-3">{{ month.monthName }}</h3>
+      <div class="grid grid-cols-7 text-center font-semibold mb-2 text-xs">
+        <div class="p-1 text-base-content/60">S</div>
+        <div class="p-1 text-base-content/60">M</div>
+        <div class="p-1 text-base-content/60">T</div>
+        <div class="p-1 text-base-content/60">W</div>
+        <div class="p-1 text-base-content/60">T</div>
+        <div class="p-1 text-base-content/60">F</div>
+        <div class="p-1 text-base-content/60">S</div>
       </div>
-      <div class="month-weeks">
-        <div class="week" *ngFor="let week of month.weeks">
+      <div class="flex flex-col gap-1">
+        <div class="grid grid-cols-7 gap-1" *ngFor="let week of month.weeks">
           <div
             class="day-cell"
             *ngFor="let day of week.days"
             [class.current-month]="day.isCurrentMonth"
             [class.other-month]="!day.isCurrentMonth"
             [ngClass]="getDayClass(day.pagesRead)"
-            [title]="day.isCurrentMonth ? (day.date | date:'mediumDate') + ' - ' + day.pagesRead + ' pages' : ''"
+            [attr.data-tooltip]="getTooltipText(day)"
           >
-            <span *ngIf="day.isCurrentMonth">{{ day.dayOfMonth }}</span>
+            <span *ngIf="day.isCurrentMonth" class="day-number">{{ day.dayOfMonth }}</span>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="card bg-base-200 p-6" *ngIf="!loading" @fadeIn>
+    <div class="text-lg font-semibold mb-4">Activity Level</div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+      <div class="flex items-center gap-3" *ngFor="let item of legendItems">
+        <div class="w-8 h-8 rounded-md flex-shrink-0" [ngClass]="item.className"></div>
+        <div class="flex flex-col">
+          <div class="text-sm font-medium">{{ item.label }}</div>
+          <div class="text-xs text-base-content/60">{{ item.range }}</div>
         </div>
       </div>
     </div>

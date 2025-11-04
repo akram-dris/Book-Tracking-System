@@ -1,53 +1,25 @@
-<div class="flex h-screen">
-  <div [class]="isSidebarCollapsed ? 'w-16' : 'w-56'" class="flex flex-col h-full bg-base-200 text-base-content transition-width duration-300 ease-in-out">
-    <div class="flex items-center justify-between p-4">
-      <a routerLink="/books" class="btn btn-ghost normal-case text-xl" [class.hidden]="isSidebarCollapsed">Book Tracking</a>
-      <button (click)="toggleSidebar()" class="btn btn-square btn-ghost">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
-    </div>
-    <ul class="menu p-4">
-      <li>
-        <a routerLink="/books">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span [class.hidden]="isSidebarCollapsed">Books</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="/authors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 21a6 6 0 006-6v-1a6 6 0 00-9-5.197" />
-          </svg>
-          <span [class.hidden]="isSidebarCollapsed">Authors</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="/tags">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5.5c.58 0 1.13.2 1.55.55L20.5 11.25c.41.41.41 1.07 0 1.48l-7.45 7.45c-.41.41-1.07.41-1.48 0L3.55 12.55c-.35-.42-.55-.97-.55-1.55V7c0-2.21 1.79-4 4-4z" />
-          </svg>
-          <span [class.hidden]="isSidebarCollapsed">Tags</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="/heatmap">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12h.01M12 12h.01M17 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span [class.hidden]="isSidebarCollapsed">Heatmap</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div class="flex-1 flex flex-col overflow-y-auto">
-    <div class="p-4 relative">
-      <app-streak-indicator></app-streak-indicator>
-      <router-outlet></router-outlet>
-    </div>
+<div class="flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <app-sidebar 
+    [isCollapsed]="isSidebarCollapsed" 
+    (toggleCollapse)="toggleSidebar()"
+  ></app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Header -->
+    <app-header (addBook)="onAddBook()"></app-header>
+
+    <!-- Breadcrumb -->
+    <app-breadcrumb></app-breadcrumb>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-y-auto bg-base-100">
+      <div class="container mx-auto max-w-7xl p-6">
+        <!-- Router Outlet -->
+        <router-outlet></router-outlet>
+      </div>
+    </main>
   </div>
 </div>
 

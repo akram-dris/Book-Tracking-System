@@ -1,72 +1,132 @@
 
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6">Tag Management</h1>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <!-- Add New Tag / Edit Tag Form -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title">{{ isEditingTag ? 'Edit Tag' : 'Add New Tag' }}</h2>
-        <form [formGroup]="tagForm" (ngSubmit)="onSubmit()">
-          <div class="form-control mb-4">
-            <label class="label">
-              <span class="label-text">Tag Name</span>
-            </label>
-            <input type="text" formControlName="name" class="input input-bordered w-full" placeholder="e.g., Fiction, Fantasy" />
-            <div *ngIf="tagForm.get('name')?.invalid && tagForm.get('name')?.touched" class="text-error text-sm mt-1">
-              Tag Name is required.
-            </div>
-          </div>
-          <div class="form-control mt-6 flex flex-row justify-end space-x-2">
-            <button *ngIf="isEditingTag" type="button" class="btn btn-ghost" (click)="cancelEdit()">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="tagForm.invalid || isLoading">
-              <span *ngIf="isLoading" class="loading loading-spinner"></span>
-              {{ isEditingTag ? 'Update Tag' : 'Add Tag' }}
-            </button>
-          </div>
-        </form>
-      </div>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-white mb-2">🏷️ Tag Management</h1>
+      <p class="text-gray-400">Organize your books with custom tags</p>
     </div>
 
-    <!-- Existing Tags List -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title">Existing Tags</h2>
-        <div class="overflow-x-auto">
-          <table class="table w-full">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Usage Count</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let tag of tags">
-                <td>
-                  <ng-container *ngIf="isEditingTag && editingTagId === tag.id; else tagNameDisplay">
-                    <input type="text" [formControl]="nameControl" class="input input-bordered input-sm w-full" />
-                  </ng-container>
-                  <ng-template #tagNameDisplay>
-                    {{ tag.name }}
-                  </ng-template>
-                </td>
-                <td>{{ tagUsageCounts[tag.id] || 0 }}</td>
-                <td>
-                  <div class="flex space-x-2">
-                    <button class="btn btn-info btn-sm" (click)="editTag(tag)" [disabled]="isEditingTag">
-                      Edit
-                    </button>
-                    <button class="btn btn-error btn-sm" (click)="deleteTag(tag.id)" [disabled]="isEditingTag">
-                      Delete
-                    </button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Add/Edit Tag Form -->
+      <div class="lg:col-span-1">
+        <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6 shadow-xl">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-white">{{ isEditingTag ? 'Edit Tag' : 'New Tag' }}</h2>
+          </div>
+
+          <form [formGroup]="tagForm" (ngSubmit)="onSubmit()">
+            <div class="space-y-4">
+              <div>
+                <label class="text-sm font-medium text-gray-300 mb-2 block">Tag Name</label>
+                <input 
+                  type="text" 
+                  formControlName="name" 
+                  class="w-full bg-gray-900/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  placeholder="e.g., Science Fiction, Mystery" 
+                />
+                <div *ngIf="tagForm.get('name')?.invalid && tagForm.get('name')?.touched" class="text-red-400 text-sm mt-2 flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Tag name is required
+                </div>
+              </div>
+
+              <div class="flex gap-2 pt-2">
+                <button 
+                  *ngIf="isEditingTag" 
+                  type="button" 
+                  class="flex-1 px-4 py-3 rounded-xl bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors"
+                  (click)="cancelEdit()">
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  [disabled]="tagForm.invalid || isLoading">
+                  <span *ngIf="isLoading" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  {{ isEditingTag ? 'Update' : 'Add Tag' }}
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Stats -->
+          <div class="mt-6 pt-6 border-t border-gray-700/50">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-400">Total Tags</span>
+              <span class="text-white font-bold text-lg">{{ tags.length }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags Grid -->
+      <div class="lg:col-span-2">
+        <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6 shadow-xl">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-white">All Tags</h2>
+            <div class="text-sm text-gray-400">
+              {{ tags.length }} tag{{ tags.length !== 1 ? 's' : '' }}
+            </div>
+          </div>
+
+          <div *ngIf="tags.length === 0" class="text-center py-16">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+            </div>
+            <p class="text-gray-400 text-lg">No tags yet</p>
+            <p class="text-gray-500 text-sm mt-1">Create your first tag to get started</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" *ngIf="tags.length > 0">
+            <div 
+              *ngFor="let tag of tags"
+              class="group bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10">
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></span>
+                    <h3 class="text-white font-semibold truncate">{{ tag.name }}</h3>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  <div class="flex items-center gap-2 text-sm text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span>{{ tagUsageCounts[tag.id] || 0 }} book{{ (tagUsageCounts[tag.id] || 0) !== 1 ? 's' : '' }}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 ml-2">
+                  <button 
+                    class="p-2 rounded-lg bg-gray-800 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                    (click)="editTag(tag)" 
+                    [disabled]="isEditingTag"
+                    title="Edit tag">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button 
+                    class="p-2 rounded-lg bg-gray-800 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                    (click)="deleteTag(tag.id)" 
+                    [disabled]="isEditingTag"
+                    title="Delete tag">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

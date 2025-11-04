@@ -13,15 +13,55 @@ import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { SessionLogComponent } from '../session-log/session-log.component';
-import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component'; // New import
-import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component'; // New import
+import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component';
+import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { QuillModule } from 'ngx-quill';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { 
+  heroArrowLeft, 
+  heroPencil, 
+  heroTrash, 
+  heroBookOpen,
+  heroChartBar,
+  heroDocumentText,
+  heroClipboardDocumentList,
+  heroPlus,
+  heroCalendar,
+  heroCheckCircle
+} from '@ng-icons/heroicons/outline';
+
+type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
 
 @Component({
   selector: 'app-book-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, SessionLogComponent, PlanAndGoalModalComponent, ReadingLogModalComponent], // Updated imports
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    ReactiveFormsModule, 
+    FormsModule, 
+    SessionLogComponent, 
+    PlanAndGoalModalComponent, 
+    ReadingLogModalComponent,
+    QuillModule,
+    NgIconComponent
+  ],
   templateUrl: './book-details.html',
-  styleUrls: ['./book-details.css']
+  styleUrls: ['./book-details.css'],
+  viewProviders: [
+    provideIcons({ 
+      heroArrowLeft, 
+      heroPencil, 
+      heroTrash, 
+      heroBookOpen,
+      heroChartBar,
+      heroDocumentText,
+      heroClipboardDocumentList,
+      heroPlus,
+      heroCalendar,
+      heroCheckCircle
+    })
+  ]
 })
 export class BookDetailsComponent implements OnInit {
   book: GetBook | undefined;
@@ -29,15 +69,34 @@ export class BookDetailsComponent implements OnInit {
   readingGoal: GetReadingGoal | null = null;
   rootUrl = environment.rootUrl;
   ReadingStatus = ReadingStatus;
-  isAddSessionModalOpen: boolean = false; // Existing property
-  isPlanAndGoalModalOpen: boolean = false; // New property
-  isReadingLogModalOpen: boolean = false; // New property
-  currentBookId: number | null = null; // Existing property
-  currentPage: number = 0; // New property
-  progress: number = 0; // New property
+  isAddSessionModalOpen: boolean = false;
+  isPlanAndGoalModalOpen: boolean = false;
+  isReadingLogModalOpen: boolean = false;
+  currentBookId: number | null = null;
+  currentPage: number = 0;
+  progress: number = 0;
   isSummaryMode: boolean = false;
   isEditingSummary: boolean = false;
   summaryForm: FormGroup;
+  
+  // New properties for tabs
+  activeTab: TabType = 'overview';
+  
+  // Notes editor
+  isEditingNotes: boolean = false;
+  notesForm: FormGroup;
+  
+  quillConfig = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'header': [1, 2, 3, false] }],
+      [{ 'color': [] }, { 'background': [] }],
+      ['link'],
+      ['clean']
+    ]
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -49,6 +108,9 @@ export class BookDetailsComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.summaryForm = this.fb.group({
+      summary: ['', Validators.required]
+    });
+    this.notesForm = this.fb.group({
       summary: ['', Validators.required]
     });
   }
@@ -286,5 +348,52 @@ export class BookDetailsComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  // Tab switching
+  switchTab(tab: TabType): void {
+    this.activeTab = tab;
+  }
+
+  getStatusBadgeClass(): string {
+    switch (this.book?.status) {
+      case ReadingStatus.CurrentlyReading:
+        return 'badge-secondary';
+      case ReadingStatus.Completed:
+      case ReadingStatus.Summarized:
+        return 'badge-success';
+      case ReadingStatus.Planning:
+        return 'badge-info';
+      default:
+        return 'badge-ghost';
+    }
+  }
+
+  // Notes editor methods
+  openNotesEditor(): void {
+    this.isEditingNotes = true;
+    if (this.book?.summary) {
+      this.notesForm.patchValue({ summary: this.book.summary });
+    } else {
+      this.notesForm.reset();
+    }
+  }
+
+  cancelNotesEdit(): void {
+    this.isEditingNotes = false;
+    this.notesForm.reset();
+  }
+
+  saveNotes(): void {
+    if (this.notesForm.valid && this.book) {
+      const summaryText = this.notesForm.get('summary')?.value;
+      
+      // Update book summary
+      this.bookService.updateBookSummary(this.book.id, summaryText).subscribe(() => {
+        this.book!.summary = summaryText;
+        this.isEditingNotes = false;
+        console.log('Book notes updated successfully');
+      });
+    }
   }
 }

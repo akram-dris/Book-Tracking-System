@@ -72,4 +72,8 @@ export class BookService {
     }
     return this.http.put<any>(`${this.apiUrl}/${bookId}/status`, body);
   }
+
+  updateBookSummary(bookId: number, summary: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${bookId}/summary`, { summary });
+  }
 }
