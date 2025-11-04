@@ -42,6 +42,7 @@ builder.Services.AddScoped<BookTrackingSystem.Repository.IReadingGoalRepository,
 builder.Services.AddScoped<BookTrackingSystem.Services.IReadingGoalService, BookTrackingSystem.Services.ReadingGoalService>();
 builder.Services.AddScoped<BookTrackingSystem.Services.IHeatmapService, BookTrackingSystem.Services.HeatmapService>();
 builder.Services.AddScoped<BookTrackingSystem.Services.IStreakService, BookTrackingSystem.Services.StreakService>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IReadingStatusService, BookTrackingSystem.Services.ReadingStatusService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
