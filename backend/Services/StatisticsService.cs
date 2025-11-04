@@ -218,7 +218,9 @@ namespace BookTrackingSystem.Services
                 : 0;
 
             var currentGoalsProgress = goals
-                .Where(g => g.Book!.Status == ReadingStatus.CurrentlyReading)
+                .Where(g => g.Book!.Status == ReadingStatus.CurrentlyReading || 
+                           g.Book!.Status == ReadingStatus.Completed ||
+                           g.Book!.Status == ReadingStatus.Summarized)
                 .Select(g =>
                 {
                     var currentPages = g.Book!.ReadingSessions?.Sum(s => s.PagesRead) ?? 0;
@@ -226,6 +228,7 @@ namespace BookTrackingSystem.Services
                     {
                         BookId = g.BookId,
                         BookTitle = g.Book!.Title,
+                        BookStatus = g.Book!.Status.ToString(),
                         LowGoal = g.LowGoal,
                         MediumGoal = g.MediumGoal,
                         HighGoal = g.HighGoal,

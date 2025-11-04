@@ -16,6 +16,7 @@ namespace BookTrackingSystem.DTOs
     {
         public int BookId { get; set; }
         public string BookTitle { get; set; } = string.Empty;
+        public string BookStatus { get; set; } = string.Empty;
         public int LowGoal { get; set; }
         public int MediumGoal { get; set; }
         public int HighGoal { get; set; }
