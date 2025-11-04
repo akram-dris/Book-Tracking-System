@@ -240,12 +240,34 @@ namespace BookTrackingSystem.Services
                 })
                 .ToList();
 
+            // Calculate goal success counts based on completed/summarized books
+            var goalsWithCompletedBooks = goals.Where(g => g.Book!.Status == ReadingStatus.Completed || 
+                                                  g.Book!.Status == ReadingStatus.Summarized).ToList();
+            
+            var lowGoalSuccessCount = 0;
+            var mediumGoalSuccessCount = 0;
+            var highGoalSuccessCount = 0;
+
+            foreach (var goal in goalsWithCompletedBooks)
+            {
+                var totalPagesRead = goal.Book!.ReadingSessions?.Sum(s => s.PagesRead) ?? 0;
+                
+                if (totalPagesRead >= goal.LowGoal)
+                    lowGoalSuccessCount++;
+                
+                if (totalPagesRead >= goal.MediumGoal)
+                    mediumGoalSuccessCount++;
+                
+                if (totalPagesRead >= goal.HighGoal)
+                    highGoalSuccessCount++;
+            }
+
             return new GoalPerformanceDto
             {
                 OverallCompletionRate = completionRate,
-                LowGoalSuccessCount = 0, // TODO: Implement goal success tracking
-                MediumGoalSuccessCount = 0,
-                HighGoalSuccessCount = 0,
+                LowGoalSuccessCount = lowGoalSuccessCount,
+                MediumGoalSuccessCount = mediumGoalSuccessCount,
+                HighGoalSuccessCount = highGoalSuccessCount,
                 AverageDaysToComplete = avgDaysToComplete,
                 BooksCompletedOnTime = 0, // TODO: Implement on-time tracking
                 BooksOverdue = 0,
