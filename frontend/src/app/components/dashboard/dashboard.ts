@@ -15,6 +15,7 @@ import { BookService } from '../../services/book.service';
 import { StatisticService } from '../../services/statistic.service';
 import { StreakService } from '../../services/streak.service';
 import { ReadingSessionService } from '../../services/reading-session.service';
+import { ReadingStatusService } from '../../services/reading-status';
 import { GetBook } from '../../models/get-book.model';
 import { Streak } from '../../models/streak.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
@@ -22,6 +23,11 @@ import { Dialog } from '@angular/cdk/dialog';
 import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+interface BookWithStatus extends GetBook {
+  statusBadgeClass?: string;
+  statusDisplayName?: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -56,8 +62,8 @@ import { environment } from '../../../environments/environment';
 export class Dashboard implements OnInit {
   stats: any = null;
   streakData: Streak | null = null;
-  currentlyReading: GetBook[] = [];
-  recentBooks: GetBook[] = [];
+  currentlyReading: BookWithStatus[] = [];
+  recentBooks: BookWithStatus[] = [];
   loading = true;
   rootUrl: string = environment.rootUrl;
   
@@ -234,6 +240,7 @@ export class Dashboard implements OnInit {
     private statsService: StatisticService,
     private streakService: StreakService,
     private readingSessionService: ReadingSessionService,
+    private readingStatusService: ReadingStatusService,
     private router: Router,
     private dialog: Dialog
   ) {}
@@ -313,6 +320,16 @@ export class Dashboard implements OnInit {
             .sort((a, b) => b.id - a.id)
             .slice(0, 6);
           
+          // Load status info for all books
+          [...this.currentlyReading, ...this.recentBooks].forEach(book => {
+            this.readingStatusService.getStatusBadgeClass(book.status).subscribe(badgeClass => {
+              book.statusBadgeClass = badgeClass;
+            });
+            this.readingStatusService.getStatusDisplayName(book.status).subscribe(displayName => {
+              book.statusDisplayName = displayName;
+            });
+          });
+          
           // Load progress for currently reading books
           if (this.currentlyReading.length > 0) {
             this.loadBookProgress(this.currentlyReading).then(() => resolve());
@@ -328,7 +345,7 @@ export class Dashboard implements OnInit {
     });
   }
 
-  loadBookProgress(books: GetBook[]): Promise<void> {
+  loadBookProgress(books: BookWithStatus[]): Promise<void> {
     return new Promise((resolve) => {
       const sessionRequests = books.map(book => 
         this.readingSessionService.getReadingSessionsForBook(book.id)
@@ -429,28 +446,16 @@ export class Dashboard implements OnInit {
     };
   }
 
-  getReadingProgress(book: GetBook): number {
+  getReadingProgress(book: BookWithStatus): number {
     return this.bookProgress.get(book.id) || 0;
   }
 
-  getStatusClass(status: ReadingStatus): string {
-    switch (status) {
-      case ReadingStatus.Planning: return 'badge-info';
-      case ReadingStatus.CurrentlyReading: return 'badge-warning';
-      case ReadingStatus.Completed: return 'badge-success';
-      case ReadingStatus.Summarized: return 'badge-accent';
-      default: return 'badge-ghost';
-    }
+  getStatusClass(book: BookWithStatus): string {
+    return book.statusBadgeClass || 'badge-ghost';
   }
 
-  getStatusLabel(status: ReadingStatus): string {
-    switch (status) {
-      case ReadingStatus.Planning: return 'Planning';
-      case ReadingStatus.CurrentlyReading: return 'Reading';
-      case ReadingStatus.Completed: return 'Completed';
-      case ReadingStatus.Summarized: return 'Summarized';
-      default: return 'Not Reading';
-    }
+  getStatusLabel(book: BookWithStatus): string {
+    return book.statusDisplayName || 'Unknown';
   }
 
   openLogSession(): void {

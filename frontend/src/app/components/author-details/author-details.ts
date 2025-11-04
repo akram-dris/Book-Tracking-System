@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthorService } from '../../services/author.service';
 import { BookService } from '../../services/book.service';
+import { ReadingStatusService } from '../../services/reading-status';
 import { GetAuthor } from '../../models/get-author.model';
 import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
@@ -11,6 +12,11 @@ import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash } from '@ng-icons/heroicons/outline';
+
+interface BookWithStatus extends GetBook {
+  statusBadgeClass?: string;
+  statusDisplayName?: string;
+}
 
 @Component({
   selector: 'app-author-details',
@@ -21,7 +27,7 @@ import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash } from '@ng-ic
 })
 export class AuthorDetailsComponent implements OnInit {
   author: GetAuthor | undefined;
-  authorBooks: GetBook[] = [];
+  authorBooks: BookWithStatus[] = [];
   rootUrl = environment.rootUrl;
   ReadingStatus = ReadingStatus;
   
@@ -39,6 +45,7 @@ export class AuthorDetailsComponent implements OnInit {
     private router: Router,
     private authorService: AuthorService,
     private bookService: BookService,
+    private readingStatusService: ReadingStatusService,
     private location: Location
   ) { }
 
@@ -59,6 +66,16 @@ export class AuthorDetailsComponent implements OnInit {
   loadAuthorBooks(authorId: number): void {
     this.bookService.getBooks().subscribe(books => {
       this.authorBooks = books.filter(book => book.authorId === authorId);
+      
+      this.authorBooks.forEach(book => {
+        this.readingStatusService.getStatusBadgeClass(book.status).subscribe(badgeClass => {
+          book.statusBadgeClass = badgeClass;
+        });
+        this.readingStatusService.getStatusDisplayName(book.status).subscribe(displayName => {
+          book.statusDisplayName = displayName;
+        });
+      });
+      
       this.calculateStatistics();
     });
   }
@@ -95,38 +112,12 @@ export class AuthorDetailsComponent implements OnInit {
     this.location.back();
   }
 
-  getStatusClass(status: ReadingStatus): string {
-    switch (status) {
-      case ReadingStatus.Planning:
-        return 'badge-info';
-      case ReadingStatus.CurrentlyReading:
-        return 'badge-warning';
-      case ReadingStatus.Completed:
-        return 'badge-success';
-      case ReadingStatus.Summarized:
-        return 'badge-secondary';
-      case ReadingStatus.NotReading:
-        return 'badge-ghost';
-      default:
-        return 'badge-ghost';
-    }
+  getStatusClass(book: BookWithStatus): string {
+    return book.statusBadgeClass || 'badge-ghost';
   }
 
-  getStatusText(status: ReadingStatus): string {
-    switch (status) {
-      case ReadingStatus.Planning:
-        return 'Planning';
-      case ReadingStatus.CurrentlyReading:
-        return 'Reading';
-      case ReadingStatus.Completed:
-        return 'Completed';
-      case ReadingStatus.Summarized:
-        return 'Summarized';
-      case ReadingStatus.NotReading:
-        return 'Not Reading';
-      default:
-        return 'Unknown';
-    }
+  getStatusText(book: BookWithStatus): string {
+    return book.statusDisplayName || 'Unknown';
   }
 
   onImageError(event: Event): void {

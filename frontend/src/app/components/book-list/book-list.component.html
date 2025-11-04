@@ -87,7 +87,7 @@
             
             <!-- Status Badge (Always Visible) -->
             <div class="absolute top-2 right-2 z-10">
-              <span class="badge badge-sm {{ getStatusClass(book.status) }} text-white shadow-xl border-0">
+              <span class="badge badge-sm {{ getStatusClass(book) }} text-white shadow-xl border-0">
                 {{ book.statusName }}
               </span>
             </div>
@@ -185,7 +185,7 @@
               }
             </div>
             <div class="flex items-center gap-3">
-              <span class="badge {{ getStatusClass(book.status) }} text-white">{{ book.statusName }}</span>
+              <span class="badge {{ getStatusClass(book) }} text-white">{{ book.statusName }}</span>
               <div class="dropdown dropdown-end">
                 <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
                   <ng-icon name="heroEllipsisVertical" size="1.25rem"></ng-icon>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
 import { ReadingSessionService } from '../../services/reading-session.service';
+import { ReadingStatusService } from '../../services/reading-status';
 import { NgFor } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { GetBook } from '../../models/get-book.model';
@@ -18,6 +19,7 @@ import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPenc
 interface BookWithProgress extends GetBook {
   progressPercentage?: number;
   statusName?: string;
+  statusBadgeClass?: string;
 }
 
 type SortOption = 'title' | 'dateAdded' | 'progress' | 'author';
@@ -69,7 +71,8 @@ export class BookListComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
-    private readingSessionService: ReadingSessionService
+    private readingSessionService: ReadingSessionService,
+    private readingStatusService: ReadingStatusService
   ) { }
 
   ngOnInit(): void {
@@ -87,7 +90,12 @@ export class BookListComponent implements OnInit {
       this.calculateStats();
 
       this.books.forEach(book => {
-        book.statusName = this.getReadingStatusName(book.status);
+        this.readingStatusService.getStatusDisplayName(book.status).subscribe(name => {
+          book.statusName = name;
+        });
+        this.readingStatusService.getStatusBadgeClass(book.status).subscribe(badgeClass => {
+          book.statusBadgeClass = badgeClass;
+        });
 
         if (book.id && book.totalPages && book.totalPages > 0) {
           this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
@@ -152,43 +160,13 @@ export class BookListComponent implements OnInit {
     }
   }
 
-  getReadingStatusName(status: ReadingStatus): string {
-    switch (status) {
-      case ReadingStatus.NotReading:
-        return 'Not Reading';
-      case ReadingStatus.Planning:
-        return 'Planning';
-      case ReadingStatus.CurrentlyReading:
-        return 'Currently Reading';
-      case ReadingStatus.Completed:
-        return 'Completed';
-      case ReadingStatus.Summarized:
-        return 'Summarized';
-      default:
-        return 'Unknown';
-    }
-  }
-
   filterBooksByTag(tagId: number | null): void {
     this.selectedTagId = tagId;
     this.loadBooks(this.selectedTagId);
   }
 
-  getStatusClass(status: ReadingStatus): string {
-    switch (status) {
-      case ReadingStatus.NotReading:
-        return 'bg-gray-500'; // Example color for Not Reading
-      case ReadingStatus.Planning:
-        return 'bg-blue-500'; // Example color for Planning
-      case ReadingStatus.CurrentlyReading:
-        return 'bg-green-500'; // Example color for Currently Reading
-      case ReadingStatus.Completed:
-        return 'bg-purple-500'; // Example color for Completed
-      case ReadingStatus.Summarized:
-        return 'status-summarized'; // Custom class for Summarized
-      default:
-        return 'bg-gray-500';
-    }
+  getStatusClass(book: BookWithProgress): string {
+    return book.statusBadgeClass || 'badge-ghost';
   }
 
   deleteBook(id: number): void {
