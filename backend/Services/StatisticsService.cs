@@ -53,6 +53,14 @@ namespace BookTrackingSystem.Services
             var daysSinceStart = (endDate.Date - startDate.Date).Days + 1;
             var averagePagesPerDay = daysSinceStart > 0 ? (double)totalPagesRead / daysSinceStart : 0;
 
+            // Only count currently reading books that started within the period or are still active
+            var booksCurrentlyReading = books.Count(b => b.Status == ReadingStatus.CurrentlyReading &&
+                                                         (!b.StartedReadingDate.HasValue || b.StartedReadingDate.Value >= startDate));
+            
+            // Only count pending books that were created within the period
+            var booksPending = books.Count(b => (b.Status == ReadingStatus.Planning || b.Status == ReadingStatus.NotReading) &&
+                                                b.CreatedAt >= startDate && b.CreatedAt <= endDate);
+
             return new ReadingOverviewDto
             {
                 TotalBooksRead = totalBooksRead,
@@ -60,8 +68,8 @@ namespace BookTrackingSystem.Services
                 AveragePagesPerDay = Math.Round(averagePagesPerDay, 2),
                 CurrentStreak = streakData.CurrentStreak,
                 LongestStreak = streakData.LongestStreak,
-                BooksCurrentlyReading = books.Count(b => b.Status == ReadingStatus.CurrentlyReading),
-                BooksPending = books.Count(b => b.Status == ReadingStatus.Planning || b.Status == ReadingStatus.NotReading)
+                BooksCurrentlyReading = booksCurrentlyReading,
+                BooksPending = booksPending
             };
         }
 
@@ -222,6 +230,125 @@ namespace BookTrackingSystem.Services
                 .OrderByDescending(x => x.Pages)
                 .FirstOrDefault();
 
+            // Status timeline - books by status over time (based on reading dates, not creation dates)
+            var allBooks = await _context.Books.ToListAsync();
+
+            var statusTimeline = new StatusTimelineDataDto();
+
+            // Get time periods based on filter type
+            var timePeriods = new List<string>();
+            var currentDate = startDate.Date;
+
+            if (filter.FilterType == FilterType.Today)
+            {
+                // Hourly for today
+                for (int i = 0; i < 24; i++)
+                {
+                    timePeriods.Add($"{i:D2}:00");
+                }
+            }
+            else if (filter.FilterType == FilterType.Week)
+            {
+                // Daily for week
+                while (currentDate <= endDate.Date)
+                {
+                    timePeriods.Add(currentDate.ToString("MMM dd"));
+                    currentDate = currentDate.AddDays(1);
+                }
+            }
+            else if (filter.FilterType == FilterType.Month)
+            {
+                // Daily for month
+                while (currentDate <= endDate.Date)
+                {
+                    timePeriods.Add(currentDate.ToString("MMM dd"));
+                    currentDate = currentDate.AddDays(1);
+                }
+            }
+            else // Year or Custom
+            {
+                // Monthly
+                currentDate = new DateTime(startDate.Year, startDate.Month, 1);
+                var lastDate = new DateTime(endDate.Year, endDate.Month, 1);
+                while (currentDate <= lastDate)
+                {
+                    timePeriods.Add(currentDate.ToString("MMM yyyy"));
+                    currentDate = currentDate.AddMonths(1);
+                }
+            }
+
+            // Initialize all periods with 0
+            foreach (var period in timePeriods)
+            {
+                statusTimeline.Completed[period] = 0;
+                statusTimeline.Summarized[period] = 0;
+                statusTimeline.CurrentlyReading[period] = 0;
+                statusTimeline.Planning[period] = 0;
+                statusTimeline.NotReading[period] = 0;
+            }
+
+            // Count books by status and period based on appropriate dates for each status
+            foreach (var book in allBooks)
+            {
+                DateTime? relevantDate = null;
+                
+                // Determine the relevant date based on status
+                switch (book.Status)
+                {
+                    case ReadingStatus.Completed:
+                    case ReadingStatus.Summarized:
+                        relevantDate = book.CompletedDate;
+                        break;
+                    case ReadingStatus.CurrentlyReading:
+                        relevantDate = book.StartedReadingDate;
+                        break;
+                    case ReadingStatus.Planning:
+                    case ReadingStatus.NotReading:
+                        relevantDate = book.CreatedAt;
+                        break;
+                }
+
+                // Skip if no relevant date or outside date range
+                if (!relevantDate.HasValue || relevantDate.Value < startDate || relevantDate.Value > endDate)
+                    continue;
+
+                string period;
+                if (filter.FilterType == FilterType.Today)
+                {
+                    period = $"{relevantDate.Value.Hour:D2}:00";
+                }
+                else if (filter.FilterType == FilterType.Week || filter.FilterType == FilterType.Month)
+                {
+                    period = relevantDate.Value.ToString("MMM dd");
+                }
+                else
+                {
+                    period = relevantDate.Value.ToString("MMM yyyy");
+                }
+
+                if (!statusTimeline.Completed.ContainsKey(period))
+                    continue;
+
+                switch (book.Status)
+                {
+                    case ReadingStatus.Completed:
+                        statusTimeline.Completed[period]++;
+                        break;
+                    case ReadingStatus.Summarized:
+                        statusTimeline.Summarized[period]++;
+                        break;
+                    case ReadingStatus.CurrentlyReading:
+                        statusTimeline.CurrentlyReading[period]++;
+                        break;
+                    case ReadingStatus.Planning:
+                        statusTimeline.Planning[period]++;
+                        break;
+                    case ReadingStatus.NotReading:
+                        statusTimeline.NotReading[period]++;
+                        break;
+                }
+            }
+
             return new TimeBasedStatisticsDto
             {
                 BestReadingMonth = bestMonth != null ? bestMonth.Date.ToString("MMMM yyyy") : null,
@@ -230,7 +357,8 @@ namespace BookTrackingSystem.Services
                 BestReadingDayPages = bestDay?.Pages ?? 0,
                 MonthlyTrend = monthlyTrend,
                 WeeklyPattern = weeklyPattern,
-                YearOverYear = yearOverYear
+                YearOverYear = yearOverYear,
+                StatusTimeline = new Dictionary<string, StatusTimelineDataDto> { { "data", statusTimeline } }
             };
         }
 
@@ -330,12 +458,19 @@ namespace BookTrackingSystem.Services
             filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
             var (startDate, endDate) = GetDateRangeFromFilter(filter);
 
-            var books = await _context.Books.Include(b => b.Author).ToListAsync();
+            // Get all books within the time period (created, started, or completed within the period)
+            var allBooks = await _context.Books.Include(b => b.Author).ToListAsync();
+            var booksInPeriod = allBooks.Where(b => 
+                (b.CreatedAt >= startDate && b.CreatedAt <= endDate) ||
+                (b.StartedReadingDate.HasValue && b.StartedReadingDate.Value >= startDate && b.StartedReadingDate.Value <= endDate) ||
+                (b.CompletedDate.HasValue && b.CompletedDate.Value >= startDate && b.CompletedDate.Value <= endDate)
+            ).ToList();
+            
             var sessions = await _context.ReadingSessions
                 .Where(s => s.Date >= startDate && s.Date <= endDate)
                 .ToListAsync();
 
-            var completedBooks = books.Where(b => (b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized) &&
+            var completedBooks = allBooks.Where(b => (b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized) &&
                                                   b.CompletedDate.HasValue && b.CompletedDate.Value >= startDate && b.CompletedDate.Value <= endDate).ToList();
             var avgBookLength = completedBooks.Any() ? Math.Round(completedBooks.Average(b => b.TotalPages), 2) : 0;
 
@@ -343,9 +478,9 @@ namespace BookTrackingSystem.Services
             var longestBook = completedBooks.OrderByDescending(b => b.TotalPages).FirstOrDefault();
 
             var avgReadingSpeed = sessions.Any() ? Math.Round(sessions.Average(s => s.PagesRead), 2) : 0;
-            var completionRate = books.Any() ? Math.Round((double)completedBooks.Count / books.Count * 100, 2) : 0;
+            var completionRate = booksInPeriod.Any() ? Math.Round((double)completedBooks.Count / booksInPeriod.Count * 100, 2) : 0;
 
-            var booksByStatus = books
+            var booksByStatus = booksInPeriod
                 .GroupBy(b => b.Status.ToString())
                 .ToDictionary(g => g.Key, g => g.Count());
 
