@@ -19,11 +19,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("overview")]
-        public async Task<ActionResult<ReadingOverviewDto>> GetReadingOverview()
+        public async Task<ActionResult<ReadingOverviewDto>> GetReadingOverview(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var overview = await _statisticsService.GetReadingOverviewAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var overview = await _statisticsService.GetReadingOverviewAsync(filter);
                 return Ok(overview);
             }
             catch (Exception ex)
@@ -34,11 +43,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("authors")]
-        public async Task<ActionResult<AuthorStatisticsDto>> GetAuthorStatistics()
+        public async Task<ActionResult<AuthorStatisticsDto>> GetAuthorStatistics(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var authorStats = await _statisticsService.GetAuthorStatisticsAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var authorStats = await _statisticsService.GetAuthorStatisticsAsync(filter);
                 return Ok(authorStats);
             }
             catch (Exception ex)
@@ -49,11 +67,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("tags")]
-        public async Task<ActionResult<TagStatisticsDto>> GetTagStatistics()
+        public async Task<ActionResult<TagStatisticsDto>> GetTagStatistics(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var tagStats = await _statisticsService.GetTagStatisticsAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var tagStats = await _statisticsService.GetTagStatisticsAsync(filter);
                 return Ok(tagStats);
             }
             catch (Exception ex)
@@ -64,11 +91,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("time-based")]
-        public async Task<ActionResult<TimeBasedStatisticsDto>> GetTimeBasedStatistics()
+        public async Task<ActionResult<TimeBasedStatisticsDto>> GetTimeBasedStatistics(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var timeStats = await _statisticsService.GetTimeBasedStatisticsAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var timeStats = await _statisticsService.GetTimeBasedStatisticsAsync(filter);
                 return Ok(timeStats);
             }
             catch (Exception ex)
@@ -79,11 +115,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("goals")]
-        public async Task<ActionResult<GoalPerformanceDto>> GetGoalPerformance()
+        public async Task<ActionResult<GoalPerformanceDto>> GetGoalPerformance(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var goalStats = await _statisticsService.GetGoalPerformanceAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var goalStats = await _statisticsService.GetGoalPerformanceAsync(filter);
                 return Ok(goalStats);
             }
             catch (Exception ex)
@@ -94,11 +139,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("books")]
-        public async Task<ActionResult<BookStatisticsDto>> GetBookStatistics()
+        public async Task<ActionResult<BookStatisticsDto>> GetBookStatistics(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var bookStats = await _statisticsService.GetBookStatisticsAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var bookStats = await _statisticsService.GetBookStatisticsAsync(filter);
                 return Ok(bookStats);
             }
             catch (Exception ex)
@@ -109,11 +163,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("records")]
-        public async Task<ActionResult<PersonalRecordsDto>> GetPersonalRecords()
+        public async Task<ActionResult<PersonalRecordsDto>> GetPersonalRecords(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var records = await _statisticsService.GetPersonalRecordsAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var records = await _statisticsService.GetPersonalRecordsAsync(filter);
                 return Ok(records);
             }
             catch (Exception ex)
@@ -124,11 +187,20 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("complete")]
-        public async Task<ActionResult<StatisticsDto>> GetCompleteStatistics()
+        public async Task<ActionResult<StatisticsDto>> GetCompleteStatistics(
+            [FromQuery] FilterType filterType = FilterType.Year,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             try
             {
-                var stats = await _statisticsService.GetCompleteStatisticsAsync();
+                var filter = new StatisticsFilterDto 
+                { 
+                    FilterType = filterType, 
+                    StartDate = startDate, 
+                    EndDate = endDate 
+                };
+                var stats = await _statisticsService.GetCompleteStatisticsAsync(filter);
                 return Ok(stats);
             }
             catch (Exception ex)

@@ -17,17 +17,40 @@ namespace BookTrackingSystem.Services
             _streakService = streakService;
         }
 
-        public async Task<ReadingOverviewDto> GetReadingOverviewAsync()
+        // Helper method to calculate date range from filter
+        private (DateTime start, DateTime end) GetDateRangeFromFilter(StatisticsFilterDto filter)
         {
+            var now = DateTime.UtcNow;
+            var today = now.Date;
+
+            return filter.FilterType switch
+            {
+                FilterType.Today => (today, today.AddDays(1).AddTicks(-1)),
+                FilterType.Week => (today.AddDays(-7), now),
+                FilterType.Month => (today.AddDays(-30), now),
+                FilterType.Year => (today.AddDays(-365), now),
+                FilterType.Custom => (filter.StartDate?.ToUniversalTime() ?? today.AddYears(-1), 
+                                     filter.EndDate?.ToUniversalTime() ?? now),
+                _ => (today.AddDays(-365), now)
+            };
+        }
+
+        public async Task<ReadingOverviewDto> GetReadingOverviewAsync(StatisticsFilterDto? filter = null)
+        {
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
+
             var books = await _context.Books.ToListAsync();
-            var sessions = await _context.ReadingSessions.ToListAsync();
+            var sessions = await _context.ReadingSessions
+                .Where(s => s.Date >= startDate && s.Date <= endDate)
+                .ToListAsync();
             var streakData = await _streakService.GetStreakDataAsync();
 
-            var totalBooksRead = books.Count(b => b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized);
+            var totalBooksRead = books.Count(b => (b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized) &&
+                                                  b.CompletedDate.HasValue && b.CompletedDate.Value >= startDate && b.CompletedDate.Value <= endDate);
             var totalPagesRead = sessions.Sum(s => s.PagesRead);
             
-            var oldestSession = sessions.OrderBy(s => s.Date).FirstOrDefault();
-            var daysSinceStart = oldestSession != null ? (DateTime.UtcNow.Date - oldestSession.Date.Date).Days + 1 : 1;
+            var daysSinceStart = (endDate.Date - startDate.Date).Days + 1;
             var averagePagesPerDay = daysSinceStart > 0 ? (double)totalPagesRead / daysSinceStart : 0;
 
             return new ReadingOverviewDto
@@ -42,16 +65,21 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<AuthorStatisticsDto> GetAuthorStatisticsAsync()
+        public async Task<AuthorStatisticsDto> GetAuthorStatisticsAsync(StatisticsFilterDto? filter = null)
         {
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
+
             var books = await _context.Books
                 .Include(b => b.Author)
-                .Where(b => b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized)
+                .Where(b => (b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized) &&
+                           b.CompletedDate.HasValue && b.CompletedDate.Value >= startDate && b.CompletedDate.Value <= endDate)
                 .ToListAsync();
 
             var sessions = await _context.ReadingSessions
                 .Include(s => s.Book)
                 .ThenInclude(b => b.Author)
+                .Where(s => s.Date >= startDate && s.Date <= endDate)
                 .ToListAsync();
 
             var totalUniqueAuthors = books.Select(b => b.AuthorId).Distinct().Count();
@@ -94,18 +122,23 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<TagStatisticsDto> GetTagStatisticsAsync()
+        public async Task<TagStatisticsDto> GetTagStatisticsAsync(StatisticsFilterDto? filter = null)
         {
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
+
             var bookTagAssignments = await _context.BookTagAssignments
                 .Include(bta => bta.Book)
                 .Include(bta => bta.BookTag)
-                .Where(bta => bta.Book!.Status == ReadingStatus.Completed || bta.Book!.Status == ReadingStatus.Summarized)
+                .Where(bta => (bta.Book!.Status == ReadingStatus.Completed || bta.Book!.Status == ReadingStatus.Summarized) &&
+                             bta.Book.CompletedDate.HasValue && bta.Book.CompletedDate.Value >= startDate && bta.Book.CompletedDate.Value <= endDate)
                 .ToListAsync();
 
             var sessions = await _context.ReadingSessions
                 .Include(s => s.Book)
                 .ThenInclude(b => b.BookTagAssignments)
                 .ThenInclude(bta => bta.BookTag)
+                .Where(s => s.Date >= startDate && s.Date <= endDate)
                 .ToListAsync();
 
             var totalUniqueTags = bookTagAssignments.Select(bta => bta.TagId).Distinct().Count();
@@ -149,13 +182,17 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<TimeBasedStatisticsDto> GetTimeBasedStatisticsAsync()
+        public async Task<TimeBasedStatisticsDto> GetTimeBasedStatisticsAsync(StatisticsFilterDto? filter = null)
         {
-            var sessions = await _context.ReadingSessions.ToListAsync();
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
 
-            // Monthly trend (last 12 months)
+            var sessions = await _context.ReadingSessions
+                .Where(s => s.Date >= startDate && s.Date <= endDate)
+                .ToListAsync();
+
+            // Monthly trend
             var monthlyTrend = sessions
-                .Where(s => s.Date >= DateTime.UtcNow.AddMonths(-12))
                 .GroupBy(s => s.Date.ToString("yyyy-MM"))
                 .OrderBy(g => g.Key)
                 .ToDictionary(g => g.Key, g => g.Sum(s => s.PagesRead));
@@ -197,20 +234,31 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<GoalPerformanceDto> GetGoalPerformanceAsync()
+        public async Task<GoalPerformanceDto> GetGoalPerformanceAsync(StatisticsFilterDto? filter = null)
         {
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
+
             var goals = await _context.ReadingGoals
                 .Include(g => g.Book)
                 .ThenInclude(b => b.ReadingSessions)
                 .ToListAsync();
 
             var completedBooks = await _context.Books
-                .Where(b => b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized)
+                .Where(b => (b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized) &&
+                           b.CompletedDate.HasValue && b.CompletedDate.Value >= startDate && b.CompletedDate.Value <= endDate)
                 .Where(b => b.StartedReadingDate.HasValue && b.CompletedDate.HasValue)
                 .ToListAsync();
 
-            var totalGoals = goals.Count;
-            var completedGoals = goals.Count(g => g.Book!.Status == ReadingStatus.Completed || g.Book!.Status == ReadingStatus.Summarized);
+            var filteredGoals = goals.Where(g => 
+                g.Book != null && 
+                g.Book.CompletedDate.HasValue && 
+                g.Book.CompletedDate.Value >= startDate && 
+                g.Book.CompletedDate.Value <= endDate
+            ).ToList();
+
+            var totalGoals = filteredGoals.Count;
+            var completedGoals = filteredGoals.Count(g => g.Book!.Status == ReadingStatus.Completed || g.Book!.Status == ReadingStatus.Summarized);
             var completionRate = totalGoals > 0 ? Math.Round((double)completedGoals / totalGoals * 100, 2) : 0;
 
             var avgDaysToComplete = completedBooks.Any() 
@@ -240,8 +288,8 @@ namespace BookTrackingSystem.Services
                 })
                 .ToList();
 
-            // Calculate goal success counts based on completed/summarized books
-            var goalsWithCompletedBooks = goals.Where(g => g.Book!.Status == ReadingStatus.Completed || 
+            // Calculate goal success counts based on completed/summarized books in the date range
+            var goalsWithCompletedBooks = filteredGoals.Where(g => g.Book!.Status == ReadingStatus.Completed || 
                                                   g.Book!.Status == ReadingStatus.Summarized).ToList();
             
             var lowGoalSuccessCount = 0;
@@ -250,7 +298,9 @@ namespace BookTrackingSystem.Services
 
             foreach (var goal in goalsWithCompletedBooks)
             {
-                var totalPagesRead = goal.Book!.ReadingSessions?.Sum(s => s.PagesRead) ?? 0;
+                var totalPagesRead = goal.Book!.ReadingSessions?
+                    .Where(s => s.Date >= startDate && s.Date <= endDate)
+                    .Sum(s => s.PagesRead) ?? 0;
                 
                 if (totalPagesRead >= goal.LowGoal)
                     lowGoalSuccessCount++;
@@ -275,12 +325,18 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<BookStatisticsDto> GetBookStatisticsAsync()
+        public async Task<BookStatisticsDto> GetBookStatisticsAsync(StatisticsFilterDto? filter = null)
         {
-            var books = await _context.Books.Include(b => b.Author).ToListAsync();
-            var sessions = await _context.ReadingSessions.ToListAsync();
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
 
-            var completedBooks = books.Where(b => b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized).ToList();
+            var books = await _context.Books.Include(b => b.Author).ToListAsync();
+            var sessions = await _context.ReadingSessions
+                .Where(s => s.Date >= startDate && s.Date <= endDate)
+                .ToListAsync();
+
+            var completedBooks = books.Where(b => (b.Status == ReadingStatus.Completed || b.Status == ReadingStatus.Summarized) &&
+                                                  b.CompletedDate.HasValue && b.CompletedDate.Value >= startDate && b.CompletedDate.Value <= endDate).ToList();
             var avgBookLength = completedBooks.Any() ? Math.Round(completedBooks.Average(b => b.TotalPages), 2) : 0;
 
             var shortestBook = completedBooks.OrderBy(b => b.TotalPages).FirstOrDefault();
@@ -316,9 +372,14 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<PersonalRecordsDto> GetPersonalRecordsAsync()
+        public async Task<PersonalRecordsDto> GetPersonalRecordsAsync(StatisticsFilterDto? filter = null)
         {
-            var sessions = await _context.ReadingSessions.ToListAsync();
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            var (startDate, endDate) = GetDateRangeFromFilter(filter);
+
+            var sessions = await _context.ReadingSessions
+                .Where(s => s.Date >= startDate && s.Date <= endDate)
+                .ToListAsync();
 
             // Most pages in a day
             var mostPagesInDay = sessions
@@ -381,17 +442,19 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public async Task<StatisticsDto> GetCompleteStatisticsAsync()
+        public async Task<StatisticsDto> GetCompleteStatisticsAsync(StatisticsFilterDto? filter = null)
         {
+            filter ??= new StatisticsFilterDto { FilterType = FilterType.Year };
+            
             return new StatisticsDto
             {
-                Overview = await GetReadingOverviewAsync(),
-                Authors = await GetAuthorStatisticsAsync(),
-                Tags = await GetTagStatisticsAsync(),
-                TimeBased = await GetTimeBasedStatisticsAsync(),
-                Goals = await GetGoalPerformanceAsync(),
-                Books = await GetBookStatisticsAsync(),
-                Records = await GetPersonalRecordsAsync()
+                Overview = await GetReadingOverviewAsync(filter),
+                Authors = await GetAuthorStatisticsAsync(filter),
+                Tags = await GetTagStatisticsAsync(filter),
+                TimeBased = await GetTimeBasedStatisticsAsync(filter),
+                Goals = await GetGoalPerformanceAsync(filter),
+                Books = await GetBookStatisticsAsync(filter),
+                Records = await GetPersonalRecordsAsync(filter)
             };
         }
 
