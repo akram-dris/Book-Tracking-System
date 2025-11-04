@@ -3,16 +3,19 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { CreateReadingSession } from '../../models/create-reading-session.model';
-import { UpdateReadingSession } from '../../models/update-reading-session.model'; // New import
+import { UpdateReadingSession } from '../../models/update-reading-session.model';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
-import { GetReadingSession } from '../../models/get-reading-session.model'; // New import
+import { GetReadingSession } from '../../models/get-reading-session.model';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroCheckCircle } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-session-log',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
   templateUrl: './session-log.component.html',
-  styleUrls: ['./session-log.component.css']
+  styleUrls: ['./session-log.component.css'],
+  viewProviders: [provideIcons({ heroCheckCircle })]
 })
 export class SessionLogComponent implements OnInit {
   @Input() bookId: number | null = null;

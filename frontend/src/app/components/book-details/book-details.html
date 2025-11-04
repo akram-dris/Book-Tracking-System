@@ -1,118 +1,261 @@
-<div *ngIf="book" class="container mx-auto px-4 py-8 relative">
-  <button (click)="goBack()" class="absolute top-0 right-0 btn btn-square btn-ghost">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
-  <div class="flex flex-col md:flex-row">
-    <div class="md:w-1/3 w-full h-full overflow-hidden">
-      <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/225/arch'" alt="{{ book.title }}" class="w-full h-full object-cover rounded-lg shadow-lg">
+<div *ngIf="book" class="min-h-screen bg-base-100">
+  <!-- Hero Section -->
+  <div class="relative bg-gradient-to-br from-base-200 to-base-300 border-b border-base-300">
+    <div class="container mx-auto px-6 py-8">
+      <!-- Back Button -->
+      <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 mb-4">
+        <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
+        Back
+      </button>
+
+      <div class="flex flex-col md:flex-row gap-8">
+        <!-- Book Cover -->
+        <div class="md:w-64 w-48 flex-shrink-0">
+          <div class="aspect-[2/3] rounded-lg overflow-hidden shadow-2xl relative group">
+            <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/600/arch'" 
+                 alt="{{ book.title }}"
+                 class="w-full h-full object-cover" />
+            <!-- Status Badge -->
+            <div class="absolute top-4 right-4">
+              <span class="badge {{ getStatusBadgeClass() }} text-white shadow-lg">
+                {{ book.status === ReadingStatus.NotReading ? 'Not Reading' :
+                   book.status === ReadingStatus.Planning ? 'Planning' :
+                   book.status === ReadingStatus.CurrentlyReading ? 'Currently Reading' :
+                   book.status === ReadingStatus.Completed ? 'Completed' : 'Summarized' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Info -->
+        <div class="flex-1">
+          <h1 class="text-4xl md:text-5xl font-bold mb-3">{{ book.title }}</h1>
+          <h2 class="text-2xl text-base-content/70 mb-4">by {{ book.author?.name }}</h2>
+          
+          <div class="flex flex-wrap gap-2 mb-4">
+            <div class="badge badge-lg badge-outline gap-2">
+              <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
+              {{ book.totalPages }} pages
+            </div>
+            <span *ngFor="let tag of book.tags" class="badge badge-lg badge-primary">
+              {{ tag.name }}
+            </span>
+          </div>
+
+          <!-- Progress Bar for Currently Reading -->
+          <div *ngIf="book.status === ReadingStatus.CurrentlyReading" class="mb-6 max-w-md">
+            <div class="flex justify-between text-sm mb-2">
+              <span class="font-medium">Reading Progress</span>
+              <span class="font-bold">{{ progress }}%</span>
+            </div>
+            <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
+              <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-300"
+                   [style.width.%]="progress">
+              </div>
+            </div>
+            <div class="flex justify-between text-xs text-base-content/60 mt-1">
+              <span>{{ currentPage }} pages read</span>
+              <span>{{ book.totalPages! - currentPage }} remaining</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap gap-2">
+            <button *ngIf="book.status === ReadingStatus.NotReading" 
+                    (click)="openPlanAndGoalModal()" 
+                    class="btn btn-primary gap-2">
+              <ng-icon name="heroPlus" size="1.25rem"></ng-icon>
+              Plan to Read
+            </button>
+            <button *ngIf="book.status === ReadingStatus.CurrentlyReading" 
+                    (click)="openAddSessionModal()" 
+                    class="btn btn-primary gap-2">
+              <ng-icon name="heroPlus" size="1.25rem"></ng-icon>
+              Log Session
+            </button>
+            <button *ngIf="book.status === ReadingStatus.Planning" 
+                    (click)="startReadingFromPlanning()" 
+                    class="btn btn-primary gap-2">
+              <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+              Start Reading
+            </button>
+            <button [routerLink]="['/books/edit', book.id]" class="btn btn-ghost gap-2">
+              <ng-icon name="heroPencil" size="1.25rem"></ng-icon>
+              Edit
+            </button>
+            <button (click)="deleteBook()" class="btn btn-error btn-outline gap-2">
+              <ng-icon name="heroTrash" size="1.25rem"></ng-icon>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div [ngClass]="{'md:w-2/3': !isSummaryMode, 'md:w-full': isSummaryMode}" class="md:pl-8">
-      <h1 class="text-4xl font-bold mb-2">{{ book.title }}</h1>
-      <div *ngIf="!isSummaryMode">
-        <h2 class="text-2xl text-gray-600 mb-4">{{ book.author?.name }}</h2>
-        <p class="text-gray-700 mb-4">Total Pages: {{ book.totalPages }}</p>
-        <div class="flex mb-4">
-          <a [routerLink]="['/books/edit', book.id]" class="btn btn-primary mr-2">Edit</a>
-          <button (click)="deleteBook()" class="btn btn-secondary">Delete</button>
-        </div>
-      </div>
+  </div>
 
-      <!-- Reading Status and Goal -->
-      <div class="mb-8" *ngIf="!isSummaryMode">
-        <div *ngIf="book.status === ReadingStatus.NotReading">
-          <button (click)="openPlanAndGoalModal()" class="btn btn-primary">Plan to Read</button>
-        </div>
-        <div *ngIf="book.status === ReadingStatus.CurrentlyReading">
-          <div class="mb-4">
-            <p class="text-sm text-gray-500">Current Page: {{ currentPage }} / {{ book.totalPages }}</p>
-            <progress class="progress progress-primary w-full" [value]="progress" max="100"></progress>
-          </div>
-          <button (click)="openAddSessionModal()" class="btn btn-primary">Add Session</button>
-        </div>
-        <div *ngIf="book.status === ReadingStatus.Planning">
-          <p class="text-lg font-semibold">Planned Start Date: {{ book.startedReadingDate | date:'dd/MM/yyyy' }}</p>
-          <div class="flex mt-2">
-            <button (click)="startReadingFromPlanning()" class="btn btn-primary mr-2">Start Reading</button>
-            <button (click)="openPlanAndGoalModal()" class="btn btn-secondary">Edit Plan/Goals</button>
-          </div>
-        </div>
-        <div *ngIf="book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized">
-          <p class="text-green-500 font-bold">You have completed this book!</p>
-          <p *ngIf="book.startedReadingDate" class="text-sm text-gray-500">
-            Started: {{ book.startedReadingDate | date:'dd/MM/yyyy' }}
-          </p>
-          <p *ngIf="book.completedDate" class="text-sm text-gray-500">
-            Completed: {{ book.completedDate | date:'dd/MM/yyyy' }}
-          </p>
-          <div class="mt-4">
-            <button *ngIf="book.status === ReadingStatus.Completed && !book.summary" (click)="createSummary()" class="btn btn-info mr-2">Create Summary</button>
-            <button *ngIf="book.status === ReadingStatus.Summarized && book.summary && !isSummaryMode" (click)="showSummary()" class="btn btn-info mr-2">Show Summary</button>
-          </div>
-        </div>
-        <div *ngIf="readingGoal" class="mt-4">
-          <h3 class="text-xl font-bold">Your Goals:</h3>
-          <p><span class="font-bold text-green-500">Low:</span> {{ readingGoal.lowGoal }} pages</p>
-          <p><span class="font-bold text-blue-500">Medium:</span> {{ readingGoal.mediumGoal }} pages</p>
-          <p><span class="font-bold text-red-500">High:</span> {{ readingGoal.highGoal }} pages</p>
-        </div>
-      </div>
+  <!-- Tabs Section -->
+  <div class="container mx-auto px-6 py-6">
+    <div class="tabs tabs-boxed bg-base-200 mb-6">
+      <a class="tab gap-2" 
+         [class.tab-active]="activeTab === 'overview'"
+         (click)="switchTab('overview')">
+        <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+        Overview
+      </a>
+      <a class="tab gap-2"
+         [class.tab-active]="activeTab === 'sessions'"
+         (click)="switchTab('sessions')">
+        <ng-icon name="heroClipboardDocumentList" size="1.25rem"></ng-icon>
+        Sessions
+      </a>
+      <a class="tab gap-2"
+         [class.tab-active]="activeTab === 'notes'"
+         (click)="switchTab('notes')">
+        <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
+        Notes
+      </a>
+      <a class="tab gap-2"
+         [class.tab-active]="activeTab === 'statistics'"
+         (click)="switchTab('statistics')">
+        <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
+        Statistics
+      </a>
+    </div>
 
-      <!-- Summary Section -->
-      <div *ngIf="isSummaryMode" class="mb-8 card bg-base-100 shadow-xl">
-        <div class="card-body">
-          <h3 class="card-title text-2xl font-bold mb-4">Book Summary</h3>
-          <form [formGroup]="summaryForm" (ngSubmit)="saveSummary()">
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Summary</span>
-              </label>
-              <textarea formControlName="summary" class="textarea textarea-bordered h-48 w-full" placeholder="Write your summary here..." [readonly]="!isEditingSummary"></textarea>
-              <label class="label" *ngIf="summaryForm.controls['summary'].invalid && summaryForm.controls['summary'].touched">
-                <span class="label-text-alt text-error">Summary is required.</span>
-              </label>
+    <!-- Tab Content -->
+    <div class="bg-base-200 rounded-lg p-6">
+      <!-- Overview Tab -->
+      <div *ngIf="activeTab === 'overview'">
+        <h3 class="text-2xl font-bold mb-4">Book Information</h3>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-semibold text-base-content/70 mb-2">Details</h4>
+              <div class="space-y-2">
+                <p><span class="font-medium">Total Pages:</span> {{ book.totalPages }}</p>
+                <p *ngIf="book.startedReadingDate">
+                  <span class="font-medium">Started:</span> {{ book.startedReadingDate | date:'dd/MM/yyyy' }}
+                </p>
+                <p *ngIf="book.completedDate">
+                  <span class="font-medium">Completed:</span> {{ book.completedDate | date:'dd/MM/yyyy' }}
+                </p>
+              </div>
             </div>
-            <div class="mt-4 flex justify-end">
-              <button *ngIf="isEditingSummary" type="submit" class="btn btn-success mr-2" [disabled]="summaryForm.invalid">Confirm</button>
-              <button *ngIf="isEditingSummary" type="button" (click)="cancelSummaryEdit()" class="btn btn-warning mr-2">Cancel</button>
-              <button *ngIf="!isEditingSummary && book.summary" type="button" (click)="editSummary()" class="btn btn-warning mr-2">Update Summary</button>
-              <button type="button" (click)="toggleSummaryMode()" class="btn btn-info">Close</button>
+
+            <div *ngIf="readingGoal">
+              <h4 class="font-semibold text-base-content/70 mb-2">Reading Goals</h4>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span>Low Goal:</span>
+                  <span class="badge badge-success">{{ readingGoal.lowGoal }} pages</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Medium Goal:</span>
+                  <span class="badge badge-info">{{ readingGoal.mediumGoal }} pages</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>High Goal:</span>
+                  <span class="badge badge-error">{{ readingGoal.highGoal }} pages</span>
+                </div>
+              </div>
             </div>
-          </form>
+          </div>
+
+          <div *ngIf="book.tags && book.tags.length > 0">
+            <h4 class="font-semibold text-base-content/70 mb-2">Tags</h4>
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let tag of book.tags" class="badge badge-primary badge-lg">
+                {{ tag.name }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Show Logs Button (visible when CurrentlyReading or Completed) -->
-      <div *ngIf="(book.status === ReadingStatus.CurrentlyReading || book.status === ReadingStatus.Completed) && !isSummaryMode" class="flex justify-between items-center mb-4">
-        <h3 class="text-2xl font-bold">Reading Sessions</h3>
-        <button (click)="openReadingLogModal()" class="btn btn-sm btn-outline">Show Logs</button>
+      <!-- Sessions Tab -->
+      <div *ngIf="activeTab === 'sessions'">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-2xl font-bold">Reading Sessions</h3>
+          <button *ngIf="book.status === ReadingStatus.CurrentlyReading" 
+                  (click)="openAddSessionModal()" 
+                  class="btn btn-primary btn-sm gap-2">
+            <ng-icon name="heroPlus" size="1rem"></ng-icon>
+            Add Session
+          </button>
+        </div>
+        
+        <div *ngIf="readingSessions.length > 0; else noSessions" class="space-y-3">
+          <div *ngFor="let session of readingSessions" 
+               class="card bg-base-100 shadow-md">
+            <div class="card-body p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-semibold">{{ session.date | date:'fullDate' }}</p>
+                  <p class="text-sm text-base-content/70">{{ session.pagesRead }} pages read</p>
+                </div>
+                <span class="badge badge-primary">{{ session.pagesRead }}p</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noSessions>
+          <p class="text-center text-base-content/60 py-8">No reading sessions recorded yet.</p>
+        </ng-template>
+      </div>
+
+      <!-- Notes Tab -->
+      <div *ngIf="activeTab === 'notes'">
+        <h3 class="text-2xl font-bold mb-4">Notes & Summary</h3>
+        <div *ngIf="book.summary; else noNotes" class="prose max-w-none">
+          <p class="whitespace-pre-wrap">{{ book.summary }}</p>
+        </div>
+        <ng-template #noNotes>
+          <p class="text-center text-base-content/60 py-8">No notes or summary available yet.</p>
+        </ng-template>
+      </div>
+
+      <!-- Statistics Tab -->
+      <div *ngIf="activeTab === 'statistics'">
+        <h3 class="text-2xl font-bold mb-4">Reading Statistics</h3>
+        <div class="stats shadow w-full">
+          <div class="stat">
+            <div class="stat-title">Total Sessions</div>
+            <div class="stat-value text-primary">{{ readingSessions.length }}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Pages Read</div>
+            <div class="stat-value text-secondary">{{ currentPage }}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Progress</div>
+            <div class="stat-value">{{ progress }}%</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<app-plan-and-goal-modal *ngIf="isPlanAndGoalModalOpen && currentBookId"
-                         [bookId]="currentBookId"
-                         [initialStartedReadingDate]="book?.startedReadingDate"
-                         [initialReadingGoal]="readingGoal"
-                         (planAndGoalSaved)="handlePlanAndGoalSaved()"
-                         (close)="closePlanAndGoalModal()">
-</app-plan-and-goal-modal>
+<!-- Modals (keep existing ones) -->
+<app-plan-and-goal-modal
+  *ngIf="isPlanAndGoalModalOpen"
+  [bookId]="currentBookId!"
+  (close)="closePlanAndGoalModal()"
+  (saved)="handlePlanAndGoalSaved()"
+></app-plan-and-goal-modal>
 
-<app-session-log *ngIf="isAddSessionModalOpen && book"
-                 [bookId]="book.id"
-                 [readingGoal]="readingGoal"
-                 [totalPages]="book.totalPages"
-                 (sessionSaved)="handleAddSessionSaved()"
-                 (close)="closeAddSessionModal()">
-</app-session-log>
+<app-reading-log-modal
+  *ngIf="isReadingLogModalOpen"
+  [bookId]="currentBookId!"
+  (close)="closeReadingLogModal()"
+></app-reading-log-modal>
 
-<app-reading-log-modal *ngIf="isReadingLogModalOpen && currentBookId && book"
-                       [bookId]="currentBookId"
-                       [readingGoal]="readingGoal"
-                       [totalPages]="book.totalPages"
-                       [bookStatus]="book.status"
-                       (close)="closeReadingLogModal()"
-                       (sessionDeleted)="handleReadingLogDeleted()">
-</app-reading-log-modal>
+<app-session-log
+  *ngIf="isAddSessionModalOpen"
+  [bookId]="currentBookId!"
+  [readingGoal]="readingGoal"
+  [totalPages]="book?.totalPages ?? null"
+  (close)="closeAddSessionModal()"
+  (saved)="handleAddSessionSaved()"
+></app-session-log>
