@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { StatisticService } from '../../services/statistic.service';
-import { Statistics } from '../../models/statistics.model';
+import { Statistics, StatisticsFilter } from '../../models/statistics.model';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { 
@@ -32,6 +32,12 @@ export class StatisticsComponent implements OnInit {
 
   // Active tab
   activeTab: 'overview' | 'authors' | 'tags' | 'time' | 'goals' | 'books' | 'records' = 'overview';
+
+  // Filter state
+  selectedFilter: 'day' | 'week' | 'month' | 'year' | 'custom' = 'year';
+  customStartDate: string = '';
+  customEndDate: string = '';
+  showCustomDateInputs = false;
 
   // Chart data
   authorBooksChart: ChartConfiguration<'bar'>['data'] | undefined;
@@ -203,7 +209,8 @@ export class StatisticsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.statisticService.getCompleteStatistics().subscribe({
+    const filter = this.buildFilter();
+    this.statisticService.getCompleteStatistics(filter).subscribe({
       next: (data) => {
         this.statistics = data;
         this.prepareCharts();
@@ -215,6 +222,76 @@ export class StatisticsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  buildFilter(): StatisticsFilter | undefined {
+    if (this.selectedFilter === 'custom') {
+      if (this.customStartDate && this.customEndDate) {
+        return {
+          filterType: 'custom',
+          startDate: this.customStartDate,
+          endDate: this.customEndDate
+        };
+      }
+      return undefined;
+    }
+    
+    return {
+      filterType: this.selectedFilter
+    };
+  }
+
+  onFilterChange(filterType: 'day' | 'week' | 'month' | 'year' | 'custom'): void {
+    this.selectedFilter = filterType;
+    this.showCustomDateInputs = filterType === 'custom';
+    
+    if (filterType !== 'custom') {
+      this.customStartDate = '';
+      this.customEndDate = '';
+      this.loadStatistics();
+    }
+  }
+
+  applyCustomFilter(): void {
+    if (this.customStartDate && this.customEndDate) {
+      if (new Date(this.customStartDate) > new Date(this.customEndDate)) {
+        this.error = 'Start date must be before end date';
+        setTimeout(() => this.error = null, 3000);
+        return;
+      }
+      this.loadStatistics();
+    } else {
+      this.error = 'Please select both start and end dates';
+      setTimeout(() => this.error = null, 3000);
+    }
+  }
+
+  resetFilter(): void {
+    this.selectedFilter = 'year';
+    this.customStartDate = '';
+    this.customEndDate = '';
+    this.showCustomDateInputs = false;
+    this.loadStatistics();
+  }
+
+  getDateRangeLabel(): string {
+    switch (this.selectedFilter) {
+      case 'day':
+        return 'Today';
+      case 'week':
+        return 'Last 7 Days';
+      case 'month':
+        return 'Last 30 Days';
+      case 'year':
+        return 'Last 365 Days';
+      case 'custom':
+        if (this.customStartDate && this.customEndDate) {
+          return `${this.customStartDate} to ${this.customEndDate}`;
+        }
+        return 'Custom Range';
+      default:
+        return 'All Time';
+    }
   }
 
   prepareCharts(): void {
@@ -488,25 +565,17 @@ export class StatisticsComponent implements OnInit {
   }
 
   createStatusTimelineChart(): void {
-    if (!this.statistics) return;
+    if (!this.statistics || !this.statistics.timeBased.statusTimeline['data']) return;
 
-    // Create monthly data for each status
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
-    
-    // Simulate cumulative book counts by status over time
-    // In a real scenario, you'd get this from the backend
-    const completed = months.map((_, i) => Math.floor(Math.random() * (i + 1) * 2));
-    const summarized = months.map((_, i) => Math.floor(Math.random() * (i + 1) * 1.5));
-    const currentlyReading = months.map(() => Math.floor(Math.random() * 5) + 2);
-    const planning = months.map(() => Math.floor(Math.random() * 8) + 3);
-    const notReading = months.map(() => Math.floor(Math.random() * 3));
+    const timelineData = this.statistics.timeBased.statusTimeline['data'];
+    const labels = Object.keys(timelineData.completed);
 
     this.statusTimelineChart = {
-      labels: months,
+      labels: labels,
       datasets: [
         {
           label: 'Completed',
-          data: completed,
+          data: labels.map(key => timelineData.completed[key] || 0),
           borderColor: 'rgba(34, 197, 94, 1)',
           backgroundColor: 'rgba(34, 197, 94, 0.1)',
           borderWidth: 3,
@@ -520,7 +589,7 @@ export class StatisticsComponent implements OnInit {
         },
         {
           label: 'Summarized',
-          data: summarized,
+          data: labels.map(key => timelineData.summarized[key] || 0),
           borderColor: 'rgba(59, 130, 246, 1)',
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
           borderWidth: 3,
@@ -534,7 +603,7 @@ export class StatisticsComponent implements OnInit {
         },
         {
           label: 'Currently Reading',
-          data: currentlyReading,
+          data: labels.map(key => timelineData.currentlyReading[key] || 0),
           borderColor: 'rgba(251, 191, 36, 1)',
           backgroundColor: 'rgba(251, 191, 36, 0.1)',
           borderWidth: 3,
@@ -548,7 +617,7 @@ export class StatisticsComponent implements OnInit {
         },
         {
           label: 'Planning',
-          data: planning,
+          data: labels.map(key => timelineData.planning[key] || 0),
           borderColor: 'rgba(168, 85, 247, 1)',
           backgroundColor: 'rgba(168, 85, 247, 0.1)',
           borderWidth: 3,
@@ -562,7 +631,7 @@ export class StatisticsComponent implements OnInit {
         },
         {
           label: 'Not Reading',
-          data: notReading,
+          data: labels.map(key => timelineData.notReading[key] || 0),
           borderColor: 'rgba(156, 163, 175, 1)',
           backgroundColor: 'rgba(156, 163, 175, 0.1)',
           borderWidth: 3,
@@ -592,5 +661,27 @@ export class StatisticsComponent implements OnInit {
     if (!this.statistics) return 0;
     const tag = this.statistics.tags.tagsByPages.find(t => t.tagId === tagId);
     return tag?.totalPages || 0;
+  }
+
+  getFilterDisplayName(): string {
+    if (!this.selectedFilter) return '2025';
+    
+    switch (this.selectedFilter) {
+      case 'day':
+        return this.customStartDate ? new Date(this.customStartDate).toLocaleDateString() : 'Today';
+      case 'week':
+        return this.customStartDate ? `Week of ${new Date(this.customStartDate).toLocaleDateString()}` : 'This Week';
+      case 'month':
+        return this.customStartDate ? new Date(this.customStartDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'This Month';
+      case 'year':
+        return this.customStartDate ? new Date(this.customStartDate).getFullYear().toString() : new Date().getFullYear().toString();
+      case 'custom':
+        if (this.customStartDate && this.customEndDate) {
+          return `${new Date(this.customStartDate).toLocaleDateString()} - ${new Date(this.customEndDate).toLocaleDateString()}`;
+        }
+        return 'Custom Period';
+      default:
+        return '2025';
+    }
   }
 }

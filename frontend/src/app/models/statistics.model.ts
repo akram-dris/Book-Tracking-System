@@ -68,6 +68,15 @@ export interface TimeBasedStatistics {
   monthlyTrend: { [key: string]: number };
   weeklyPattern: { [key: string]: number };
   yearOverYear: { [key: number]: number };
+  statusTimeline: { [key: string]: StatusTimelineData };
+}
+
+export interface StatusTimelineData {
+  completed: { [key: string]: number };
+  summarized: { [key: string]: number };
+  currentlyReading: { [key: string]: number };
+  planning: { [key: string]: number };
+  notReading: { [key: string]: number };
 }
 
 export interface GoalPerformance {
@@ -129,4 +138,10 @@ export interface FastestCompletion {
   days: number;
   startDate: string | null;
   completedDate: string | null;
+}
+
+export interface StatisticsFilter {
+  filterType: 'day' | 'week' | 'month' | 'year' | 'custom';
+  startDate?: string;
+  endDate?: string;
 }

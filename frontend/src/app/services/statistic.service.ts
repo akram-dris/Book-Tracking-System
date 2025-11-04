@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { 
@@ -11,7 +11,8 @@ import {
   TimeBasedStatistics, 
   GoalPerformance, 
   BookStatistics, 
-  PersonalRecords 
+  PersonalRecords,
+  StatisticsFilter 
 } from '../models/statistics.model';
 
 @Injectable({
@@ -22,39 +23,62 @@ export class StatisticService {
 
   constructor(private http: HttpClient) { }
 
+  private buildFilterParams(filter?: StatisticsFilter): HttpParams {
+    let params = new HttpParams();
+    
+    if (filter) {
+      params = params.set('filterType', filter.filterType);
+      
+      if (filter.filterType === 'custom' && filter.startDate && filter.endDate) {
+        params = params.set('startDate', filter.startDate);
+        params = params.set('endDate', filter.endDate);
+      }
+    }
+    
+    return params;
+  }
+
   getGlobalStats(): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/stats`);
   }
 
-  getReadingOverview(): Observable<ReadingOverview> {
-    return this.http.get<ReadingOverview>(`${this.apiUrl}/overview`);
+  getReadingOverview(filter?: StatisticsFilter): Observable<ReadingOverview> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<ReadingOverview>(`${this.apiUrl}/overview`, { params });
   }
 
-  getAuthorStatistics(): Observable<AuthorStatistics> {
-    return this.http.get<AuthorStatistics>(`${this.apiUrl}/authors`);
+  getAuthorStatistics(filter?: StatisticsFilter): Observable<AuthorStatistics> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<AuthorStatistics>(`${this.apiUrl}/authors`, { params });
   }
 
-  getTagStatistics(): Observable<TagStatistics> {
-    return this.http.get<TagStatistics>(`${this.apiUrl}/tags`);
+  getTagStatistics(filter?: StatisticsFilter): Observable<TagStatistics> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<TagStatistics>(`${this.apiUrl}/tags`, { params });
   }
 
-  getTimeBasedStatistics(): Observable<TimeBasedStatistics> {
-    return this.http.get<TimeBasedStatistics>(`${this.apiUrl}/time-based`);
+  getTimeBasedStatistics(filter?: StatisticsFilter): Observable<TimeBasedStatistics> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<TimeBasedStatistics>(`${this.apiUrl}/time-based`, { params });
   }
 
-  getGoalPerformance(): Observable<GoalPerformance> {
-    return this.http.get<GoalPerformance>(`${this.apiUrl}/goals`);
+  getGoalPerformance(filter?: StatisticsFilter): Observable<GoalPerformance> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<GoalPerformance>(`${this.apiUrl}/goals`, { params });
   }
 
-  getBookStatistics(): Observable<BookStatistics> {
-    return this.http.get<BookStatistics>(`${this.apiUrl}/books`);
+  getBookStatistics(filter?: StatisticsFilter): Observable<BookStatistics> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<BookStatistics>(`${this.apiUrl}/books`, { params });
   }
 
-  getPersonalRecords(): Observable<PersonalRecords> {
-    return this.http.get<PersonalRecords>(`${this.apiUrl}/records`);
+  getPersonalRecords(filter?: StatisticsFilter): Observable<PersonalRecords> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<PersonalRecords>(`${this.apiUrl}/records`, { params });
   }
 
-  getCompleteStatistics(): Observable<Statistics> {
-    return this.http.get<Statistics>(`${this.apiUrl}/complete`);
+  getCompleteStatistics(filter?: StatisticsFilter): Observable<Statistics> {
+    const params = this.buildFilterParams(filter);
+    return this.http.get<Statistics>(`${this.apiUrl}/complete`, { params });
   }
 }

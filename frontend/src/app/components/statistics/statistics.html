@@ -5,6 +5,90 @@
     <p class="text-base-content/60">Comprehensive insights into your reading journey</p>
   </div>
 
+  <!-- Global Filter Section -->
+  <div class="card bg-base-200 shadow-lg mb-6">
+    <div class="card-body">
+      <h3 class="card-title text-lg mb-4">
+        <ng-icon name="heroCalendar" class="mr-2"></ng-icon>
+        Time Period Filter
+      </h3>
+      
+      <!-- Filter Buttons -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button 
+          class="btn btn-sm"
+          [class.btn-primary]="selectedFilter === 'day'"
+          (click)="onFilterChange('day')">
+          Today
+        </button>
+        <button 
+          class="btn btn-sm"
+          [class.btn-primary]="selectedFilter === 'week'"
+          (click)="onFilterChange('week')">
+          Week
+        </button>
+        <button 
+          class="btn btn-sm"
+          [class.btn-primary]="selectedFilter === 'month'"
+          (click)="onFilterChange('month')">
+          Month
+        </button>
+        <button 
+          class="btn btn-sm"
+          [class.btn-primary]="selectedFilter === 'year'"
+          (click)="onFilterChange('year')">
+          Year
+        </button>
+        <button 
+          class="btn btn-sm"
+          [class.btn-primary]="selectedFilter === 'custom'"
+          (click)="onFilterChange('custom')">
+          Custom
+        </button>
+        <button 
+          class="btn btn-sm btn-ghost"
+          (click)="resetFilter()">
+          Reset
+        </button>
+      </div>
+
+      <!-- Custom Date Inputs -->
+      <div *ngIf="showCustomDateInputs" class="flex flex-wrap gap-4 items-end">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Start Date</span>
+          </label>
+          <input 
+            type="date" 
+            [(ngModel)]="customStartDate"
+            class="input input-bordered input-sm" />
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">End Date</span>
+          </label>
+          <input 
+            type="date" 
+            [(ngModel)]="customEndDate"
+            class="input input-bordered input-sm" />
+        </div>
+        <button 
+          class="btn btn-sm btn-primary"
+          (click)="applyCustomFilter()">
+          Apply
+        </button>
+      </div>
+
+      <!-- Current Filter Display -->
+      <div class="mt-3">
+        <div class="badge badge-lg badge-outline">
+          <ng-icon name="heroCalendar" class="mr-2"></ng-icon>
+          {{ getDateRangeLabel() }}
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading State -->
   <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
@@ -456,8 +540,8 @@
       <!-- Status Over Time Chart (NEW) -->
       <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
         <div class="card-body">
-          <h3 class="card-title">📈 Book Status Timeline (2025)</h3>
-          <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved throughout the year</p>
+          <h3 class="card-title">📈 Book Status Timeline ({{ getFilterDisplayName() }})</h3>
+          <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved over the selected period</p>
           <div style="height: 400px;">
             <canvas baseChart
               [data]="statusTimelineChart"
