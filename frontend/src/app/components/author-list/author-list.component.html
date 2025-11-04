@@ -80,6 +80,7 @@
                 [src]="rootUrl + author.imageUrl" 
                 [alt]="author.name" 
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                (error)="onImageError($event, author)"
               />
             } @else {
               <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">

@@ -57,10 +57,13 @@ export class AuthorListComponent implements OnInit {
       );
 
       forkJoin([...bookCountRequests]).subscribe(allBooks => {
-        this.authors = authors.map((author, index) => ({
-          ...author,
-          bookCount: allBooks[index].filter((book: any) => book.authorId === author.id).length
-        }));
+        this.authors = authors.map((author, index) => {
+          console.log('Author loaded:', author.name, 'ImageURL:', author.imageUrl, 'Full URL:', this.rootUrl + author.imageUrl);
+          return {
+            ...author,
+            bookCount: allBooks[index].filter((book: any) => book.authorId === author.id).length
+          };
+        });
         this.applyFilters();
         this.isLoading = false;
       });
@@ -125,5 +128,11 @@ export class AuthorListComponent implements OnInit {
         this.loadAuthors();
       });
     }
+  }
+
+  onImageError(event: Event, author: AuthorWithCount): void {
+    console.error('Failed to load image for author:', author.name, 'URL:', this.rootUrl + author.imageUrl);
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
   }
 }

@@ -2,6 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { 
+  heroHome,
   heroBookOpen, 
   heroUserGroup, 
   heroTag, 
@@ -25,6 +26,7 @@ interface NavItem {
   standalone: true,
   viewProviders: [
     provideIcons({ 
+      heroHome,
       heroBookOpen, 
       heroUserGroup, 
       heroTag, 
@@ -39,6 +41,7 @@ export class SidebarComponent {
   toggleCollapse = output<void>();
 
   navItems: NavItem[] = [
+    { path: '/', label: 'Dashboard', icon: 'heroHome', tooltip: 'Home Dashboard' },
     { path: '/books', label: 'Books', icon: 'heroBookOpen', tooltip: 'Manage your books' },
     { path: '/authors', label: 'Authors', icon: 'heroUserGroup', tooltip: 'Manage authors' },
     { path: '/tags', label: 'Tags', icon: 'heroTag', tooltip: 'Organize with tags' },

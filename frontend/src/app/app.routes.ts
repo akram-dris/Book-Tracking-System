@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { Dashboard } from './components/dashboard/dashboard';
 import { BookListComponent } from './components/book-list/book-list.component';
 import { BookFormComponent } from './components/book-form/book-form.component';
 import { AuthorListComponent } from './components/author-list/author-list.component';
@@ -10,6 +11,7 @@ import { TagManagementComponent } from './components/tag-management/tag-manageme
 import { SessionLogComponent } from './components/session-log/session-log.component';
 import { HeatmapComponent } from './components/heatmap/heatmap';
 export const routes: Routes = [
+    { path: '', component: Dashboard },
     { path: 'books', component: BookListComponent },
     { path: 'books/new', component: BookFormComponent },
     { path: 'books/:id/edit', component: BookFormComponent },
@@ -20,6 +22,5 @@ export const routes: Routes = [
     { path: 'authors/:id', component: AuthorDetailsComponent },
     { path: 'tags', component: TagManagementComponent },
     { path: 'sessions/log', component: SessionLogComponent },
-    { path: 'heatmap', component: HeatmapComponent },
-    { path: '', redirectTo: '/books', pathMatch: 'full' }
+    { path: 'heatmap', component: HeatmapComponent }
 ];

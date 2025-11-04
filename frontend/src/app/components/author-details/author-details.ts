@@ -128,4 +128,10 @@ export class AuthorDetailsComponent implements OnInit {
         return 'Unknown';
     }
   }
+
+  onImageError(event: Event): void {
+    console.error('Failed to load author image. URL:', this.rootUrl + this.author?.imageUrl);
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+  }
 }

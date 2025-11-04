@@ -1,0 +1,263 @@
+<div class="min-h-screen bg-base-200 p-4 md:p-6 lg:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4" @fadeInUp>
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Welcome Back! 📚
+        </h1>
+        <p class="text-base-content/70 mt-1">Here's your reading journey at a glance</p>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="flex gap-2">
+        <button (click)="openLogSession()" class="btn btn-primary btn-sm md:btn-md gap-2">
+          <ng-icon name="heroPlus" class="text-lg"></ng-icon>
+          Log Session
+        </button>
+        <button (click)="navigateToAddBook()" class="btn btn-outline btn-sm md:btn-md gap-2">
+          <ng-icon name="heroBookOpen" class="text-lg"></ng-icon>
+          Add Book
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div *ngFor="let i of [1,2,3,4]" class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <div class="animate-pulse">
+            <div class="h-4 bg-base-300 rounded w-3/4 mb-4"></div>
+            <div class="h-8 bg-base-300 rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div *ngIf="!loading && stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
+      
+      <!-- Total Books -->
+      <div class="card bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer border border-primary/20"
+           (click)="navigateToBooks()">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-base-content/70 font-medium">Total Books</p>
+              <h3 class="text-3xl font-bold text-primary mt-1">{{ stats.bookStatistics?.totalBooks || 0 }}</h3>
+            </div>
+            <div class="bg-primary/20 p-3 rounded-full">
+              <ng-icon name="heroBookOpen" class="text-2xl text-primary"></ng-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pages Read -->
+      <div class="card bg-gradient-to-br from-secondary/10 to-secondary/5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary/20">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-base-content/70 font-medium">Pages Read</p>
+              <h3 class="text-3xl font-bold text-secondary mt-1">{{ stats.totalPagesRead || 0 }}</h3>
+            </div>
+            <div class="bg-secondary/20 p-3 rounded-full">
+              <ng-icon name="heroCheckCircle" class="text-2xl text-secondary"></ng-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reading Streak -->
+      <div class="card bg-gradient-to-br from-warning/10 to-warning/5 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer border border-warning/20"
+           (click)="navigateToHeatmap()">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-base-content/70 font-medium">Current Streak</p>
+              <h3 class="text-3xl font-bold text-warning mt-1">{{ streakData?.currentStreak || 0 }}</h3>
+              <p class="text-xs text-base-content/60 mt-1">days in a row 🔥</p>
+            </div>
+            <div class="bg-warning/20 p-3 rounded-full">
+              <ng-icon name="heroFire" class="text-2xl text-warning"></ng-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Currently Reading -->
+      <div class="card bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-accent/20">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-base-content/70 font-medium">Currently Reading</p>
+              <h3 class="text-3xl font-bold text-accent mt-1">{{ stats.bookStatistics?.currentlyReadingCount || 0 }}</h3>
+            </div>
+            <div class="bg-accent/20 p-3 rounded-full">
+              <ng-icon name="heroBookmark" class="text-2xl text-accent"></ng-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Left Column: Charts and Stats -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Reading Progress Chart -->
+        <div *ngIf="!loading && readingProgressChart" class="card bg-base-100 shadow-xl" @fadeInUp>
+          <div class="card-body">
+            <h2 class="card-title text-xl mb-4 flex items-center gap-2">
+              <ng-icon name="heroChartBar" class="text-primary"></ng-icon>
+              Reading Progress Overview
+            </h2>
+            <div class="flex justify-center items-center" style="height: 300px;">
+              <canvas baseChart
+                [data]="readingProgressChart"
+                [options]="doughnutOptions"
+                type="doughnut">
+              </canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Currently Reading Books -->
+        <div *ngIf="!loading && currentlyReading.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+          <div class="card-body">
+            <h2 class="card-title text-xl mb-4 flex items-center gap-2">
+              <ng-icon name="heroSparkles" class="text-warning"></ng-icon>
+              Continue Reading
+            </h2>
+            <div class="space-y-4">
+              <div *ngFor="let book of currentlyReading" 
+                   class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-base-300 transition-all cursor-pointer group"
+                   (click)="navigateToBookDetails(book.id)">
+                <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
+                     [alt]="book.title"
+                     class="w-16 h-24 object-cover rounded-lg shadow-md group-hover:scale-105 transition-transform">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-lg truncate group-hover:text-primary transition-colors">{{ book.title }}</h3>
+                  <p class="text-sm text-base-content/70">by {{ book.author?.name || 'Unknown Author' }}</p>
+                  <div class="mt-2">
+                    <div class="flex items-center justify-between text-sm mb-1">
+                      <span class="text-base-content/70">Progress</span>
+                      <span class="font-medium text-primary">{{ getReadingProgress(book) }}%</span>
+                    </div>
+                    <div class="w-full bg-base-300 rounded-full h-2">
+                      <div class="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500"
+                           [style.width.%]="getReadingProgress(book)"></div>
+                    </div>
+                    <p class="text-xs text-base-content/60 mt-1">
+                      {{ book.totalPages }} pages
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button (click)="navigateToBooks()" class="btn btn-outline btn-sm mt-4 w-full">
+              View All Books
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State for Currently Reading -->
+        <div *ngIf="!loading && currentlyReading.length === 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+          <div class="card-body text-center py-12">
+            <ng-icon name="heroBookOpen" class="text-6xl text-base-content/30 mx-auto"></ng-icon>
+            <h3 class="text-xl font-semibold mt-4">No books in progress</h3>
+            <p class="text-base-content/70 mt-2">Start reading a book to see your progress here</p>
+            <button (click)="navigateToBooks()" class="btn btn-primary mt-4">
+              Browse Books
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Recent Activity & Streak -->
+      <div class="space-y-6">
+        
+        <!-- Streak Card -->
+        <div *ngIf="!loading && streakData" class="card bg-gradient-to-br from-warning/20 to-warning/5 shadow-xl border border-warning/30" @fadeInUp>
+          <div class="card-body text-center">
+            <div class="text-6xl mb-2">🔥</div>
+            <h2 class="card-title text-2xl justify-center text-warning">{{ streakData.currentStreak }} Day Streak!</h2>
+            <p class="text-base-content/70 mt-2">Keep up the great work!</p>
+            <div class="divider"></div>
+            <div class="text-center">
+              <p class="text-sm text-base-content/70">Longest Streak</p>
+              <p class="text-2xl font-bold text-warning">{{ streakData.longestStreak }} days</p>
+            </div>
+            <button (click)="navigateToHeatmap()" class="btn btn-warning btn-sm mt-4">
+              View Activity
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div *ngIf="!loading && stats" class="card bg-base-100 shadow-xl" @fadeInUp>
+          <div class="card-body">
+            <h2 class="card-title text-lg mb-4 flex items-center gap-2">
+              <ng-icon name="heroTrophy" class="text-accent"></ng-icon>
+              Reading Stats
+            </h2>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
+                <div class="flex items-center gap-2">
+                  <ng-icon name="heroCheckCircle" class="text-success"></ng-icon>
+                  <span class="text-sm font-medium">Completed</span>
+                </div>
+                <span class="text-lg font-bold text-success">{{ stats.bookStatistics?.completedBooksCount || 0 }}</span>
+              </div>
+              
+              <div class="flex items-center justify-between p-3 bg-warning/10 rounded-lg border border-warning/20">
+                <div class="flex items-center gap-2">
+                  <ng-icon name="heroBookOpen" class="text-warning"></ng-icon>
+                  <span class="text-sm font-medium">Reading</span>
+                </div>
+                <span class="text-lg font-bold text-warning">{{ stats.bookStatistics?.currentlyReadingCount || 0 }}</span>
+              </div>
+              
+              <div class="flex items-center justify-between p-3 bg-info/10 rounded-lg border border-info/20">
+                <div class="flex items-center gap-2">
+                  <ng-icon name="heroBookmark" class="text-info"></ng-icon>
+                  <span class="text-sm font-medium">To Read</span>
+                </div>
+                <span class="text-lg font-bold text-info">{{ stats.bookStatistics?.toReadBooksCount || 0 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Books -->
+        <div *ngIf="!loading && recentBooks.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+          <div class="card-body">
+            <h2 class="card-title text-lg mb-4 flex items-center gap-2">
+              <ng-icon name="heroCalendar" class="text-secondary"></ng-icon>
+              Recent Books
+            </h2>
+            <div class="space-y-2">
+              <div *ngFor="let book of recentBooks.slice(0, 4)" 
+                   class="flex items-center gap-3 p-2 hover:bg-base-200 rounded-lg transition-all cursor-pointer"
+                   (click)="navigateToBookDetails(book.id)">
+                <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
+                     [alt]="book.title"
+                     class="w-10 h-14 object-cover rounded shadow-sm">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium truncate">{{ book.title }}</p>
+                  <p class="text-xs text-base-content/60 truncate">{{ book.author?.name || 'Unknown' }}</p>
+                </div>
+                <span class="badge badge-sm" [ngClass]="getStatusClass(book.status)">
+                  {{ getStatusLabel(book.status) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
