@@ -65,26 +65,167 @@ export class Dashboard implements OnInit {
   bookProgress = new Map<number, number>();
   
   // Chart data
-  readingProgressChart: ChartConfiguration<'doughnut'>['data'] | null = null;
-  monthlyActivityChart: ChartConfiguration<'bar'>['data'] | null = null;
+  readingProgressChart: ChartConfiguration<'doughnut'>['data'] | undefined;
+  monthlyActivityChart: ChartConfiguration<'bar'>['data'] | undefined;
 
   // Chart options
   doughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
     plugins: {
-      legend: { display: true, position: 'bottom' }
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          padding: 20,
+          font: {
+            size: 14,
+            weight: 600,
+            family: "'Inter', sans-serif"
+          },
+          color: 'rgba(255, 255, 255, 0.95)',
+          usePointStyle: true,
+          pointStyle: 'circle',
+          boxWidth: 12,
+          boxHeight: 12,
+          generateLabels: (chart: any) => {
+            const data = chart.data;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map((label: string, i: number) => {
+                const value = data.datasets[0].data[i];
+                const total = data.datasets[0].data.reduce((a: number, b: number) => a + b, 0);
+                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                return {
+                  text: `${label}: ${value} (${percentage}%)`,
+                  fillStyle: data.datasets[0].backgroundColor[i],
+                  strokeStyle: data.datasets[0].borderColor[i],
+                  lineWidth: 2,
+                  hidden: false,
+                  index: i
+                };
+              });
+            }
+            return [];
+          }
+        }
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: (context: any) => {
+            const label = context.label || '';
+            const value = context.parsed;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+            return `${label}: ${value} books (${percentage}%)`;
+          }
+        },
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: 'rgba(255, 255, 255, 1)',
+        bodyColor: 'rgba(255, 255, 255, 0.9)',
+        borderColor: 'rgba(75, 85, 99, 0.5)',
+        borderWidth: 1,
+        titleFont: { size: 15, weight: 'bold', family: "'Inter', sans-serif" },
+        bodyFont: { size: 14, family: "'Inter', sans-serif" },
+        padding: 16,
+        cornerRadius: 12,
+        displayColors: true,
+        boxPadding: 8
+      }
+    },
+    animation: {
+      animateRotate: true,
+      animateScale: true,
+      duration: 2000,
+      easing: 'easeInOutCubic',
+      delay: (context: any) => {
+        return context.dataIndex * 200;
+      }
+    },
+    interaction: {
+      mode: 'nearest',
+      intersect: false
     }
   };
 
   barOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { display: false }
+      legend: { display: false },
+      tooltip: {
+        enabled: true,
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: 'rgba(255, 255, 255, 1)',
+        bodyColor: 'rgba(255, 255, 255, 0.9)',
+        borderColor: 'rgba(75, 85, 99, 0.5)',
+        borderWidth: 1,
+        titleFont: { size: 15, weight: 'bold', family: "'Inter', sans-serif" },
+        bodyFont: { size: 14, family: "'Inter', sans-serif" },
+        padding: 16,
+        cornerRadius: 12,
+        displayColors: true,
+        boxPadding: 8,
+        callbacks: {
+          label: (context: any) => {
+            const value = context.parsed.y;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+            return `${value} books (${percentage}%)`;
+          }
+        }
+      }
     },
     scales: {
-      y: { beginAtZero: true }
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          font: { 
+            size: 13,
+            weight: 500,
+            family: "'Inter', sans-serif"
+          },
+          color: 'rgba(255, 255, 255, 0.8)',
+          padding: 8
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.08)',
+          lineWidth: 1
+        },
+        border: {
+          display: false
+        }
+      },
+      x: {
+        ticks: {
+          font: { 
+            size: 13,
+            weight: 500,
+            family: "'Inter', sans-serif"
+          },
+          color: 'rgba(255, 255, 255, 0.8)',
+          padding: 8
+        },
+        grid: {
+          display: false
+        },
+        border: {
+          display: false
+        }
+      }
+    },
+    animation: {
+      duration: 2000,
+      easing: 'easeInOutCubic',
+      delay: (context: any) => {
+        return context.dataIndex * 300;
+      }
+    },
+    interaction: {
+      mode: 'index',
+      intersect: false
     }
   };
 
@@ -214,29 +355,76 @@ export class Dashboard implements OnInit {
   prepareCharts(): void {
     if (!this.stats) return;
 
-    // Doughnut chart for reading status
+    // Doughnut chart for reading status with modern colors
     const bookStats = this.stats.bookStatistics || {};
+    const toRead = bookStats.toReadBooksCount || 0;
+    const reading = bookStats.currentlyReadingCount || 0;
+    const completed = bookStats.completedBooksCount || 0;
+
+    // Ensure we have at least some dummy data for visualization when no books
+    const hasData = toRead > 0 || reading > 0 || completed > 0;
+    
     this.readingProgressChart = {
-      labels: ['To Read', 'Reading', 'Completed'],
+      labels: ['📚 Planning', '📖 In Progress', '✅ Finished'],
       datasets: [{
-        data: [
-          bookStats.toReadBooksCount || 0,
-          bookStats.currentlyReadingCount || 0,
-          bookStats.completedBooksCount || 0
+        data: hasData ? [toRead, reading, completed] : [1, 1, 1],
+        backgroundColor: [
+          'rgba(96, 165, 250, 0.9)',   // Blue - brighter
+          'rgba(251, 191, 36, 0.9)',   // Amber - brighter
+          'rgba(52, 211, 153, 0.9)'    // Green - brighter
         ],
-        backgroundColor: ['#60a5fa', '#fbbf24', '#34d399'],
-        hoverBackgroundColor: ['#3b82f6', '#f59e0b', '#10b981']
+        borderColor: [
+          'rgba(96, 165, 250, 1)',
+          'rgba(251, 191, 36, 1)',
+          'rgba(52, 211, 153, 1)'
+        ],
+        borderWidth: 3,
+        hoverBackgroundColor: [
+          'rgba(59, 130, 246, 1)',
+          'rgba(245, 158, 11, 1)',
+          'rgba(16, 185, 129, 1)'
+        ],
+        hoverBorderColor: [
+          'rgba(147, 197, 253, 1)',
+          'rgba(252, 211, 77, 1)',
+          'rgba(110, 231, 183, 1)'
+        ],
+        hoverBorderWidth: 5,
+        spacing: 3,
+        hoverOffset: 15
       }]
     };
 
-    // Bar chart for monthly activity (mock data for now)
+    // Bar chart for status breakdown with gradient effect
     this.monthlyActivityChart = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      labels: ['Planning', 'In Progress', 'Finished'],
       datasets: [{
-        label: 'Books Read',
-        data: [3, 5, 2, 8, 6, 4],
-        backgroundColor: '#8b5cf6',
-        hoverBackgroundColor: '#7c3aed'
+        label: 'Books',
+        data: hasData ? [toRead, reading, completed] : [1, 1, 1],
+        backgroundColor: [
+          'rgba(96, 165, 250, 0.9)',
+          'rgba(251, 191, 36, 0.9)',
+          'rgba(52, 211, 153, 0.9)'
+        ],
+        borderColor: [
+          'rgba(96, 165, 250, 1)',
+          'rgba(251, 191, 36, 1)',
+          'rgba(52, 211, 153, 1)'
+        ],
+        borderWidth: 2,
+        borderRadius: 12,
+        borderSkipped: false,
+        hoverBackgroundColor: [
+          'rgba(59, 130, 246, 1)',
+          'rgba(245, 158, 11, 1)',
+          'rgba(16, 185, 129, 1)'
+        ],
+        hoverBorderColor: [
+          'rgba(147, 197, 253, 1)',
+          'rgba(252, 211, 77, 1)',
+          'rgba(110, 231, 183, 1)'
+        ],
+        hoverBorderWidth: 3
       }]
     };
   }
