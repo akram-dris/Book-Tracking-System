@@ -10,6 +10,7 @@ import { BookDetailsComponent } from './components/book-details/book-details';
 import { TagManagementComponent } from './components/tag-management/tag-management.component';
 import { SessionLogComponent } from './components/session-log/session-log.component';
 import { HeatmapComponent } from './components/heatmap/heatmap';
+import { StatisticsComponent } from './components/statistics/statistics';
 export const routes: Routes = [
     { path: '', component: Dashboard },
     { path: 'books', component: BookListComponent },
@@ -22,5 +23,6 @@ export const routes: Routes = [
     { path: 'authors/:id', component: AuthorDetailsComponent },
     { path: 'tags', component: TagManagementComponent },
     { path: 'sessions/log', component: SessionLogComponent },
-    { path: 'heatmap', component: HeatmapComponent }
+    { path: 'heatmap', component: HeatmapComponent },
+    { path: 'statistics', component: StatisticsComponent }
 ];

@@ -1,0 +1,33 @@
+:host {
+    display: block;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.tabs .tab {
+    transition: all 0.2s ease;
+}
+
+.tabs .tab:hover:not(.tab-active) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+canvas {
+    max-height: 400px !important;
+}
