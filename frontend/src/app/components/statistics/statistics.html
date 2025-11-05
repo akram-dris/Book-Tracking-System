@@ -5,85 +5,90 @@
     <p class="text-base-content/60">Comprehensive insights into your reading journey</p>
   </div>
 
-  <!-- Global Filter Section -->
-  <div class="card bg-base-200 shadow-lg mb-6">
-    <div class="card-body">
-      <h3 class="card-title text-lg mb-4">
-        <ng-icon name="heroCalendar" class="mr-2"></ng-icon>
-        Time Period Filter
-      </h3>
+  <!-- Global Filter Section - Modern Design -->
+  <div class="filter-section">
+    <div class="filter-card">
+      <div class="filter-header">
+        <div class="flex items-center gap-3">
+          <div class="filter-icon">
+            <ng-icon name="heroCalendar" size="1.5rem"></ng-icon>
+          </div>
+          <div>
+            <h3 class="filter-title">Time Period</h3>
+            <p class="filter-subtitle">Select your analysis timeframe</p>
+          </div>
+        </div>
+        <div class="current-filter-badge">
+          <ng-icon name="heroCalendar" class="mr-1.5" size="1rem"></ng-icon>
+          <span>{{ getDateRangeLabel() }}</span>
+        </div>
+      </div>
       
-      <!-- Filter Buttons -->
-      <div class="flex flex-wrap gap-2 mb-4">
+      <!-- Filter Pills -->
+      <div class="filter-pills">
         <button 
-          class="btn btn-sm"
-          [class.btn-primary]="selectedFilter === 'day'"
+          class="filter-pill"
+          [class.active]="selectedFilter === 'day'"
           (click)="onFilterChange('day')">
-          Today
+          <span class="pill-label">Today</span>
+          <span class="pill-indicator"></span>
         </button>
         <button 
-          class="btn btn-sm"
-          [class.btn-primary]="selectedFilter === 'week'"
+          class="filter-pill"
+          [class.active]="selectedFilter === 'week'"
           (click)="onFilterChange('week')">
-          Week
+          <span class="pill-label">Week</span>
+          <span class="pill-indicator"></span>
         </button>
         <button 
-          class="btn btn-sm"
-          [class.btn-primary]="selectedFilter === 'month'"
+          class="filter-pill"
+          [class.active]="selectedFilter === 'month'"
           (click)="onFilterChange('month')">
-          Month
+          <span class="pill-label">Month</span>
+          <span class="pill-indicator"></span>
         </button>
         <button 
-          class="btn btn-sm"
-          [class.btn-primary]="selectedFilter === 'year'"
+          class="filter-pill"
+          [class.active]="selectedFilter === 'year'"
           (click)="onFilterChange('year')">
-          Year
+          <span class="pill-label">Year</span>
+          <span class="pill-indicator"></span>
         </button>
         <button 
-          class="btn btn-sm"
-          [class.btn-primary]="selectedFilter === 'custom'"
+          class="filter-pill"
+          [class.active]="selectedFilter === 'custom'"
           (click)="onFilterChange('custom')">
-          Custom
+          <span class="pill-label">Custom</span>
+          <span class="pill-indicator"></span>
         </button>
+        <div class="divider-vertical"></div>
         <button 
-          class="btn btn-sm btn-ghost"
+          class="filter-pill reset"
           (click)="resetFilter()">
-          Reset
+          <ng-icon name="heroCalendar" size="1rem" class="mr-1"></ng-icon>
+          <span class="pill-label">Reset</span>
         </button>
       </div>
 
-      <!-- Custom Date Inputs -->
-      <div *ngIf="showCustomDateInputs" class="flex flex-wrap gap-4 items-end">
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">Start Date</span>
-          </label>
-          <input 
-            type="date" 
-            [(ngModel)]="customStartDate"
-            class="input input-bordered input-sm" />
-        </div>
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">End Date</span>
-          </label>
-          <input 
-            type="date" 
-            [(ngModel)]="customEndDate"
-            class="input input-bordered input-sm" />
-        </div>
-        <button 
-          class="btn btn-sm btn-primary"
-          (click)="applyCustomFilter()">
-          Apply
-        </button>
-      </div>
+      <!-- Custom Date Range Input - Angular Material Comparison Range Picker -->
+      <div *ngIf="showCustomDateInputs" class="custom-date-section">
+        <div class="date-inputs-grid-material">
+          <mat-form-field appearance="outline" class="date-range-field">
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [rangePicker]="picker" [max]="today" [comparisonStart]="comparisonStart" [comparisonEnd]="comparisonEnd">
+              <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
+              <input matEndDate [(ngModel)]="endDate" placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
 
-      <!-- Current Filter Display -->
-      <div class="mt-3">
-        <div class="badge badge-lg badge-outline">
-          <ng-icon name="heroCalendar" class="mr-2"></ng-icon>
-          {{ getDateRangeLabel() }}
+          <button 
+            class="apply-button"
+            (click)="applyCustomFilter()">
+            <span>Apply Filter</span>
+            <ng-icon name="heroCalendar" size="1rem" class="ml-2"></ng-icon>
+          </button>
         </div>
       </div>
     </div>
@@ -99,36 +104,101 @@
 
   <!-- Statistics Content -->
   <div *ngIf="statistics && !loading">
-    <!-- Tabs -->
-    <div class="tabs tabs-boxed mb-6 bg-base-200">
-      <a class="tab" [class.tab-active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
-        <ng-icon name="heroChartBar" class="mr-2"></ng-icon>
-        Overview
-      </a>
-      <a class="tab" [class.tab-active]="activeTab === 'authors'" (click)="setActiveTab('authors')">
-        <ng-icon name="heroUsers" class="mr-2"></ng-icon>
-        Authors
-      </a>
-      <a class="tab" [class.tab-active]="activeTab === 'tags'" (click)="setActiveTab('tags')">
-        <ng-icon name="heroTag" class="mr-2"></ng-icon>
-        Tags
-      </a>
-      <a class="tab" [class.tab-active]="activeTab === 'time'" (click)="setActiveTab('time')">
-        <ng-icon name="heroClock" class="mr-2"></ng-icon>
-        Time Analysis
-      </a>
-      <a class="tab" [class.tab-active]="activeTab === 'goals'" (click)="setActiveTab('goals')">
-        <ng-icon name="heroFlag" class="mr-2"></ng-icon>
-        Goals
-      </a>
-      <a class="tab" [class.tab-active]="activeTab === 'books'" (click)="setActiveTab('books')">
-        <ng-icon name="heroBookOpen" class="mr-2"></ng-icon>
-        Books
-      </a>
-      <a class="tab" [class.tab-active]="activeTab === 'records'" (click)="setActiveTab('records')">
-        <ng-icon name="heroTrophy" class="mr-2"></ng-icon>
-        Records
-      </a>
+    <!-- Modern Tabs Navigation -->
+    <div class="tabs-container">
+      <div class="tabs-wrapper">
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'overview'" 
+          (click)="setActiveTab('overview')">
+          <div class="tab-icon">
+            <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Overview</span>
+            <span class="tab-description">General statistics</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'authors'" 
+          (click)="setActiveTab('authors')">
+          <div class="tab-icon">
+            <ng-icon name="heroUsers" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Authors</span>
+            <span class="tab-description">By author</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'tags'" 
+          (click)="setActiveTab('tags')">
+          <div class="tab-icon">
+            <ng-icon name="heroTag" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Tags</span>
+            <span class="tab-description">By category</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'time'" 
+          (click)="setActiveTab('time')">
+          <div class="tab-icon">
+            <ng-icon name="heroClock" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Time</span>
+            <span class="tab-description">Time analysis</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'goals'" 
+          (click)="setActiveTab('goals')">
+          <div class="tab-icon">
+            <ng-icon name="heroFlag" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Goals</span>
+            <span class="tab-description">Progress tracking</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'books'" 
+          (click)="setActiveTab('books')">
+          <div class="tab-icon">
+            <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Books</span>
+            <span class="tab-description">Book insights</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'records'" 
+          (click)="setActiveTab('records')">
+          <div class="tab-icon">
+            <ng-icon name="heroTrophy" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Records</span>
+            <span class="tab-description">Achievements</span>
+          </div>
+        </button>
+      </div>
+      <div class="tab-indicator" [style.transform]="getTabIndicatorTransform()"></div>
     </div>
 
     <!-- Overview Tab -->

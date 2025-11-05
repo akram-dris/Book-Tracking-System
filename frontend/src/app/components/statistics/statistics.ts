@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
@@ -11,13 +11,27 @@ import {
   heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
   heroClock, heroTrophy, heroCalendar, heroFlag
 } from '@ng-icons/heroicons/outline';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
 
 // Register Chart.js components
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-statistics',
-  imports: [CommonModule, FormsModule, BaseChartDirective, LoadingSpinnerComponent, NgIconComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    BaseChartDirective, 
+    LoadingSpinnerComponent, 
+    NgIconComponent,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatNativeDateModule,
+    MatInputModule
+  ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
   viewProviders: [provideIcons({ 
@@ -25,7 +39,13 @@ Chart.register(...registerables);
     heroClock, heroTrophy, heroCalendar, heroFlag
   })]
 })
-export class StatisticsComponent implements OnInit {
+export class StatisticsComponent implements OnInit, OnDestroy {
+  startDate: Date | null = null;
+  endDate: Date | null = null;
+  comparisonStart: Date | null = null;
+  comparisonEnd: Date | null = null;
+  today = new Date();
+  
   statistics: Statistics | null = null;
   loading = true;
   error: string | null = null;
@@ -37,6 +57,7 @@ export class StatisticsComponent implements OnInit {
   selectedFilter: 'day' | 'week' | 'month' | 'year' | 'custom' = 'year';
   customStartDate: string = '';
   customEndDate: string = '';
+  customDateRange: string = '';
   showCustomDateInputs = false;
 
   // Chart data
@@ -202,7 +223,30 @@ export class StatisticsComponent implements OnInit {
   constructor(private statisticService: StatisticService) {}
 
   ngOnInit(): void {
+    // Set default date range to last year
+    const today = new Date();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+    
+    this.startDate = oneYearAgo;
+    this.endDate = today;
+    
+    // Set comparison range (previous year for comparison)
+    this.setComparisonRange(oneYearAgo, today);
+    
     this.loadStatistics();
+  }
+
+  setComparisonRange(start: Date, end: Date): void {
+    // Calculate the duration of the selected range
+    const duration = end.getTime() - start.getTime();
+    
+    // Set comparison range to the same duration, ending the day before the start
+    const compEnd = new Date(start.getTime() - 24 * 60 * 60 * 1000); // Day before start
+    const compStart = new Date(compEnd.getTime() - duration);
+    
+    this.comparisonStart = compStart;
+    this.comparisonEnd = compEnd;
   }
 
   loadStatistics(): void {
@@ -226,11 +270,11 @@ export class StatisticsComponent implements OnInit {
 
   buildFilter(): StatisticsFilter | undefined {
     if (this.selectedFilter === 'custom') {
-      if (this.customStartDate && this.customEndDate) {
+      if (this.startDate && this.endDate) {
         return {
           filterType: 'custom',
-          startDate: this.customStartDate,
-          endDate: this.customEndDate
+          startDate: this.startDate.toISOString().split('T')[0],
+          endDate: this.endDate.toISOString().split('T')[0]
         };
       }
       return undefined;
@@ -242,23 +286,38 @@ export class StatisticsComponent implements OnInit {
   }
 
   onFilterChange(filterType: 'day' | 'week' | 'month' | 'year' | 'custom'): void {
+    console.log('🎯 Filter changed to:', filterType);
     this.selectedFilter = filterType;
     this.showCustomDateInputs = filterType === 'custom';
     
     if (filterType !== 'custom') {
+      // Reset dates
+      const today = new Date();
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(today.getFullYear() - 1);
+      
+      this.startDate = oneYearAgo;
+      this.endDate = today;
       this.customStartDate = '';
       this.customEndDate = '';
+      this.customDateRange = '';
       this.loadStatistics();
     }
   }
 
   applyCustomFilter(): void {
-    if (this.customStartDate && this.customEndDate) {
-      if (new Date(this.customStartDate) > new Date(this.customEndDate)) {
+    if (this.startDate && this.endDate) {
+      if (this.startDate > this.endDate) {
         this.error = 'Start date must be before end date';
         setTimeout(() => this.error = null, 3000);
         return;
       }
+      
+      // Update comparison range
+      this.setComparisonRange(this.startDate, this.endDate);
+      
+      this.customStartDate = this.startDate.toISOString().split('T')[0];
+      this.customEndDate = this.endDate.toISOString().split('T')[0];
       this.loadStatistics();
     } else {
       this.error = 'Please select both start and end dates';
@@ -267,10 +326,26 @@ export class StatisticsComponent implements OnInit {
   }
 
   resetFilter(): void {
+    console.log('🔄 Reset filter called');
     this.selectedFilter = 'year';
+    this.showCustomDateInputs = false;
+    
+    const today = new Date();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+    
+    this.startDate = oneYearAgo;
+    this.endDate = today;
     this.customStartDate = '';
     this.customEndDate = '';
-    this.showCustomDateInputs = false;
+    this.customDateRange = '';
+    
+    console.log('✅ Reset complete:', {
+      startDate: this.startDate,
+      endDate: this.endDate,
+      selectedFilter: this.selectedFilter
+    });
+    
     this.loadStatistics();
   }
 
@@ -285,8 +360,8 @@ export class StatisticsComponent implements OnInit {
       case 'year':
         return 'Last 365 Days';
       case 'custom':
-        if (this.customStartDate && this.customEndDate) {
-          return `${this.customStartDate} to ${this.customEndDate}`;
+        if (this.startDate && this.endDate) {
+          return `${this.startDate.toLocaleDateString()} to ${this.endDate.toLocaleDateString()}`;
         }
         return 'Custom Range';
       default:
@@ -481,6 +556,13 @@ export class StatisticsComponent implements OnInit {
 
   setActiveTab(tab: typeof this.activeTab): void {
     this.activeTab = tab;
+  }
+
+  getTabIndicatorTransform(): string {
+    const tabs = ['overview', 'authors', 'tags', 'time', 'goals', 'books', 'records'];
+    const index = tabs.indexOf(this.activeTab);
+    const tabWidth = 100 / tabs.length;
+    return `translateX(${index * 100}%)`;
   }
 
   filterGoals(): void {
@@ -683,5 +765,13 @@ export class StatisticsComponent implements OnInit {
       default:
         return '2025';
     }
+  }
+
+  ngOnDestroy(): void {
+    // No cleanup needed for Material datepicker
+  }
+
+  onDateInputClick(): void {
+    // Not needed for Material datepicker
   }
 }
