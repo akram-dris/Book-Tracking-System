@@ -1,0 +1,698 @@
+<div class="container mx-auto p-6">
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold mb-2">📊 Statistics & Analytics</h1>
+    <p class="text-base-content/60">Comprehensive insights into your reading journey</p>
+  </div>
+
+  <!-- Global Filter Section - Modern Design -->
+  <div class="filter-section">
+    <div class="filter-card">
+      <div class="filter-header">
+        <div class="flex items-center gap-3">
+          <div class="filter-icon">
+            <ng-icon name="heroCalendar" size="1.5rem"></ng-icon>
+          </div>
+          <div>
+            <h3 class="filter-title">Time Period</h3>
+            <p class="filter-subtitle">Select your analysis timeframe</p>
+          </div>
+        </div>
+        <div class="current-filter-badge">
+          <ng-icon name="heroCalendar" class="mr-1.5" size="1rem"></ng-icon>
+          <span>{{ getDateRangeLabel() }}</span>
+        </div>
+      </div>
+      
+      <!-- Filter Pills -->
+      <div class="filter-pills">
+        <button 
+          class="filter-pill"
+          [class.active]="selectedFilter === 'day'"
+          (click)="onFilterChange('day')">
+          <span class="pill-label">Today</span>
+          <span class="pill-indicator"></span>
+        </button>
+        <button 
+          class="filter-pill"
+          [class.active]="selectedFilter === 'week'"
+          (click)="onFilterChange('week')">
+          <span class="pill-label">Week</span>
+          <span class="pill-indicator"></span>
+        </button>
+        <button 
+          class="filter-pill"
+          [class.active]="selectedFilter === 'month'"
+          (click)="onFilterChange('month')">
+          <span class="pill-label">Month</span>
+          <span class="pill-indicator"></span>
+        </button>
+        <button 
+          class="filter-pill"
+          [class.active]="selectedFilter === 'year'"
+          (click)="onFilterChange('year')">
+          <span class="pill-label">Year</span>
+          <span class="pill-indicator"></span>
+        </button>
+        <button 
+          class="filter-pill"
+          [class.active]="selectedFilter === 'custom'"
+          (click)="onFilterChange('custom')">
+          <span class="pill-label">Custom</span>
+          <span class="pill-indicator"></span>
+        </button>
+        <div class="divider-vertical"></div>
+        <button 
+          class="filter-pill reset"
+          (click)="resetFilter()">
+          <ng-icon name="heroCalendar" size="1rem" class="mr-1"></ng-icon>
+          <span class="pill-label">Reset</span>
+        </button>
+      </div>
+
+      <!-- Custom Date Range Input - Angular Material Comparison Range Picker -->
+      <div *ngIf="showCustomDateInputs" class="custom-date-section">
+        <div class="date-inputs-grid-material">
+          <mat-form-field appearance="outline" class="date-range-field">
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [rangePicker]="picker" [max]="today" [comparisonStart]="comparisonStart" [comparisonEnd]="comparisonEnd">
+              <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
+              <input matEndDate [(ngModel)]="endDate" placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+
+          <button 
+            class="apply-button"
+            (click)="applyCustomFilter()">
+            <span>Apply Filter</span>
+            <ng-icon name="heroCalendar" size="1rem" class="ml-2"></ng-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-error">
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Statistics Content -->
+  <div *ngIf="statistics && !loading">
+    <!-- Modern Tabs Navigation -->
+    <div class="tabs-container">
+      <div class="tabs-wrapper">
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'overview'" 
+          (click)="setActiveTab('overview')">
+          <div class="tab-icon">
+            <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Overview</span>
+            <span class="tab-description">General statistics</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'authors'" 
+          (click)="setActiveTab('authors')">
+          <div class="tab-icon">
+            <ng-icon name="heroUsers" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Authors</span>
+            <span class="tab-description">By author</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'tags'" 
+          (click)="setActiveTab('tags')">
+          <div class="tab-icon">
+            <ng-icon name="heroTag" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Tags</span>
+            <span class="tab-description">By category</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'time'" 
+          (click)="setActiveTab('time')">
+          <div class="tab-icon">
+            <ng-icon name="heroClock" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Time</span>
+            <span class="tab-description">Time analysis</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'goals'" 
+          (click)="setActiveTab('goals')">
+          <div class="tab-icon">
+            <ng-icon name="heroFlag" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Goals</span>
+            <span class="tab-description">Progress tracking</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'books'" 
+          (click)="setActiveTab('books')">
+          <div class="tab-icon">
+            <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Books</span>
+            <span class="tab-description">Book insights</span>
+          </div>
+        </button>
+        
+        <button 
+          class="modern-tab" 
+          [class.active]="activeTab === 'records'" 
+          (click)="setActiveTab('records')">
+          <div class="tab-icon">
+            <ng-icon name="heroTrophy" size="1.25rem"></ng-icon>
+          </div>
+          <div class="tab-content">
+            <span class="tab-label">Records</span>
+            <span class="tab-description">Achievements</span>
+          </div>
+        </button>
+      </div>
+      <div class="tab-indicator" [style.transform]="getTabIndicatorTransform()"></div>
+    </div>
+
+    <!-- Overview Tab -->
+    <div *ngIf="activeTab === 'overview'">
+      <h2 class="text-2xl font-bold mb-4">📖 Reading Overview</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-figure text-primary">
+            <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+          </div>
+          <div class="stat-title">Books Read</div>
+          <div class="stat-value text-primary">{{ statistics.overview.totalBooksRead }}</div>
+          <div class="stat-desc">Completed + Summarized</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-figure text-secondary">
+            <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+          </div>
+          <div class="stat-title">Total Pages</div>
+          <div class="stat-value text-secondary">{{ statistics.overview.totalPagesRead | number }}</div>
+          <div class="stat-desc">All time</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-figure text-accent">
+            <ng-icon name="heroChartBar" size="2rem"></ng-icon>
+          </div>
+          <div class="stat-title">Avg Pages/Day</div>
+          <div class="stat-value text-accent">{{ statistics.overview.averagePagesPerDay }}</div>
+          <div class="stat-desc">Overall average</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-figure text-warning">
+            <ng-icon name="heroFire" size="2rem"></ng-icon>
+          </div>
+          <div class="stat-title">Current Streak</div>
+          <div class="stat-value text-warning">{{ statistics.overview.currentStreak }}</div>
+          <div class="stat-desc">Longest: {{ statistics.overview.longestStreak }} days</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Currently Reading</div>
+          <div class="stat-value">{{ statistics.overview.booksCurrentlyReading }}</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Books Pending</div>
+          <div class="stat-value">{{ statistics.overview.booksPending }}</div>
+          <div class="stat-desc">Planning + Not Reading</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Authors Tab -->
+    <div *ngIf="activeTab === 'authors'">
+      <h2 class="text-2xl font-bold mb-4">👥 Author Statistics</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Authors Read</div>
+          <div class="stat-value">{{ statistics.authors.totalAuthorsRead }}</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Most Read Author</div>
+          <div class="stat-value text-primary text-lg">{{ statistics.authors.mostReadAuthor || 'N/A' }}</div>
+          <div class="stat-desc">{{ statistics.authors.mostReadAuthorBookCount }} books</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Diversity Score</div>
+          <div class="stat-value">{{ statistics.authors.authorDiversityScore }}</div>
+          <div class="stat-desc">Unique authors / total books</div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow-xl mb-4" *ngIf="authorBooksChart">
+        <div class="card-body">
+          <h3 class="card-title">📊 Top Authors by Books</h3>
+          <div style="height: 300px;">
+            <canvas baseChart
+              [data]="authorBooksChart"
+              [options]="barChartOptions"
+              type="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead>
+            <tr>
+              <th>Author</th>
+              <th>Books</th>
+              <th>Total Pages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let author of statistics.authors.topAuthorsByBooks">
+              <td>{{ author.authorName }}</td>
+              <td>{{ author.bookCount }}</td>
+              <td>{{ getAuthorPages(author.authorId) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tags Tab -->
+    <div *ngIf="activeTab === 'tags'">
+      <h2 class="text-2xl font-bold mb-4">🏷️ Tag Statistics</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Total Tags</div>
+          <div class="stat-value">{{ statistics.tags.totalTags }}</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Favorite Tag</div>
+          <div class="stat-value text-primary text-lg">{{ statistics.tags.favoriteTag || 'N/A' }}</div>
+          <div class="stat-desc">{{ statistics.tags.favoriteTagBookCount }} books</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Diversity Score</div>
+          <div class="stat-value">{{ statistics.tags.tagDiversityScore }}</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="card bg-base-200 shadow-xl" *ngIf="tagBooksChart">
+          <div class="card-body">
+            <h3 class="card-title">📊 Books by Tag</h3>
+            <div style="height: 300px;">
+              <canvas baseChart
+                [data]="tagBooksChart"
+                [options]="pieChartOptions"
+                type="pie">
+              </canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title">Top Tags</h3>
+            <div class="overflow-x-auto">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Tag</th>
+                    <th>Books</th>
+                    <th>Pages</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tag of statistics.tags.topTagsByBooks">
+                    <td>{{ tag.tagName }}</td>
+                    <td>{{ tag.bookCount }}</td>
+                    <td>{{ getTagPages(tag.tagId) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Analysis Tab -->
+    <div *ngIf="activeTab === 'time'">
+      <h2 class="text-2xl font-bold mb-4">⏰ Time-Based Analysis</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Best Reading Month</div>
+          <div class="stat-value text-lg">{{ statistics.timeBased.bestReadingMonth || 'N/A' }}</div>
+          <div class="stat-desc">{{ statistics.timeBased.bestReadingMonthPages }} pages</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Best Day of Week</div>
+          <div class="stat-value text-lg">{{ statistics.timeBased.bestReadingDayOfWeek || 'N/A' }}</div>
+          <div class="stat-desc">{{ statistics.timeBased.bestReadingDayPages }} pages total</div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow-xl mb-4" *ngIf="monthlyTrendChart">
+        <div class="card-body">
+          <h3 class="card-title">📈 Monthly Reading Trend</h3>
+          <div style="height: 300px;">
+            <canvas baseChart
+              [data]="monthlyTrendChart"
+              [options]="lineChartOptions"
+              type="line">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow-xl" *ngIf="weeklyPatternChart">
+        <div class="card-body">
+          <h3 class="card-title">📊 Weekly Reading Pattern</h3>
+          <div style="height: 300px;">
+            <canvas baseChart
+              [data]="weeklyPatternChart"
+              [options]="barChartOptions"
+              type="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goals Tab -->
+    <div *ngIf="activeTab === 'goals'">
+      <h2 class="text-2xl font-bold mb-4">🎯 Goal Performance</h2>
+      
+      <!-- Overall Goal Achievement Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Overall Completion</div>
+          <div class="stat-value text-success">{{ statistics.goals.overallCompletionRate.toFixed(1) }}%</div>
+          <div class="stat-desc">All books average</div>
+        </div>
+
+        <div class="stat bg-gradient-to-br from-info to-info/80 text-white rounded-lg shadow">
+          <div class="stat-title text-white/90">Low Goals Achieved</div>
+          <div class="stat-value">{{ statistics.goals.lowGoalSuccessCount }}</div>
+          <div class="stat-desc text-white/80">{{ getGoalPercentage('low') }}% success rate</div>
+        </div>
+
+        <div class="stat bg-gradient-to-br from-warning to-warning/80 text-white rounded-lg shadow">
+          <div class="stat-title text-white/90">Medium Goals Achieved</div>
+          <div class="stat-value">{{ statistics.goals.mediumGoalSuccessCount }}</div>
+          <div class="stat-desc text-white/80">{{ getGoalPercentage('medium') }}% success rate</div>
+        </div>
+
+        <div class="stat bg-gradient-to-br from-error to-error/80 text-white rounded-lg shadow">
+          <div class="stat-title text-white/90">High Goals Achieved</div>
+          <div class="stat-value">{{ statistics.goals.highGoalSuccessCount }}</div>
+          <div class="stat-desc text-white/80">{{ getGoalPercentage('high') }}% success rate</div>
+        </div>
+      </div>
+
+      <!-- Goal Achievement Visualization -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="card bg-base-200 shadow-xl" *ngIf="goalAchievementChart">
+          <div class="card-body">
+            <h3 class="card-title">📊 Goal Achievement Overview</h3>
+            <div style="height: 300px;">
+              <canvas baseChart
+                [data]="goalAchievementChart"
+                [options]="barChartOptions"
+                type="bar">
+              </canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl" *ngIf="goalCompletionChart">
+          <div class="card-body">
+            <h3 class="card-title">🎯 Completion Distribution</h3>
+            <div style="height: 300px;">
+              <canvas baseChart
+                [data]="goalCompletionChart"
+                [options]="doughnutChartOptions"
+                type="doughnut">
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Goals Progress with Filter -->
+      <div class="card bg-base-200 shadow-xl" *ngIf="statistics.goals.currentGoalsProgress.length > 0">
+        <div class="card-body">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <h3 class="card-title">📚 Current Reading Goals</h3>
+            <div class="flex gap-2 w-full md:w-auto">
+              <!-- Status Filter -->
+              <select class="select select-bordered select-sm flex-1 md:w-48" [(ngModel)]="selectedStatusFilter" (change)="filterGoals()">
+                <option value="all">All Statuses</option>
+                <option value="reading">📖 Currently Reading</option>
+                <option value="completed">✅ Completed</option>
+                <option value="both">📚 Both</option>
+              </select>
+              
+              <!-- Book Filter -->
+              <select class="select select-bordered select-sm flex-1 md:w-64" [(ngModel)]="selectedBookFilter" (change)="filterGoals()">
+                <option value="all">All Books ({{ getFilteredCount() }})</option>
+                <option *ngFor="let goal of getAvailableBooks()" [value]="goal.bookId">
+                  {{ goal.bookTitle }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div *ngFor="let goal of filteredGoals" class="mb-6 p-4 bg-base-100 rounded-lg">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h4 class="font-bold text-lg">{{ goal.bookTitle }}</h4>
+                <p class="text-sm text-base-content/60">Current Progress: {{ goal.currentPages }} pages</p>
+              </div>
+              <div class="badge badge-lg badge-primary">{{ getOverallProgress(goal) }}%</div>
+            </div>
+            
+            <!-- Visual Goal Progress -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+              <div class="text-center p-3 rounded-lg" [class.bg-info/20]="goal.lowProgress >= 100" [class.bg-base-200]="goal.lowProgress < 100">
+                <div class="text-xs font-semibold text-info mb-1">LOW GOAL</div>
+                <div class="text-2xl font-bold" [class.text-info]="goal.lowProgress >= 100">{{ goal.lowGoal }}</div>
+                <div class="text-xs text-base-content/60">pages</div>
+                <div class="mt-2">
+                  <div class="radial-progress text-info" [style.--value]="goal.lowProgress > 100 ? 100 : goal.lowProgress" [style.--size]="'3rem'" [style.--thickness]="'4px'">
+                    <span class="text-xs">{{ goal.lowProgress > 100 ? 100 : goal.lowProgress }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center p-3 rounded-lg" [class.bg-warning/20]="goal.mediumProgress >= 100" [class.bg-base-200]="goal.mediumProgress < 100">
+                <div class="text-xs font-semibold text-warning mb-1">MEDIUM GOAL</div>
+                <div class="text-2xl font-bold" [class.text-warning]="goal.mediumProgress >= 100">{{ goal.mediumGoal }}</div>
+                <div class="text-xs text-base-content/60">pages</div>
+                <div class="mt-2">
+                  <div class="radial-progress text-warning" [style.--value]="goal.mediumProgress > 100 ? 100 : goal.mediumProgress" [style.--size]="'3rem'" [style.--thickness]="'4px'">
+                    <span class="text-xs">{{ goal.mediumProgress > 100 ? 100 : goal.mediumProgress }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center p-3 rounded-lg" [class.bg-error/20]="goal.highProgress >= 100" [class.bg-base-200]="goal.highProgress < 100">
+                <div class="text-xs font-semibold text-error mb-1">HIGH GOAL</div>
+                <div class="text-2xl font-bold" [class.text-error]="goal.highProgress >= 100">{{ goal.highGoal }}</div>
+                <div class="text-xs text-base-content/60">pages</div>
+                <div class="mt-2">
+                  <div class="radial-progress text-error" [style.--value]="goal.highProgress > 100 ? 100 : goal.highProgress" [style.--size]="'3rem'" [style.--thickness]="'4px'">
+                    <span class="text-xs">{{ goal.highProgress > 100 ? 100 : goal.highProgress }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Linear Progress Bars -->
+            <div class="space-y-2">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-info">Low Goal</span>
+                  <span class="font-semibold">{{ goal.currentPages }} / {{ goal.lowGoal }}</span>
+                </div>
+                <progress class="progress progress-info h-2" [value]="goal.lowProgress > 100 ? 100 : goal.lowProgress" max="100"></progress>
+              </div>
+              
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-warning">Medium Goal</span>
+                  <span class="font-semibold">{{ goal.currentPages }} / {{ goal.mediumGoal }}</span>
+                </div>
+                <progress class="progress progress-warning h-2" [value]="goal.mediumProgress > 100 ? 100 : goal.mediumProgress" max="100"></progress>
+              </div>
+              
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-error">High Goal</span>
+                  <span class="font-semibold">{{ goal.currentPages }} / {{ goal.highGoal }}</span>
+                </div>
+                <progress class="progress progress-error h-2" [value]="goal.highProgress > 100 ? 100 : goal.highProgress" max="100"></progress>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="filteredGoals.length === 0" class="text-center py-8 text-base-content/60">
+            <p>No goals found for the selected filter</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Books Tab -->
+    <div *ngIf="activeTab === 'books'">
+      <h2 class="text-2xl font-bold mb-4">📚 Book Statistics</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Avg Book Length</div>
+          <div class="stat-value">{{ statistics.books.averageBookLength }}</div>
+          <div class="stat-desc">pages</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Avg Reading Speed</div>
+          <div class="stat-value">{{ statistics.books.averageReadingSpeed }}</div>
+          <div class="stat-desc">pages per session</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-title">Completion Rate</div>
+          <div class="stat-value text-success">{{ statistics.books.completionRate }}%</div>
+        </div>
+      </div>
+
+      <!-- Status Over Time Chart (NEW) -->
+      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
+        <div class="card-body">
+          <h3 class="card-title">📈 Book Status Timeline ({{ getFilterDisplayName() }})</h3>
+          <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved over the selected period</p>
+          <div style="height: 400px;">
+            <canvas baseChart
+              [data]="statusTimelineChart"
+              [options]="lineChartOptions"
+              type="line">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.shortestBook">
+          <div class="card-body">
+            <h3 class="card-title">📖 Shortest Book</h3>
+            <p class="text-lg font-bold">{{ statistics.books.shortestBook.title }}</p>
+            <p>{{ statistics.books.shortestBook.authorName }}</p>
+            <p class="text-primary">{{ statistics.books.shortestBook.totalPages }} pages</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.longestBook">
+          <div class="card-body">
+            <h3 class="card-title">📚 Longest Book</h3>
+            <p class="text-lg font-bold">{{ statistics.books.longestBook.title }}</p>
+            <p>{{ statistics.books.longestBook.authorName }}</p>
+            <p class="text-primary">{{ statistics.books.longestBook.totalPages }} pages</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow-xl" *ngIf="statusChart">
+        <div class="card-body">
+          <h3 class="card-title">📊 Books by Status Distribution</h3>
+          <div style="height: 350px;">
+            <canvas baseChart
+              [data]="statusChart"
+              [options]="doughnutChartOptions"
+              type="doughnut">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Records Tab -->
+    <div *ngIf="activeTab === 'records'">
+      <h2 class="text-2xl font-bold mb-4">🏆 Personal Records</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.mostPagesInDay">
+          <div class="card-body">
+            <h3 class="card-title">📅 Most Pages in a Day</h3>
+            <p class="text-3xl font-bold text-primary">{{ statistics.records.mostPagesInDay.pages }}</p>
+            <p>{{ statistics.records.mostPagesInDay.date | date:'mediumDate' }}</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.mostPagesInMonth">
+          <div class="card-body">
+            <h3 class="card-title">📆 Most Pages in a Month</h3>
+            <p class="text-3xl font-bold text-secondary">{{ statistics.records.mostPagesInMonth.pages }}</p>
+            <p>{{ statistics.records.mostPagesInMonth.date | date:'MMMM yyyy' }}</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.fastestBookCompletion">
+          <div class="card-body">
+            <h3 class="card-title">⚡ Fastest Completion</h3>
+            <p class="text-lg font-bold">{{ statistics.records.fastestBookCompletion.bookTitle }}</p>
+            <p class="text-2xl font-bold text-accent">{{ statistics.records.fastestBookCompletion.days }} days</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title">📖 Total Reading Days</h3>
+            <p class="text-3xl font-bold text-success">{{ statistics.records.totalReadingDays }}</p>
+            <p>Days with reading sessions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

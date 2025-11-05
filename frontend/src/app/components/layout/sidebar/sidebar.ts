@@ -8,7 +8,8 @@ import {
   heroTag, 
   heroCalendarDays,
   heroBars3,
-  heroChartBarSquare
+  heroChartBarSquare,
+  heroChartBar
 } from '@ng-icons/heroicons/outline';
 
 interface NavItem {
@@ -32,7 +33,8 @@ interface NavItem {
       heroTag, 
       heroCalendarDays,
       heroBars3,
-      heroChartBarSquare
+      heroChartBarSquare,
+      heroChartBar
     })
   ]
 })
@@ -45,6 +47,7 @@ export class SidebarComponent {
     { path: '/books', label: 'Books', icon: 'heroBookOpen', tooltip: 'Manage your books' },
     { path: '/authors', label: 'Authors', icon: 'heroUserGroup', tooltip: 'Manage authors' },
     { path: '/tags', label: 'Tags', icon: 'heroTag', tooltip: 'Organize with tags' },
+    { path: '/statistics', label: 'Statistics', icon: 'heroChartBar', tooltip: 'Analytics & Stats' },
     { path: '/heatmap', label: 'Heatmap', icon: 'heroChartBarSquare', tooltip: 'Reading activity' }
   ];
 
