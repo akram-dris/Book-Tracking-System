@@ -126,20 +126,14 @@
                     [options]="doughnutOptions"
                     type="doughnut">
                   </canvas>
-                  <!-- Center Text -->
-                  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <div class="text-4xl font-bold text-primary">
-                      {{ (stats?.bookStatistics?.totalBooks || 0) }}
-                    </div>
-                    <div class="text-sm text-base-content/60 mt-1">Total Books</div>
-                  </div>
+
                 </div>
               </div>
 
               <!-- Bar Chart -->
               <div class="flex flex-col">
-                <h3 class="text-sm font-semibold text-base-content/70 mb-3 text-center">Status Breakdown</h3>
-                <div style="height: 250px; width: 100%;">
+
+                <div style="height: 280px; width: 100%;">
                   <canvas baseChart
                     [data]="monthlyActivityChart"
                     [options]="barOptions"
