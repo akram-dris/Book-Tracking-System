@@ -235,6 +235,13 @@ export class Dashboard implements OnInit {
     }
   };
 
+  getTotalBooks(): number {
+    if (!this.stats || !this.stats.books || !this.stats.books.booksByStatus) {
+      return 0;
+    }
+    return Object.values(this.stats.books.booksByStatus).reduce((sum: number, count: any) => sum + count, 0);
+  }
+
   constructor(
     private bookService: BookService,
     private statsService: StatisticService,
@@ -264,7 +271,7 @@ export class Dashboard implements OnInit {
 
   loadStats(): Promise<void> {
     return new Promise((resolve) => {
-      this.statsService.getGlobalStats().subscribe({
+      this.statsService.getCompleteStatistics().subscribe({
         next: (data) => {
           this.stats = data;
           this.prepareCharts();
@@ -272,23 +279,7 @@ export class Dashboard implements OnInit {
         },
         error: (err) => {
           console.error('Error loading stats', err);
-          // Calculate stats from books data instead
-          this.bookService.getBooks().subscribe({
-            next: (books) => {
-              this.stats = {
-                bookStatistics: {
-                  totalBooks: books.length,
-                  completedBooksCount: books.filter(b => b.status === ReadingStatus.Completed || b.status === ReadingStatus.Summarized).length,
-                  currentlyReadingCount: books.filter(b => b.status === ReadingStatus.CurrentlyReading).length,
-                  toReadBooksCount: books.filter(b => b.status === ReadingStatus.Planning || b.status === ReadingStatus.NotReading).length
-                },
-                totalPagesRead: 0
-              };
-              this.prepareCharts();
-              resolve();
-            },
-            error: () => resolve()
-          });
+          resolve();
         }
       });
     });
@@ -382,18 +373,18 @@ export class Dashboard implements OnInit {
     if (!this.stats) return;
 
     // Doughnut chart for reading status with modern colors
-    const bookStats = this.stats.bookStatistics || {};
-    const toRead = bookStats.toReadBooksCount || 0;
-    const reading = bookStats.currentlyReadingCount || 0;
-    const completed = bookStats.completedBooksCount || 0;
+    const booksByStatus = this.stats.books?.booksByStatus || {};
+    const toReadChart = (booksByStatus.Planning || 0) + (booksByStatus.NotReading || 0);
+    const readingChart = booksByStatus.CurrentlyReading || 0;
+    const completedChart = (booksByStatus.Completed || 0) + (booksByStatus.Summarized || 0);
 
     // Ensure we have at least some dummy data for visualization when no books
-    const hasData = toRead > 0 || reading > 0 || completed > 0;
+    const hasData = toReadChart > 0 || readingChart > 0 || completedChart > 0;
     
     this.readingProgressChart = {
       labels: ['📚 Planning', '📖 In Progress', '✅ Finished'],
       datasets: [{
-        data: hasData ? [toRead, reading, completed] : [1, 1, 1],
+        data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
           'rgba(96, 165, 250, 0.9)',   // Blue - brighter
           'rgba(251, 191, 36, 0.9)',   // Amber - brighter
@@ -426,7 +417,7 @@ export class Dashboard implements OnInit {
       labels: ['Planning', 'In Progress', 'Finished'],
       datasets: [{
         label: 'Books',
-        data: hasData ? [toRead, reading, completed] : [1, 1, 1],
+        data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
           'rgba(96, 165, 250, 0.9)',
           'rgba(251, 191, 36, 0.9)',
