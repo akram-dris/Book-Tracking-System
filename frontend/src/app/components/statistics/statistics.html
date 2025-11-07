@@ -1,95 +1,67 @@
 <div class="container mx-auto p-6">
   <!-- Page Header -->
   <div class="mb-8">
-    <h1 class="text-4xl font-bold mb-2">📊 Statistics & Analytics</h1>
-    <p class="text-base-content/60">Comprehensive insights into your reading journey</p>
+    
   </div>
 
   <!-- Global Filter Section - Modern Design -->
-  <div class="filter-section">
-    <div class="filter-card">
-      <div class="filter-header">
-        <div class="flex items-center gap-3">
-          <div class="filter-icon">
-            <ng-icon name="heroCalendar" size="1.5rem"></ng-icon>
-          </div>
-          <div>
-            <h3 class="filter-title">Time Period</h3>
-            <p class="filter-subtitle">Select your analysis timeframe</p>
-          </div>
-        </div>
-        <div class="current-filter-badge">
-          <ng-icon name="heroCalendar" class="mr-1.5" size="1rem"></ng-icon>
-          <span>{{ getDateRangeLabel() }}</span>
-        </div>
-      </div>
-      
-      <!-- Filter Pills -->
-      <div class="filter-pills">
+  <div class="mb-8">
+    <div class="join">
+      <button 
+        class="join-item btn"
+        [class.btn-active]="selectedFilter === 'day'"
+        (click)="onFilterChange('day')">
+        Today
+      </button>
+      <button 
+        class="join-item btn"
+        [class.btn-active]="selectedFilter === 'week'"
+        (click)="onFilterChange('week')">
+        Week
+      </button>
+      <button 
+        class="join-item btn"
+        [class.btn-active]="selectedFilter === 'month'"
+        (click)="onFilterChange('month')">
+        Month
+      </button>
+      <button 
+        class="join-item btn"
+        [class.btn-active]="selectedFilter === 'year'"
+        (click)="onFilterChange('year')">
+        Year
+      </button>
+      <button 
+        class="join-item btn"
+        [class.btn-active]="selectedFilter === 'custom'"
+        (click)="onFilterChange('custom')">
+        Custom
+      </button>
+    </div>
+
+    <!-- Custom Date Range Input - Angular Material Comparison Range Picker -->
+    <div *ngIf="showCustomDateInputs" class="mt-4">
+      <div class="flex items-center gap-4">
+        <mat-form-field appearance="outline" class="flex-grow">
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker" [max]="today" [comparisonStart]="comparisonStart" [comparisonEnd]="comparisonEnd">
+            <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
+            <input matEndDate [(ngModel)]="endDate" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
         <button 
-          class="filter-pill"
-          [class.active]="selectedFilter === 'day'"
-          (click)="onFilterChange('day')">
-          <span class="pill-label">Today</span>
-          <span class="pill-indicator"></span>
+          class="btn btn-primary"
+          (click)="applyCustomFilter()">
+          Apply
         </button>
         <button 
-          class="filter-pill"
-          [class.active]="selectedFilter === 'week'"
-          (click)="onFilterChange('week')">
-          <span class="pill-label">Week</span>
-          <span class="pill-indicator"></span>
-        </button>
-        <button 
-          class="filter-pill"
-          [class.active]="selectedFilter === 'month'"
-          (click)="onFilterChange('month')">
-          <span class="pill-label">Month</span>
-          <span class="pill-indicator"></span>
-        </button>
-        <button 
-          class="filter-pill"
-          [class.active]="selectedFilter === 'year'"
-          (click)="onFilterChange('year')">
-          <span class="pill-label">Year</span>
-          <span class="pill-indicator"></span>
-        </button>
-        <button 
-          class="filter-pill"
-          [class.active]="selectedFilter === 'custom'"
-          (click)="onFilterChange('custom')">
-          <span class="pill-label">Custom</span>
-          <span class="pill-indicator"></span>
-        </button>
-        <div class="divider-vertical"></div>
-        <button 
-          class="filter-pill reset"
+          class="btn btn-ghost"
           (click)="resetFilter()">
-          <ng-icon name="heroCalendar" size="1rem" class="mr-1"></ng-icon>
-          <span class="pill-label">Reset</span>
+          Reset
         </button>
-      </div>
-
-      <!-- Custom Date Range Input - Angular Material Comparison Range Picker -->
-      <div *ngIf="showCustomDateInputs" class="custom-date-section">
-        <div class="date-inputs-grid-material">
-          <mat-form-field appearance="outline" class="date-range-field">
-            <mat-label>Enter a date range</mat-label>
-            <mat-date-range-input [rangePicker]="picker" [max]="today" [comparisonStart]="comparisonStart" [comparisonEnd]="comparisonEnd">
-              <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
-              <input matEndDate [(ngModel)]="endDate" placeholder="End date">
-            </mat-date-range-input>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-date-range-picker #picker></mat-date-range-picker>
-          </mat-form-field>
-
-          <button 
-            class="apply-button"
-            (click)="applyCustomFilter()">
-            <span>Apply Filter</span>
-            <ng-icon name="heroCalendar" size="1rem" class="ml-2"></ng-icon>
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -105,105 +77,54 @@
   <!-- Statistics Content -->
   <div *ngIf="statistics && !loading">
     <!-- Modern Tabs Navigation -->
-    <div class="tabs-container">
-      <div class="tabs-wrapper">
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'overview'" 
-          (click)="setActiveTab('overview')">
-          <div class="tab-icon">
-            <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Overview</span>
-            <span class="tab-description">General statistics</span>
-          </div>
-        </button>
-        
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'authors'" 
-          (click)="setActiveTab('authors')">
-          <div class="tab-icon">
-            <ng-icon name="heroUsers" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Authors</span>
-            <span class="tab-description">By author</span>
-          </div>
-        </button>
-        
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'tags'" 
-          (click)="setActiveTab('tags')">
-          <div class="tab-icon">
-            <ng-icon name="heroTag" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Tags</span>
-            <span class="tab-description">By category</span>
-          </div>
-        </button>
-        
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'time'" 
-          (click)="setActiveTab('time')">
-          <div class="tab-icon">
-            <ng-icon name="heroClock" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Time</span>
-            <span class="tab-description">Time analysis</span>
-          </div>
-        </button>
-        
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'goals'" 
-          (click)="setActiveTab('goals')">
-          <div class="tab-icon">
-            <ng-icon name="heroFlag" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Goals</span>
-            <span class="tab-description">Progress tracking</span>
-          </div>
-        </button>
-        
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'books'" 
-          (click)="setActiveTab('books')">
-          <div class="tab-icon">
-            <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Books</span>
-            <span class="tab-description">Book insights</span>
-          </div>
-        </button>
-        
-        <button 
-          class="modern-tab" 
-          [class.active]="activeTab === 'records'" 
-          (click)="setActiveTab('records')">
-          <div class="tab-icon">
-            <ng-icon name="heroTrophy" size="1.25rem"></ng-icon>
-          </div>
-          <div class="tab-content">
-            <span class="tab-label">Records</span>
-            <span class="tab-description">Achievements</span>
-          </div>
-        </button>
-      </div>
-      <div class="tab-indicator" [style.transform]="getTabIndicatorTransform()"></div>
+    <div class="tabs tabs-boxed mb-8">
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'overview'" 
+        (click)="setActiveTab('overview')">
+        Overview
+      </button>
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'authors'" 
+        (click)="setActiveTab('authors')">
+        Authors
+      </button>
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'tags'" 
+        (click)="setActiveTab('tags')">
+        Tags
+      </button>
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'time'" 
+        (click)="setActiveTab('time')">
+        Time
+      </button>
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'goals'" 
+        (click)="setActiveTab('goals')">
+        Goals
+      </button>
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'books'" 
+        (click)="setActiveTab('books')">
+        Books
+      </button>
+      <button 
+        class="tab" 
+        [class.tab-active]="activeTab === 'records'" 
+        (click)="setActiveTab('records')">
+        Records
+      </button>
     </div>
 
     <!-- Overview Tab -->
     <div *ngIf="activeTab === 'overview'">
-      <h2 class="text-2xl font-bold mb-4">📖 Reading Overview</h2>
+      <h2 class="text-2xl font-bold mb-4">Reading Overview</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
@@ -259,7 +180,7 @@
 
     <!-- Authors Tab -->
     <div *ngIf="activeTab === 'authors'">
-      <h2 class="text-2xl font-bold mb-4">👥 Author Statistics</h2>
+      <h2 class="text-2xl font-bold mb-4">Author Statistics</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
@@ -282,7 +203,7 @@
 
       <div class="card bg-base-200 shadow-xl mb-4" *ngIf="authorBooksChart">
         <div class="card-body">
-          <h3 class="card-title">📊 Top Authors by Books</h3>
+          <h3 class="card-title">Top Authors by Books</h3>
           <div style="height: 300px;">
             <canvas baseChart
               [data]="authorBooksChart"
@@ -315,7 +236,7 @@
 
     <!-- Tags Tab -->
     <div *ngIf="activeTab === 'tags'">
-      <h2 class="text-2xl font-bold mb-4">🏷️ Tag Statistics</h2>
+      <h2 class="text-2xl font-bold mb-4">Tag Statistics</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
@@ -377,7 +298,7 @@
 
     <!-- Time Analysis Tab -->
     <div *ngIf="activeTab === 'time'">
-      <h2 class="text-2xl font-bold mb-4">⏰ Time-Based Analysis</h2>
+      <h2 class="text-2xl font-bold mb-4">Time-Based Analysis</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
@@ -395,7 +316,7 @@
 
       <div class="card bg-base-200 shadow-xl mb-4" *ngIf="monthlyTrendChart">
         <div class="card-body">
-          <h3 class="card-title">📈 Monthly Reading Trend</h3>
+          <h3 class="card-title">Monthly Reading Trend</h3>
           <div style="height: 300px;">
             <canvas baseChart
               [data]="monthlyTrendChart"
@@ -408,7 +329,7 @@
 
       <div class="card bg-base-200 shadow-xl" *ngIf="weeklyPatternChart">
         <div class="card-body">
-          <h3 class="card-title">📊 Weekly Reading Pattern</h3>
+          <h3 class="card-title">Weekly Reading Pattern</h3>
           <div style="height: 300px;">
             <canvas baseChart
               [data]="weeklyPatternChart"
@@ -422,7 +343,7 @@
 
     <!-- Goals Tab -->
     <div *ngIf="activeTab === 'goals'">
-      <h2 class="text-2xl font-bold mb-4">🎯 Goal Performance</h2>
+      <h2 class="text-2xl font-bold mb-4">Goal Performance</h2>
       
       <!-- Overall Goal Achievement Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -455,7 +376,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div class="card bg-base-200 shadow-xl" *ngIf="goalAchievementChart">
           <div class="card-body">
-            <h3 class="card-title">📊 Goal Achievement Overview</h3>
+            <h3 class="card-title">Goal Achievement Overview</h3>
             <div style="height: 300px;">
               <canvas baseChart
                 [data]="goalAchievementChart"
@@ -468,7 +389,7 @@
 
         <div class="card bg-base-200 shadow-xl" *ngIf="goalCompletionChart">
           <div class="card-body">
-            <h3 class="card-title">🎯 Completion Distribution</h3>
+            <h3 class="card-title">Completion Distribution</h3>
             <div style="height: 300px;">
               <canvas baseChart
                 [data]="goalCompletionChart"
@@ -484,7 +405,7 @@
       <div class="card bg-base-200 shadow-xl" *ngIf="statistics.goals.currentGoalsProgress.length > 0">
         <div class="card-body">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
-            <h3 class="card-title">📚 Current Reading Goals</h3>
+            <h3 class="card-title">Current Reading Goals</h3>
             <div class="flex gap-2 w-full md:w-auto">
               <!-- Status Filter -->
               <select class="select select-bordered select-sm flex-1 md:w-48" [(ngModel)]="selectedStatusFilter" (change)="filterGoals()">
@@ -586,7 +507,7 @@
 
     <!-- Books Tab -->
     <div *ngIf="activeTab === 'books'">
-      <h2 class="text-2xl font-bold mb-4">📚 Book Statistics</h2>
+      <h2 class="text-2xl font-bold mb-4">Book Statistics</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
@@ -610,7 +531,7 @@
       <!-- Status Over Time Chart (NEW) -->
       <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
         <div class="card-body">
-          <h3 class="card-title">📈 Book Status Timeline ({{ getFilterDisplayName() }})</h3>
+          <h3 class="card-title">Book Status Timeline ({{ getFilterDisplayName() }})</h3>
           <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved over the selected period</p>
           <div style="height: 400px;">
             <canvas baseChart
@@ -625,7 +546,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.shortestBook">
           <div class="card-body">
-            <h3 class="card-title">📖 Shortest Book</h3>
+            <h3 class="card-title">Shortest Book</h3>
             <p class="text-lg font-bold">{{ statistics.books.shortestBook.title }}</p>
             <p>{{ statistics.books.shortestBook.authorName }}</p>
             <p class="text-primary">{{ statistics.books.shortestBook.totalPages }} pages</p>
@@ -634,7 +555,7 @@
 
         <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.longestBook">
           <div class="card-body">
-            <h3 class="card-title">📚 Longest Book</h3>
+            <h3 class="card-title">Longest Book</h3>
             <p class="text-lg font-bold">{{ statistics.books.longestBook.title }}</p>
             <p>{{ statistics.books.longestBook.authorName }}</p>
             <p class="text-primary">{{ statistics.books.longestBook.totalPages }} pages</p>
@@ -644,7 +565,7 @@
 
       <div class="card bg-base-200 shadow-xl" *ngIf="statusChart">
         <div class="card-body">
-          <h3 class="card-title">📊 Books by Status Distribution</h3>
+          <h3 class="card-title">Books by Status Distribution</h3>
           <div style="height: 350px;">
             <canvas baseChart
               [data]="statusChart"

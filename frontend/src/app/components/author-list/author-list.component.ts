@@ -7,7 +7,7 @@ import { GetAuthor } from '../../models/get-author.model';
 import { environment } from 'src/environments/environment';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
+import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus } from '@ng-icons/heroicons/outline';
 import { BookService } from '../../services/book.service';
 import { forkJoin } from 'rxjs';
 
@@ -21,7 +21,7 @@ interface AuthorWithCount extends GetAuthor {
   imports: [RouterModule, FormsModule, NgIconComponent, DatePipe],
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.css'],
-  viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown })]
+  viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus })]
 })
 export class AuthorListComponent implements OnInit {
   authors: AuthorWithCount[] = [];

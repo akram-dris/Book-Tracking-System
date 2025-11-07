@@ -1,11 +1,6 @@
 <div class="container mx-auto px-4 py-8">
   <!-- Header -->
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Authors</h1>
-    <a routerLink="/authors/new" class="btn btn-primary gap-2">
-      <ng-icon name="heroUserPlus" size="1.25rem"></ng-icon>
-      Add Author
-    </a>
   </div>
 
   <!-- Search & Sort Bar -->
@@ -134,10 +129,9 @@
       </div>
       <h3 class="text-xl font-semibold mb-2">No authors yet</h3>
       <p class="text-base-content/70 mb-4">Start by adding your first author</p>
-      <a routerLink="/authors/new" class="btn btn-primary gap-2">
-        <ng-icon name="heroUserPlus" size="1.25rem"></ng-icon>
-        Add Author
-      </a>
     </div>
   }
 </div>
+<a routerLink="/authors/new" class="btn btn-primary btn-circle fixed bottom-6 right-6 shadow-lg">
+  <ng-icon name="heroPlus" size="1.5rem"></ng-icon>
+</a>

@@ -1,36 +1,24 @@
 <div class="p-6 max-w-7xl mx-auto" @fadeIn>
   <!-- Header Section -->
-  <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-    <div>
-      <h2 class="text-3xl font-bold">📖 Reading Activity</h2>
-      <p class="text-base-content/70 mt-1">Your reading journey through the year</p>
-    </div>
-
+  <div class="flex flex-col md:flex-row items-center justify-center mb-8 gap-4">
     <!-- Year Navigation -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center justify-center gap-3">
       <button 
-        class="btn btn-ghost btn-sm btn-circle"
+        class="btn btn-ghost btn-lg btn-circle"
         (click)="previousYear()"
         [disabled]="loading"
       >
-        <ng-icon name="heroChevronLeft" size="20"></ng-icon>
+        <ng-icon name="heroChevronLeft" size="24"></ng-icon>
       </button>
       
-      <select 
-        class="select select-bordered select-sm w-28"
-        [(ngModel)]="currentYear" 
-        (change)="onYearChange()"
-        [disabled]="loading"
-      >
-        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-      </select>
+      <span class="text-2xl font-bold w-28 text-center">{{ currentYear }}</span>
       
       <button 
-        class="btn btn-ghost btn-sm btn-circle"
+        class="btn btn-ghost btn-lg btn-circle"
         (click)="nextYear()"
         [disabled]="loading"
       >
-        <ng-icon name="heroChevronRight" size="20"></ng-icon>
+        <ng-icon name="heroChevronRight" size="24"></ng-icon>
       </button>
     </div>
   </div>

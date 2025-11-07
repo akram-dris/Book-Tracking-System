@@ -78,43 +78,10 @@ export class Dashboard implements OnInit {
   doughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '65%',
+    cutout: '75%',
     plugins: {
       legend: {
-        display: true,
-        position: 'right',
-        labels: {
-          padding: 20,
-          font: {
-            size: 14,
-            weight: 600,
-            family: "'Inter', sans-serif"
-          },
-          color: 'rgba(255, 255, 255, 0.95)',
-          usePointStyle: true,
-          pointStyle: 'circle',
-          boxWidth: 12,
-          boxHeight: 12,
-          generateLabels: (chart: any) => {
-            const data = chart.data;
-            if (data.labels.length && data.datasets.length) {
-              return data.labels.map((label: string, i: number) => {
-                const value = data.datasets[0].data[i];
-                const total = data.datasets[0].data.reduce((a: number, b: number) => a + b, 0);
-                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                return {
-                  text: `${label}: ${value} (${percentage}%)`,
-                  fillStyle: data.datasets[0].backgroundColor[i],
-                  strokeStyle: data.datasets[0].borderColor[i],
-                  lineWidth: 2,
-                  hidden: false,
-                  index: i
-                };
-              });
-            }
-            return [];
-          }
-        }
+        display: false,
       },
       tooltip: {
         enabled: true,
@@ -189,15 +156,15 @@ export class Dashboard implements OnInit {
         ticks: {
           stepSize: 1,
           font: { 
-            size: 13,
+            size: 12,
             weight: 500,
             family: "'Inter', sans-serif"
           },
-          color: 'rgba(255, 255, 255, 0.8)',
-          padding: 8
+          color: 'rgba(255, 255, 255, 0.7)',
+          padding: 10
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.08)',
+          color: 'rgba(255, 255, 255, 0.1)',
           lineWidth: 1
         },
         border: {
@@ -207,12 +174,12 @@ export class Dashboard implements OnInit {
       x: {
         ticks: {
           font: { 
-            size: 13,
+            size: 12,
             weight: 500,
             family: "'Inter', sans-serif"
           },
-          color: 'rgba(255, 255, 255, 0.8)',
-          padding: 8
+          color: 'rgba(255, 255, 255, 0.7)',
+          padding: 10
         },
         grid: {
           display: false
@@ -223,10 +190,10 @@ export class Dashboard implements OnInit {
       }
     },
     animation: {
-      duration: 2000,
-      easing: 'easeInOutCubic',
+      duration: 1500,
+      easing: 'easeOutCubic',
       delay: (context: any) => {
-        return context.dataIndex * 300;
+        return context.dataIndex * 200;
       }
     },
     interaction: {
@@ -234,6 +201,13 @@ export class Dashboard implements OnInit {
       intersect: false
     }
   };
+
+  getTotalBooks(): number {
+    if (!this.stats || !this.stats.books || !this.stats.books.booksByStatus) {
+      return 0;
+    }
+    return Object.values(this.stats.books.booksByStatus).reduce((sum: number, count: any) => sum + count, 0);
+  }
 
   constructor(
     private bookService: BookService,
@@ -264,7 +238,7 @@ export class Dashboard implements OnInit {
 
   loadStats(): Promise<void> {
     return new Promise((resolve) => {
-      this.statsService.getGlobalStats().subscribe({
+      this.statsService.getCompleteStatistics().subscribe({
         next: (data) => {
           this.stats = data;
           this.prepareCharts();
@@ -272,23 +246,7 @@ export class Dashboard implements OnInit {
         },
         error: (err) => {
           console.error('Error loading stats', err);
-          // Calculate stats from books data instead
-          this.bookService.getBooks().subscribe({
-            next: (books) => {
-              this.stats = {
-                bookStatistics: {
-                  totalBooks: books.length,
-                  completedBooksCount: books.filter(b => b.status === ReadingStatus.Completed || b.status === ReadingStatus.Summarized).length,
-                  currentlyReadingCount: books.filter(b => b.status === ReadingStatus.CurrentlyReading).length,
-                  toReadBooksCount: books.filter(b => b.status === ReadingStatus.Planning || b.status === ReadingStatus.NotReading).length
-                },
-                totalPagesRead: 0
-              };
-              this.prepareCharts();
-              resolve();
-            },
-            error: () => resolve()
-          });
+          resolve();
         }
       });
     });
@@ -382,18 +340,18 @@ export class Dashboard implements OnInit {
     if (!this.stats) return;
 
     // Doughnut chart for reading status with modern colors
-    const bookStats = this.stats.bookStatistics || {};
-    const toRead = bookStats.toReadBooksCount || 0;
-    const reading = bookStats.currentlyReadingCount || 0;
-    const completed = bookStats.completedBooksCount || 0;
+    const booksByStatus = this.stats.books?.booksByStatus || {};
+    const toReadChart = (booksByStatus.Planning || 0) + (booksByStatus.NotReading || 0);
+    const readingChart = booksByStatus.CurrentlyReading || 0;
+    const completedChart = (booksByStatus.Completed || 0) + (booksByStatus.Summarized || 0);
 
     // Ensure we have at least some dummy data for visualization when no books
-    const hasData = toRead > 0 || reading > 0 || completed > 0;
+    const hasData = toReadChart > 0 || readingChart > 0 || completedChart > 0;
     
     this.readingProgressChart = {
-      labels: ['📚 Planning', '📖 In Progress', '✅ Finished'],
+     
       datasets: [{
-        data: hasData ? [toRead, reading, completed] : [1, 1, 1],
+        data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
           'rgba(96, 165, 250, 0.9)',   // Blue - brighter
           'rgba(251, 191, 36, 0.9)',   // Amber - brighter
@@ -426,7 +384,7 @@ export class Dashboard implements OnInit {
       labels: ['Planning', 'In Progress', 'Finished'],
       datasets: [{
         label: 'Books',
-        data: hasData ? [toRead, reading, completed] : [1, 1, 1],
+        data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
           'rgba(96, 165, 250, 0.9)',
           'rgba(251, 191, 36, 0.9)',

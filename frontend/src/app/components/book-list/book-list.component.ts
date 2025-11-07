@@ -14,7 +14,7 @@ import { BookStatsComponent, BookStatistics } from './book-stats/book-stats';
 import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash } from '@ng-icons/heroicons/outline';
+import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus } from '@ng-icons/heroicons/outline';
 
 interface BookWithProgress extends GetBook {
   progressPercentage?: number;
@@ -41,7 +41,7 @@ type ViewMode = 'grid' | 'list';
   ],
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.css'],
-  viewProviders: [provideIcons({ heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash })]
+  viewProviders: [provideIcons({ heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus })]
 })
 export class BookListComponent implements OnInit {
   books: BookWithProgress[] = [];

@@ -38,9 +38,6 @@ export class StatisticService {
     return params;
   }
 
-  getGlobalStats(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/stats`);
-  }
 
   getReadingOverview(filter?: StatisticsFilter): Observable<ReadingOverview> {
     const params = this.buildFilterParams(filter);

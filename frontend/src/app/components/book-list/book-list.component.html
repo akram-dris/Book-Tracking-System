@@ -1,12 +1,6 @@
 <div class="container mx-auto px-4 py-8">
   <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Books</h1>
-    <div class="flex gap-2">
-      <a routerLink="/books/new" class="btn btn-primary">Add Book</a>
-      <a routerLink="/sessions/log" class="btn btn-secondary">Log Session</a>
-    </div>
-  </div>
+
 
   <!-- Statistics -->
   <app-book-stats [stats]="bookStats"></app-book-stats>
@@ -62,9 +56,8 @@
       [icon]="'heroBookOpen'"
       [title]="'No books yet'"
       [description]="'Start building your reading library by adding your first book!'"
-      [actionText]="'Add Book'"
     >
-      <a routerLink="/books/new" class="btn btn-primary">Add Your First Book</a>
+
     </app-empty-state>
   }
 
@@ -134,7 +127,7 @@
               <div class="dropdown dropdown-end">
                 <button tabindex="0" class="btn btn-circle btn-sm bg-white/90 hover:bg-white border-0 shadow-xl backdrop-blur-sm"
                         (click)="$event.stopPropagation()">
-                  <ng-icon name="heroEllipsisVertical" size="1rem" class="text-base-content"></ng-icon>
+                  <ng-icon name="heroEllipsisVertical" size="1rem"></ng-icon>
                 </button>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-2xl bg-base-100 rounded-box w-44 mt-1 border border-base-300">
                   <li><a [routerLink]="['/books', book.id]" class="gap-2">
@@ -202,4 +195,7 @@
       </div>
     }
   }
+  <a routerLink="/books/new" class="btn btn-primary btn-circle fixed bottom-6 right-6 shadow-lg">
+    <ng-icon name="heroPlus" size="1.5rem"></ng-icon>
+  </a>
 </div>
