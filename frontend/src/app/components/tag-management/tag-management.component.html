@@ -1,18 +1,14 @@
 
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+<div class="min-h-screen  from-gray-900 via-gray-800 to-gray-900 p-6">
   <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold text-white mb-2">🏷️ Tag Management</h1>
-      <p class="text-gray-400">Organize your books with custom tags</p>
-    </div>
+    
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Add/Edit Tag Form -->
       <div class="lg:col-span-1">
         <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
@@ -27,7 +23,7 @@
                 <input 
                   type="text" 
                   formControlName="name" 
-                  class="w-full bg-gray-900/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  class="w-full bg-gray-900/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   placeholder="e.g., Science Fiction, Mystery" 
                 />
                 <div *ngIf="tagForm.get('name')?.invalid && tagForm.get('name')?.touched" class="text-red-400 text-sm mt-2 flex items-center gap-1">
@@ -48,7 +44,7 @@
                 </button>
                 <button 
                   type="submit" 
-                  class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   [disabled]="tagForm.invalid || isLoading">
                   <span *ngIf="isLoading" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   {{ isEditingTag ? 'Update' : 'Add Tag' }}
@@ -90,11 +86,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" *ngIf="tags.length > 0">
             <div 
               *ngFor="let tag of tags"
-              class="group bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10">
+              class="group bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/10">
               <div class="flex items-start justify-between">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 mb-2">
-                    <span class="inline-block w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></span>
+                    <span class="inline-block w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></span>
                     <h3 class="text-white font-semibold truncate">{{ tag.name }}</h3>
                   </div>
                   <div class="flex items-center gap-2 text-sm text-gray-400">
