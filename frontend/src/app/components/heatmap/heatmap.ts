@@ -107,10 +107,6 @@ export class HeatmapComponent implements OnInit {
     this.totalDays = Object.values(this.heatmapData).filter(pages => pages > 0).length;
   }
 
-  onYearChange(): void {
-    this.loadHeatmapData();
-  }
-
   previousYear(): void {
     this.currentYear--;
     this.loadHeatmapData();

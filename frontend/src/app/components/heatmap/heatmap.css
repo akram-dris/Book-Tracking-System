@@ -55,30 +55,30 @@
 }
 
 .day-1-10 {
-  background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
-  color: #22543d;
+  background: linear-gradient(135deg, #90cdf4 0%, #63b3ed 100%);
+  color: #1a365d;
 }
 
 .day-11-25 {
-  background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+  background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
   color: white;
 }
 
 .day-26-50 {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
   color: white;
 }
 
 .day-51-100 {
-  background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+  background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
   color: white;
 }
 
 .day-100-plus {
-  background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+  background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%);
   color: white;
   font-weight: bold;
-  box-shadow: 0 0 15px rgba(47, 133, 90, 0.4);
+  box-shadow: 0 0 15px rgba(43, 108, 176, 0.4);
 }
 
 /* Responsive Adjustments */
