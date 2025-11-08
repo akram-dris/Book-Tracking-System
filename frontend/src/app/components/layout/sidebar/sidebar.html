@@ -28,6 +28,7 @@
         <li>
           <a [routerLink]="item.path" 
              routerLinkActive="active bg-primary text-primary-content"
+             [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
              [attr.data-tip]="isCollapsed() ? item.tooltip : null"
              [class.tooltip]="isCollapsed()"
              [class.tooltip-right]="isCollapsed()"
