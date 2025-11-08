@@ -47,7 +47,7 @@
 
   <!-- Calendar Grid -->
   <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
-    <div class="card bg-base-200 p-4" *ngFor="let month of calendarMonths">
+    <div class="card bg-base-300 p-4" *ngFor="let month of calendarMonths">
       <h3 class="text-center font-semibold text-lg mb-3">{{ month.monthName }}</h3>
       <div class="grid grid-cols-7 text-center font-semibold mb-2 text-xs">
         <div class="p-1 text-base-content/60">S</div>

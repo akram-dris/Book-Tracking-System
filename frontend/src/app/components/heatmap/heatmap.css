@@ -28,7 +28,7 @@
   transform: translateX(-50%);
   margin-bottom: 0.5rem;
   padding: 0.75rem;
-  background-color: hsl(var(--b3));
+  background-color: hsl(var(--p));
   font-size: 0.75rem;
   border-radius: 0.5rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -50,8 +50,13 @@
 
 /* Color scale for pages read - Enhanced with better gradients */
 .day-0 {
-  background-color: rgba(var(--bc) / 0.1);
-  color: rgba(var(--bc) / 0.4);
+  background-color: transparent;
+  color: hsl(var(--n)); /* Black text for light theme */
+}
+
+.day-0:hover {
+  background-color: hsl(var(--b1)); /* White background */
+  color: hsl(var(--n)); /* Neutral/dark gray text */
 }
 
 .day-1-10 {
