@@ -15,15 +15,11 @@
           <div class="avatar">
             <div class="w-48 rounded-2xl ring ring-primary ring-offset-base-100 ring-offset-4 shadow-2xl">
               <img 
-                *ngIf="author.imageUrl" 
-                [src]="rootUrl + author.imageUrl" 
+                [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'" 
                 [alt]="author.name"
                 class="object-cover"
                 (error)="onImageError($event)"
               />
-              <div *ngIf="!author.imageUrl" class="bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <span class="text-6xl font-bold text-white">{{ author.name.charAt(0).toUpperCase() }}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -129,14 +125,10 @@
         <!-- Book Cover -->
         <figure class="relative aspect-[2/3] overflow-hidden bg-base-300">
           <img 
-            *ngIf="book.imageUrl" 
-            [src]="rootUrl + book.imageUrl" 
+            [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
             [alt]="book.title"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          <div *ngIf="!book.imageUrl" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-            <ng-icon name="heroBookOpen" size="48" class="text-base-content/30"></ng-icon>
-          </div>
           
           <!-- Status Badge -->
           <div class="absolute top-2 right-2">

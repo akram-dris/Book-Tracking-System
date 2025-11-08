@@ -70,18 +70,12 @@
         >
           <!-- Author Image -->
           <figure class="h-64 bg-base-300 relative overflow-hidden">
-            @if (author.imageUrl) {
-              <img 
-                [src]="rootUrl + author.imageUrl" 
-                [alt]="author.name" 
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                (error)="onImageError($event, author)"
-              />
-            } @else {
-              <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                <span class="text-6xl font-bold text-base-content/30">{{ author.name.charAt(0) }}</span>
-              </div>
-            }
+            <img 
+              [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'" 
+              [alt]="author.name" 
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              (error)="onImageError($event, author)"
+            />
             
             <!-- Hover Overlay -->
             <div class="absolute inset-0 bg-black/60 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
