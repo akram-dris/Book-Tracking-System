@@ -1,7 +1,7 @@
 <div *ngIf="author" class="min-h-screen bg-base-200">
   <!-- Hero Section -->
   <div class="bg-gradient-to-r from-primary/20 to-secondary/20 relative">
-    <div class="container mx-auto px-4 py-8">
+    <div>
       <!-- Back Button -->
       <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 mb-4">
         <ng-icon name="heroArrowLeft" size="20"></ng-icon>
@@ -105,7 +105,7 @@
   </div>
 
   <!-- Books Section -->
-  <div class="container mx-auto px-4 py-8">
+  <div>
     <h2 class="text-3xl font-bold mb-6">Books by {{ author.name }}</h2>
     
     <!-- Empty State -->
