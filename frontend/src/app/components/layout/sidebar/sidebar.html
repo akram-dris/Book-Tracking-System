@@ -1,4 +1,4 @@
-<aside [class.w-16]="isCollapsed()" [class.w-64]="!isCollapsed()" 
+<aside [class.w-16]="isCollapsed()" [class.w-52]="!isCollapsed()" 
        class="flex flex-col h-full bg-base-200 border-r border-base-300 transition-all duration-300 ease-in-out">
   <!-- Header -->
   <div class="flex items-center justify-between px-4 h-16 border-b border-base-300">
@@ -32,7 +32,8 @@
              [attr.data-tip]="isCollapsed() ? item.tooltip : null"
              [class.tooltip]="isCollapsed()"
              [class.tooltip-right]="isCollapsed()"
-             class="flex items-center gap-3 rounded-lg transition-all duration-200 hover:bg-base-300">
+             class="flex items-center rounded-lg transition-all duration-200 hover:bg-base-300"
+             [class.gap-3]="!isCollapsed()">
             <ng-icon [name]="item.icon" size="1.25rem"></ng-icon>
             @if (!isCollapsed()) {
               <span class="font-medium">{{ item.label }}</span>
