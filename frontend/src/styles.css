@@ -11,52 +11,52 @@
 }
 
 [data-theme="light"] {
-  --p: 217 91% 59%; /* Primary - hsl(217, 91%, 59%) - blue-500 */
+  --p: 217 91% 59%; /* Primary - blue-500 */
   --pf: 217 91% 50%; /* Primary focus - darker blue */
-  --s: 263 70% 50%; /* Secondary - hsl(263, 70%, 50%) - violet-700 */
-  --sf: 263 70% 42%; /* Secondary focus - darker violet */
-  --a: 36 100% 50%; /* Accent - hsl(36, 100%, 50%) - amber-500 */
-  --af: 36 100% 42%; /* Accent focus - darker amber */
-  --n: 215 14% 34%; /* Neutral - hsl(215, 14%, 34%) - gray-700 */
-  --nf: 215 14% 26%; /* Neutral focus - darker gray */
-  --b1: 0 0% 100%; /* Base-100 - hsl(0, 0%, 100%) - white */
-  --b2: 210 40% 96%; /* Base-200 - hsl(210, 40%, 96%) - gray-100 */
-  --b3: 210 40% 90%; /* Base-300 - hsl(210, 40%, 90%) - gray-200 */
-  --in: 217 91% 59%; /* Info - hsl(217, 91%, 59%) - blue-500 */
-  --su: 142 76% 36%; /* Success - hsl(142, 76%, 36%) - green-600 */
-  --wa: 48 96% 50%; /* Warning - hsl(48, 96%, 50%) - yellow-500 */
-  --er: 0 84% 60%; /* Error - hsl(0, 84%, 60%) - red-600 */
+  --s: 262 83% 58%; /* Secondary - deep purple for Summarized */
+  --sf: 262 83% 48%; /* Secondary focus - darker purple */
+  --a: 160 84% 39%; /* Accent - emerald green for Completed */
+  --af: 160 84% 32%; /* Accent focus - darker emerald */
+  --n: 220 9% 46%; /* Neutral - slate gray for Not Reading */
+  --nf: 220 9% 38%; /* Neutral focus - darker slate */
+  --b1: 0 0% 100%; /* Base-100 - white */
+  --b2: 210 40% 96%; /* Base-200 - gray-100 */
+  --b3: 210 40% 90%; /* Base-300 - gray-200 */
+  --in: 199 89% 48%; /* Info - sky blue for Planning */
+  --su: 142 76% 36%; /* Success - green-600 (kept for other uses) */
+  --wa: 24 95% 53%; /* Warning - coral orange for Currently Reading */
+  --er: 0 84% 60%; /* Error - red-600 */
 
   /* Text colors for contrast */
   --pc: 0 0% 100%; /* Primary content - white */
   --sc: 0 0% 100%; /* Secondary content - white */
   --ac: 0 0% 100%; /* Accent content - white */
-  --nc: 215 14% 34%; /* Neutral content - gray-700 */
+  --nc: 0 0% 100%; /* Neutral content - white */
   --bc: 215 14% 34%; /* Base content - gray-700 */
 }
 
 [data-theme="dark"] {
   --p: 217 91% 65%; /* Primary - brighter blue for dark mode */
   --pf: 217 91% 75%; /* Primary focus - even brighter blue */
-  --s: 263 70% 60%; /* Secondary - brighter violet */
-  --sf: 263 70% 70%; /* Secondary focus - brighter violet */
-  --a: 36 100% 60%; /* Accent - brighter amber */
-  --af: 36 100% 70%; /* Accent focus - brighter amber */
-  --n: 220 15% 25%; /* Neutral - adjusted gray */
-  --nf: 220 15% 35%; /* Neutral focus - lighter gray */
-  --b1: 222 47% 11%; /* Base-100 - hsl(222, 47%, 11%) - slate-900 */
-  --b2: 222 47% 15%; /* Base-200 - hsl(222, 47%, 15%) - slate-800 */
-  --b3: 222 47% 20%; /* Base-300 - hsl(222, 47%, 20%) - slate-700 */
-  --in: 217 91% 65%; /* Info - brighter blue */
-  --su: 142 76% 46%; /* Success - brighter green */
-  --wa: 48 96% 60%; /* Warning - brighter yellow */
+  --s: 262 83% 68%; /* Secondary - brighter purple for Summarized */
+  --sf: 262 83% 78%; /* Secondary focus - even brighter purple */
+  --a: 160 84% 49%; /* Accent - brighter emerald for Completed */
+  --af: 160 84% 59%; /* Accent focus - even brighter emerald */
+  --n: 220 9% 56%; /* Neutral - lighter slate gray for Not Reading */
+  --nf: 220 9% 66%; /* Neutral focus - even lighter slate */
+  --b1: 222 47% 11%; /* Base-100 - slate-900 */
+  --b2: 222 47% 15%; /* Base-200 - slate-800 */
+  --b3: 222 47% 20%; /* Base-300 - slate-700 */
+  --in: 199 89% 58%; /* Info - brighter sky blue for Planning */
+  --su: 142 76% 46%; /* Success - brighter green (kept for other uses) */
+  --wa: 24 95% 63%; /* Warning - brighter coral for Currently Reading */
   --er: 0 84% 70%; /* Error - brighter red */
 
   /* Text colors for contrast */
   --pc: 222 47% 11%; /* Primary content - dark for contrast */
   --sc: 222 47% 11%; /* Secondary content - dark for contrast */
   --ac: 222 47% 11%; /* Accent content - dark for contrast */
-  --nc: 210 40% 96%; /* Neutral content - light gray */
+  --nc: 222 47% 11%; /* Neutral content - dark for contrast */
   --bc: 210 40% 96%; /* Base content - light gray */
 }
 
@@ -353,6 +353,66 @@ button:active:not(:disabled),
 
 .avatar:hover {
   @apply ring-2 ring-primary ring-offset-2 ring-offset-base-100;
+}
+
+/* ============================================
+   STATUS BADGE COLORS
+   Ensure badges use our custom theme colors
+   ============================================ */
+
+.badge-neutral {
+  @apply bg-neutral text-neutral-content;
+}
+
+.badge-info {
+  @apply bg-info text-info-content;
+}
+
+.badge-warning {
+  @apply bg-warning text-warning-content;
+}
+
+.badge-accent {
+  @apply bg-accent text-accent-content;
+}
+
+.badge-secondary {
+  @apply bg-secondary text-secondary-content;
+}
+
+/* Ensure info uses our custom info color (sky blue) */
+.badge-info,
+[class*="badge-info"] {
+  background-color: hsl(var(--in)) !important;
+  color: white !important;
+}
+
+/* Ensure warning uses our coral orange */
+.badge-warning,
+[class*="badge-warning"] {
+  background-color: hsl(var(--wa)) !important;
+  color: white !important;
+}
+
+/* Ensure accent uses our emerald green */
+.badge-accent,
+[class*="badge-accent"] {
+  background-color: hsl(var(--a)) !important;
+  color: hsl(var(--ac)) !important;
+}
+
+/* Ensure secondary uses our deep purple */
+.badge-secondary,
+[class*="badge-secondary"] {
+  background-color: hsl(var(--s)) !important;
+  color: hsl(var(--sc)) !important;
+}
+
+/* Ensure neutral uses our slate gray */
+.badge-neutral,
+[class*="badge-neutral"] {
+  background-color: hsl(var(--n)) !important;
+  color: hsl(var(--nc)) !important;
 }
 
 /* Custom scrollbar */
