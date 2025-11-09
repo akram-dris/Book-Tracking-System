@@ -12,9 +12,13 @@
 
 [data-theme="light"] {
   --p: 217 91% 59%; /* Primary - hsl(217, 91%, 59%) - blue-500 */
+  --pf: 217 91% 50%; /* Primary focus - darker blue */
   --s: 263 70% 50%; /* Secondary - hsl(263, 70%, 50%) - violet-700 */
+  --sf: 263 70% 42%; /* Secondary focus - darker violet */
   --a: 36 100% 50%; /* Accent - hsl(36, 100%, 50%) - amber-500 */
+  --af: 36 100% 42%; /* Accent focus - darker amber */
   --n: 215 14% 34%; /* Neutral - hsl(215, 14%, 34%) - gray-700 */
+  --nf: 215 14% 26%; /* Neutral focus - darker gray */
   --b1: 0 0% 100%; /* Base-100 - hsl(0, 0%, 100%) - white */
   --b2: 210 40% 96%; /* Base-200 - hsl(210, 40%, 96%) - gray-100 */
   --b3: 210 40% 90%; /* Base-300 - hsl(210, 40%, 90%) - gray-200 */
@@ -32,24 +36,28 @@
 }
 
 [data-theme="dark"] {
-  --p: 217 91% 59%; /* Primary - hsl(217, 91%, 59%) - blue-500 */
-  --s: 263 70% 50%; /* Secondary - hsl(263, 70%, 50%) - violet-700 */
-  --a: 36 100% 50%; /* Accent - hsl(36, 100%, 50%) - amber-500 */
-  --n: 215 14% 34%; /* Neutral - hsl(215, 14%, 34%) - gray-700 */
+  --p: 217 91% 65%; /* Primary - brighter blue for dark mode */
+  --pf: 217 91% 75%; /* Primary focus - even brighter blue */
+  --s: 263 70% 60%; /* Secondary - brighter violet */
+  --sf: 263 70% 70%; /* Secondary focus - brighter violet */
+  --a: 36 100% 60%; /* Accent - brighter amber */
+  --af: 36 100% 70%; /* Accent focus - brighter amber */
+  --n: 220 15% 25%; /* Neutral - adjusted gray */
+  --nf: 220 15% 35%; /* Neutral focus - lighter gray */
   --b1: 222 47% 11%; /* Base-100 - hsl(222, 47%, 11%) - slate-900 */
   --b2: 222 47% 15%; /* Base-200 - hsl(222, 47%, 15%) - slate-800 */
   --b3: 222 47% 20%; /* Base-300 - hsl(222, 47%, 20%) - slate-700 */
-  --in: 217 91% 59%; /* Info - hsl(217, 91%, 59%) - blue-500 */
-  --su: 142 76% 36%; /* Success - hsl(142, 76%, 36%) - green-600 */
-  --wa: 48 96% 50%; /* Warning - hsl(48, 96%, 50%) - yellow-500 */
-  --er: 0 84% 60%; /* Error - hsl(0, 84%, 60%) - red-600 */
+  --in: 217 91% 65%; /* Info - brighter blue */
+  --su: 142 76% 46%; /* Success - brighter green */
+  --wa: 48 96% 60%; /* Warning - brighter yellow */
+  --er: 0 84% 70%; /* Error - brighter red */
 
   /* Text colors for contrast */
-  --pc: 0 0% 100%; /* Primary content - white */
-  --sc: 0 0% 100%; /* Secondary content - white */
-  --ac: 0 0% 100%; /* Accent content - white */
-  --nc: 215 14% 34%; /* Neutral content - gray-700 */
-  --bc: 215 14% 34%; /* Base content - gray-700 */
+  --pc: 222 47% 11%; /* Primary content - dark for contrast */
+  --sc: 222 47% 11%; /* Secondary content - dark for contrast */
+  --ac: 222 47% 11%; /* Accent content - dark for contrast */
+  --nc: 210 40% 96%; /* Neutral content - light gray */
+  --bc: 210 40% 96%; /* Base content - light gray */
 }
 
 /* Design Tokens - Custom CSS Variables */
@@ -101,11 +109,250 @@
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+
+  /* Hover Effects */
+  --hover-scale: 1.02;
+  --hover-scale-sm: 1.01;
+  --hover-scale-lg: 1.05;
+  --hover-brightness: 1.05;
 }
 
 /* Smooth transitions for theme changes */
 * {
   @apply transition-colors duration-200;
+}
+
+/* ============================================
+   GLOBAL HOVER & INTERACTION STYLES
+   Consistent personality across all themes
+   ============================================ */
+
+/* Interactive Elements - Base Hover States */
+button:not(:disabled),
+a:not(.no-hover),
+[role="button"]:not(:disabled),
+.interactive {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+button:not(:disabled):hover,
+a:not(.no-hover):hover,
+[role="button"]:not(:disabled):hover,
+.interactive:hover {
+  @apply brightness-105;
+}
+
+/* Primary Interactive Elements */
+.btn-primary,
+.bg-primary,
+[class*="btn-primary"] {
+  @apply transition-all duration-200;
+}
+
+.btn-primary:hover:not(:disabled),
+.bg-primary:hover,
+[class*="btn-primary"]:hover:not(:disabled) {
+  @apply brightness-110 shadow-lg;
+  box-shadow: 0 4px 14px 0 hsl(var(--p) / 0.39);
+}
+
+/* Card Hover Effects */
+.card,
+.card-side,
+[class*="card"] {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.card:hover,
+.card-side:hover {
+  @apply shadow-2xl;
+  box-shadow: 0 8px 24px -4px hsl(var(--p) / 0.15),
+              0 4px 8px -2px hsl(var(--p) / 0.1);
+}
+
+/* Link Hover - Consistent Blue Personality */
+a:not(.btn):not(.no-hover) {
+  @apply text-base-content transition-all duration-200;
+}
+
+a:not(.btn):not(.no-hover):hover {
+  @apply text-primary;
+}
+
+/* Input Fields - Primary Color on Focus */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  @apply transition-all duration-200;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):hover:not(:disabled),
+textarea:hover:not(:disabled),
+select:hover:not(:disabled) {
+  @apply border-primary/50;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  @apply border-primary ring-2 ring-primary/20;
+}
+
+/* Icon Buttons with Hover Glow */
+.btn-circle,
+.btn-square,
+[class*="btn-circle"],
+[class*="btn-square"] {
+  @apply transition-all duration-200;
+}
+
+.btn-circle:hover:not(:disabled),
+.btn-square:hover:not(:disabled) {
+  @apply scale-110 shadow-lg;
+  box-shadow: 0 4px 12px 0 hsl(var(--p) / 0.25);
+}
+
+/* Badge & Tag Hover */
+.badge,
+.chip,
+[class*="badge"] {
+  @apply transition-all duration-200;
+}
+
+.badge:hover,
+.chip:hover,
+[class*="badge"]:hover {
+  @apply brightness-110 scale-105;
+}
+
+/* Dropdown & Menu Items */
+.menu li > *:hover,
+.dropdown-content li:hover,
+[role="menuitem"]:hover {
+  @apply bg-primary/10 text-primary;
+}
+
+/* Tab Active State with Primary */
+.tab-active,
+[aria-selected="true"] {
+  @apply text-primary border-primary;
+}
+
+.tab:hover:not(.tab-active) {
+  @apply text-primary/70;
+}
+
+/* Toggle & Checkbox - Primary Color */
+input[type="checkbox"]:checked,
+input[type="radio"]:checked,
+.toggle:checked {
+  @apply bg-primary border-primary;
+}
+
+input[type="checkbox"]:hover,
+input[type="radio"]:hover,
+.toggle:hover {
+  @apply brightness-110;
+}
+
+/* Progress & Range - Primary Color */
+progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+  @apply bg-primary;
+}
+
+input[type="range"]::-webkit-slider-thumb,
+input[type="range"]::-moz-range-thumb {
+  @apply bg-primary;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb,
+input[type="range"]:hover::-moz-range-thumb {
+  @apply brightness-110 scale-110;
+}
+
+/* Alert with Primary Accent */
+.alert-info {
+  @apply bg-primary/10 border-primary/30 text-primary;
+}
+
+/* Modal & Dialog Overlay */
+.modal-backdrop,
+.overlay {
+  @apply backdrop-blur-sm;
+}
+
+/* Smooth Scaling for Interactive Cards */
+.hover-scale {
+  @apply transition-transform duration-300;
+}
+
+.hover-scale:hover {
+  @apply -translate-y-1 scale-[1.02];
+}
+
+/* Active/Pressed States */
+button:active:not(:disabled),
+.btn:active:not(:disabled) {
+  @apply scale-95 brightness-95;
+}
+
+/* Loading States with Primary */
+.loading,
+.spinner {
+  @apply text-primary;
+}
+
+/* Skeleton Loading with Primary Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--b2)) 0%,
+    hsl(var(--p) / 0.1) 50%,
+    hsl(var(--b2)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Tooltip with Primary Accent */
+.tooltip,
+[data-tooltip] {
+  @apply relative;
+}
+
+.tooltip::before,
+[data-tooltip]::before {
+  @apply bg-primary text-primary-content;
+}
+
+/* Divider with Primary Accent */
+.divider::before,
+.divider::after {
+  @apply bg-base-300;
+}
+
+.divider-primary::before,
+.divider-primary::after {
+  @apply bg-primary/30;
+}
+
+/* Avatar with Hover Effect */
+.avatar {
+  @apply transition-all duration-200;
+}
+
+.avatar:hover {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-base-100;
 }
 
 /* Custom scrollbar */
@@ -119,11 +366,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-base-content/20 rounded-lg;
+  @apply bg-primary/40 rounded-lg;
+  transition: background-color 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-base-content/30;
+  @apply bg-primary/60;
 }
 
 /* Focus visible styles */
@@ -223,16 +471,18 @@ h6 {
 }
 
 .ng-dropdown-panel .ng-option:hover {
-  background-color: hsl(var(--b2));
+  background-color: hsl(var(--p) / 0.1);
+  color: hsl(var(--p));
 }
 
 .ng-dropdown-panel .ng-option-selected {
-  background-color: hsl(var(--p) / 0.1);
-  font-weight: 500;
+  background-color: hsl(var(--p) / 0.15);
+  color: hsl(var(--p));
+  font-weight: 600;
 }
 
 .ng-dropdown-panel .ng-option-marked {
-  background-color: hsl(var(--b2));
+  background-color: hsl(var(--p) / 0.08);
 }
 
 .ng-select-error .ng-select-container {
