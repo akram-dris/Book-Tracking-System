@@ -16,9 +16,7 @@
           <div>
             <h3 class="text-base font-bold">Filters</h3>
             <p class="text-xs text-base-content/60">
-              {{ selectedFilter === 'day' ? 'Today' : selectedFilter === 'week' ? 'Week' : selectedFilter === 'month' ? 'Month' : selectedFilter === 'year' ? 'Year' : 'Custom' }} 
-              · 
-              {{ activeTab === 'overview' ? 'Overview' : activeTab === 'authors' ? 'Authors' : activeTab === 'tags' ? 'Tags' : activeTab === 'time' ? 'Time' : activeTab === 'goals' ? 'Goals' : activeTab === 'books' ? 'Books' : 'Records' }}
+              {{ selectedFilter === 'day' ? 'Today' : selectedFilter === 'week' ? 'Week' : selectedFilter === 'month' ? 'Month' : selectedFilter === 'year' ? 'Year' : 'Custom' }}
             </p>
           </div>
         </div>
@@ -27,10 +25,6 @@
           <div class="badge badge-primary badge-sm gap-1.5">
             <ng-icon name="heroCalendarDays" size="0.75rem"></ng-icon>
             {{ selectedFilter === 'day' ? 'Today' : selectedFilter === 'week' ? 'Week' : selectedFilter === 'month' ? 'Month' : selectedFilter === 'year' ? 'Year' : 'Custom' }}
-          </div>
-          <div class="badge badge-secondary badge-sm gap-1.5">
-            <ng-icon name="heroChartBarSquare" size="0.75rem"></ng-icon>
-            {{ activeTab === 'overview' ? 'Overview' : activeTab === 'authors' ? 'Authors' : activeTab === 'tags' ? 'Tags' : activeTab === 'time' ? 'Time' : activeTab === 'goals' ? 'Goals' : activeTab === 'books' ? 'Books' : 'Records' }}
           </div>
           <ng-icon name="heroChevronDown" size="1.25rem" class="text-primary animate-bounce"></ng-icon>
         </div>
@@ -171,121 +165,122 @@
           </div>
         </div>
 
-        <!-- Statistics Category Section -->
-        <div class="p-4 rounded-lg bg-base-200/30 border border-base-300/30">
-          <div class="flex items-center gap-2 mb-3">
-            <ng-icon name="heroChartBarSquare" size="1rem" class="text-secondary"></ng-icon>
-            <h4 class="font-bold text-sm">Statistics Category</h4>
-          </div>
-          
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'overview' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('overview')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'overview' ? 'bg-white/20' : 'bg-primary/10'">
-                  <ng-icon name="heroSquares2x2" size="1.125rem" [class]="activeTab === 'overview' ? 'text-white' : 'text-primary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Overview</span>
-              </div>
-              <div *ngIf="activeTab === 'overview'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'authors' ? 'bg-gradient-to-br from-info to-info/80 text-white shadow-lg shadow-info/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('authors')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'authors' ? 'bg-white/20' : 'bg-info/10'">
-                  <ng-icon name="heroUserGroup" size="1.125rem" [class]="activeTab === 'authors' ? 'text-white' : 'text-info'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Authors</span>
-              </div>
-              <div *ngIf="activeTab === 'authors'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'tags' ? 'bg-gradient-to-br from-success to-success/80 text-white shadow-lg shadow-success/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('tags')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'tags' ? 'bg-white/20' : 'bg-success/10'">
-                  <ng-icon name="heroTag" size="1.125rem" [class]="activeTab === 'tags' ? 'text-white' : 'text-success'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Tags</span>
-              </div>
-              <div *ngIf="activeTab === 'tags'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'time' ? 'bg-gradient-to-br from-warning to-warning/80 text-white shadow-lg shadow-warning/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('time')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'time' ? 'bg-white/20' : 'bg-warning/10'">
-                  <ng-icon name="heroClock" size="1.125rem" [class]="activeTab === 'time' ? 'text-white' : 'text-warning'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Time</span>
-              </div>
-              <div *ngIf="activeTab === 'time'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'goals' ? 'bg-gradient-to-br from-secondary to-secondary/80 text-white shadow-lg shadow-secondary/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('goals')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'goals' ? 'bg-white/20' : 'bg-secondary/10'">
-                  <ng-icon name="heroTrophy" size="1.125rem" [class]="activeTab === 'goals' ? 'text-white' : 'text-secondary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Goals</span>
-              </div>
-              <div *ngIf="activeTab === 'goals'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'books' ? 'bg-gradient-to-br from-accent to-accent/80 text-white shadow-lg shadow-accent/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('books')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'books' ? 'bg-white/20' : 'bg-accent/10'">
-                  <ng-icon name="heroBookOpen" size="1.125rem" [class]="activeTab === 'books' ? 'text-white' : 'text-accent'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Books</span>
-              </div>
-              <div *ngIf="activeTab === 'books'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
-              [class]="activeTab === 'records' ? 'bg-gradient-to-br from-error to-error/80 text-white shadow-lg shadow-error/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
-              (click)="setActiveTab('records')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-2.5 flex flex-col items-center gap-1">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="activeTab === 'records' ? 'bg-white/20' : 'bg-error/10'">
-                  <ng-icon name="heroFire" size="1.125rem" [class]="activeTab === 'records' ? 'text-white' : 'text-error'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Records</span>
-              </div>
-              <div *ngIf="activeTab === 'records'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
-            </button>
-          </div>
-        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Statistics Category Section (Always Visible) -->
+  <div class="mb-6 p-4 rounded-lg bg-base-200/30 border border-base-300/30">
+    <div class="flex items-center gap-2 mb-3">
+      <ng-icon name="heroChartBarSquare" size="1rem" class="text-secondary"></ng-icon>
+      <h4 class="font-bold text-sm">Statistics Category</h4>
+    </div>
+    
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'overview' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('overview')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'overview' ? 'bg-white/20' : 'bg-primary/10'">
+            <ng-icon name="heroSquares2x2" size="1.125rem" [class]="activeTab === 'overview' ? 'text-white' : 'text-primary'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Overview</span>
+        </div>
+        <div *ngIf="activeTab === 'overview'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
+
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'authors' ? 'bg-gradient-to-br from-info to-info/80 text-white shadow-lg shadow-info/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('authors')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'authors' ? 'bg-white/20' : 'bg-info/10'">
+            <ng-icon name="heroUserGroup" size="1.125rem" [class]="activeTab === 'authors' ? 'text-white' : 'text-info'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Authors</span>
+        </div>
+        <div *ngIf="activeTab === 'authors'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
+
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'tags' ? 'bg-gradient-to-br from-success to-success/80 text-white shadow-lg shadow-success/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('tags')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'tags' ? 'bg-white/20' : 'bg-success/10'">
+            <ng-icon name="heroTag" size="1.125rem" [class]="activeTab === 'tags' ? 'text-white' : 'text-success'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Tags</span>
+        </div>
+        <div *ngIf="activeTab === 'tags'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
+
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'time' ? 'bg-gradient-to-br from-warning to-warning/80 text-white shadow-lg shadow-warning/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('time')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'time' ? 'bg-white/20' : 'bg-warning/10'">
+            <ng-icon name="heroClock" size="1.125rem" [class]="activeTab === 'time' ? 'text-white' : 'text-warning'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Time</span>
+        </div>
+        <div *ngIf="activeTab === 'time'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
+
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'goals' ? 'bg-gradient-to-br from-secondary to-secondary/80 text-white shadow-lg shadow-secondary/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('goals')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'goals' ? 'bg-white/20' : 'bg-secondary/10'">
+            <ng-icon name="heroTrophy" size="1.125rem" [class]="activeTab === 'goals' ? 'text-white' : 'text-secondary'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Goals</span>
+        </div>
+        <div *ngIf="activeTab === 'goals'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
+
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'books' ? 'bg-gradient-to-br from-accent to-accent/80 text-white shadow-lg shadow-accent/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('books')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'books' ? 'bg-white/20' : 'bg-accent/10'">
+            <ng-icon name="heroBookOpen" size="1.125rem" [class]="activeTab === 'books' ? 'text-white' : 'text-accent'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Books</span>
+        </div>
+        <div *ngIf="activeTab === 'books'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
+
+      <button 
+        class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
+        [class]="activeTab === 'records' ? 'bg-gradient-to-br from-error to-error/80 text-white shadow-lg shadow-error/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
+        (click)="setActiveTab('records')">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative p-2.5 flex flex-col items-center gap-1">
+          <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
+               [class]="activeTab === 'records' ? 'bg-white/20' : 'bg-error/10'">
+            <ng-icon name="heroFire" size="1.125rem" [class]="activeTab === 'records' ? 'text-white' : 'text-error'"></ng-icon>
+          </div>
+          <span class="font-semibold text-xs">Records</span>
+        </div>
+        <div *ngIf="activeTab === 'records'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+      </button>
     </div>
   </div>
 
