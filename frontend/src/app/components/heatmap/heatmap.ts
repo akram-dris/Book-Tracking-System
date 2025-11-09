@@ -4,7 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { HeatmapService } from '../../services/heatmap.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroChevronLeft, heroChevronRight } from '@ng-icons/heroicons/outline';
+import { 
+  heroChevronLeft, 
+  heroChevronRight, 
+  heroCalendarDays, 
+  heroCalendar,
+  heroFire, 
+  heroBookOpen, 
+  heroChartBarSquare, 
+  heroTrophy,
+  heroSparkles
+} from '@ng-icons/heroicons/outline';
 
 interface CalendarDay {
   date: Date;
@@ -32,7 +42,17 @@ interface LegendItem {
   selector: 'app-heatmap',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent],
-  viewProviders: [provideIcons({ heroChevronLeft, heroChevronRight })],
+  viewProviders: [provideIcons({ 
+    heroChevronLeft, 
+    heroChevronRight, 
+    heroCalendarDays, 
+    heroCalendar,
+    heroFire, 
+    heroBookOpen, 
+    heroChartBarSquare, 
+    heroTrophy,
+    heroSparkles
+  })],
   templateUrl: './heatmap.html',
   styleUrl: './heatmap.css',
   animations: [
@@ -62,6 +82,8 @@ export class HeatmapComponent implements OnInit {
   loading: boolean = false;
   totalPages: number = 0;
   totalDays: number = 0;
+  currentStreak: number = 0;
+  longestStreak: number = 0;
   legendItems: LegendItem[] = [
     { label: 'No activity', className: 'day-0', range: '0 pages' },
     { label: 'Light', className: 'day-1-10', range: '1-10 pages' },
@@ -92,6 +114,7 @@ export class HeatmapComponent implements OnInit {
       next: (data) => {
         this.heatmapData = data;
         this.calculateStats();
+        this.calculateStreaks();
         this.generateCalendarGrid();
         this.loading = false;
       },
@@ -105,6 +128,61 @@ export class HeatmapComponent implements OnInit {
   calculateStats(): void {
     this.totalPages = Object.values(this.heatmapData).reduce((sum, pages) => sum + pages, 0);
     this.totalDays = Object.values(this.heatmapData).filter(pages => pages > 0).length;
+  }
+
+  calculateStreaks(): void {
+    const sortedDates = Object.keys(this.heatmapData)
+      .filter(date => this.heatmapData[date] > 0)
+      .sort();
+
+    if (sortedDates.length === 0) {
+      this.currentStreak = 0;
+      this.longestStreak = 0;
+      return;
+    }
+
+    let current = 1;
+    let longest = 1;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate longest streak
+    for (let i = 1; i < sortedDates.length; i++) {
+      const prevDate = new Date(sortedDates[i - 1]);
+      const currDate = new Date(sortedDates[i]);
+      const diffDays = Math.floor((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        current++;
+        longest = Math.max(longest, current);
+      } else {
+        current = 1;
+      }
+    }
+
+    this.longestStreak = longest;
+
+    // Calculate current streak (counting backwards from today)
+    current = 0;
+    const lastDate = new Date(sortedDates[sortedDates.length - 1]);
+    lastDate.setHours(0, 0, 0, 0);
+    
+    if (lastDate.getTime() === today.getTime()) {
+      current = 1;
+      for (let i = sortedDates.length - 2; i >= 0; i--) {
+        const currDate = new Date(sortedDates[i]);
+        const nextDate = new Date(sortedDates[i + 1]);
+        const diffDays = Math.floor((nextDate.getTime() - currDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          current++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    this.currentStreak = current;
   }
 
   previousYear(): void {
@@ -195,5 +273,36 @@ export class HeatmapComponent implements OnInit {
     if (!day.isCurrentMonth) return '';
     const dateStr = day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     return `${dateStr}\n${day.pagesRead} pages read`;
+  }
+
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  }
+
+  getMonthTotal(month: CalendarMonth): number {
+    let total = 0;
+    month.weeks.forEach(week => {
+      week.days.forEach(day => {
+        if (day.isCurrentMonth) {
+          total += day.pagesRead;
+        }
+      });
+    });
+    return total;
+  }
+
+  getMonthActiveDays(month: CalendarMonth): number {
+    let days = 0;
+    month.weeks.forEach(week => {
+      week.days.forEach(day => {
+        if (day.isCurrentMonth && day.pagesRead > 0) {
+          days++;
+        }
+      });
+    });
+    return days;
   }
 }
