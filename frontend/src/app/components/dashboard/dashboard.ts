@@ -77,8 +77,8 @@ export class Dashboard implements OnInit {
   // Chart options
   doughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
-    maintainAspectRatio: false,
-    cutout: '75%',
+    maintainAspectRatio: true,
+    cutout: '70%',
     plugins: {
       legend: {
         display: false,
@@ -97,23 +97,23 @@ export class Dashboard implements OnInit {
         backgroundColor: 'rgba(17, 24, 39, 0.95)',
         titleColor: 'rgba(255, 255, 255, 1)',
         bodyColor: 'rgba(255, 255, 255, 0.9)',
-        borderColor: 'rgba(75, 85, 99, 0.5)',
-        borderWidth: 1,
-        titleFont: { size: 15, weight: 'bold', family: "'Inter', sans-serif" },
-        bodyFont: { size: 14, family: "'Inter', sans-serif" },
-        padding: 16,
-        cornerRadius: 12,
+        borderColor: 'rgba(59, 130, 246, 0.5)',
+        borderWidth: 2,
+        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        padding: 12,
+        cornerRadius: 8,
         displayColors: true,
-        boxPadding: 8
+        boxPadding: 6
       }
     },
     animation: {
       animateRotate: true,
       animateScale: true,
-      duration: 2000,
+      duration: 1500,
       easing: 'easeInOutCubic',
       delay: (context: any) => {
-        return context.dataIndex * 200;
+        return context.dataIndex * 150;
       }
     },
     interaction: {
@@ -132,14 +132,14 @@ export class Dashboard implements OnInit {
         backgroundColor: 'rgba(17, 24, 39, 0.95)',
         titleColor: 'rgba(255, 255, 255, 1)',
         bodyColor: 'rgba(255, 255, 255, 0.9)',
-        borderColor: 'rgba(75, 85, 99, 0.5)',
-        borderWidth: 1,
-        titleFont: { size: 15, weight: 'bold', family: "'Inter', sans-serif" },
-        bodyFont: { size: 14, family: "'Inter', sans-serif" },
-        padding: 16,
-        cornerRadius: 12,
+        borderColor: 'rgba(59, 130, 246, 0.5)',
+        borderWidth: 2,
+        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        padding: 12,
+        cornerRadius: 8,
         displayColors: true,
-        boxPadding: 8,
+        boxPadding: 6,
         callbacks: {
           label: (context: any) => {
             const value = context.parsed.y;
@@ -160,11 +160,11 @@ export class Dashboard implements OnInit {
             weight: 500,
             family: "'Inter', sans-serif"
           },
-          color: 'rgba(255, 255, 255, 0.7)',
-          padding: 10
+          color: 'rgba(156, 163, 175, 0.8)',
+          padding: 8
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(156, 163, 175, 0.1)',
           lineWidth: 1
         },
         border: {
@@ -178,8 +178,8 @@ export class Dashboard implements OnInit {
             weight: 500,
             family: "'Inter', sans-serif"
           },
-          color: 'rgba(255, 255, 255, 0.7)',
-          padding: 10
+          color: 'rgba(156, 163, 175, 0.8)',
+          padding: 8
         },
         grid: {
           display: false
@@ -190,10 +190,10 @@ export class Dashboard implements OnInit {
       }
     },
     animation: {
-      duration: 1500,
+      duration: 1200,
       easing: 'easeOutCubic',
       delay: (context: any) => {
-        return context.dataIndex * 200;
+        return context.dataIndex * 150;
       }
     },
     interaction: {
@@ -349,33 +349,33 @@ export class Dashboard implements OnInit {
     const hasData = toReadChart > 0 || readingChart > 0 || completedChart > 0;
     
     this.readingProgressChart = {
-     
+      labels: ['Planning', 'In Progress', 'Finished'],
       datasets: [{
         data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
-          'rgba(96, 165, 250, 0.9)',   // Blue - brighter
-          'rgba(251, 191, 36, 0.9)',   // Amber - brighter
-          'rgba(52, 211, 153, 0.9)'    // Green - brighter
+          'rgba(59, 130, 246, 0.85)',   // Primary Blue
+          'rgba(251, 191, 36, 0.85)',   // Warning Amber
+          'rgba(34, 197, 94, 0.85)'     // Success Green
         ],
         borderColor: [
-          'rgba(96, 165, 250, 1)',
-          'rgba(251, 191, 36, 1)',
-          'rgba(52, 211, 153, 1)'
-        ],
-        borderWidth: 3,
-        hoverBackgroundColor: [
           'rgba(59, 130, 246, 1)',
+          'rgba(251, 191, 36, 1)',
+          'rgba(34, 197, 94, 1)'
+        ],
+        borderWidth: 2,
+        hoverBackgroundColor: [
+          'rgba(37, 99, 235, 1)',
           'rgba(245, 158, 11, 1)',
-          'rgba(16, 185, 129, 1)'
+          'rgba(22, 163, 74, 1)'
         ],
         hoverBorderColor: [
-          'rgba(147, 197, 253, 1)',
+          'rgba(96, 165, 250, 1)',
           'rgba(252, 211, 77, 1)',
-          'rgba(110, 231, 183, 1)'
+          'rgba(134, 239, 172, 1)'
         ],
-        hoverBorderWidth: 5,
-        spacing: 3,
-        hoverOffset: 15
+        hoverBorderWidth: 3,
+        spacing: 2,
+        hoverOffset: 12
       }]
     };
 
@@ -386,17 +386,17 @@ export class Dashboard implements OnInit {
         label: 'Books',
         data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
-          'rgba(96, 165, 250, 0.9)',
-          'rgba(251, 191, 36, 0.9)',
-          'rgba(52, 211, 153, 0.9)'
+          'rgba(59, 130, 246, 0.85)',
+          'rgba(251, 191, 36, 0.85)',
+          'rgba(34, 197, 94, 0.85)'
         ],
         borderColor: [
-          'rgba(96, 165, 250, 1)',
+          'rgba(59, 130, 246, 1)',
           'rgba(251, 191, 36, 1)',
-          'rgba(52, 211, 153, 1)'
+          'rgba(34, 197, 94, 1)'
         ],
         borderWidth: 2,
-        borderRadius: 12,
+        borderRadius: 8,
         borderSkipped: false,
         hoverBackgroundColor: [
           'rgba(59, 130, 246, 1)',
