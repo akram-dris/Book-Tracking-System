@@ -226,40 +226,6 @@
           </div>
         </div>
 
-        <!-- Quick Stats -->
-        <div *ngIf="!loading && stats" class="card bg-base-100 shadow-xl" @fadeInUp>
-          <div class="card-body">
-            <h2 class="card-title text-lg mb-4 flex items-center gap-2">
-              <ng-icon name="heroTrophy" class="text-accent"></ng-icon>
-              Reading Stats
-            </h2>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
-                <div class="flex items-center gap-2">
-                  <ng-icon name="heroCheckCircle" class="text-success"></ng-icon>
-                  <span class="text-sm font-medium">Completed</span>
-                </div>
-                          <span class="text-lg font-bold text-success">{{ stats.overview?.totalBooksRead || 0 }}</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-3 bg-warning/10 rounded-lg border border-warning/20">
-                          <div class="flex items-center gap-2">
-                            <ng-icon name="heroBookOpen" class="text-warning"></ng-icon>
-                            <span class="text-sm font-medium">Reading</span>
-                          </div>
-                          <span class="text-lg font-bold text-warning">{{ stats.overview?.booksCurrentlyReading || 0 }}</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-3 bg-info/10 rounded-lg border border-info/20">
-                          <div class="flex items-center gap-2">
-                            <ng-icon name="heroBookmark" class="text-info"></ng-icon>
-                            <span class="text-sm font-medium">To Read</span>
-                          </div>
-                          <span class="text-lg font-bold text-info">{{ stats.overview?.booksPending || 0 }}</span>              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Recent Books -->
         <div *ngIf="!loading && recentBooks.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body">
