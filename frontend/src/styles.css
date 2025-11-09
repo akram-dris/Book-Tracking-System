@@ -132,7 +132,7 @@ button:not(:disabled),
 a:not(.no-hover),
 [role="button"]:not(:disabled),
 .interactive {
-  @apply transition-all duration-200 ease-in-out;
+  @apply transition-all duration-200 ease-in-out cursor-pointer;
 }
 
 button:not(:disabled):hover,
@@ -160,7 +160,7 @@ a:not(.no-hover):hover,
 .card,
 .card-side,
 [class*="card"] {
-  @apply transition-all duration-300 ease-in-out;
+  @apply transition-all duration-300 ease-in-out cursor-pointer;
 }
 
 .card:hover,
@@ -203,7 +203,7 @@ select:focus {
 .btn-square,
 [class*="btn-circle"],
 [class*="btn-square"] {
-  @apply transition-all duration-200;
+  @apply transition-all duration-200 cursor-pointer;
 }
 
 .btn-circle:hover:not(:disabled),
@@ -216,7 +216,7 @@ select:focus {
 .badge,
 .chip,
 [class*="badge"] {
-  @apply transition-all duration-200;
+  @apply transition-all duration-200 cursor-pointer;
 }
 
 .badge:hover,
@@ -226,6 +226,12 @@ select:focus {
 }
 
 /* Dropdown & Menu Items */
+.menu li > *,
+.dropdown-content li,
+[role="menuitem"] {
+  @apply cursor-pointer;
+}
+
 .menu li > *:hover,
 .dropdown-content li:hover,
 [role="menuitem"]:hover {
@@ -238,6 +244,10 @@ select:focus {
   @apply text-primary border-primary;
 }
 
+.tab {
+  @apply cursor-pointer;
+}
+
 .tab:hover:not(.tab-active) {
   @apply text-primary/70;
 }
@@ -247,6 +257,12 @@ input[type="checkbox"]:checked,
 input[type="radio"]:checked,
 .toggle:checked {
   @apply bg-primary border-primary;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+.toggle {
+  @apply cursor-pointer;
 }
 
 input[type="checkbox"]:hover,
@@ -437,6 +453,42 @@ button:active:not(:disabled),
 /* Focus visible styles */
 :focus-visible {
   @apply outline-2 outline-offset-2 outline-primary;
+}
+
+/* Additional Cursor Pointer Styles */
+select,
+label:has(input[type="checkbox"]),
+label:has(input[type="radio"]),
+.clickable,
+.selectable,
+[onclick],
+[ng-click],
+mat-icon[role="button"],
+.mat-mdc-button,
+.mat-mdc-icon-button,
+.mat-mdc-tab,
+.mat-mdc-chip,
+.mat-expansion-panel-header {
+  @apply cursor-pointer;
+}
+
+/* Disabled state - no pointer */
+button:disabled,
+input:disabled,
+select:disabled,
+[disabled],
+.disabled {
+  cursor: not-allowed !important;
+}
+
+/* Text selection cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea {
+  cursor: text;
 }
 
 /* CDK Dialog Overlay Styles */
