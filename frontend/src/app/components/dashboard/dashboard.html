@@ -19,65 +19,80 @@
     <div *ngIf="!loading && stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
       
       <!-- Total Books -->
-      <div class="card bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer border border-primary/20"
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-primary hover:-translate-y-1"
            (click)="navigateToBooks()">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Total Books</p>
-              <h3 class="text-3xl font-bold text-primary mt-1">{{ getTotalBooks() }}</h3>
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-sm shadow-primary/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Total Books</p>
+              </div>
+              <h3 class="text-4xl font-bold text-primary group-hover:scale-105 transition-transform">{{ getTotalBooks() }}</h3>
             </div>
-            <div class="bg-primary/20 p-3 rounded-full">
+            <div class="bg-primary/10 group-hover:bg-primary/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-primary/30">
               <ng-icon name="heroBookOpen" class="text-2xl text-primary"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-primary to-primary/20 rounded-full mt-2"></div>
         </div>
       </div>
 
       <!-- Pages Read -->
-      <div class="card bg-gradient-to-br from-secondary/10 to-secondary/5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary/20">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Pages Read</p>
-              <h3 class="text-3xl font-bold text-secondary mt-1">{{ stats.overview?.totalPagesRead || 0 }}</h3>
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-success/20 transition-all duration-300 border-2 border-base-300 hover:border-success hover:-translate-y-1">
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-success animate-pulse shadow-sm shadow-success/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Pages Read</p>
+              </div>
+              <h3 class="text-4xl font-bold text-success group-hover:scale-105 transition-transform">{{ stats.overview?.totalPagesRead || 0 }}</h3>
             </div>
-            <div class="bg-secondary/20 p-3 rounded-full">
-              <ng-icon name="heroCheckCircle" class="text-2xl text-secondary"></ng-icon>
+            <div class="bg-success/10 group-hover:bg-success/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-success/30">
+              <ng-icon name="heroCheckCircle" class="text-2xl text-success"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-success to-success/20 rounded-full mt-2"></div>
         </div>
       </div>
 
       <!-- Reading Streak -->
-      <div class="card bg-gradient-to-br from-warning/10 to-warning/5 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer border border-warning/20"
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-warning/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-warning hover:-translate-y-1"
            (click)="navigateToHeatmap()">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Current Streak</p>
-              <h3 class="text-3xl font-bold text-warning mt-1">{{ streakData?.currentStreak || 0 }}</h3>
-              <p class="text-xs text-base-content/60 mt-1">days in a row 🔥</p>
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-warning animate-pulse shadow-sm shadow-warning/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Current Streak</p>
+              </div>
+              <h3 class="text-4xl font-bold text-warning group-hover:scale-105 transition-transform">{{ streakData?.currentStreak || 0 }}</h3>
             </div>
-            <div class="bg-warning/20 p-3 rounded-full">
+            <div class="bg-warning/10 group-hover:bg-warning/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-warning/30">
               <ng-icon name="heroFire" class="text-2xl text-warning"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-warning to-warning/20 rounded-full mt-2"></div>
         </div>
       </div>
 
       <!-- Currently Reading -->
-      <div class="card bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-accent/20">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Currently Reading</p>
-              <h3 class="text-3xl font-bold text-accent mt-1">{{ stats.overview?.booksCurrentlyReading || 0 }}</h3>
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-info/20 transition-all duration-300 border-2 border-base-300 hover:border-info hover:-translate-y-1">
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-info animate-pulse shadow-sm shadow-info/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">In Progress</p>
+              </div>
+              <h3 class="text-4xl font-bold text-info group-hover:scale-105 transition-transform">{{ stats.overview?.booksCurrentlyReading || 0 }}</h3>
             </div>
-            <div class="bg-accent/20 p-3 rounded-full">
-              <ng-icon name="heroBookmark" class="text-2xl text-accent"></ng-icon>
+            <div class="bg-info/10 group-hover:bg-info/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-info/30">
+              <ng-icon name="heroBookmark" class="text-2xl text-info"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-info to-info/20 rounded-full mt-2"></div>
         </div>
       </div>
     </div>
