@@ -1,0 +1,24 @@
+/* Sidebar with high z-index to ensure tooltips appear above content */
+aside {
+  z-index: 1000;
+}
+
+/* Tooltip styling with even higher z-index */
+.tooltip {
+  z-index: 9999 !important;
+}
+
+.tooltip:before,
+.tooltip:after {
+  z-index: 9999 !important;
+}
+
+/* Ensure tooltips appear correctly positioned */
+[data-tip] {
+  position: relative;
+}
+
+[data-tip]:before,
+[data-tip]:after {
+  z-index: 9999 !important;
+}
