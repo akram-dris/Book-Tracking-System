@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash } from '@ng-icons/heroicons/outline';
+import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus } from '@ng-icons/heroicons/outline';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
@@ -23,7 +23,7 @@ interface BookWithStatus extends GetBook {
   imports: [CommonModule, RouterModule, NgIconComponent],
   templateUrl: './author-details.html',
   styleUrls: ['./author-details.css'],
-  viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash })]
+  viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus })]
 })
 export class AuthorDetailsComponent implements OnInit {
   author: GetAuthor | undefined;

@@ -1,101 +1,116 @@
-<div *ngIf="author" class="min-h-screen bg-base-200">
-  <!-- Hero Section -->
-  <div class="bg-gradient-to-r from-primary/20 to-secondary/20 relative">
-    <div>
-      <!-- Back Button -->
-      <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 mb-4">
-        <ng-icon name="heroArrowLeft" size="20"></ng-icon>
-        Back
-      </button>
+<div *ngIf="author" class="min-h-screen bg-base-100">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 hover:bg-primary/10 hover:text-primary transition-all duration-200">
+      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
+      Back
+    </button>
+  </div>
 
-      <!-- Author Profile -->
+  <!-- Hero Section -->
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/30 shadow-xl transition-all duration-300 overflow-hidden mb-6">
+    <div class="p-8">
       <div class="flex flex-col md:flex-row gap-8 items-start">
         <!-- Author Image -->
-        <div class="w-48 h-48 flex-shrink-0">
-          <div class="avatar">
-            <div class="w-48 rounded-2xl ring ring-primary ring-offset-base-100 ring-offset-4 shadow-2xl">
+        <div class="flex-shrink-0">
+          <div class="relative group">
+            <div class="w-48 h-48 rounded-2xl overflow-hidden border-2 border-base-300 hover:border-primary shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300">
               <img 
                 [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'" 
                 [alt]="author.name"
-                class="object-cover"
+                class="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-500"
                 (error)="onImageError($event)"
               />
             </div>
+            <!-- Overlay on hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
           </div>
         </div>
 
         <!-- Author Info -->
         <div class="flex-1">
-          <h1 class="text-5xl font-bold mb-4">{{ author.name }}</h1>
+          <h1 class="text-4xl font-bold mb-2 text-base-content">{{ author.name }}</h1>
+          <p *ngIf="author.createdAt" class="text-sm text-base-content/50 mb-6">Added {{ author.createdAt | date:'MMM dd, yyyy' }}</p>
           
           <!-- Statistics Cards -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
-              <div class="stat-figure text-primary">
-                <ng-icon name="heroBookOpen" size="32"></ng-icon>
+            <div class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <ng-icon name="heroBookOpen" size="1.5rem" class="text-primary"></ng-icon>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-primary">{{ totalBooks }}</div>
+                  <div class="text-xs text-base-content/60">Total Books</div>
+                </div>
               </div>
-              <div class="stat-title text-xs">Total Books</div>
-              <div class="stat-value text-2xl text-primary">{{ totalBooks }}</div>
             </div>
             
-            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
-              <div class="stat-figure text-success">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-8 h-8 stroke-current">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+            <div class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 hover:-translate-y-1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <ng-icon name="heroCheckCircle" size="1.5rem" class="text-accent"></ng-icon>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-accent">{{ booksCompleted }}</div>
+                  <div class="text-xs text-base-content/60">Completed</div>
+                </div>
               </div>
-              <div class="stat-title text-xs">Completed</div>
-              <div class="stat-value text-2xl text-success">{{ booksCompleted }}</div>
             </div>
             
-            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
-              <div class="stat-figure text-warning">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-8 h-8 stroke-current">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
+            <div class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-warning hover:shadow-lg hover:shadow-warning/10 transition-all duration-300 hover:-translate-y-1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
+                  <ng-icon name="heroBookOpen" size="1.5rem" class="text-warning"></ng-icon>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-warning">{{ booksReading }}</div>
+                  <div class="text-xs text-base-content/60">Reading</div>
+                </div>
               </div>
-              <div class="stat-title text-xs">Reading</div>
-              <div class="stat-value text-2xl text-warning">{{ booksReading }}</div>
             </div>
             
-            <div class="stat bg-base-100 rounded-lg shadow-md p-4">
-              <div class="stat-figure text-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-8 h-8 stroke-current">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
+            <div class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-secondary hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 hover:-translate-y-1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                  <ng-icon name="heroDocumentText" size="1.5rem" class="text-secondary"></ng-icon>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-secondary">{{ totalPagesRead }}</div>
+                  <div class="text-xs text-base-content/60">Pages Read</div>
+                </div>
               </div>
-              <div class="stat-title text-xs">Pages Read</div>
-              <div class="stat-value text-2xl text-secondary">{{ totalPagesRead }}</div>
             </div>
           </div>
 
           <!-- Biography Section -->
-          <div *ngIf="author.bio" class="card bg-base-100 shadow-md mb-6">
-            <div class="card-body p-4">
-              <h2 class="card-title text-lg flex items-center justify-between">
+          <div *ngIf="author.bio" class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 transition-all duration-300 mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-lg font-semibold flex items-center gap-2">
+                <ng-icon name="heroDocumentText" size="1.25rem" class="text-primary"></ng-icon>
                 Biography
-                <button 
-                  *ngIf="author.bio && author.bio.length > 200"
-                  (click)="toggleBio()" 
-                  class="btn btn-ghost btn-xs"
-                >
-                  {{ bioExpanded ? 'Show Less' : 'Show More' }}
-                </button>
               </h2>
-              <p class="text-base-content/70" [class.line-clamp-3]="!bioExpanded && author.bio && author.bio.length > 200">
-                {{ author.bio }}
-              </p>
+              <button 
+                *ngIf="author.bio && author.bio.length > 200"
+                (click)="toggleBio()" 
+                class="btn btn-ghost btn-xs hover:bg-primary/10 hover:text-primary transition-all duration-200"
+              >
+                {{ bioExpanded ? 'Show Less' : 'Show More' }}
+              </button>
             </div>
+            <p class="text-base-content/70 leading-relaxed" [class.line-clamp-3]="!bioExpanded && author.bio && author.bio.length > 200">
+              {{ author.bio }}
+            </p>
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex gap-2">
-            <a [routerLink]="['/authors/edit', author.id]" class="btn btn-primary gap-2">
-              <ng-icon name="heroPencilSquare" size="20"></ng-icon>
+          <div class="flex gap-3">
+            <a [routerLink]="['/authors/edit', author.id]" class="btn btn-ghost btn-sm gap-2 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-primary/20">
+              <ng-icon name="heroPencilSquare" size="1.25rem"></ng-icon>
               Edit Author
             </a>
-            <button (click)="deleteAuthor()" class="btn btn-error gap-2">
-              <ng-icon name="heroTrash" size="20"></ng-icon>
+            <button (click)="deleteAuthor()" class="btn btn-error btn-outline btn-sm gap-2 hover:scale-105 transition-all duration-200 border-2">
+              <ng-icon name="heroTrash" size="1.25rem"></ng-icon>
               Delete
             </button>
           </div>
@@ -105,14 +120,23 @@
   </div>
 
   <!-- Books Section -->
-  <div>
-    <h2 class="text-3xl font-bold mb-6">Books by {{ author.name }}</h2>
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/30 shadow-xl transition-all duration-300 p-6">
+    <h2 class="text-2xl font-bold mb-6 text-base-content flex items-center gap-2">
+      <ng-icon name="heroBookOpen" size="1.5rem" class="text-primary"></ng-icon>
+      Books by {{ author.name }}
+    </h2>
     
     <!-- Empty State -->
-    <div *ngIf="authorBooks.length === 0" class="text-center py-12">
-      <ng-icon name="heroBookOpen" size="64" class="text-base-content/30"></ng-icon>
-      <p class="text-xl text-base-content/50 mt-4">No books yet</p>
-      <a routerLink="/books/add" class="btn btn-primary mt-4">Add First Book</a>
+    <div *ngIf="authorBooks.length === 0" class="text-center py-16">
+      <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+        <ng-icon name="heroBookOpen" size="3rem" class="text-primary"></ng-icon>
+      </div>
+      <p class="text-xl text-base-content/70 font-medium">No books yet</p>
+      <p class="text-sm text-base-content/50 mt-2">Add the first book by this author</p>
+      <a routerLink="/books/new" class="btn btn-primary btn-sm mt-4 rounded-xl shadow-lg shadow-primary/30 hover:brightness-110 hover:scale-105 transition-all duration-200">
+        <ng-icon name="heroPlus" size="1rem"></ng-icon>
+        Add First Book
+      </a>
     </div>
 
     <!-- Books Grid -->
@@ -120,29 +144,32 @@
       <a 
         *ngFor="let book of authorBooks" 
         [routerLink]="['/books', book.id]"
-        class="card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+        class="bg-base-100 rounded-xl shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-1 border-2 border-base-300 hover:border-primary overflow-hidden group cursor-pointer"
       >
         <!-- Book Cover -->
-        <figure class="relative aspect-[2/3] overflow-hidden bg-base-300">
+        <figure class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-base-300 to-base-200">
           <img 
             [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
             [alt]="book.title"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            class="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-500"
           />
           
+          <!-- Hover Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
           <!-- Status Badge -->
-          <div class="absolute top-2 right-2">
-            <div class="badge badge-sm {{ getStatusClass(book) }} shadow-md">
+          <div class="absolute top-2 right-2 z-10">
+            <div class="badge badge-sm {{ getStatusClass(book) }} shadow-xl border-0 hover:scale-110 transition-transform duration-200">
               {{ getStatusText(book) }}
             </div>
           </div>
-        </figure>
 
-        <!-- Book Info -->
-        <div class="card-body p-3">
-          <h3 class="card-title text-sm line-clamp-2" [title]="book.title">{{ book.title }}</h3>
-          <p class="text-xs text-base-content/60">{{ book.totalPages }} pages</p>
-        </div>
+          <!-- Book Info on Hover -->
+          <div class="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+            <h3 class="text-white font-bold text-sm line-clamp-2 drop-shadow-lg">{{ book.title }}</h3>
+            <p class="text-white/90 text-xs mt-1 drop-shadow-md">{{ book.totalPages }} pages</p>
+          </div>
+        </figure>
       </a>
     </div>
   </div>
