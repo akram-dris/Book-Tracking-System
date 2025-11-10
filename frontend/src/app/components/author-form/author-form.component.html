@@ -1,17 +1,22 @@
 <!-- Compact Modal-Style Form -->
 <div class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-  <div class="bg-base-100 rounded-2xl shadow-2xl w-full max-w-xl max-h-[98vh] overflow-hidden flex flex-col">
+  <div class="bg-base-100 rounded-2xl border-2 border-base-300 shadow-2xl w-full max-w-xl max-h-[98vh] overflow-hidden flex flex-col">
     <!-- Minimal Header -->
-    <div class="flex items-center justify-between px-5 py-3 border-b border-base-300">
-      <h2 class="text-lg font-bold">{{ isEditMode ? 'Edit' : 'Add' }} Author</h2>
-      <button class="btn btn-ghost btn-circle btn-xs" routerLink="/authors">
-        <ng-icon name="heroXMark" size="1rem"></ng-icon>
+    <div class="flex items-center justify-between px-5 py-4 border-b-2 border-base-300 bg-base-200/50">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <ng-icon name="heroUser" size="1.25rem" class="text-primary"></ng-icon>
+        </div>
+        <h2 class="text-lg font-bold text-base-content">{{ isEditMode ? 'Edit' : 'Add' }} Author</h2>
+      </div>
+      <button class="btn btn-ghost btn-circle btn-sm hover:bg-error/10 hover:text-error hover:scale-110 transition-all duration-200" routerLink="/authors">
+        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
       </button>
     </div>
 
     <!-- Form Content -->
     <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto">
-      <div class="p-5 pb-8 space-y-3">
+      <div class="p-6 space-y-4">
         <div class="grid grid-cols-12 gap-6">
           <!-- Compact Image Upload -->
           <div class="col-span-5">
@@ -20,25 +25,28 @@
               <div
                 *ngIf="!imagePreviewUrl"
                 (click)="fileInput.click()"
-                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-lg bg-base-200 hover:bg-base-300 transition-all cursor-pointer flex items-center justify-center"
+                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-xl bg-base-200 hover:bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group"
               >
-                <div class="flex flex-col items-center justify-center p-2">
-                  <ng-icon name="heroPhoto" size="2rem" class="text-base-content/30 mb-1"></ng-icon>
-                  <p class="text-xs text-base-content/50 text-center">Drop or click</p>
+                <div class="flex flex-col items-center justify-center p-3">
+                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
+                    <ng-icon name="heroPhoto" size="1.5rem" class="text-primary"></ng-icon>
+                  </div>
+                  <p class="text-sm font-medium text-base-content/70 text-center">Drop image here</p>
+                  <p class="text-xs text-base-content/50 text-center mt-1">or click to browse</p>
                 </div>
               </div>
 
               <!-- Image Preview -->
               <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
-                <div class="h-full w-full rounded-lg overflow-hidden bg-base-300 border-2 border-base-300" (click)="fileInput.click()">
-                  <img [src]="imagePreviewUrl" alt="Author photo" class="w-full h-full object-cover cursor-pointer" />
+                <div class="h-full w-full rounded-xl overflow-hidden bg-base-300 border-2 border-base-300 hover:border-primary transition-all duration-300" (click)="fileInput.click()">
+                  <img [src]="imagePreviewUrl" alt="Author photo" class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <button
                   type="button"
                   (click)="removeImage($event)"
-                  class="absolute -top-1 -right-1 btn btn-circle btn-xs bg-error hover:bg-error/90 text-white border-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  class="absolute -top-2 -right-2 btn btn-circle btn-sm bg-error hover:bg-error/90 text-white border-0 shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200"
                 >
-                  <ng-icon name="heroXMark" size="0.75rem"></ng-icon>
+                  <ng-icon name="heroXMark" size="1rem"></ng-icon>
                 </button>
               </div>
               <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
@@ -46,30 +54,39 @@
           </div>
 
           <!-- Form Fields -->
-          <div class="col-span-7 pl-6">
+          <div class="col-span-7 space-y-4">
             <!-- Name -->
             <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Name <span class="text-error">*</span></span>
+              <label class="label py-0 pb-1">
+                <span class="label-text text-sm font-semibold flex items-center gap-1">
+                  <ng-icon name="heroUser" size="1rem" class="text-primary"></ng-icon>
+                  Name <span class="text-error">*</span>
+                </span>
               </label>
               <input
                 type="text"
                 formControlName="name"
-                class="input input-sm input-bordered w-full"
-                placeholder="Author name"
+                class="input input-bordered w-full border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                placeholder="Enter author name"
                 [class.input-error]="authorForm.get('name')?.invalid && authorForm.get('name')?.touched"
               />
+              <label *ngIf="authorForm.get('name')?.invalid && authorForm.get('name')?.touched" class="label">
+                <span class="label-text-alt text-error">Name is required</span>
+              </label>
             </div>
 
             <!-- Bio -->
             <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Biography</span>
+              <label class="label py-0 pb-1">
+                <span class="label-text text-sm font-semibold flex items-center gap-1">
+                  <ng-icon name="heroDocumentText" size="1rem" class="text-primary"></ng-icon>
+                  Biography
+                </span>
               </label>
               <textarea
                 formControlName="bio"
-                class="textarea textarea-sm textarea-bordered w-full h-32"
-                placeholder="Author biography..."
+                class="textarea textarea-bordered w-full h-32 border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none"
+                placeholder="Write a brief biography..."
               ></textarea>
             </div>
           </div>
@@ -77,11 +94,12 @@
       </div>
 
       <!-- Footer Actions -->
-      <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-base-300 bg-base-200/50">
-        <button type="button" class="btn btn-sm btn-ghost" routerLink="/authors">Cancel</button>
-        <button type="submit" class="btn btn-sm btn-primary" [disabled]="authorForm.invalid || isLoading">
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t-2 border-base-300 bg-base-200/50">
+        <button type="button" class="btn btn-ghost btn-sm hover:bg-base-300 hover:scale-105 transition-all duration-200" routerLink="/authors">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm px-6 rounded-xl shadow-lg shadow-primary/30 hover:brightness-110 hover:scale-105 transition-all duration-200" [disabled]="authorForm.invalid || isLoading">
           <span *ngIf="isLoading" class="loading loading-spinner loading-xs"></span>
-          {{ isEditMode ? 'Update' : 'Create' }}
+          <ng-icon *ngIf="!isLoading" [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Update' : 'Add Author' }}</span>
         </button>
       </div>
     </form>

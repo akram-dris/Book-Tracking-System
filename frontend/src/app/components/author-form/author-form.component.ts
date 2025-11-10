@@ -8,13 +8,13 @@ import { UpdateAuthor } from '../../models/update-author.model';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroXMark, heroPhoto } from '@ng-icons/heroicons/outline';
+import { heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-author-form',
   standalone: true,
   imports: [ReactiveFormsModule, RouterModule, CommonModule, NgIconComponent],
-  viewProviders: [provideIcons({ heroXMark, heroPhoto })],
+  viewProviders: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil })],
   templateUrl: './author-form.component.html',
   styleUrls: ['./author-form.component.css']
 })
