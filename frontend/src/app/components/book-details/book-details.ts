@@ -27,7 +27,8 @@ import {
   heroClipboardDocumentList,
   heroPlus,
   heroCalendar,
-  heroCheckCircle
+  heroCheckCircle,
+  heroTag
 } from '@ng-icons/heroicons/outline';
 
 type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
@@ -59,7 +60,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
       heroClipboardDocumentList,
       heroPlus,
       heroCalendar,
-      heroCheckCircle
+      heroCheckCircle,
+      heroTag
     })
   ]
 })
