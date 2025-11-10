@@ -1,17 +1,22 @@
 <!-- Compact Modal-Style Form -->
 <div class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-  <div class="bg-base-100 rounded-2xl shadow-2xl w-full max-w-xl max-h-[98vh] overflow-hidden flex flex-col">
+  <div class="bg-base-100 rounded-2xl border-2 border-base-300 shadow-2xl w-full max-w-xl max-h-[98vh] overflow-hidden flex flex-col">
     <!-- Minimal Header -->
-    <div class="flex items-center justify-between px-5 py-3 border-b border-base-300">
-      <h2 class="text-lg font-bold">{{ isEditMode ? 'Edit' : 'Add' }} Book</h2>
-      <button class="btn btn-ghost btn-circle btn-xs" routerLink="/books">
-        <ng-icon name="heroXMark" size="1rem"></ng-icon>
+    <div class="flex items-center justify-between px-5 py-4 border-b-2 border-base-300 bg-base-200/50">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <ng-icon name="heroBookOpen" size="1.25rem" class="text-primary"></ng-icon>
+        </div>
+        <h2 class="text-lg font-bold text-base-content">{{ isEditMode ? 'Edit' : 'Add' }} Book</h2>
+      </div>
+      <button class="btn btn-ghost btn-circle btn-sm hover:bg-error/10 hover:text-error hover:scale-110 transition-all duration-200" routerLink="/books">
+        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
       </button>
     </div>
 
     <!-- Form Content -->
     <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto">
-      <div class="p-5 pb-8 space-y-3">
+      <div class="p-6 space-y-4">
         <div class="grid grid-cols-12 gap-6">
           <!-- Compact Image Upload -->
           <div class="col-span-5">
@@ -22,52 +27,64 @@
                 (change)="onFilesAdded($event.addedFiles)"
                 [multiple]="false"
                 [accept]="'image/*'"
-                class="!h-full !w-full !border-2 !border-dashed !border-base-300 hover:!border-primary !rounded-lg !bg-base-200 hover:!bg-base-300 transition-all cursor-pointer flex items-center justify-center"
+                class="!h-full !w-full !border-2 !border-dashed !border-base-300 hover:!border-primary !rounded-xl !bg-base-200 hover:!bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group"
               >
                 <ngx-dropzone-label>
-                  <div class="flex flex-col items-center justify-center p-2">
-                    <ng-icon name="heroPhoto" size="2rem" class="text-base-content/30 mb-1"></ng-icon>
-                    <p class="text-xs text-base-content/50 text-center">Drop or click</p>
+                  <div class="flex flex-col items-center justify-center p-3">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
+                      <ng-icon name="heroPhoto" size="1.5rem" class="text-primary"></ng-icon>
+                    </div>
+                    <p class="text-sm font-medium text-base-content/70 text-center">Drop image here</p>
+                    <p class="text-xs text-base-content/50 text-center mt-1">or click to browse</p>
                   </div>
                 </ngx-dropzone-label>
               </ngx-dropzone>
 
               <!-- Image Preview -->
               <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
-                <div class="h-full w-full rounded-lg overflow-hidden bg-base-300 border-2 border-base-300">
-                  <img [src]="imagePreviewUrl" alt="Cover" class="w-full h-full object-cover" />
+                <div class="h-full w-full rounded-xl overflow-hidden bg-base-300 border-2 border-base-300 hover:border-primary transition-all duration-300">
+                  <img [src]="imagePreviewUrl" alt="Cover" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <button
                   type="button"
                   (click)="onFileRemoved()"
-                  class="absolute -top-1 -right-1 btn btn-circle btn-xs bg-error hover:bg-error/90 text-white border-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  class="absolute -top-2 -right-2 btn btn-circle btn-sm bg-error hover:bg-error/90 text-white border-0 shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200"
                 >
-                  <ng-icon name="heroXMark" size="0.75rem"></ng-icon>
+                  <ng-icon name="heroXMark" size="1rem"></ng-icon>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Form Fields -->
-          <div class="col-span-7 pl-6">
+          <div class="col-span-7 space-y-4">
             <!-- Title -->
             <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Title <span class="text-error">*</span></span>
+              <label class="label py-0 pb-1">
+                <span class="label-text text-sm font-semibold flex items-center gap-1">
+                  <ng-icon name="heroBookOpen" size="1rem" class="text-primary"></ng-icon>
+                  Title <span class="text-error">*</span>
+                </span>
               </label>
               <input
                 type="text"
                 formControlName="title"
-                class="input input-sm input-bordered w-full"
-                placeholder="Book title"
+                class="input input-bordered w-full border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                placeholder="Enter book title"
                 [class.input-error]="bookForm.get('title')?.invalid && bookForm.get('title')?.touched"
               />
+              <label *ngIf="bookForm.get('title')?.invalid && bookForm.get('title')?.touched" class="label">
+                <span class="label-text-alt text-error">Title is required</span>
+              </label>
             </div>
 
             <!-- Author -->
             <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Author <span class="text-error">*</span></span>
+              <label class="label py-0 pb-1">
+                <span class="label-text text-sm font-semibold flex items-center gap-1">
+                  <ng-icon name="heroUser" size="1rem" class="text-primary"></ng-icon>
+                  Author <span class="text-error">*</span>
+                </span>
               </label>
               <ng-select
                 [items]="authors"
@@ -77,57 +94,68 @@
                 placeholder="Select author"
                 [clearable]="true"
                 [searchable]="true"
-                class="ng-select-sm"
                 [class.ng-select-error]="bookForm.get('authorId')?.invalid && bookForm.get('authorId')?.touched"
               >
                 <ng-template ng-label-tmp let-item="item">
-                  <div class="flex items-center gap-1.5">
-                    <div *ngIf="getSelectedAuthorImage(item.id)" class="w-5 h-5 rounded-full overflow-hidden border border-base-300">
+                  <div class="flex items-center gap-2">
+                    <div *ngIf="getSelectedAuthorImage(item.id)" class="w-6 h-6 rounded-full overflow-hidden border-2 border-base-300">
                       <img [src]="getSelectedAuthorImage(item.id)" [alt]="item.name" class="w-full h-full object-cover" />
                     </div>
                     <div *ngIf="!getSelectedAuthorImage(item.id)" class="avatar placeholder">
-                      <div class="w-5 h-5 rounded-full bg-primary text-primary-content">
-                        <span class="text-[10px]">{{ item.name.charAt(0) }}</span>
+                      <div class="w-6 h-6 rounded-full bg-primary text-primary-content">
+                        <span class="text-xs font-medium">{{ item.name.charAt(0) }}</span>
                       </div>
                     </div>
-                    <span class="text-sm">{{ item.name }}</span>
+                    <span class="text-sm font-medium">{{ item.name }}</span>
                   </div>
                 </ng-template>
                 <ng-template ng-option-tmp let-item="item">
-                  <div class="flex items-center gap-2 py-0.5">
-                    <div *ngIf="item.imageUrl" class="w-6 h-6 rounded-full overflow-hidden border border-base-300">
+                  <div class="flex items-center gap-2 py-1">
+                    <div *ngIf="item.imageUrl" class="w-7 h-7 rounded-full overflow-hidden border-2 border-base-300">
                       <img [src]="getRootUrl() + item.imageUrl" [alt]="item.name" class="w-full h-full object-cover" />
                     </div>
                     <div *ngIf="!item.imageUrl" class="avatar placeholder">
-                      <div class="w-6 h-6 rounded-full bg-primary text-primary-content">
-                        <span class="text-[10px]">{{ item.name.charAt(0) }}</span>
+                      <div class="w-7 h-7 rounded-full bg-primary text-primary-content">
+                        <span class="text-xs font-medium">{{ item.name.charAt(0) }}</span>
                       </div>
                     </div>
                     <span class="text-sm">{{ item.name }}</span>
                   </div>
                 </ng-template>
               </ng-select>
+              <label *ngIf="bookForm.get('authorId')?.invalid && bookForm.get('authorId')?.touched" class="label">
+                <span class="label-text-alt text-error">Author is required</span>
+              </label>
             </div>
 
             <!-- Total Pages -->
             <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Pages <span class="text-error">*</span></span>
+              <label class="label py-0 pb-1">
+                <span class="label-text text-sm font-semibold flex items-center gap-1">
+                  <ng-icon name="heroDocumentText" size="1rem" class="text-primary"></ng-icon>
+                  Pages <span class="text-error">*</span>
+                </span>
               </label>
               <input
                 type="number"
                 formControlName="totalPages"
-                class="input input-sm input-bordered w-full"
+                class="input input-bordered w-full border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 placeholder="e.g., 320"
                 min="1"
                 [class.input-error]="bookForm.get('totalPages')?.invalid && bookForm.get('totalPages')?.touched"
               />
+              <label *ngIf="bookForm.get('totalPages')?.invalid && bookForm.get('totalPages')?.touched" class="label">
+                <span class="label-text-alt text-error">Pages is required</span>
+              </label>
             </div>
 
             <!-- Tags -->
             <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Tags</span>
+              <label class="label py-0 pb-1">
+                <span class="label-text text-sm font-semibold flex items-center gap-1">
+                  <ng-icon name="heroTag" size="1rem" class="text-primary"></ng-icon>
+                  Tags
+                </span>
               </label>
               <ng-select
                 [items]="tags"
@@ -140,20 +168,19 @@
                 placeholder="Select tags"
                 [clearable]="true"
                 [searchable]="true"
-                class="ng-select-sm"
               >
                 <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                  <div class="flex flex-wrap gap-1">
-                    <div *ngFor="let item of items" class="badge badge-primary badge-xs gap-0.5 px-1.5 py-0.5">
-                      <span class="text-[10px]">{{ item.name }}</span>
-                      <button type="button" (click)="clear(item)" class="hover:text-error">
-                        <ng-icon name="heroXMark" size="0.625rem"></ng-icon>
+                  <div class="flex flex-wrap gap-1.5">
+                    <div *ngFor="let item of items" class="badge badge-primary badge-sm gap-1 px-2 py-1 hover:scale-105 transition-transform">
+                      <span class="text-xs font-medium">{{ item.name }}</span>
+                      <button type="button" (click)="clear(item)" class="hover:text-error transition-colors">
+                        <ng-icon name="heroXMark" size="0.75rem"></ng-icon>
                       </button>
                     </div>
                   </div>
                 </ng-template>
                 <ng-template ng-option-tmp let-item="item">
-                  <span class="badge badge-primary badge-xs text-[10px]">{{ item.name }}</span>
+                  <span class="badge badge-primary badge-sm text-xs">{{ item.name }}</span>
                 </ng-template>
               </ng-select>
             </div>
@@ -163,16 +190,17 @@
     </form>
 
     <!-- Compact Footer -->
-    <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-base-300 bg-base-200/50">
-      <button type="button" routerLink="/books" class="btn btn-ghost btn-sm">Cancel</button>
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t-2 border-base-300 bg-base-200/50">
+      <button type="button" routerLink="/books" class="btn btn-ghost btn-sm hover:bg-base-300 hover:scale-105 transition-all duration-200">Cancel</button>
       <button
         type="submit"
         (click)="onSubmit()"
-        class="btn btn-primary btn-sm px-4"
+        class="btn btn-primary btn-sm px-6 rounded-xl shadow-lg shadow-primary/30 hover:brightness-110 hover:scale-105 transition-all duration-200"
         [disabled]="bookForm.invalid || isLoading"
       >
         <span *ngIf="isLoading" class="loading loading-spinner loading-xs"></span>
-        <span *ngIf="!isLoading">{{ isEditMode ? 'Update' : 'Add' }}</span>
+        <ng-icon *ngIf="!isLoading" [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
+        <span *ngIf="!isLoading">{{ isEditMode ? 'Update' : 'Add Book' }}</span>
       </button>
     </div>
   </div>
