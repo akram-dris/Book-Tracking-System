@@ -1,11 +1,14 @@
 <div *ngIf="book" class="min-h-screen bg-base-100">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
+      <span class="font-medium">Back</span>
+    </button>
+  </div>
+
   <!-- Header Section -->
   <div>
-    <!-- Back Button -->
-    <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 mb-6 hover:bg-primary/10 hover:text-primary transition-all duration-200">
-      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
-      Back
-    </button>
 
     <!-- Book Card with Modern Design -->
     <div class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/50 shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 overflow-hidden mb-6">
