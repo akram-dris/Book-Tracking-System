@@ -22,7 +22,7 @@ export const routes: Routes = [
     { path: 'authors/:id/edit', component: AuthorFormComponent },
     { path: 'authors/:id', component: AuthorDetailsComponent },
     { path: 'tags', component: TagManagementComponent },
-    { path: 'sessions/log', component: SessionLogComponent },
+    { path: 'books/:bookId/session/log', component: SessionLogComponent },
     { path: 'heatmap', component: HeatmapComponent },
     { path: 'statistics', component: StatisticsComponent }
 ];

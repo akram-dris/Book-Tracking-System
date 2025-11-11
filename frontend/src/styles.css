@@ -605,3 +605,113 @@ h6 {
 .ng-select-error.ng-select-focused .ng-select-container {
   border-color: hsl(var(--er));
 }
+
+/* Angular Material Datepicker Dark Mode Support */
+.mat-datepicker-content {
+  background-color: hsl(var(--b1)) !important;
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-calendar {
+  background-color: hsl(var(--b1)) !important;
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-calendar-header {
+  background-color: hsl(var(--b1)) !important;
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-calendar-body-label,
+.mat-calendar-table-header th {
+  color: hsl(var(--bc) / 0.7) !important;
+}
+
+.mat-calendar-body-cell-content {
+  color: hsl(var(--bc)) !important;
+  border-color: transparent !important;
+}
+
+.mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+  background-color: hsl(var(--p) / 0.1) !important;
+}
+
+.mat-calendar-body-selected {
+  background-color: hsl(var(--p)) !important;
+  color: hsl(var(--pc)) !important;
+}
+
+.mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+  border-color: hsl(var(--p)) !important;
+  color: hsl(var(--p)) !important;
+}
+
+.mat-calendar-body-disabled {
+  color: hsl(var(--bc) / 0.3) !important;
+}
+
+.mat-mdc-icon-button.mat-mdc-button-base {
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-mdc-form-field {
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-mdc-text-field-wrapper {
+  background-color: hsl(var(--b1)) !important;
+}
+
+.mat-mdc-form-field .mat-mdc-floating-label,
+.mat-mdc-form-field .mat-mdc-input-element {
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-mdc-form-field .mat-mdc-input-element::placeholder {
+  color: hsl(var(--bc) / 0.5) !important;
+}
+
+.mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+.mat-mdc-form-field .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-notched-outline__notch,
+.mat-mdc-form-field .mdc-notched-outline__trailing {
+  border-color: hsl(var(--bc) / 0.2) !important;
+}
+
+.mat-mdc-form-field:hover .mdc-notched-outline__leading,
+.mat-mdc-form-field:hover .mdc-notched-outline__notch,
+.mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+  border-color: hsl(var(--bc) / 0.3) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: hsl(var(--p)) !important;
+  border-width: 2px !important;
+}
+
+.mat-datepicker-toggle-default-icon {
+  color: hsl(var(--bc)) !important;
+}
+
+/* Calendar navigation buttons */
+.mat-calendar-previous-button,
+.mat-calendar-next-button,
+.mat-calendar-period-button {
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-calendar-previous-button:hover,
+.mat-calendar-next-button:hover,
+.mat-calendar-period-button:hover {
+  background-color: hsl(var(--p) / 0.1) !important;
+}
+
+.mat-calendar-arrow {
+  fill: hsl(var(--bc)) !important;
+}
+

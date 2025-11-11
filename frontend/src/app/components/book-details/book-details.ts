@@ -12,7 +12,6 @@ import { environment } from '../../../environments/environment';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { SessionLogComponent } from '../session-log/session-log.component';
 import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component';
 import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
 import { QuillModule } from 'ngx-quill';
@@ -41,7 +40,6 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
     RouterModule, 
     ReactiveFormsModule, 
     FormsModule, 
-    SessionLogComponent, 
     PlanAndGoalModalComponent, 
     ReadingLogModalComponent,
     QuillModule,
@@ -71,7 +69,6 @@ export class BookDetailsComponent implements OnInit {
   readingGoal: GetReadingGoal | null = null;
   rootUrl = environment.rootUrl;
   ReadingStatus = ReadingStatus;
-  isAddSessionModalOpen: boolean = false;
   isPlanAndGoalModalOpen: boolean = false;
   isReadingLogModalOpen: boolean = false;
   currentBookId: number | null = null;
@@ -251,19 +248,8 @@ export class BookDetailsComponent implements OnInit {
   }
 
   openAddSessionModal(): void {
-    console.log('BookDetailsComponent openAddSessionModal - Opening AddSessionModal for bookId:', this.currentBookId);
-    this.isAddSessionModalOpen = true;
-  }
-
-  closeAddSessionModal(): void {
-    console.log('BookDetailsComponent closeAddSessionModal');
-    this.isAddSessionModalOpen = false;
-  }
-
-  handleAddSessionSaved(): void {
-    console.log('BookDetailsComponent handleAddSessionSaved - Session saved, refreshing data for bookId:', this.book?.id);
-    this.closeAddSessionModal();
-    this.refreshBookData(); // Refresh all book-related data
+    console.log('BookDetailsComponent openAddSessionModal - Navigating to session log for bookId:', this.currentBookId);
+    this.router.navigate(['/books', this.currentBookId, 'session', 'log']);
   }
 
   startReadingFromPlanning(): void {

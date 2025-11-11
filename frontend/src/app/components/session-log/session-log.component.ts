@@ -1,76 +1,107 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReadingSessionService } from '../../services/reading-session.service';
+import { BookService } from '../../services/book.service';
+import { ReadingGoalService } from '../../services/reading-goal.service';
 import { CreateReadingSession } from '../../models/create-reading-session.model';
 import { UpdateReadingSession } from '../../models/update-reading-session.model';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroCheckCircle } from '@ng-icons/heroicons/outline';
+import { heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText } from '@ng-icons/heroicons/outline';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-session-log',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, MatDatepickerModule, MatInputModule, MatFormFieldModule],
   templateUrl: './session-log.component.html',
   styleUrls: ['./session-log.component.css'],
-  viewProviders: [provideIcons({ heroCheckCircle })]
+  viewProviders: [provideIcons({ heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText })]
 })
 export class SessionLogComponent implements OnInit {
-  @Input() bookId: number | null = null;
-  @Input() readingGoal: GetReadingGoal | null = null;
-  @Input() totalPages: number | null = null;
-  @Output() sessionSaved = new EventEmitter<void>();
-  @Output() close = new EventEmitter<void>();
+  bookId: number | null = null;
+  readingGoal: GetReadingGoal | null = null;
+  totalPages: number | null = null;
 
   sessionForm: FormGroup;
   isLoading = false;
-  currentPage: number = 0; // To be calculated
-  progress: number = 0; // To be calculated
-  currentPagesRead: number = 0; // New property to track pages read input
-  existingSession: GetReadingSession | null = null; // New property
+  currentPage: number = 0;
+  progress: number = 0;
+  currentPagesRead: number = 0;
+  existingSession: GetReadingSession | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private readingSessionService: ReadingSessionService
+    private route: ActivatedRoute,
+    private router: Router,
+    private readingSessionService: ReadingSessionService,
+    private bookService: BookService,
+    private readingGoalService: ReadingGoalService
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
-      date: [this.formatDate(new Date()), Validators.required],
+      date: [new Date(), Validators.required],
       summary: ['']
     });
   }
 
   ngOnInit(): void {
-    console.log('SessionLogComponent ngOnInit - bookId:', this.bookId, 'readingGoal:', this.readingGoal, 'totalPages:', this.totalPages);
-    if (this.bookId) {
+    // Get bookId from route params
+    this.route.params.subscribe(params => {
+      this.bookId = +params['bookId'];
+      if (this.bookId) {
+        this.loadBookData();
+      }
+    });
+  }
+
+  loadBookData(): void {
+    if (!this.bookId) return;
+
+    // Fetch book details
+    this.bookService.getBook(this.bookId).subscribe(book => {
+      this.totalPages = book.totalPages;
+
+      // Fetch reading goal for this book
+      this.readingGoalService.getReadingGoalForBook(this.bookId!).subscribe({
+        next: (goal) => {
+          this.readingGoal = goal;
+        },
+        error: () => {
+          // No reading goal, that's fine
+        }
+      });
+
       // Fetch all sessions to calculate current progress
-      this.readingSessionService.getReadingSessionsForBook(this.bookId).subscribe(sessions => {
+      this.readingSessionService.getReadingSessionsForBook(this.bookId!).subscribe(sessions => {
         this.currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
         if (this.totalPages && this.totalPages > 0) {
           this.progress = (this.currentPage / this.totalPages) * 100;
         }
-        console.log('SessionLogComponent ngOnInit - currentPage:', this.currentPage, 'progress:', this.progress);
-      });
 
-      // Check for existing session for today's date
-      const today = this.formatDate(new Date());
-      this.readingSessionService.getReadingSessionsForBook(this.bookId).subscribe(sessions => {
-        this.existingSession = sessions.find(session => this.formatDate(new Date(session.date)) === today) || null;
+        // Check for existing session for today's date
+        const todayDate = this.formatDate(new Date());
+        this.existingSession = sessions.find(session => 
+          this.formatDate(new Date(session.date)) === todayDate
+        ) || null;
 
         if (this.existingSession) {
           this.sessionForm.patchValue({
-            pagesRead: null, // User will enter additional pages
-            date: this.formatDate(new Date(this.existingSession.date)),
+            pagesRead: 0,
+            date: new Date(this.existingSession.date),
             summary: this.existingSession.summary || ''
           });
-          this.currentPagesRead = this.existingSession.pagesRead; // Keep track of total pages read for goal feedback
+          this.currentPagesRead = this.existingSession.pagesRead;
         }
       });
-    }
+    });
 
-    // Subscribe to pagesRead changes to update visual feedback
+    // Subscribe to pagesRead changes
     this.sessionForm.get('pagesRead')?.valueChanges.subscribe(value => {
       this.currentPagesRead = value || 0;
     });
@@ -120,6 +151,10 @@ export class SessionLogComponent implements OnInit {
     return classes;
   }
 
+  onCancel(): void {
+    this.router.navigate(['/books', this.bookId]);
+  }
+
   onSubmit(): void {
     if (this.sessionForm.valid && this.bookId) {
       this.isLoading = true;
@@ -141,8 +176,7 @@ export class SessionLogComponent implements OnInit {
         this.readingSessionService.updateReadingSession(this.existingSession.id, updateSession).subscribe({
           next: () => {
             this.isLoading = false;
-            this.sessionSaved.emit();
-            this.close.emit();
+            this.router.navigate(['/books', this.bookId]);
           },
           error: (err) => {
             this.isLoading = false;
@@ -156,8 +190,7 @@ export class SessionLogComponent implements OnInit {
         this.readingSessionService.addReadingSession(newSession).subscribe({
           next: () => {
             this.isLoading = false;
-            this.sessionSaved.emit();
-            this.close.emit();
+            this.router.navigate(['/books', this.bookId]);
           },
           error: (err) => {
             this.isLoading = false;
@@ -171,9 +204,5 @@ export class SessionLogComponent implements OnInit {
         });
       }
     }
-  }
-
-  onCancel(): void {
-    this.close.emit();
   }
 }
