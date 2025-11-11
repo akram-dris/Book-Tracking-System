@@ -1,7 +1,7 @@
 <div class="bg-base-100">
   <!-- Back Button -->
   <div class="mb-6">
-    <button type="button" (click)="onCancel()" class="btn btn-ghost btn-sm gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+    <button mat-button type="button" (click)="onCancel()" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
       <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
       <span class="font-medium">Back</span>
     </button>
@@ -235,11 +235,11 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center justify-end gap-3">
-              <button type="button" class="btn btn-ghost hover:bg-base-300 hover:scale-105 transition-all duration-200" (click)="onCancel()">
+              <button mat-button type="button" class="hover:bg-base-300 hover:scale-105 transition-all duration-200" (click)="onCancel()">
                 Cancel
               </button>
-              <button type="submit" 
-                      class="btn btn-primary px-8 rounded-xl shadow-lg shadow-primary/30 hover:brightness-110 hover:scale-105 transition-all duration-200 gap-2" 
+              <button mat-raised-button color="primary" type="submit" 
+                      class="px-8 gap-2" 
                       [disabled]="sessionForm.invalid || isLoading">
                 <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
                 <ng-icon *ngIf="!isLoading" name="heroCheckCircle" size="1.25rem"></ng-icon>

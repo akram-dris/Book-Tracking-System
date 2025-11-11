@@ -15,6 +15,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus } from '@ng-icons/heroicons/outline';
+import { MatButtonModule } from '@angular/material/button';
 
 interface BookWithProgress extends GetBook {
   progressPercentage?: number;
@@ -37,7 +38,8 @@ type ViewMode = 'grid' | 'list';
     BookStatsComponent,
     EmptyStateComponent,
     LoadingSpinnerComponent,
-    NgIconComponent
+    NgIconComponent,
+    MatButtonModule
   ],
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.css'],

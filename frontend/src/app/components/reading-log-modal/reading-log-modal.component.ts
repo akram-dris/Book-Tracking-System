@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { ReadingSessionService } from '../../services/reading-session.service';
-import { ReadingStatus } from '../../models/enums/reading-status.enum'; // New import
-import { NoteModalComponent } from '../note-modal/note-modal.component'; // New import
-import { UpdateReadingSession } from '../../models/update-reading-session.model'; // New import
+import { ReadingStatus } from '../../models/enums/reading-status.enum';
+import { NoteModalComponent } from '../note-modal/note-modal.component';
+import { UpdateReadingSession } from '../../models/update-reading-session.model';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-reading-log-modal',
   standalone: true,
-  imports: [CommonModule, NoteModalComponent], // Updated imports
+  imports: [CommonModule, NoteModalComponent, MatButtonModule],
   templateUrl: './reading-log-modal.component.html',
   styleUrls: ['./reading-log-modal.component.css']
 })

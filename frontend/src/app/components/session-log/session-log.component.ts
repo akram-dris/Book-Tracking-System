@@ -14,11 +14,12 @@ import { heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumen
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-session-log',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, MatDatepickerModule, MatInputModule, MatFormFieldModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, MatDatepickerModule, MatInputModule, MatFormFieldModule, MatButtonModule],
   templateUrl: './session-log.component.html',
   styleUrls: ['./session-log.component.css'],
   viewProviders: [provideIcons({ heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText })]

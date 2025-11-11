@@ -12,6 +12,7 @@ import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus } from '@ng-icons/heroicons/outline';
+import { MatButtonModule } from '@angular/material/button';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
@@ -20,7 +21,7 @@ interface BookWithStatus extends GetBook {
 
 @Component({
   selector: 'app-author-details',
-  imports: [CommonModule, RouterModule, NgIconComponent],
+  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule],
   templateUrl: './author-details.html',
   styleUrls: ['./author-details.css'],
   viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus })]

@@ -13,6 +13,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil } from '@ng-icons/heroicons/outline';
+import { MatButtonModule } from '@angular/material/button';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -23,7 +24,7 @@ import { GetTag } from '../../models/get-tag.model';
 @Component({
   selector: 'app-book-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent],
+  imports: [ReactiveFormsModule, FormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule],
   providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil })],
   templateUrl: './book-form.component.html',
   styleUrls: ['./book-form.component.css']

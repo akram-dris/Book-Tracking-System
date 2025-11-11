@@ -10,6 +10,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus } from '@ng-icons/heroicons/outline';
 import { BookService } from '../../services/book.service';
 import { forkJoin } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
 
 interface AuthorWithCount extends GetAuthor {
   bookCount?: number;
@@ -18,7 +19,7 @@ interface AuthorWithCount extends GetAuthor {
 @Component({
   selector: 'app-author-list',
   standalone: true,
-  imports: [RouterModule, FormsModule, NgIconComponent, DatePipe],
+  imports: [RouterModule, FormsModule, NgIconComponent, DatePipe, MatButtonModule],
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.css'],
   viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus })]

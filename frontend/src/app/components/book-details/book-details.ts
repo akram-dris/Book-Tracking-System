@@ -16,6 +16,7 @@ import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-
 import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { MatButtonModule } from '@angular/material/button';
 import { 
   heroArrowLeft, 
   heroPencil, 
@@ -43,7 +44,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
     PlanAndGoalModalComponent, 
     ReadingLogModalComponent,
     QuillModule,
-    NgIconComponent
+    NgIconComponent,
+    MatButtonModule
   ],
   templateUrl: './book-details.html',
   styleUrls: ['./book-details.css'],

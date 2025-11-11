@@ -715,3 +715,161 @@ h6 {
   fill: hsl(var(--bc)) !important;
 }
 
+/* Angular Material Button Integration with DaisyUI Design System */
+/* Override Material button styles to match our personality */
+
+/* Material Button Base Styles */
+.mdc-button {
+  font-family: var(--font-sans) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  transition: all 0.2s ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Primary Buttons */
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary {
+  background-color: hsl(var(--p)) !important;
+  color: hsl(var(--pc)) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 14px 0 hsl(var(--p) / 0.3) !important;
+}
+
+.mat-mdc-raised-button.mat-primary:hover,
+.mat-mdc-unelevated-button.mat-primary:hover {
+  background-color: hsl(var(--pf)) !important;
+  filter: brightness(1.1);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px 0 hsl(var(--p) / 0.4) !important;
+}
+
+/* Ghost/Text Buttons */
+.mat-mdc-button.mat-mdc-button-base {
+  border-radius: 0.75rem !important;
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-mdc-button:hover {
+  background-color: hsl(var(--b2)) !important;
+  transform: scale(1.05);
+}
+
+/* Outlined Buttons */
+.mat-mdc-outlined-button {
+  border-radius: 0.75rem !important;
+  border: 2px solid hsl(var(--bc) / 0.2) !important;
+  color: hsl(var(--bc)) !important;
+}
+
+.mat-mdc-outlined-button:hover {
+  border-color: hsl(var(--p) / 0.5) !important;
+  background-color: hsl(var(--p) / 0.1) !important;
+  color: hsl(var(--p)) !important;
+  transform: scale(1.05);
+}
+
+/* Icon Buttons */
+.mat-mdc-icon-button {
+  border-radius: 50% !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.mat-mdc-icon-button:hover {
+  background-color: hsl(var(--b2)) !important;
+  transform: scale(1.1);
+}
+
+/* FAB Buttons */
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  background-color: hsl(var(--p)) !important;
+  color: hsl(var(--pc)) !important;
+  box-shadow: 0 8px 24px -4px hsl(var(--p) / 0.4) !important;
+}
+
+.mat-mdc-fab:hover,
+.mat-mdc-mini-fab:hover {
+  background-color: hsl(var(--pf)) !important;
+  filter: brightness(1.1);
+  transform: scale(1.1);
+  box-shadow: 0 10px 30px -4px hsl(var(--p) / 0.6) !important;
+}
+
+/* Error/Danger Buttons */
+.mat-mdc-raised-button.mat-warn,
+.mat-mdc-outlined-button.mat-warn {
+  background-color: transparent !important;
+  border-color: hsl(var(--er)) !important;
+  color: hsl(var(--er)) !important;
+}
+
+.mat-mdc-raised-button.mat-warn:hover,
+.mat-mdc-outlined-button.mat-warn:hover {
+  background-color: hsl(var(--er) / 0.1) !important;
+  transform: scale(1.05);
+}
+
+/* Accent Buttons */
+.mat-mdc-raised-button.mat-accent {
+  background-color: hsl(var(--a)) !important;
+  color: hsl(var(--ac)) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 14px 0 hsl(var(--a) / 0.3) !important;
+}
+
+.mat-mdc-raised-button.mat-accent:hover {
+  background-color: hsl(var(--af)) !important;
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+/* Disabled State */
+.mat-mdc-button:disabled,
+.mat-mdc-raised-button:disabled,
+.mat-mdc-outlined-button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Remove Material ripple color override to use theme colors */
+.mat-mdc-button .mat-mdc-button-persistent-ripple,
+.mat-mdc-raised-button .mat-mdc-button-persistent-ripple {
+  opacity: 0.1;
+}
+
+/* Small buttons */
+.mat-mdc-button.btn-sm,
+.mat-mdc-raised-button.btn-sm,
+.mat-mdc-outlined-button.btn-sm {
+  padding: 0.25rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  min-height: 2rem !important;
+}
+
+/* Button with icons spacing */
+.mat-mdc-button .mat-icon,
+.mat-mdc-raised-button .mat-icon,
+.mat-mdc-outlined-button .mat-icon {
+  margin-right: 0.5rem;
+}
+
+/* Ensure proper alignment for buttons with ng-icon */
+.mat-mdc-button ng-icon,
+.mat-mdc-raised-button ng-icon,
+.mat-mdc-outlined-button ng-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Material button label alignment */
+.mat-mdc-button-touch-target,
+.mdc-button__label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+

@@ -9,11 +9,12 @@ import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil } from '@ng-icons/heroicons/outline';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-author-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule, NgIconComponent],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule, NgIconComponent, MatButtonModule],
   viewProviders: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil })],
   templateUrl: './author-form.component.html',
   styleUrls: ['./author-form.component.css']

@@ -10,6 +10,7 @@ import {
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
+import { MatButtonModule } from '@angular/material/button';
 
 import { BookService } from '../../services/book.service';
 import { StatisticService } from '../../services/statistic.service';
@@ -32,7 +33,7 @@ interface BookWithStatus extends GetBook {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, RouterModule, BaseChartDirective],
+  imports: [CommonModule, NgIconComponent, RouterModule, BaseChartDirective, MatButtonModule],
   viewProviders: [provideIcons({ 
     heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock, 
     heroTrophy, heroArrowTrendingUp, heroSparkles, heroCalendar,

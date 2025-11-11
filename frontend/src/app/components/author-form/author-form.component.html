@@ -9,7 +9,7 @@
         </div>
         <h2 class="text-lg font-bold text-base-content">{{ isEditMode ? 'Edit' : 'Add' }} Author</h2>
       </div>
-      <button class="btn btn-ghost btn-circle btn-sm hover:bg-error/10 hover:text-error hover:scale-110 transition-all duration-200" routerLink="/authors">
+      <button mat-icon-button routerLink="/authors" class="hover:text-error">
         <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
       </button>
     </div>
@@ -42,9 +42,11 @@
                   <img [src]="imagePreviewUrl" alt="Author photo" class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <button
+                  mat-icon-button
                   type="button"
                   (click)="removeImage($event)"
-                  class="absolute -top-2 -right-2 btn btn-circle btn-sm bg-error hover:bg-error/90 text-white border-0 shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200"
+                  class="absolute -top-2 -right-2 bg-error text-white shadow-lg opacity-0 group-hover:opacity-100"
+                  style="width: 28px; height: 28px;"
                 >
                   <ng-icon name="heroXMark" size="1rem"></ng-icon>
                 </button>
@@ -95,8 +97,8 @@
 
       <!-- Footer Actions -->
       <div class="flex items-center justify-end gap-3 px-6 py-4 border-t-2 border-base-300 bg-base-200/50">
-        <button type="button" class="btn btn-ghost btn-sm hover:bg-base-300 hover:scale-105 transition-all duration-200" routerLink="/authors">Cancel</button>
-        <button type="submit" class="btn btn-primary btn-sm px-6 rounded-xl shadow-lg shadow-primary/30 hover:brightness-110 hover:scale-105 transition-all duration-200" [disabled]="authorForm.invalid || isLoading">
+        <button mat-button type="button" routerLink="/authors" class="hover:bg-base-300 hover:scale-105 transition-all duration-200">Cancel</button>
+        <button mat-raised-button color="primary" type="submit" class="px-6" [disabled]="authorForm.invalid || isLoading">
           <span *ngIf="isLoading" class="loading loading-spinner loading-xs"></span>
           <ng-icon *ngIf="!isLoading" [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
           <span *ngIf="!isLoading">{{ isEditMode ? 'Update' : 'Add Author' }}</span>
