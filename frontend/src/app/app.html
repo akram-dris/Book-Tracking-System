@@ -20,6 +20,11 @@
         <router-outlet></router-outlet>
       </div>
     </main>
+    @if (showAddButton) {
+      <a [routerLink]="addRouterLink" mat-fab color="primary" class="add-button-fixed fixed bottom-6 right-6 z-50">
+        <ng-icon name="heroPlus" size="1.75rem"></ng-icon>
+      </a>
+    }
   </div>
 </div>
 
