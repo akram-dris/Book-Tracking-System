@@ -15,3 +15,16 @@
 .card:hover .status-summarized {
     background-color: #eab308; /* yellow-600 on hover */
 }
+
+/* Fix dropdown overflow */
+.card {
+    overflow: visible !important;
+}
+
+.card figure {
+    overflow: hidden;
+}
+
+.dropdown-content {
+    position: fixed !important;
+}
