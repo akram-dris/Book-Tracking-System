@@ -8,14 +8,30 @@ import { UpdateAuthor } from '../../models/update-author.model';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil } from '@ng-icons/heroicons/outline';
+import { heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil, heroArrowLeft } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-author-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule, NgIconComponent, MatButtonModule],
-  viewProviders: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil })],
+  imports: [
+    ReactiveFormsModule, 
+    RouterModule, 
+    CommonModule, 
+    NgIconComponent, 
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCardModule
+  ],
+  viewProviders: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil, heroArrowLeft })],
   templateUrl: './author-form.component.html',
   styleUrls: ['./author-form.component.css']
 })
