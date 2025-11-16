@@ -1,7 +1,7 @@
-<aside [class.w-16]="isCollapsed()" [class.w-64]="!isCollapsed()" 
-       class="flex flex-col h-full bg-base-200 border-r border-base-300 transition-all duration-300 ease-in-out">
+<aside [class.w-16]="isCollapsed()" [class.w-52]="!isCollapsed()" 
+       class="flex flex-col h-full bg-base-200 border-r border-base-300 transition-all duration-300 ease-in-out relative z-50">
   <!-- Header -->
-  <div class="flex items-center justify-between p-4 border-b border-base-300">
+  <div class="flex items-center justify-between px-4 h-16 border-b border-base-300">
     @if (!isCollapsed()) {
       <a routerLink="/" class="flex items-center gap-2 text-xl font-bold hover:text-primary transition-colors">
         <ng-icon name="heroBookOpen" size="1.5rem"></ng-icon>
@@ -22,16 +22,18 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto">
+  <nav class="flex-1">
     <ul class="menu p-2 gap-1">
       @for (item of navItems; track item.path) {
         <li>
           <a [routerLink]="item.path" 
-             routerLinkActive="active bg-primary text-primary-content"
+             routerLinkActive="active bg-primary text-primary-content hover:bg-primary/75"
+             [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
              [attr.data-tip]="isCollapsed() ? item.tooltip : null"
              [class.tooltip]="isCollapsed()"
              [class.tooltip-right]="isCollapsed()"
-             class="flex items-center gap-3 rounded-lg transition-all duration-200 hover:bg-base-300">
+             class="flex items-center rounded-lg transition-all duration-200 hover:bg-primary/10"
+             [class.gap-3]="!isCollapsed()">
             <ng-icon [name]="item.icon" size="1.25rem"></ng-icon>
             @if (!isCollapsed()) {
               <span class="font-medium">{{ item.label }}</span>

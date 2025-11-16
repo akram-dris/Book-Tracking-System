@@ -16,7 +16,7 @@ namespace BookTrackingSystem.Services
                     Value = (int)ReadingStatus.NotReading,
                     Name = nameof(ReadingStatus.NotReading),
                     DisplayName = "Not Reading",
-                    BadgeClass = "badge-ghost"
+                    BadgeClass = "badge-neutral"
                 },
                 new ReadingStatusDto
                 {
@@ -37,7 +37,7 @@ namespace BookTrackingSystem.Services
                     Value = (int)ReadingStatus.Completed,
                     Name = nameof(ReadingStatus.Completed),
                     DisplayName = "Completed",
-                    BadgeClass = "badge-success"
+                    BadgeClass = "badge-accent"
                 },
                 new ReadingStatusDto
                 {

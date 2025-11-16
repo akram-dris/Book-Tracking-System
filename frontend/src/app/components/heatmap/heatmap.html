@@ -1,41 +1,88 @@
-<div class="p-6 max-w-7xl mx-auto" @fadeIn>
-  <!-- Header Section -->
-  <div class="flex flex-col md:flex-row items-center justify-center mb-8 gap-4">
-    <!-- Year Navigation -->
-    <div class="flex items-center justify-center gap-3">
+<div @fadeIn>
+  <!-- Header Section with Enhanced Design -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-6">
+    <!-- Year Navigation with Modern Style -->
+    <div class="flex items-center gap-4 bg-base-200/50 rounded-2xl p-3 border border-base-300/30 backdrop-blur-sm">
       <button 
-        class="btn btn-ghost btn-lg btn-circle"
+        class="btn btn-circle btn-ghost hover:bg-primary/10 hover:text-primary hover:scale-110 transition-all duration-300"
         (click)="previousYear()"
         [disabled]="loading"
       >
         <ng-icon name="heroChevronLeft" size="24"></ng-icon>
       </button>
       
-      <span class="text-2xl font-bold w-28 text-center">{{ currentYear }}</span>
+      <div class="flex items-center gap-2 px-4">
+        <ng-icon name="heroCalendarDays" size="20" class="text-primary"></ng-icon>
+        <span class="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{{ currentYear }}</span>
+      </div>
       
       <button 
-        class="btn btn-ghost btn-lg btn-circle"
+        class="btn btn-circle btn-ghost hover:bg-primary/10 hover:text-primary hover:scale-110 transition-all duration-300"
         (click)="nextYear()"
         [disabled]="loading"
       >
         <ng-icon name="heroChevronRight" size="24"></ng-icon>
       </button>
     </div>
+
+    <!-- Streak Info (New Feature) -->
+    <div class="flex items-center gap-3 bg-gradient-to-r from-accent/10 to-secondary/10 rounded-2xl px-6 py-3 border border-accent/20">
+      <ng-icon name="heroFire" size="24" class="text-accent"></ng-icon>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-accent">{{ currentStreak }}</span>
+        <span class="text-xs text-base-content/60">Day Streak</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Stats Section -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" *ngIf="!loading" @fadeIn>
-    <div class="card bg-base-200 p-4 text-center">
-      <div class="text-3xl font-bold text-primary">{{ totalPages }}</div>
-      <div class="text-sm text-base-content/70 mt-1">Total Pages</div>
+  <!-- Stats Section with Enhanced Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" *ngIf="!loading" @fadeIn>
+    <!-- Total Pages Card -->
+    <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6 hover:border-primary/40 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2">
+          <ng-icon name="heroBookOpen" size="20" class="text-primary"></ng-icon>
+          <div class="text-xs font-medium text-base-content/60 uppercase tracking-wider">Total Pages</div>
+        </div>
+        <div class="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{{ totalPages | number }}</div>
+      </div>
     </div>
-    <div class="card bg-base-200 p-4 text-center">
-      <div class="text-3xl font-bold text-primary">{{ totalDays }}</div>
-      <div class="text-sm text-base-content/70 mt-1">Active Days</div>
+
+    <!-- Active Days Card -->
+    <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent border border-secondary/20 p-6 hover:border-secondary/40 transition-all duration-500 hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl group-hover:bg-secondary/10 transition-all duration-500"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2">
+          <ng-icon name="heroCalendarDays" size="20" class="text-secondary"></ng-icon>
+          <div class="text-xs font-medium text-base-content/60 uppercase tracking-wider">Active Days</div>
+        </div>
+        <div class="text-4xl font-bold bg-gradient-to-r from-secondary to-secondary/70 bg-clip-text text-transparent">{{ totalDays }}</div>
+      </div>
     </div>
-    <div class="card bg-base-200 p-4 text-center">
-      <div class="text-3xl font-bold text-primary">{{ totalPages > 0 ? (totalPages / totalDays | number:'1.0-0') : 0 }}</div>
-      <div class="text-sm text-base-content/70 mt-1">Avg Pages/Day</div>
+
+    <!-- Average Pages/Day Card -->
+    <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border border-accent/20 p-6 hover:border-accent/40 transition-all duration-500 hover:shadow-xl hover:shadow-accent/10 hover:-translate-y-1">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl group-hover:bg-accent/10 transition-all duration-500"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2">
+          <ng-icon name="heroChartBarSquare" size="20" class="text-accent"></ng-icon>
+          <div class="text-xs font-medium text-base-content/60 uppercase tracking-wider">Avg Pages/Day</div>
+        </div>
+        <div class="text-4xl font-bold bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">{{ totalPages > 0 ? (totalPages / totalDays | number:'1.0-0') : 0 }}</div>
+      </div>
+    </div>
+
+    <!-- Longest Streak Card -->
+    <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-warning/10 via-warning/5 to-transparent border border-warning/20 p-6 hover:border-warning/40 transition-all duration-500 hover:shadow-xl hover:shadow-warning/10 hover:-translate-y-1">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-warning/5 rounded-full blur-3xl group-hover:bg-warning/10 transition-all duration-500"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2">
+          <ng-icon name="heroTrophy" size="20" class="text-warning"></ng-icon>
+          <div class="text-xs font-medium text-base-content/60 uppercase tracking-wider">Best Streak</div>
+        </div>
+        <div class="text-4xl font-bold bg-gradient-to-r from-warning to-warning/70 bg-clip-text text-transparent">{{ longestStreak }}</div>
+      </div>
     </div>
   </div>
 
@@ -45,45 +92,79 @@
     <p class="mt-4 text-base-content/70">Loading your reading data...</p>
   </div>
 
-  <!-- Calendar Grid -->
+  <!-- Calendar Grid with Modern Design -->
   <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
-    <div class="card bg-base-200 p-4" *ngFor="let month of calendarMonths">
-      <h3 class="text-center font-semibold text-lg mb-3">{{ month.monthName }}</h3>
-      <div class="grid grid-cols-7 text-center font-semibold mb-2 text-xs">
-        <div class="p-1 text-base-content/60">S</div>
-        <div class="p-1 text-base-content/60">M</div>
-        <div class="p-1 text-base-content/60">T</div>
-        <div class="p-1 text-base-content/60">W</div>
-        <div class="p-1 text-base-content/60">T</div>
-        <div class="p-1 text-base-content/60">F</div>
-        <div class="p-1 text-base-content/60">S</div>
+    <div class="month-container group relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200 to-base-300/50 p-5 border border-base-300/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1" *ngFor="let month of calendarMonths">
+      <!-- Month Header with Icon -->
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <ng-icon name="heroCalendar" size="18" class="text-primary opacity-70"></ng-icon>
+        <h3 class="text-center font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{{ month.monthName }}</h3>
       </div>
-      <div class="flex flex-col gap-1">
-        <div class="grid grid-cols-7 gap-1" *ngFor="let week of month.weeks">
+      
+      <!-- Day Headers -->
+      <div class="grid grid-cols-7 text-center mb-3 text-xs font-bold">
+        <div class="p-2 text-error/70">S</div>
+        <div class="p-2 text-base-content/60">M</div>
+        <div class="p-2 text-base-content/60">T</div>
+        <div class="p-2 text-base-content/60">W</div>
+        <div class="p-2 text-base-content/60">T</div>
+        <div class="p-2 text-base-content/60">F</div>
+        <div class="p-2 text-error/70">S</div>
+      </div>
+      
+      <!-- Calendar Days -->
+      <div class="flex flex-col gap-1.5">
+        <div class="grid grid-cols-7 gap-1.5" *ngFor="let week of month.weeks">
           <div
             class="day-cell"
             *ngFor="let day of week.days"
             [class.current-month]="day.isCurrentMonth"
             [class.other-month]="!day.isCurrentMonth"
+            [class.today]="isToday(day.date)"
             [ngClass]="getDayClass(day.pagesRead)"
             [attr.data-tooltip]="getTooltipText(day)"
           >
             <span *ngIf="day.isCurrentMonth" class="day-number">{{ day.dayOfMonth }}</span>
+            <span *ngIf="isToday(day.date) && day.isCurrentMonth" class="today-indicator"></span>
           </div>
+        </div>
+      </div>
+      
+      <!-- Month Summary -->
+      <div class="mt-4 pt-4 border-t border-base-content/10 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-1">
+          <ng-icon name="heroBookOpen" size="14" class="text-primary/70"></ng-icon>
+          <span class="font-semibold text-base-content/70">{{ getMonthTotal(month) }} pages</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <ng-icon name="heroFire" size="14" class="text-accent/70"></ng-icon>
+          <span class="font-semibold text-base-content/70">{{ getMonthActiveDays(month) }} days</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Legend -->
-  <div class="card bg-base-200 p-6" *ngIf="!loading" @fadeIn>
-    <div class="text-lg font-semibold mb-4">Activity Level</div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-      <div class="flex items-center gap-3" *ngFor="let item of legendItems">
-        <div class="w-8 h-8 rounded-md flex-shrink-0" [ngClass]="item.className"></div>
-        <div class="flex flex-col">
-          <div class="text-sm font-medium">{{ item.label }}</div>
-          <div class="text-xs text-base-content/60">{{ item.range }}</div>
+  <!-- Enhanced Legend with Modern Design -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200 to-base-300/50 p-6 border border-base-300/50" *ngIf="!loading" @fadeIn>
+    <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+    <div class="relative">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-2 rounded-lg bg-primary/10">
+          <ng-icon name="heroSparkles" size="20" class="text-primary"></ng-icon>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold">Activity Level Guide</h3>
+          <p class="text-xs text-base-content/60">Track your reading intensity throughout the year</p>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div class="group flex items-center gap-3 p-3 rounded-xl bg-base-100/50 hover:bg-base-100 border border-base-300/30 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg" *ngFor="let item of legendItems">
+          <div class="w-10 h-10 rounded-lg flex-shrink-0 ring-2 ring-base-300/30 group-hover:ring-primary/30 transition-all duration-300" [ngClass]="item.className"></div>
+          <div class="flex flex-col">
+            <div class="text-sm font-semibold">{{ item.label }}</div>
+            <div class="text-xs text-base-content/50">{{ item.range }}</div>
+          </div>
         </div>
       </div>
     </div>

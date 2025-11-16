@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-base-200 p-4 md:p-6 lg:p-8">
-  <div class="max-w-7xl mx-auto space-y-6">
+<div class="min-h-screen">
+  <div class="space-y-6">
     
 
 
@@ -19,65 +19,80 @@
     <div *ngIf="!loading && stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
       
       <!-- Total Books -->
-      <div class="card bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer border border-primary/20"
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-primary hover:-translate-y-1"
            (click)="navigateToBooks()">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Total Books</p>
-              <h3 class="text-3xl font-bold text-primary mt-1">{{ getTotalBooks() }}</h3>
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-primary shadow-sm shadow-primary/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Total Books</p>
+              </div>
+              <h3 class="text-4xl font-bold text-primary group-hover:scale-105 transition-transform">{{ getTotalBooks() }}</h3>
             </div>
-            <div class="bg-primary/20 p-3 rounded-full">
+            <div class="bg-primary/10 group-hover:bg-primary/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-primary/30">
               <ng-icon name="heroBookOpen" class="text-2xl text-primary"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-primary to-primary/20 rounded-full mt-2"></div>
         </div>
       </div>
 
       <!-- Pages Read -->
-      <div class="card bg-gradient-to-br from-secondary/10 to-secondary/5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-secondary/20">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Pages Read</p>
-              <h3 class="text-3xl font-bold text-secondary mt-1">{{ stats.overview?.totalPagesRead || 0 }}</h3>
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-success/20 transition-all duration-300 border-2 border-base-300 hover:border-success hover:-translate-y-1">
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-success shadow-sm shadow-success/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Pages Read</p>
+              </div>
+              <h3 class="text-4xl font-bold text-success group-hover:scale-105 transition-transform">{{ stats.overview?.totalPagesRead || 0 }}</h3>
             </div>
-            <div class="bg-secondary/20 p-3 rounded-full">
-              <ng-icon name="heroCheckCircle" class="text-2xl text-secondary"></ng-icon>
+            <div class="bg-success/10 group-hover:bg-success/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-success/30">
+              <ng-icon name="heroCheckCircle" class="text-2xl text-success"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-success to-success/20 rounded-full mt-2"></div>
         </div>
       </div>
 
       <!-- Reading Streak -->
-      <div class="card bg-gradient-to-br from-warning/10 to-warning/5 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer border border-warning/20"
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-warning/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-warning hover:-translate-y-1"
            (click)="navigateToHeatmap()">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Current Streak</p>
-              <h3 class="text-3xl font-bold text-warning mt-1">{{ streakData?.currentStreak || 0 }}</h3>
-              <p class="text-xs text-base-content/60 mt-1">days in a row 🔥</p>
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-warning shadow-sm shadow-warning/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Current Streak</p>
+              </div>
+              <h3 class="text-4xl font-bold text-warning group-hover:scale-105 transition-transform">{{ streakData?.currentStreak || 0 }}</h3>
             </div>
-            <div class="bg-warning/20 p-3 rounded-full">
+            <div class="bg-warning/10 group-hover:bg-warning/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-warning/30">
               <ng-icon name="heroFire" class="text-2xl text-warning"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-warning to-warning/20 rounded-full mt-2"></div>
         </div>
       </div>
 
       <!-- Currently Reading -->
-      <div class="card bg-gradient-to-br from-accent/10 to-accent/5 shadow-xl hover:shadow-2xl transition-all duration-300 border border-accent/20">
-        <div class="card-body">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-base-content/70 font-medium">Currently Reading</p>
-              <h3 class="text-3xl font-bold text-accent mt-1">{{ stats.overview?.booksCurrentlyReading || 0 }}</h3>
+      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-info/20 transition-all duration-300 border-2 border-base-300 hover:border-info hover:-translate-y-1">
+        <div class="card-body p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-info shadow-sm shadow-info/50"></span>
+                <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">In Progress</p>
+              </div>
+              <h3 class="text-4xl font-bold text-info group-hover:scale-105 transition-transform">{{ stats.overview?.booksCurrentlyReading || 0 }}</h3>
             </div>
-            <div class="bg-accent/20 p-3 rounded-full">
-              <ng-icon name="heroBookmark" class="text-2xl text-accent"></ng-icon>
+            <div class="bg-info/10 group-hover:bg-info/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-info/30">
+              <ng-icon name="heroBookmark" class="text-2xl text-info"></ng-icon>
             </div>
           </div>
+          <div class="h-1 bg-gradient-to-r from-info to-info/20 rounded-full mt-2"></div>
         </div>
       </div>
     </div>
@@ -89,7 +104,7 @@
       <div class="lg:col-span-2 space-y-6">
         
         <!-- Reading Progress Charts -->
-        <div *ngIf="!loading && readingProgressChart" class="card bg-base-100 shadow-xl" @fadeInUp>
+        <div *ngIf="!loading && readingProgressChart" class="card bg-base-100 shadow-xl border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10" @fadeInUp>
           <div class="card-body">
             <h2 class="card-title text-xl mb-4 flex items-center gap-2">
               <ng-icon name="heroChartBar" class="text-primary"></ng-icon>
@@ -97,23 +112,50 @@
             </h2>
             
             <!-- Charts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <!-- Doughnut Chart -->
               <div class="flex flex-col items-center">
-                <div class="relative" style="height: 280px; width: 100%;">
+                <div class="relative" style="height: 220px; width: 220px; margin: 0 auto;">
                   <canvas baseChart
                     [data]="readingProgressChart"
                     [options]="doughnutOptions"
                     type="doughnut">
                   </canvas>
-
+                  <!-- Center Label -->
+                  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <div class="text-3xl font-bold text-primary">{{ getTotalBooks() }}</div>
+                    <div class="text-xs text-base-content/60 font-medium">Total Books</div>
+                  </div>
+                </div>
+                <!-- Legend with Indicators -->
+                <div class="mt-6 space-y-2 w-full">
+                  <div class="flex items-center justify-between px-4 py-2 bg-info/5 rounded-lg border border-info/20 hover:bg-info/10 hover:border-info/30 transition-all cursor-pointer group">
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-info shadow-sm shadow-info/50 group-hover:scale-110 transition-transform"></span>
+                      <span class="text-sm font-medium text-base-content/80">Planning</span>
+                    </div>
+                    <span class="text-sm font-bold text-info">{{ stats.overview?.booksPending || 0 }}</span>
+                  </div>
+                  <div class="flex items-center justify-between px-4 py-2 bg-warning/5 rounded-lg border border-warning/20 hover:bg-warning/10 hover:border-warning/30 transition-all cursor-pointer group">
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-warning shadow-sm shadow-warning/50 group-hover:scale-110 transition-transform"></span>
+                      <span class="text-sm font-medium text-base-content/80">In Progress</span>
+                    </div>
+                    <span class="text-sm font-bold text-warning">{{ stats.overview?.booksCurrentlyReading || 0 }}</span>
+                  </div>
+                  <div class="flex items-center justify-between px-4 py-2 bg-success/5 rounded-lg border border-success/20 hover:bg-success/10 hover:border-success/30 transition-all cursor-pointer group">
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-success shadow-sm shadow-success/50 group-hover:scale-110 transition-transform"></span>
+                      <span class="text-sm font-medium text-base-content/80">Finished</span>
+                    </div>
+                    <span class="text-sm font-bold text-success">{{ stats.overview?.totalBooksRead || 0 }}</span>
+                  </div>
                 </div>
               </div>
 
               <!-- Bar Chart -->
-              <div class="flex flex-col">
-
-                <div style="height: 280px; width: 100%;">
+              <div class="flex flex-col h-full">
+                <div class="flex-1" style="min-height: 340px;">
                   <canvas baseChart
                     [data]="monthlyActivityChart"
                     [options]="barOptions"
@@ -123,21 +165,7 @@
               </div>
             </div>
 
-            <!-- Quick Stats Summary -->
-            <div class="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-base-300">
-              <div class="text-center p-3 bg-info/5 rounded-lg border border-info/20">
-                <div class="text-2xl font-bold text-info">{{ stats.overview?.booksPending || 0 }}</div>
-                <div class="text-xs text-base-content/60 mt-1">Planning</div>
-              </div>
-              <div class="text-center p-3 bg-warning/5 rounded-lg border border-warning/20">
-                <div class="text-2xl font-bold text-warning">{{ stats.overview?.booksCurrentlyReading || 0 }}</div>
-                <div class="text-xs text-base-content/60 mt-1">In Progress</div>
-              </div>
-              <div class="text-center p-3 bg-success/5 rounded-lg border border-success/20">
-                <div class="text-2xl font-bold text-success">{{ stats.overview?.totalBooksRead || 0 }}</div>
-                <div class="text-xs text-base-content/60 mt-1">Finished</div>
-              </div>
-            </div>
+
           </div>
         </div>
 
@@ -150,7 +178,7 @@
             </h2>
             <div class="space-y-4">
               <div *ngFor="let book of currentlyReading" 
-                   class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-base-300 transition-all cursor-pointer group"
+                   class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-primary/10 transition-all cursor-pointer group"
                    (click)="navigateToBookDetails(book.id)">
                 <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
                      [alt]="book.title"
@@ -174,7 +202,7 @@
                 </div>
               </div>
             </div>
-            <button (click)="navigateToBooks()" class="btn btn-outline btn-sm mt-4 w-full">
+            <button mat-stroked-button (click)="navigateToBooks()" class="btn-sm mt-4 w-full">
               View All Books
             </button>
           </div>
@@ -186,7 +214,7 @@
             <ng-icon name="heroBookOpen" class="text-6xl text-base-content/30 mx-auto"></ng-icon>
             <h3 class="text-xl font-semibold mt-4">No books in progress</h3>
             <p class="text-base-content/70 mt-2">Start reading a book to see your progress here</p>
-            <button (click)="navigateToBooks()" class="btn btn-primary mt-4">
+            <button mat-raised-button color="primary" (click)="navigateToBooks()" class="mt-4">
               Browse Books
             </button>
           </div>
@@ -207,43 +235,9 @@
               <p class="text-sm text-base-content/70">Longest Streak</p>
               <p class="text-2xl font-bold text-warning">{{ streakData.longestStreak }} days</p>
             </div>
-            <button (click)="navigateToHeatmap()" class="btn btn-warning btn-sm mt-4">
+            <button mat-raised-button (click)="navigateToHeatmap()" class="btn-sm mt-4" style="background-color: hsl(var(--wa)); color: white;">
               View Activity
             </button>
-          </div>
-        </div>
-
-        <!-- Quick Stats -->
-        <div *ngIf="!loading && stats" class="card bg-base-100 shadow-xl" @fadeInUp>
-          <div class="card-body">
-            <h2 class="card-title text-lg mb-4 flex items-center gap-2">
-              <ng-icon name="heroTrophy" class="text-accent"></ng-icon>
-              Reading Stats
-            </h2>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
-                <div class="flex items-center gap-2">
-                  <ng-icon name="heroCheckCircle" class="text-success"></ng-icon>
-                  <span class="text-sm font-medium">Completed</span>
-                </div>
-                          <span class="text-lg font-bold text-success">{{ stats.overview?.totalBooksRead || 0 }}</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-3 bg-warning/10 rounded-lg border border-warning/20">
-                          <div class="flex items-center gap-2">
-                            <ng-icon name="heroBookOpen" class="text-warning"></ng-icon>
-                            <span class="text-sm font-medium">Reading</span>
-                          </div>
-                          <span class="text-lg font-bold text-warning">{{ stats.overview?.booksCurrentlyReading || 0 }}</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-3 bg-info/10 rounded-lg border border-info/20">
-                          <div class="flex items-center gap-2">
-                            <ng-icon name="heroBookmark" class="text-info"></ng-icon>
-                            <span class="text-sm font-medium">To Read</span>
-                          </div>
-                          <span class="text-lg font-bold text-info">{{ stats.overview?.booksPending || 0 }}</span>              </div>
-            </div>
           </div>
         </div>
 
@@ -256,7 +250,7 @@
             </h2>
             <div class="space-y-2">
               <div *ngFor="let book of recentBooks.slice(0, 4)" 
-                   class="flex items-center gap-3 p-2 hover:bg-base-200 rounded-lg transition-all cursor-pointer"
+                   class="flex items-center gap-3 p-2 hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
                    (click)="navigateToBookDetails(book.id)">
                 <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
                      [alt]="book.title"

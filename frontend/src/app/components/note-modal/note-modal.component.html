@@ -6,8 +6,7 @@
         <span class="text-xl">{{ getNoteTypeIcon() }}</span>
         <h3 class="font-semibold text-base">{{ isReadOnly ? 'View Note' : 'Edit Note' }}</h3>
       </div>
-      <button type="button" 
-              class="btn btn-ghost btn-circle btn-xs"
+      <button mat-icon-button type="button" 
               (click)="onClose()">
         <ng-icon name="heroXMark" size="1.2rem"></ng-icon>
       </button>
@@ -23,34 +22,30 @@
         <div class="flex items-center gap-3" *ngIf="!isReadOnly">
           <!-- Note Type Buttons -->
           <div class="flex gap-1">
-            <button type="button"
-                    class="btn btn-xs gap-1"
-                    [class.btn-primary]="noteForm.value.noteType === 'general'"
-                    [class.btn-ghost]="noteForm.value.noteType !== 'general'"
+            <button mat-button type="button"
+                    class="text-xs gap-1"
+                    [color]="noteForm.value.noteType === 'general' ? 'primary' : ''"
                     (click)="noteForm.patchValue({ noteType: 'general' })">
               <span class="text-sm">📝</span>
               <span class="text-xs">General</span>
             </button>
-            <button type="button"
-                    class="btn btn-xs gap-1"
-                    [class.btn-primary]="noteForm.value.noteType === 'quote'"
-                    [class.btn-ghost]="noteForm.value.noteType !== 'quote'"
+            <button mat-button type="button"
+                    class="text-xs gap-1"
+                    [color]="noteForm.value.noteType === 'quote' ? 'primary' : ''"
                     (click)="noteForm.patchValue({ noteType: 'quote' })">
               <span class="text-sm">💬</span>
               <span class="text-xs">Quote</span>
             </button>
-            <button type="button"
-                    class="btn btn-xs gap-1"
-                    [class.btn-primary]="noteForm.value.noteType === 'thought'"
-                    [class.btn-ghost]="noteForm.value.noteType !== 'thought'"
+            <button mat-button type="button"
+                    class="text-xs gap-1"
+                    [color]="noteForm.value.noteType === 'thought' ? 'primary' : ''"
                     (click)="noteForm.patchValue({ noteType: 'thought' })">
               <span class="text-sm">💭</span>
               <span class="text-xs">Thought</span>
             </button>
-            <button type="button"
-                    class="btn btn-xs gap-1"
-                    [class.btn-primary]="noteForm.value.noteType === 'question'"
-                    [class.btn-ghost]="noteForm.value.noteType !== 'question'"
+            <button mat-button type="button"
+                    class="text-xs gap-1"
+                    [color]="noteForm.value.noteType === 'question' ? 'primary' : ''"
                     (click)="noteForm.patchValue({ noteType: 'question' })">
               <span class="text-sm">❓</span>
               <span class="text-xs">Question</span>
@@ -88,14 +83,13 @@
       <!-- Footer Actions -->
       <div class="border-t border-base-300 px-6 py-3">
         <div class="flex justify-end gap-2">
-          <button type="button" 
-                  class="btn btn-ghost btn-sm"
+          <button mat-button type="button" 
                   (click)="onClose()">
             {{ isReadOnly ? 'Close' : 'Cancel' }}
           </button>
-          <button *ngIf="!isReadOnly" 
+          <button mat-raised-button color="primary" *ngIf="!isReadOnly" 
                   type="submit" 
-                  class="btn btn-primary btn-sm gap-2"
+                  class="gap-2"
                   [disabled]="noteForm.invalid">
             <ng-icon name="heroCheckCircle" size="1rem"></ng-icon>
             Save Note

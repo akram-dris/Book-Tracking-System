@@ -18,6 +18,10 @@ export class ReadingStatusService {
   getAllStatuses(): Observable<ReadingStatusInfo[]> {
     if (!this.statusCache$) {
       this.statusCache$ = this.http.get<ReadingStatusInfo[]>(this.apiUrl).pipe(
+        map(statuses => {
+          console.log('🎨 STATUS COLORS FROM BACKEND:', statuses);
+          return statuses;
+        }),
         shareReplay(1)
       );
     }

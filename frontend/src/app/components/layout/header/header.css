@@ -1,0 +1,20 @@
+/* Header with smooth transitions */
+header {
+  backdrop-filter: blur(8px);
+}
+
+/* Search input custom styling */
+input[type="text"]:focus {
+  transform: scale(1.01);
+}
+
+/* Smooth transitions for all interactive elements */
+input,
+button {
+  transition: all 0.3s ease;
+}
+
+/* Theme toggle button enhanced */
+button:active {
+  transform: scale(0.95);
+}

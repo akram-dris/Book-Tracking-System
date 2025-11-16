@@ -1,89 +1,110 @@
-<!-- Compact Modal-Style Form -->
-<div class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-  <div class="bg-base-100 rounded-2xl shadow-2xl w-full max-w-xl max-h-[98vh] overflow-hidden flex flex-col">
-    <!-- Minimal Header -->
-    <div class="flex items-center justify-between px-5 py-3 border-b border-base-300">
-      <h2 class="text-lg font-bold">{{ isEditMode ? 'Edit' : 'Add' }} Author</h2>
-      <button class="btn btn-ghost btn-circle btn-xs" routerLink="/authors">
-        <ng-icon name="heroXMark" size="1rem"></ng-icon>
-      </button>
-    </div>
+<!-- Full Page Form -->
+<div class="space-y-3">
+  <!-- Back Button -->
+  <div>
+    <button mat-button routerLink="/authors" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
+      <span class="font-medium">Back</span>
+    </button>
+  </div>
 
-    <!-- Form Content -->
-    <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto">
-      <div class="p-5 pb-8 space-y-3">
-        <div class="grid grid-cols-12 gap-6">
-          <!-- Compact Image Upload -->
-          <div class="col-span-5">
-            <div class="aspect-[3/4] w-full min-w-[140px]">
+  <!-- Form Card -->
+  <mat-card class="!shadow-xl border-2 border-base-300">
+    <form [formGroup]="authorForm" (ngSubmit)="onSubmit()">
+      <mat-card-content class="p-4">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <!-- Column 1: Author Photo -->
+          <div class="lg:col-span-2">
+            <h3 class="text-sm font-semibold mb-2 text-base-content">Author Photo</h3>
+            <div class="aspect-[3/4] w-full max-w-[220px] mx-auto lg:mx-0">
               <!-- Upload Area -->
               <div
                 *ngIf="!imagePreviewUrl"
                 (click)="fileInput.click()"
-                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-lg bg-base-200 hover:bg-base-300 transition-all cursor-pointer flex items-center justify-center"
+                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-xl bg-base-200 hover:bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group"
               >
-                <div class="flex flex-col items-center justify-center p-2">
-                  <ng-icon name="heroPhoto" size="2rem" class="text-base-content/30 mb-1"></ng-icon>
-                  <p class="text-xs text-base-content/50 text-center">Drop or click</p>
+                <div class="flex flex-col items-center justify-center p-4">
+                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
+                    <mat-icon class="text-primary !text-3xl !w-8 !h-8">photo_camera</mat-icon>
+                  </div>
+                  <p class="text-sm font-medium text-center">Drop photo</p>
+                  <p class="text-xs opacity-70 text-center mt-1">or click</p>
                 </div>
               </div>
 
               <!-- Image Preview -->
               <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
-                <div class="h-full w-full rounded-lg overflow-hidden bg-base-300 border-2 border-base-300" (click)="fileInput.click()">
-                  <img [src]="imagePreviewUrl" alt="Author photo" class="w-full h-full object-cover cursor-pointer" />
+                <div class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg" (click)="fileInput.click()">
+                  <img [src]="imagePreviewUrl" alt="Author photo" class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <button
+                  mat-mini-fab
+                  color="warn"
                   type="button"
                   (click)="removeImage($event)"
-                  class="absolute -top-1 -right-1 btn btn-circle btn-xs bg-error hover:bg-error/90 text-white border-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity !shadow-lg !w-7 !h-7"
+                  aria-label="Remove image"
                 >
-                  <ng-icon name="heroXMark" size="0.75rem"></ng-icon>
+                  <mat-icon class="!text-lg">close</mat-icon>
                 </button>
               </div>
               <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
             </div>
           </div>
 
-          <!-- Form Fields -->
-          <div class="col-span-7 pl-6">
-            <!-- Name -->
-            <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Name <span class="text-error">*</span></span>
-              </label>
-              <input
-                type="text"
-                formControlName="name"
-                class="input input-sm input-bordered w-full"
-                placeholder="Author name"
-                [class.input-error]="authorForm.get('name')?.invalid && authorForm.get('name')?.touched"
-              />
-            </div>
+          <!-- Column 2: Author Information -->
+          <div class="lg:col-span-3">
+            <h3 class="text-sm font-semibold mb-2 text-base-content">Author Information</h3>
+            <div class="space-y-4">
+              <!-- Name -->
+              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Author Name</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  formControlName="name"
+                  placeholder="Enter author name"
+                  required
+                />
+                <mat-error *ngIf="authorForm.get('name')?.hasError('required')">
+                  Name is required
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Bio -->
-            <div class="form-control">
-              <label class="label py-0 pb-0.5">
-                <span class="label-text text-xs font-medium">Biography</span>
-              </label>
-              <textarea
-                formControlName="bio"
-                class="textarea textarea-sm textarea-bordered w-full h-32"
-                placeholder="Author biography..."
-              ></textarea>
+              <!-- Biography -->
+              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Biography</mat-label>
+                <textarea
+                  matInput
+                  formControlName="bio"
+                  placeholder="Write a brief biography..."
+                  rows="6"
+                  class="resize-none"
+                ></textarea>
+                <mat-hint>Optional author biography</mat-hint>
+              </mat-form-field>
             </div>
           </div>
         </div>
-      </div>
+      </mat-card-content>
 
-      <!-- Footer Actions -->
-      <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-base-300 bg-base-200/50">
-        <button type="button" class="btn btn-sm btn-ghost" routerLink="/authors">Cancel</button>
-        <button type="submit" class="btn btn-sm btn-primary" [disabled]="authorForm.invalid || isLoading">
-          <span *ngIf="isLoading" class="loading loading-spinner loading-xs"></span>
-          {{ isEditMode ? 'Update' : 'Create' }}
+      <!-- Form Actions -->
+      <mat-card-actions class="flex items-center justify-end gap-3 px-4 py-4 !m-0 !mt-4">
+        <button mat-button type="button" routerLink="/authors">
+          <mat-icon>close</mat-icon>
+          Cancel
         </button>
-      </div>
+        <button
+          mat-raised-button 
+          color="primary"
+          type="submit"
+          [disabled]="authorForm.invalid || isLoading"
+        >
+          <mat-spinner *ngIf="isLoading" diameter="20" class="mr-2"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ isEditMode ? 'Update Author' : 'Add Author' }}
+        </button>
+      </mat-card-actions>
     </form>
-  </div>
+  </mat-card>
 </div>

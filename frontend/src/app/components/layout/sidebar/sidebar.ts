@@ -17,6 +17,7 @@ interface NavItem {
   label: string;
   icon: string;
   tooltip?: string;
+  exactMatch?: boolean;
 }
 
 @Component({
@@ -43,7 +44,7 @@ export class SidebarComponent {
   toggleCollapse = output<void>();
 
   navItems: NavItem[] = [
-    { path: '/', label: 'Dashboard', icon: 'heroHome', tooltip: 'Home Dashboard' },
+    { path: '/', label: 'Dashboard', icon: 'heroHome', tooltip: 'Home Dashboard', exactMatch: true },
     { path: '/books', label: 'Books', icon: 'heroBookOpen', tooltip: 'Manage your books' },
     { path: '/authors', label: 'Authors', icon: 'heroUserGroup', tooltip: 'Manage authors' },
     { path: '/tags', label: 'Tags', icon: 'heroTag', tooltip: 'Organize with tags' },

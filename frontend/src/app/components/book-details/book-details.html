@@ -1,29 +1,32 @@
 <div *ngIf="book" class="min-h-screen bg-base-100">
-  <!-- Header Section -->
-  <div class="container mx-auto px-6 py-6">
-    <!-- Back Button -->
-    <button (click)="goBack()" class="btn btn-ghost btn-sm gap-2 mb-6">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <button mat-button (click)="goBack()" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
       <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
-      Back
+      <span class="font-medium">Back</span>
     </button>
+  </div>
+
+  <!-- Header Section -->
+  <div>
 
     <!-- Book Card with Modern Design -->
-    <div class="card bg-base-200 shadow-2xl overflow-hidden mb-6">
-      <div class="card-body p-0">
+    <div class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/50 shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 overflow-hidden mb-6">
+      <div class="p-0">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
           <!-- Left Side - Book Cover (Larger) -->
           <div class="lg:col-span-3 relative group">
             <div class="aspect-[2/3] lg:aspect-auto lg:h-full overflow-hidden bg-gradient-to-br from-base-300 to-base-200 relative">
-              <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : 'https://placeimg.com/400/600/arch'" 
+              <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
                    alt="{{ book.title }}"
-                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:brightness-90" />
               
               <!-- Dark Overlay -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
               <!-- Status Badge -->
               <div class="absolute top-4 right-4 z-10">
-                <span class="badge {{ getStatusBadgeClass() }} text-white shadow-xl border-0">
+                <span class="badge {{ getStatusBadgeClass() }} shadow-xl border-0 hover:scale-110 transition-transform duration-200">
                   {{ book.status === ReadingStatus.NotReading ? 'Not Reading' :
                      book.status === ReadingStatus.Planning ? 'Planning' :
                      book.status === ReadingStatus.CurrentlyReading ? 'Currently Reading' :
@@ -32,22 +35,22 @@
               </div>
 
               <!-- Quick Actions (Floating) -->
-              <div class="absolute bottom-4 left-4 right-4 z-10 space-y-2">
+              <div class="absolute bottom-4 left-4 right-4 z-10 space-y-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                 <button *ngIf="book.status === ReadingStatus.NotReading" 
                         (click)="openPlanAndGoalModal()" 
-                        class="btn btn-primary btn-sm w-full gap-2 shadow-xl">
+                        mat-raised-button color="primary" class="btn-sm w-full gap-2">
                   <ng-icon name="heroPlus" size="1rem"></ng-icon>
                   Plan to Read
                 </button>
                 <button *ngIf="book.status === ReadingStatus.CurrentlyReading" 
                         (click)="openAddSessionModal()" 
-                        class="btn btn-primary btn-sm w-full gap-2 shadow-xl">
+                        mat-raised-button color="primary" class="btn-sm w-full gap-2">
                   <ng-icon name="heroPlus" size="1rem"></ng-icon>
                   Log Session
                 </button>
                 <button *ngIf="book.status === ReadingStatus.Planning" 
                         (click)="startReadingFromPlanning()" 
-                        class="btn btn-primary btn-sm w-full gap-2 shadow-xl">
+                        mat-raised-button color="primary" class="btn-sm w-full gap-2">
                   <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
                   Start Reading
                 </button>
@@ -65,11 +68,11 @@
             
             <!-- Meta Info -->
             <div class="flex flex-wrap gap-2 mb-6">
-              <div class="badge badge-lg badge-outline gap-2">
-                <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
+              <div class="badge badge-lg badge-outline gap-2 border-2 hover:border-primary hover:bg-primary/10 hover:scale-105 transition-all duration-200">
+                <ng-icon name="heroBookOpen" size="1rem" class="text-primary"></ng-icon>
                 {{ book.totalPages }} pages
               </div>
-              <span *ngFor="let tag of book.tags" class="badge badge-lg badge-primary">
+              <span *ngFor="let tag of book.tags" class="badge badge-lg badge-primary hover:scale-105 hover:brightness-110 transition-all duration-200 shadow-md cursor-pointer">
                 {{ tag.name }}
               </span>
             </div>
@@ -77,10 +80,10 @@
             <!-- Progress Bar for Currently Reading -->
             <div *ngIf="book.status === ReadingStatus.CurrentlyReading" class="mb-6 max-w-xl">
               <div class="flex justify-between text-sm mb-2">
-                <span class="font-medium">Reading Progress</span>
-                <span class="font-bold">{{ progress }}%</span>
+                <span class="font-medium text-base-content/70">Reading Progress</span>
+                <span class="font-bold text-primary">{{ progress }}%</span>
               </div>
-              <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
+              <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden border-2 border-base-300">
                 <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-300 shadow-lg"
                      [style.width.%]="progress">
                 </div>
@@ -93,11 +96,11 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-2 mb-6">
-              <button [routerLink]="['/books', book.id, 'edit']" class="btn btn-ghost btn-sm gap-2">
+              <button mat-button [routerLink]="['/books', book.id, 'edit']" class="gap-2 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-primary/20">
                 <ng-icon name="heroPencil" size="1rem"></ng-icon>
                 Edit
               </button>
-              <button (click)="deleteBook()" class="btn btn-error btn-outline btn-sm gap-2">
+              <button mat-stroked-button color="warn" (click)="deleteBook()" class="gap-2 hover:scale-105 transition-all duration-200">
                 <ng-icon name="heroTrash" size="1rem"></ng-icon>
                 Delete
               </button>
@@ -105,19 +108,19 @@
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div class="bg-base-100 rounded-lg p-4 text-center">
+              <div class="bg-base-100 rounded-xl p-4 text-center border-2 border-base-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1">
                 <div class="text-2xl font-bold text-primary">{{ readingSessions.length }}</div>
                 <div class="text-xs text-base-content/60">Sessions</div>
               </div>
-              <div class="bg-base-100 rounded-lg p-4 text-center">
+              <div class="bg-base-100 rounded-xl p-4 text-center border-2 border-base-300 hover:border-secondary hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 hover:-translate-y-1">
                 <div class="text-2xl font-bold text-secondary">{{ currentPage }}</div>
                 <div class="text-xs text-base-content/60">Pages Read</div>
               </div>
-              <div class="bg-base-100 rounded-lg p-4 text-center">
+              <div class="bg-base-100 rounded-xl p-4 text-center border-2 border-base-300 hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 hover:-translate-y-1">
                 <div class="text-2xl font-bold text-accent">{{ progress }}%</div>
                 <div class="text-xs text-base-content/60">Progress</div>
               </div>
-              <div class="bg-base-100 rounded-lg p-4 text-center">
+              <div class="bg-base-100 rounded-xl p-4 text-center border-2 border-base-300 hover:border-info hover:shadow-lg hover:shadow-info/10 transition-all duration-300 hover:-translate-y-1">
                 <div class="text-2xl font-bold text-info">{{ book.totalPages! - currentPage }}</div>
                 <div class="text-xs text-base-content/60">Remaining</div>
               </div>
@@ -129,28 +132,40 @@
   </div>
 
   <!-- Tabs Section -->
-  <div class="container mx-auto px-6 py-6">
-    <div class="tabs tabs-boxed bg-base-200 mb-6">
-      <a class="tab gap-2" 
-         [class.tab-active]="activeTab === 'overview'"
+  <div>
+    <div class="tabs tabs-boxed bg-base-200 mb-6 border-2 border-base-300 p-2 rounded-2xl gap-2">
+      <a class="tab gap-2 transition-all duration-200 rounded-xl hover:bg-primary/10 hover:text-primary" 
+         [class.active]="activeTab === 'overview'"
+         [class.bg-primary]="activeTab === 'overview'"
+         [class.text-primary-content]="activeTab === 'overview'"
+         [class.hover:!bg-primary/75]="activeTab === 'overview'"
          (click)="switchTab('overview')">
         <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
         Overview
       </a>
-      <a class="tab gap-2"
-         [class.tab-active]="activeTab === 'sessions'"
+      <a class="tab gap-2 transition-all duration-200 rounded-xl hover:bg-primary/10 hover:text-primary"
+         [class.active]="activeTab === 'sessions'"
+         [class.bg-primary]="activeTab === 'sessions'"
+         [class.text-primary-content]="activeTab === 'sessions'"
+         [class.hover:!bg-primary/75]="activeTab === 'sessions'"
          (click)="switchTab('sessions')">
         <ng-icon name="heroClipboardDocumentList" size="1.25rem"></ng-icon>
         Sessions
       </a>
-      <a class="tab gap-2"
-         [class.tab-active]="activeTab === 'notes'"
+      <a class="tab gap-2 transition-all duration-200 rounded-xl hover:bg-primary/10 hover:text-primary"
+         [class.active]="activeTab === 'notes'"
+         [class.bg-primary]="activeTab === 'notes'"
+         [class.text-primary-content]="activeTab === 'notes'"
+         [class.hover:!bg-primary/75]="activeTab === 'notes'"
          (click)="switchTab('notes')">
         <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
         Notes
       </a>
-      <a class="tab gap-2"
-         [class.tab-active]="activeTab === 'statistics'"
+      <a class="tab gap-2 transition-all duration-200 rounded-xl hover:bg-primary/10 hover:text-primary"
+         [class.active]="activeTab === 'statistics'"
+         [class.bg-primary]="activeTab === 'statistics'"
+         [class.text-primary-content]="activeTab === 'statistics'"
+         [class.hover:!bg-primary/75]="activeTab === 'statistics'"
          (click)="switchTab('statistics')">
         <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
         Statistics
@@ -158,49 +173,64 @@
     </div>
 
     <!-- Tab Content -->
-    <div class="bg-base-200 rounded-lg p-6">
+    <div class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/30 p-6 shadow-xl transition-all duration-300">
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'">
-        <h3 class="text-2xl font-bold mb-4">Book Information</h3>
+        <h3 class="text-2xl font-bold mb-6 text-base-content">Book Information</h3>
         
         <div class="grid md:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div>
-              <h4 class="font-semibold text-base-content/70 mb-2">Details</h4>
-              <div class="space-y-2">
-                <p><span class="font-medium">Total Pages:</span> {{ book.totalPages }}</p>
-                <p *ngIf="book.startedReadingDate">
-                  <span class="font-medium">Started:</span> {{ book.startedReadingDate | date:'dd/MM/yyyy' }}
-                </p>
-                <p *ngIf="book.completedDate">
-                  <span class="font-medium">Completed:</span> {{ book.completedDate | date:'dd/MM/yyyy' }}
-                </p>
-              </div>
+          <!-- Details Card -->
+          <div class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+            <div class="flex items-center gap-2 mb-4">
+              <ng-icon name="heroBookOpen" size="1.5rem" class="text-primary"></ng-icon>
+              <h4 class="font-semibold text-lg text-base-content">Details</h4>
             </div>
-
-            <div *ngIf="readingGoal">
-              <h4 class="font-semibold text-base-content/70 mb-2">Reading Goals</h4>
-              <div class="space-y-2">
-                <div class="flex justify-between">
-                  <span>Low Goal:</span>
-                  <span class="badge badge-success">{{ readingGoal.lowGoal }} pages</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>Medium Goal:</span>
-                  <span class="badge badge-info">{{ readingGoal.mediumGoal }} pages</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>High Goal:</span>
-                  <span class="badge badge-error">{{ readingGoal.highGoal }} pages</span>
-                </div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-primary/5 transition-colors duration-200">
+                <span class="text-base-content/70">Total Pages</span>
+                <span class="font-bold text-primary">{{ book.totalPages }}</span>
+              </div>
+              <div *ngIf="book.startedReadingDate" class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-primary/5 transition-colors duration-200">
+                <span class="text-base-content/70">Started</span>
+                <span class="font-medium text-base-content">{{ book.startedReadingDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div *ngIf="book.completedDate" class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-primary/5 transition-colors duration-200">
+                <span class="text-base-content/70">Completed</span>
+                <span class="font-medium text-base-content">{{ book.completedDate | date:'dd/MM/yyyy' }}</span>
               </div>
             </div>
           </div>
 
-          <div *ngIf="book.tags && book.tags.length > 0">
-            <h4 class="font-semibold text-base-content/70 mb-2">Tags</h4>
+          <!-- Reading Goals Card -->
+          <div *ngIf="readingGoal" class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+            <div class="flex items-center gap-2 mb-4">
+              <ng-icon name="heroCheckCircle" size="1.5rem" class="text-primary"></ng-icon>
+              <h4 class="font-semibold text-lg text-base-content">Reading Goals</h4>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-accent/5 transition-colors duration-200">
+                <span class="text-base-content/70">Low Goal</span>
+                <span class="badge badge-accent badge-lg hover:scale-105 transition-transform">{{ readingGoal.lowGoal }} pages</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-info/5 transition-colors duration-200">
+                <span class="text-base-content/70">Medium Goal</span>
+                <span class="badge badge-info badge-lg hover:scale-105 transition-transform">{{ readingGoal.mediumGoal }} pages</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-error/5 transition-colors duration-200">
+                <span class="text-base-content/70">High Goal</span>
+                <span class="badge badge-error badge-lg hover:scale-105 transition-transform">{{ readingGoal.highGoal }} pages</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tags Card -->
+          <div *ngIf="book.tags && book.tags.length > 0" class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 md:col-span-2">
+            <div class="flex items-center gap-2 mb-4">
+              <ng-icon name="heroTag" size="1.5rem" class="text-primary"></ng-icon>
+              <h4 class="font-semibold text-lg text-base-content">Tags</h4>
+            </div>
             <div class="flex flex-wrap gap-2">
-              <span *ngFor="let tag of book.tags" class="badge badge-primary badge-lg">
+              <span *ngFor="let tag of book.tags" class="badge badge-primary badge-lg hover:scale-105 hover:brightness-110 transition-all duration-200 shadow-md cursor-pointer">
                 {{ tag.name }}
               </span>
             </div>
@@ -211,10 +241,10 @@
       <!-- Sessions Tab -->
       <div *ngIf="activeTab === 'sessions'">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-2xl font-bold">Reading Sessions</h3>
+          <h3 class="text-2xl font-bold text-base-content">Reading Sessions</h3>
           <button *ngIf="book.status === ReadingStatus.CurrentlyReading" 
                   (click)="openAddSessionModal()" 
-                  class="btn btn-primary btn-sm gap-2">
+                  mat-raised-button color="primary" class="btn-sm gap-2">
             <ng-icon name="heroPlus" size="1rem"></ng-icon>
             Add Session
           </button>
@@ -222,36 +252,35 @@
         
         <div *ngIf="readingSessions.length > 0; else noSessions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div *ngFor="let session of readingSessions" 
-               class="group relative bg-base-100 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 hover:border-primary/50">
+               class="group relative bg-base-100 rounded-xl overflow-hidden border-2 border-base-300 hover:border-primary hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer">
             <!-- Card Content -->
             <div class="p-4">
               <!-- Date -->
               <div class="flex items-center gap-2 mb-3">
                 <ng-icon name="heroCalendar" size="1.25rem" class="text-primary"></ng-icon>
-                <p class="font-bold text-sm">{{ session.date | date:'EEE, MMM d, y' }}</p>
+                <p class="font-bold text-sm group-hover:text-primary transition-colors duration-200">{{ session.date | date:'EEE, MMM d, y' }}</p>
               </div>
               
               <!-- Stats -->
               <div class="space-y-2">
                 <!-- Pages Read -->
-                <div class="flex items-center justify-between bg-base-200/50 rounded-lg p-2">
+                <div class="flex items-center justify-between bg-base-200/50 rounded-lg p-2 group-hover:bg-primary/10 transition-all duration-200">
                   <div class="flex items-center gap-2">
-                    <ng-icon name="heroBookOpen" size="1rem" class="text-secondary"></ng-icon>
+                    <ng-icon name="heroBookOpen" size="1rem" class="text-primary"></ng-icon>
                     <span class="text-xs text-base-content/70">Pages Read</span>
                   </div>
                   <span class="font-bold text-primary">{{ session.pagesRead }}</span>
                 </div>
               </div>
             </div>
-            
-            <!-- Hover Indicator -->
-            <div class="absolute inset-0 border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
           </div>
         </div>
         <ng-template #noSessions>
           <div class="text-center py-16">
-            <ng-icon name="heroClipboardDocumentList" size="4rem" class="text-base-content/20 mx-auto mb-4"></ng-icon>
-            <p class="text-base-content/60 text-lg">No reading sessions recorded yet.</p>
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+              <ng-icon name="heroClipboardDocumentList" size="3rem" class="text-primary"></ng-icon>
+            </div>
+            <p class="text-base-content/70 text-lg font-medium">No reading sessions recorded yet.</p>
             <p class="text-base-content/40 text-sm mt-2">Start logging your reading progress!</p>
           </div>
         </ng-template>
@@ -260,9 +289,9 @@
       <!-- Notes Tab -->
       <div *ngIf="activeTab === 'notes'">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-2xl font-bold">Notes & Summary</h3>
+          <h3 class="text-2xl font-bold text-base-content">Notes & Summary</h3>
           <button (click)="openNotesEditor()" 
-                  class="btn btn-primary btn-sm gap-2">
+                  mat-raised-button color="primary" class="btn-sm gap-2">
             <ng-icon [name]="book.summary ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
             {{ book.summary ? 'Edit Notes' : 'Add Notes' }}
           </button>
@@ -270,32 +299,34 @@
         
         <div *ngIf="!isEditingNotes">
           <div *ngIf="book.summary; else noNotes" 
-               class="prose max-w-none bg-base-100 rounded-lg p-6 border border-base-300"
+               class="prose max-w-none bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 transition-all duration-300"
                [innerHTML]="book.summary">
           </div>
           <ng-template #noNotes>
             <div class="text-center py-16">
-              <ng-icon name="heroDocumentText" size="4rem" class="text-base-content/20 mx-auto mb-4"></ng-icon>
-              <p class="text-base-content/60 text-lg">No notes or summary available yet.</p>
+              <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+                <ng-icon name="heroDocumentText" size="3rem" class="text-primary"></ng-icon>
+              </div>
+              <p class="text-base-content/70 text-lg font-medium">No notes or summary available yet.</p>
               <p class="text-base-content/40 text-sm mt-2">Click "Add Notes" to get started!</p>
             </div>
           </ng-template>
         </div>
 
         <!-- Rich Text Editor -->
-        <div *ngIf="isEditingNotes" class="bg-base-100 rounded-lg border border-base-300 p-6">
+        <div *ngIf="isEditingNotes" class="bg-base-100 rounded-xl border-2 border-base-300 hover:border-primary/30 p-6 transition-all duration-300">
           <form [formGroup]="notesForm" (ngSubmit)="saveNotes()">
             <div class="mb-4">
               <label class="label">
                 <span class="label-text font-semibold flex items-center gap-2">
-                  <ng-icon name="heroDocumentText" size="1.2rem"></ng-icon>
+                  <ng-icon name="heroDocumentText" size="1.2rem" class="text-primary"></ng-icon>
                   Note Content
                 </span>
                 <span class="label-text-alt text-error" *ngIf="notesForm.get('summary')?.invalid && notesForm.get('summary')?.touched">
                   Note content is required
                 </span>
               </label>
-              <div class="bg-base-100 rounded-lg border border-base-300">
+              <div class="bg-base-100 rounded-xl border-2 border-base-300 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200">
                 <quill-editor formControlName="summary"
                               [modules]="quillConfig"
                               [styles]="{'min-height': '300px', 'border': 'none'}"
@@ -305,13 +336,13 @@
             </div>
             
             <div class="flex justify-end gap-3 mt-6">
-              <button type="button" 
-                      class="btn btn-ghost"
+              <button mat-button type="button" 
+                      class="hover:bg-base-300 hover:scale-105 transition-all duration-200"
                       (click)="cancelNotesEdit()">
                 Cancel
               </button>
-              <button type="submit" 
-                      class="btn btn-primary gap-2"
+              <button mat-raised-button color="primary" type="submit" 
+                      class="gap-2"
                       [disabled]="notesForm.invalid">
                 <ng-icon name="heroCheckCircle" size="1.2rem"></ng-icon>
                 Save Notes
@@ -323,30 +354,42 @@
 
       <!-- Statistics Tab -->
       <div *ngIf="activeTab === 'statistics'">
-        <h3 class="text-2xl font-bold mb-4">Reading Statistics</h3>
-        <div class="stats shadow-md bg-base-200 w-full">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <ng-icon name="heroBookOpen" size="2rem"></ng-icon>
+        <h3 class="text-2xl font-bold mb-6 text-base-content">Reading Statistics</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <ng-icon name="heroBookOpen" size="2rem" class="text-primary"></ng-icon>
+              </div>
+              <div>
+                <div class="text-3xl font-bold text-primary">{{ readingSessions.length }}</div>
+                <div class="text-sm text-base-content/60">Total Sessions</div>
+              </div>
             </div>
-            <div class="stat-title">Total Sessions</div>
-            <div class="stat-value text-primary">{{ readingSessions.length }}</div>
           </div>
-          <div class="stat">
-            <div class="stat-figure text-secondary">
-              <ng-icon name="heroDocumentText" size="2rem"></ng-icon>
+          <div class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-secondary hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                <ng-icon name="heroDocumentText" size="2rem" class="text-secondary"></ng-icon>
+              </div>
+              <div>
+                <div class="text-3xl font-bold text-secondary">{{ currentPage }}</div>
+                <div class="text-sm text-base-content/60">Pages Read</div>
+                <div class="text-xs text-base-content/40">of {{ book.totalPages }} pages</div>
+              </div>
             </div>
-            <div class="stat-title">Pages Read</div>
-            <div class="stat-value text-secondary">{{ currentPage }}</div>
-            <div class="stat-desc">of {{ book.totalPages }} pages</div>
           </div>
-          <div class="stat">
-            <div class="stat-figure text-success">
-              <ng-icon name="heroCheckCircle" size="2rem"></ng-icon>
+          <div class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                <ng-icon name="heroCheckCircle" size="2rem" class="text-accent"></ng-icon>
+              </div>
+              <div>
+                <div class="text-3xl font-bold text-accent">{{ progress }}%</div>
+                <div class="text-sm text-base-content/60">Progress</div>
+                <div class="text-xs text-base-content/40">{{ book.totalPages - currentPage }} pages remaining</div>
+              </div>
             </div>
-            <div class="stat-title">Progress</div>
-            <div class="stat-value text-success">{{ progress }}%</div>
-            <div class="stat-desc">{{ book.totalPages - currentPage }} pages remaining</div>
           </div>
         </div>
       </div>
@@ -367,12 +410,3 @@
   [bookId]="currentBookId!"
   (close)="closeReadingLogModal()"
 ></app-reading-log-modal>
-
-<app-session-log
-  *ngIf="isAddSessionModalOpen"
-  [bookId]="currentBookId!"
-  [readingGoal]="readingGoal"
-  [totalPages]="book?.totalPages ?? null"
-  (close)="closeAddSessionModal()"
-  (saved)="handleAddSessionSaved()"
-></app-session-log>

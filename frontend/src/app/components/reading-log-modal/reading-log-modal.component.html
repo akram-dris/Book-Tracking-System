@@ -10,8 +10,7 @@
             <p class="text-sm text-base-content/60">{{ readingSessions.length }} session(s) logged</p>
           </div>
         </div>
-        <button type="button" 
-                class="btn btn-ghost btn-circle"
+        <button mat-icon-button type="button" 
                 (click)="onClose()">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -94,10 +93,9 @@
               <!-- Right: Actions -->
               <div class="flex gap-2">
                 <!-- View/Edit Note Button -->
-                <button (click)="viewEditNote(session)" 
-                        class="btn btn-sm gap-2"
-                        [class.btn-ghost]="!session.summary"
-                        [class.btn-primary]="session.summary"
+                <button mat-button (click)="viewEditNote(session)" 
+                        class="gap-2"
+                        [color]="session.summary ? 'primary' : ''"
                         [title]="session.summary ? 'Edit Note' : 'Add Note'">
                   <svg *ngIf="session.summary" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
@@ -109,9 +107,9 @@
                 </button>
 
                 <!-- Delete Button (only if not completed) -->
-                <button *ngIf="bookStatus !== ReadingStatus.Completed"
+                <button mat-icon-button *ngIf="bookStatus !== ReadingStatus.Completed"
                         (click)="deleteSession(session.id)" 
-                        class="btn btn-sm btn-ghost btn-circle text-error hover:bg-error/10"
+                        class="text-error hover:bg-error/10"
                         title="Delete Session">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -127,7 +125,7 @@
     <!-- Footer -->
     <div class="border-t border-base-300 px-6 py-4">
       <div class="flex justify-end">
-        <button type="button" class="btn btn-primary" (click)="onClose()">Close</button>
+        <button mat-raised-button color="primary" type="button" (click)="onClose()">Close</button>
       </div>
     </div>
   </div>

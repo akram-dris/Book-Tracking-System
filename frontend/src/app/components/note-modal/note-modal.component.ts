@@ -12,11 +12,12 @@ import {
   heroXMark,
   heroCheckCircle
 } from '@ng-icons/heroicons/outline';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-note-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, QuillModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, QuillModule, NgIconComponent, MatButtonModule],
   templateUrl: './note-modal.component.html',
   styleUrls: ['./note-modal.component.css'],
   viewProviders: [provideIcons({ 

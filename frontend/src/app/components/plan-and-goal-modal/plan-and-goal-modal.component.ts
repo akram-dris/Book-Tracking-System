@@ -5,11 +5,12 @@ import { ReadingGoalService } from '../../services/reading-goal.service';
 import { BookService } from '../../services/book.service';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-plan-and-goal-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule],
   templateUrl: './plan-and-goal-modal.component.html',
   styleUrls: ['./plan-and-goal-modal.component.css']
 })

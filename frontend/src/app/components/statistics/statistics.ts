@@ -9,7 +9,10 @@ import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinn
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { 
   heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
-  heroClock, heroTrophy, heroCalendar, heroFlag
+  heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
+  heroCalendarDays, heroAdjustmentsHorizontal, heroCheckCircle,
+  heroXCircle, heroFunnel, heroChartBarSquare, heroSquares2x2,
+  heroUserGroup, heroChevronDown, heroXMark
 } from '@ng-icons/heroicons/outline';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,7 +39,10 @@ Chart.register(...registerables);
   styleUrl: './statistics.css',
   viewProviders: [provideIcons({ 
     heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
-    heroClock, heroTrophy, heroCalendar, heroFlag
+    heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
+    heroCalendarDays, heroAdjustmentsHorizontal, heroCheckCircle,
+    heroXCircle, heroFunnel, heroChartBarSquare, heroSquares2x2,
+    heroUserGroup, heroChevronDown, heroXMark
   })]
 })
 export class StatisticsComponent implements OnInit, OnDestroy {
@@ -59,6 +65,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   customEndDate: string = '';
   customDateRange: string = '';
   showCustomDateInputs = false;
+  filtersExpanded = false;
 
   // Chart data
   authorBooksChart: ChartConfiguration<'bar'>['data'] | undefined;
