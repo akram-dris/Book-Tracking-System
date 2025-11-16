@@ -1,4 +1,439 @@
-/* Custom ng-select sizing */
+/* Material Design Enhancements - Full Dark Theme Support */
+:host ::ng-deep mat-card {
+  border-radius: 1rem !important;
+  background-color: oklch(var(--b1)) !important;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Card header styling improvements */
+h3 {
+  color: oklch(var(--bc)) !important;
+  font-weight: 600;
+}
+
+/* Better visual separation */
+.space-y-3 > * + * {
+  margin-top: 1rem;
+}
+
+/* Tag section improvements */
+.bg-base-200\/50 {
+  background-color: oklch(var(--b2) / 0.5) !important;
+  border-color: oklch(var(--bc) / 0.15) !important;
+  transition: all 0.3s ease;
+}
+
+.bg-base-200\/50:hover {
+  border-color: oklch(var(--bc) / 0.25) !important;
+}
+
+/* Scrollbar for tags section */
+.max-h-\[calc\(100vh-280px\)\] {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--p) / 0.3) oklch(var(--b2));
+}
+
+.max-h-\[calc\(100vh-280px\)\]::-webkit-scrollbar {
+  width: 4px;
+}
+
+.max-h-\[calc\(100vh-280px\)\]::-webkit-scrollbar-track {
+  background: oklch(var(--b2));
+  border-radius: 2px;
+}
+
+.max-h-\[calc\(100vh-280px\)\]::-webkit-scrollbar-thumb {
+  background-color: oklch(var(--p) / 0.3);
+  border-radius: 2px;
+}
+
+.max-h-\[calc\(100vh-280px\)\]::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(var(--p) / 0.5);
+}
+
+/* Tag button improvements */
+.cursor-pointer {
+  position: relative;
+  overflow: hidden;
+}
+
+.cursor-pointer::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: oklch(var(--p) / 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.cursor-pointer:active::before {
+  width: 200%;
+  height: 200%;
+}
+
+/* Badge styling */
+.badge-primary {
+  background-color: oklch(var(--p)) !important;
+  color: oklch(var(--pc)) !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px oklch(var(--p) / 0.3);
+}
+
+/* Improve dropzone styling - Dark theme compatible */
+ngx-dropzone {
+  transition: all 0.3s ease !important;
+}
+
+:host ::ng-deep ngx-dropzone {
+  background-color: oklch(var(--b2)) !important;
+  border-color: oklch(var(--bc) / 0.3) !important;
+}
+
+:host ::ng-deep .ngx-dropzone-label {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .ngx-dz-hovered {
+  border-color: oklch(var(--p)) !important;
+  box-shadow: 0 0 20px oklch(var(--p) / 0.2) !important;
+  background-color: oklch(var(--b3)) !important;
+}
+
+/* Dropzone text color */
+:host ::ng-deep ngx-dropzone p {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep ngx-dropzone .text-sm,
+:host ::ng-deep ngx-dropzone .text-xs,
+:host ::ng-deep ngx-dropzone .text-base {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep mat-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  margin-bottom: 0 !important;
+}
+
+/* Compact form field sizing */
+:host ::ng-deep .mat-mdc-form-field.mat-form-field-subscript-dynamic .mat-mdc-form-field-hint-wrapper,
+:host ::ng-deep .mat-mdc-form-field.mat-form-field-subscript-dynamic .mat-mdc-form-field-error-wrapper {
+  padding: 0 !important;
+  margin-top: 2px !important;
+}
+
+/* Filled appearance improvements - Dark theme compatible */
+:host ::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mdc-text-field--filled {
+  background-color: oklch(var(--b2)) !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 12px 16px 0 !important;
+  transition: background-color 0.2s ease;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-text-field--filled {
+  background-color: oklch(var(--b3)) !important;
+  box-shadow: 0 4px 12px oklch(var(--p) / 0.1);
+}
+
+/* Text field wrapper background fix */
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper .mdc-text-field {
+  background-color: oklch(var(--b2)) !important;
+}
+
+/* Fix mat-select background - Dark theme compatible */
+:host ::ng-deep .mat-mdc-select-value {
+  background-color: transparent !important;
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-trigger {
+  background-color: transparent !important;
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-value-text {
+  background-color: transparent !important;
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-value-text span {
+  color: oklch(var(--bc)) !important;
+  background-color: transparent !important;
+}
+
+/* Fix select content wrapper */
+:host ::ng-deep .mat-mdc-select-value span span {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-value div {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-value div span {
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-select-min-line {
+  color: oklch(var(--bc)) !important;
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mat-mdc-select-arrow {
+  color: oklch(var(--bc) / 0.7) !important;
+}
+
+/* Force all text inside select to use theme color */
+:host ::ng-deep .mat-mdc-select-value * {
+  color: oklch(var(--bc)) !important;
+}
+
+/* Fix white chip background in select */
+:host ::ng-deep .mat-mdc-select-value mat-chip {
+  background-color: transparent !important;
+  color: oklch(var(--bc)) !important;
+}
+
+/* Fix placeholder in select */
+:host ::ng-deep .mat-mdc-select-placeholder {
+  color: oklch(var(--bc) / 0.5) !important;
+  background-color: transparent !important;
+}
+
+/* Remove white background from multi-select chips */
+:host ::ng-deep .mat-mdc-chip {
+  background-color: transparent !important;
+  color: oklch(var(--bc)) !important;
+}
+
+:host ::ng-deep .mat-mdc-chip-action-label {
+  color: oklch(var(--bc)) !important;
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mat-mdc-chip-set {
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mat-mdc-chip-grid {
+  background-color: transparent !important;
+}
+
+/* Force all select-related elements to be transparent */
+:host ::ng-deep .mat-mdc-select * {
+  background-color: transparent !important;
+}
+
+/* Input text color - Dark theme compatible */
+:host ::ng-deep .mat-mdc-input-element {
+  color: oklch(var(--bc)) !important;
+  caret-color: oklch(var(--p)) !important;
+}
+
+:host ::ng-deep .mat-mdc-input-element::placeholder {
+  color: oklch(var(--bc) / 0.5) !important;
+}
+
+/* Label color - Dark theme compatible */
+:host ::ng-deep .mat-mdc-floating-label {
+  color: oklch(var(--bc) / 0.7) !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: oklch(var(--p)) !important;
+}
+
+:host ::ng-deep .mdc-floating-label {
+  color: oklch(var(--bc) / 0.7) !important;
+}
+
+/* Remove inner borders completely */
+:host ::ng-deep .mdc-text-field--filled::before {
+  border-bottom: none !important;
+}
+
+:host ::ng-deep .mdc-text-field--filled::after {
+  border-bottom: none !important;
+}
+
+/* Underline styling - Dark theme compatible */
+:host ::ng-deep .mdc-line-ripple::before {
+  border-bottom-width: 1px !important;
+  border-bottom-color: oklch(var(--bc) / 0.3) !important;
+}
+
+:host ::ng-deep .mdc-line-ripple::after {
+  border-bottom-width: 2px !important;
+  border-bottom-color: oklch(var(--p)) !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-line-ripple::after {
+  border-bottom-color: oklch(var(--p)) !important;
+}
+
+/* Remove any additional borders from input elements */
+:host ::ng-deep .mat-mdc-input-element,
+:host ::ng-deep .mat-mdc-select {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Smooth focus transitions */
+:host ::ng-deep .mat-mdc-form-field {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Material Select with Avatar */
+:host ::ng-deep .mat-mdc-option {
+  height: auto !important;
+  min-height: 48px;
+}
+
+/* Dropdown panel dark theme */
+:host ::ng-deep .mat-mdc-select-panel {
+  background-color: oklch(var(--b1)) !important;
+  border: 1px solid oklch(var(--bc) / 0.2) !important;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3) !important;
+}
+
+:host ::ng-deep .mat-mdc-option {
+  color: oklch(var(--bc)) !important;
+  background-color: transparent !important;
+  transition: background-color 0.2s ease;
+}
+
+:host ::ng-deep .mat-mdc-option:hover {
+  background-color: oklch(var(--b2)) !important;
+}
+
+:host ::ng-deep .mat-mdc-option.mdc-list-item--selected {
+  background-color: oklch(var(--p) / 0.1) !important;
+}
+
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background-color: oklch(var(--b3)) !important;
+}
+
+:host ::ng-deep .mat-pseudo-checkbox {
+  color: oklch(var(--bc) / 0.5) !important;
+  border-color: oklch(var(--bc) / 0.5) !important;
+}
+
+:host ::ng-deep .mat-pseudo-checkbox-checked {
+  color: oklch(var(--p)) !important;
+  background-color: oklch(var(--p)) !important;
+  border-color: oklch(var(--p)) !important;
+}
+
+/* Hint text dark theme */
+:host ::ng-deep .mat-mdc-form-field-hint {
+  color: oklch(var(--bc) / 0.6) !important;
+}
+
+/* Error text */
+:host ::ng-deep .mat-mdc-form-field-error {
+  color: oklch(var(--er)) !important;
+}
+
+/* Material Chips - smaller size */
+:host ::ng-deep mat-chip {
+  font-size: 0.75rem !important;
+  min-height: 28px !important;
+}
+
+:host ::ng-deep mat-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Card actions dark theme */
+:host ::ng-deep mat-card-actions {
+  background-color: oklch(var(--b1)) !important;
+  border-top: 1px solid oklch(var(--bc) / 0.1) !important;
+}
+
+/* Button improvements */
+:host ::ng-deep .mat-mdc-button {
+  transition: all 0.2s ease !important;
+}
+
+:host ::ng-deep .mat-mdc-raised-button {
+  box-shadow: 0 4px 12px oklch(var(--p) / 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+:host ::ng-deep .mat-mdc-raised-button:hover {
+  box-shadow: 0 6px 20px oklch(var(--p) / 0.4) !important;
+  transform: translateY(-2px);
+}
+
+:host ::ng-deep .mat-mdc-raised-button:disabled {
+  opacity: 0.5;
+  box-shadow: none !important;
+}
+
+/* Tags container scrollbar styling - Dark theme compatible */
+.max-h-64 {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--p) / 0.3) oklch(var(--b2));
+}
+
+.max-h-64::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.max-h-64::-webkit-scrollbar-track {
+  background: oklch(var(--b2));
+  border-radius: 3px;
+}
+
+.max-h-64::-webkit-scrollbar-thumb {
+  background-color: oklch(var(--p) / 0.3);
+  border-radius: 3px;
+}
+
+.max-h-64::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(var(--p) / 0.5);
+}
+
+/* Loading Spinner in Button */
+:host ::ng-deep mat-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+:host ::ng-deep mat-spinner circle {
+  stroke: currentColor !important;
+}
+
+/* Page header spacing - more compact */
+h1 {
+  line-height: 1.2;
+}
+
+h3 {
+  color: inherit;
+}
+
+/* Custom ng-select sizing - keep for dropzone compatibility */
 :host ::ng-deep .ng-select-sm .ng-select-container {
   min-height: 32px;
   font-size: 0.875rem;

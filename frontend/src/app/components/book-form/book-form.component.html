@@ -1,210 +1,184 @@
-<!-- Compact Modal-Style Form -->
-<div class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-  <div class="bg-base-100 rounded-2xl border-2 border-base-300 shadow-2xl w-full max-w-xl max-h-[98vh] overflow-hidden flex flex-col">
-    <!-- Minimal Header -->
-    <div class="flex items-center justify-between px-5 py-4 border-b-2 border-base-300 bg-base-200/50">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-          <ng-icon name="heroBookOpen" size="1.25rem" class="text-primary"></ng-icon>
-        </div>
-        <h2 class="text-lg font-bold text-base-content">{{ isEditMode ? 'Edit' : 'Add' }} Book</h2>
-      </div>
-      <button mat-icon-button routerLink="/books" class="hover:text-error">
-        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
-      </button>
-    </div>
+<!-- Full Page Form -->
+<div class="space-y-3">
+  <!-- Back Button -->
+  <div>
+    <button mat-button routerLink="/books" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
+      <span class="font-medium">Back</span>
+    </button>
+  </div>
 
-    <!-- Form Content -->
-    <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto">
-      <div class="p-6 space-y-4">
-        <div class="grid grid-cols-12 gap-6">
-          <!-- Compact Image Upload -->
-          <div class="col-span-5">
-            <div class="aspect-[2/3] w-full min-w-[140px]">
+  <!-- Form Card -->
+  <mat-card class="!shadow-xl border-2 border-base-300">
+    <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
+      <mat-card-content class="p-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Column 1: Book Cover -->
+          <div class="lg:col-span-3">
+            <h3 class="text-sm font-semibold mb-2 text-base-content">Book Cover</h3>
+            <div class="aspect-[2/3] w-full max-w-[180px] mx-auto lg:mx-0">
               <!-- Dropzone -->
               <ngx-dropzone
                 *ngIf="!imagePreviewUrl"
                 (change)="onFilesAdded($event.addedFiles)"
                 [multiple]="false"
                 [accept]="'image/*'"
-                class="!h-full !w-full !border-2 !border-dashed !border-base-300 hover:!border-primary !rounded-xl !bg-base-200 hover:!bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group"
+                class="!h-full !w-full !border-2 !border-dashed hover:!border-primary !rounded-xl hover:!bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group"
               >
                 <ngx-dropzone-label>
-                  <div class="flex flex-col items-center justify-center p-3">
+                  <div class="flex flex-col items-center justify-center p-4">
                     <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
-                      <ng-icon name="heroPhoto" size="1.5rem" class="text-primary"></ng-icon>
+                      <mat-icon class="text-primary !text-3xl !w-8 !h-8">photo_camera</mat-icon>
                     </div>
-                    <p class="text-sm font-medium text-base-content/70 text-center">Drop image here</p>
-                    <p class="text-xs text-base-content/50 text-center mt-1">or click to browse</p>
+                    <p class="text-sm font-medium text-center">Drop cover</p>
+                    <p class="text-xs opacity-70 text-center mt-1">or click</p>
                   </div>
                 </ngx-dropzone-label>
               </ngx-dropzone>
 
               <!-- Image Preview -->
               <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
-                <div class="h-full w-full rounded-xl overflow-hidden bg-base-300 border-2 border-base-300 hover:border-primary transition-all duration-300">
+                <div class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg">
                   <img [src]="imagePreviewUrl" alt="Cover" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <button
-                  mat-icon-button
+                  mat-mini-fab
+                  color="warn"
                   type="button"
                   (click)="onFileRemoved()"
-                  class="absolute -top-2 -right-2 bg-error text-white shadow-lg opacity-0 group-hover:opacity-100"
-                  style="width: 28px; height: 28px;"
+                  class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity !shadow-lg !w-7 !h-7"
+                  aria-label="Remove image"
                 >
-                  <ng-icon name="heroXMark" size="1rem"></ng-icon>
+                  <mat-icon class="!text-lg">close</mat-icon>
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Form Fields -->
-          <div class="col-span-7 space-y-4">
-            <!-- Title -->
-            <div class="form-control">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-sm font-semibold flex items-center gap-1">
-                  <ng-icon name="heroBookOpen" size="1rem" class="text-primary"></ng-icon>
-                  Title <span class="text-error">*</span>
-                </span>
-              </label>
-              <input
-                type="text"
-                formControlName="title"
-                class="input input-bordered w-full border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                placeholder="Enter book title"
-                [class.input-error]="bookForm.get('title')?.invalid && bookForm.get('title')?.touched"
-              />
-              <label *ngIf="bookForm.get('title')?.invalid && bookForm.get('title')?.touched" class="label">
-                <span class="label-text-alt text-error">Title is required</span>
-              </label>
-            </div>
+          <!-- Column 2: Book Information -->
+          <div class="lg:col-span-4">
+            <h3 class="text-base font-semibold mb-3 text-base-content">Book Information</h3>
+            <div class="grid gap-3">
+              <!-- Title -->
+              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Book Title</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  formControlName="title"
+                  placeholder="Enter book title"
+                  required
+                />
+                <mat-error *ngIf="bookForm.get('title')?.hasError('required')">
+                  Title is required
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Author -->
-            <div class="form-control">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-sm font-semibold flex items-center gap-1">
-                  <ng-icon name="heroUser" size="1rem" class="text-primary"></ng-icon>
-                  Author <span class="text-error">*</span>
-                </span>
-              </label>
-              <ng-select
-                [items]="authors"
-                bindLabel="name"
-                bindValue="id"
-                formControlName="authorId"
-                placeholder="Select author"
-                [clearable]="true"
-                [searchable]="true"
-                [class.ng-select-error]="bookForm.get('authorId')?.invalid && bookForm.get('authorId')?.touched"
-              >
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="flex items-center gap-2">
-                    <div *ngIf="getSelectedAuthorImage(item.id)" class="w-6 h-6 rounded-full overflow-hidden border-2 border-base-300">
-                      <img [src]="getSelectedAuthorImage(item.id)" [alt]="item.name" class="w-full h-full object-cover" />
-                    </div>
-                    <div *ngIf="!getSelectedAuthorImage(item.id)" class="avatar placeholder">
-                      <div class="w-6 h-6 rounded-full bg-primary text-primary-content">
-                        <span class="text-xs font-medium">{{ item.name.charAt(0) }}</span>
+              <!-- Author -->
+              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Author</mat-label>
+                <mat-select formControlName="authorId" placeholder="Select an author" required>
+                  <mat-option *ngFor="let author of authors" [value]="author.id">
+                    <div class="flex items-center gap-2">
+                      <img 
+                        *ngIf="author.imageUrl" 
+                        [src]="getRootUrl() + author.imageUrl" 
+                        [alt]="author.name" 
+                        class="w-6 h-6 rounded-full object-cover"
+                      />
+                      <div *ngIf="!author.imageUrl" class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-medium">
+                        {{ author.name.charAt(0) }}
                       </div>
+                      <span>{{ author.name }}</span>
                     </div>
-                    <span class="text-sm font-medium">{{ item.name }}</span>
-                  </div>
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                  <div class="flex items-center gap-2 py-1">
-                    <div *ngIf="item.imageUrl" class="w-7 h-7 rounded-full overflow-hidden border-2 border-base-300">
-                      <img [src]="getRootUrl() + item.imageUrl" [alt]="item.name" class="w-full h-full object-cover" />
-                    </div>
-                    <div *ngIf="!item.imageUrl" class="avatar placeholder">
-                      <div class="w-7 h-7 rounded-full bg-primary text-primary-content">
-                        <span class="text-xs font-medium">{{ item.name.charAt(0) }}</span>
-                      </div>
-                    </div>
-                    <span class="text-sm">{{ item.name }}</span>
-                  </div>
-                </ng-template>
-              </ng-select>
-              <label *ngIf="bookForm.get('authorId')?.invalid && bookForm.get('authorId')?.touched" class="label">
-                <span class="label-text-alt text-error">Author is required</span>
-              </label>
-            </div>
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="bookForm.get('authorId')?.hasError('required')">
+                  Author is required
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Total Pages -->
-            <div class="form-control">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-sm font-semibold flex items-center gap-1">
-                  <ng-icon name="heroDocumentText" size="1rem" class="text-primary"></ng-icon>
-                  Pages <span class="text-error">*</span>
-                </span>
-              </label>
-              <input
-                type="number"
-                formControlName="totalPages"
-                class="input input-bordered w-full border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                placeholder="e.g., 320"
-                min="1"
-                [class.input-error]="bookForm.get('totalPages')?.invalid && bookForm.get('totalPages')?.touched"
-              />
-              <label *ngIf="bookForm.get('totalPages')?.invalid && bookForm.get('totalPages')?.touched" class="label">
-                <span class="label-text-alt text-error">Pages is required</span>
-              </label>
+              <!-- Total Pages -->
+              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Total Pages</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  formControlName="totalPages"
+                  placeholder="e.g., 320"
+                  min="1"
+                  required
+                />
+                <mat-error *ngIf="bookForm.get('totalPages')?.hasError('required')">
+                  Total pages is required
+                </mat-error>
+                <mat-error *ngIf="bookForm.get('totalPages')?.hasError('min')">
+                  Pages must be at least 1
+                </mat-error>
+              </mat-form-field>
             </div>
+          </div>
 
-            <!-- Tags -->
-            <div class="form-control">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-sm font-semibold flex items-center gap-1">
-                  <ng-icon name="heroTag" size="1rem" class="text-primary"></ng-icon>
-                  Tags
-                </span>
-              </label>
-              <ng-select
-                [items]="tags"
-                bindLabel="name"
-                bindValue="id"
-                [multiple]="true"
-                [(ngModel)]="selectedTags"
-                [ngModelOptions]="{standalone: true}"
-                (ngModelChange)="onTagsChange($event)"
-                placeholder="Select tags"
-                [clearable]="true"
-                [searchable]="true"
-              >
-                <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                  <div class="flex flex-wrap gap-1.5">
-                    <div *ngFor="let item of items" class="badge badge-primary badge-sm gap-1 px-2 py-1 hover:scale-105 transition-transform">
-                      <span class="text-xs font-medium">{{ item.name }}</span>
-                      <button type="button" (click)="clear(item)" class="hover:text-error transition-colors">
-                        <ng-icon name="heroXMark" size="0.75rem"></ng-icon>
-                      </button>
-                    </div>
-                  </div>
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                  <span class="badge badge-primary badge-sm text-xs">{{ item.name }}</span>
-                </ng-template>
-              </ng-select>
+          <!-- Column 3: Tags -->
+          <div class="lg:col-span-5">
+            <h3 class="text-sm font-semibold mb-2 text-base-content">Tags</h3>
+            <div>
+              <!-- Available Tags -->
+              <div class="p-3 rounded-lg bg-base-200/50 border-2 border-base-300 max-h-[calc(100vh-280px)] overflow-y-auto">
+                <p class="text-xs font-semibold text-base-content/70 mb-2 flex items-center gap-2 sticky top-0 bg-base-200/50 pb-2">
+                  <mat-icon class="!text-sm">local_offer</mat-icon>
+                  Available Tags
+                  <span *ngIf="bookForm.get('tagIds')?.value?.length > 0" class="ml-auto badge badge-primary badge-sm">
+                    {{ bookForm.get('tagIds')?.value?.length }} selected
+                  </span>
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    *ngFor="let tag of tags"
+                    type="button"
+                    (click)="toggleTag(tag.id)"
+                    [class.bg-primary]="isTagSelected(tag.id)"
+                    [class.text-primary-content]="isTagSelected(tag.id)"
+                    [class.bg-base-100]="!isTagSelected(tag.id)"
+                    [class.border-primary]="isTagSelected(tag.id)"
+                    class="px-2.5 py-1.5 rounded-lg border-2 border-base-300 hover:border-primary hover:scale-105 transition-all duration-200 text-xs font-medium cursor-pointer"
+                  >
+                    <span class="flex items-center gap-1.5">
+                      <mat-icon *ngIf="isTagSelected(tag.id)" class="!text-sm">check</mat-icon>
+                      {{ tag.name }}
+                    </span>
+                  </button>
+                </div>
+                
+                <!-- Empty state when no tags exist -->
+                <div *ngIf="tags.length === 0" class="py-4 text-center">
+                  <mat-icon class="text-base-content/30 !text-3xl mb-1">local_offer</mat-icon>
+                  <p class="text-xs font-medium text-base-content/70">No tags available</p>
+                  <p class="text-xs text-base-content/50 mt-1">Create tags first</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
+      </mat-card-content>
 
-    <!-- Compact Footer -->
-    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t-2 border-base-300 bg-base-200/50">
-      <button mat-button type="button" routerLink="/books" class="hover:bg-base-300 hover:scale-105 transition-all duration-200">Cancel</button>
-      <button
-        mat-raised-button color="primary"
-        type="submit"
-        (click)="onSubmit()"
-        class="px-6"
-        [disabled]="bookForm.invalid || isLoading"
-      >
-        <span *ngIf="isLoading" class="loading loading-spinner loading-xs"></span>
-        <ng-icon *ngIf="!isLoading" [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
-        <span *ngIf="!isLoading">{{ isEditMode ? 'Update' : 'Add Book' }}</span>
-      </button>
-    </div>
-  </div>
+      <!-- Form Actions -->
+      <mat-card-actions class="flex items-center justify-end gap-3 px-4 py-4 !m-0 !mt-4">
+        <button mat-button type="button" routerLink="/books">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+        <button
+          mat-raised-button 
+          color="primary"
+          type="submit"
+          [disabled]="bookForm.invalid || isLoading"
+        >
+          <mat-spinner *ngIf="isLoading" diameter="20" class="mr-2"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ isEditMode ? 'Update Book' : 'Add Book' }}
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
 </div>

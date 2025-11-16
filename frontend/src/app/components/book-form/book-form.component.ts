@@ -12,8 +12,19 @@ import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil } from '@ng-icons/heroicons/outline';
+import { heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -24,8 +35,8 @@ import { GetTag } from '../../models/get-tag.model';
 @Component({
   selector: 'app-book-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule],
-  providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil })],
+  imports: [ReactiveFormsModule, FormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatAutocompleteModule, MatCardModule, MatDividerModule],
+  providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft })],
   templateUrl: './book-form.component.html',
   styleUrls: ['./book-form.component.css']
 })
@@ -45,6 +56,9 @@ export class BookFormComponent implements OnInit {
   
   // For ng-select custom items
   selectedTags: any[] = [];
+  
+  // For Material chips
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
   constructor(
     private fb: FormBuilder,
@@ -98,6 +112,42 @@ export class BookFormComponent implements OnInit {
   onTagsChange(tags: GetTag[]) {
     const tagIds = tags.map(t => t.id);
     this.bookForm.patchValue({ tagIds: tagIds });
+  }
+  
+  removeTag(tag: GetTag) {
+    this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
+    this.onTagsChange(this.selectedTags);
+  }
+  
+  removeTagById(tagId: number) {
+    const currentTags = this.bookForm.get('tagIds')?.value || [];
+    const updatedTags = currentTags.filter((id: number) => id !== tagId);
+    this.bookForm.patchValue({ tagIds: updatedTags });
+  }
+  
+  toggleTag(tagId: number) {
+    const currentTags = this.bookForm.get('tagIds')?.value || [];
+    const index = currentTags.indexOf(tagId);
+    
+    if (index > -1) {
+      // Tag is already selected, remove it
+      currentTags.splice(index, 1);
+    } else {
+      // Tag is not selected, add it
+      currentTags.push(tagId);
+    }
+    
+    this.bookForm.patchValue({ tagIds: [...currentTags] });
+  }
+  
+  isTagSelected(tagId: number): boolean {
+    const currentTags = this.bookForm.get('tagIds')?.value || [];
+    return currentTags.includes(tagId);
+  }
+  
+  getTagName(tagId: number): string {
+    const tag = this.tags.find(t => t.id === tagId);
+    return tag?.name || '';
   }
   
   onAuthorChange(authorId: number | null) {

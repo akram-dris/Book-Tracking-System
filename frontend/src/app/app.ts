@@ -34,10 +34,12 @@ export class App {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
       if (event.url.startsWith('/authors')) {
-        this.showAddButton = true;
+        // Hide button on author form pages
+        this.showAddButton = !event.url.includes('/authors/new') && !event.url.includes('/authors/edit');
         this.addRouterLink = '/authors/new';
       } else if (event.url.startsWith('/books')) {
-        this.showAddButton = true;
+        // Hide button on book form pages
+        this.showAddButton = !event.url.includes('/books/new') && !event.url.includes('/books/edit');
         this.addRouterLink = '/books/new';
       } else {
         this.showAddButton = false;
