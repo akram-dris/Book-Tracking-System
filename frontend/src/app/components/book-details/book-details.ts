@@ -245,6 +245,12 @@ export class BookDetailsComponent implements OnInit {
 
   handlePlanAndGoalSaved(): void {
     console.log('BookDetailsComponent handlePlanAndGoalSaved - Plan and Goal saved, refreshing data for bookId:', this.book?.id);
+    
+    // Update book status optimistically for immediate UI feedback
+    if (this.book) {
+      this.book.status = ReadingStatus.Planning;
+    }
+    
     this.closePlanAndGoalModal();
     this.refreshBookData(); // Refresh all book-related data
   }
