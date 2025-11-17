@@ -43,14 +43,24 @@ namespace BookTrackingSystem.Repository
         {
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
-            return book;
+            
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments!)
+                    .ThenInclude(bta => bta.BookTag)
+                .FirstOrDefaultAsync(b => b.Id == book.Id) ?? book;
         }
 
         public async Task<Book> UpdateBookAsync(Book book)
         {
             _context.Entry(book).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return book;
+            
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments!)
+                    .ThenInclude(bta => bta.BookTag)
+                .FirstOrDefaultAsync(b => b.Id == book.Id) ?? book;
         }
 
         public async Task DeleteBookAsync(int id)
