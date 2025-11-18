@@ -98,7 +98,7 @@ export class AuthorFormComponent implements OnInit {
 
       if (this.isEditMode && this.authorId) {
         this.authorService.updateAuthor(this.authorId, authorData as UpdateAuthor).subscribe(() => {
-          this.router.navigate(['/authors']);
+          this.router.navigate(['/authors', this.authorId]);
           this.isLoading = false;
         }, () => {
           this.isLoading = false;
@@ -111,6 +111,14 @@ export class AuthorFormComponent implements OnInit {
           this.isLoading = false;
         });
       }
+    }
+  }
+
+  goBack(): void {
+    if (this.isEditMode && this.authorId) {
+      this.router.navigate(['/authors', this.authorId]);
+    } else {
+      this.router.navigate(['/authors']);
     }
   }
 }
