@@ -81,7 +81,7 @@
             <div *ngIf="book.status === ReadingStatus.CurrentlyReading" class="mb-6 max-w-xl">
               <div class="flex justify-between text-sm mb-2">
                 <span class="font-medium text-base-content/70">Reading Progress</span>
-                <span class="font-bold text-primary">{{ progress }}%</span>
+                <span class="font-bold text-primary">{{ progress | number:'1.0-2' }}%</span>
               </div>
               <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden border-2 border-base-300">
                 <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-300 shadow-lg"
@@ -117,7 +117,7 @@
                 <div class="text-xs text-base-content/60">Pages Read</div>
               </div>
               <div class="bg-base-100 rounded-xl p-4 text-center border-2 border-base-300 hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 hover:-translate-y-1">
-                <div class="text-2xl font-bold text-accent">{{ progress }}%</div>
+                <div class="text-2xl font-bold text-accent">{{ progress | number:'1.0-2' }}%</div>
                 <div class="text-xs text-base-content/60">Progress</div>
               </div>
               <div class="bg-base-100 rounded-xl p-4 text-center border-2 border-base-300 hover:border-info hover:shadow-lg hover:shadow-info/10 transition-all duration-300 hover:-translate-y-1">
@@ -385,7 +385,7 @@
                 <ng-icon name="heroCheckCircle" size="2rem" class="text-accent"></ng-icon>
               </div>
               <div>
-                <div class="text-3xl font-bold text-accent">{{ progress }}%</div>
+                <div class="text-3xl font-bold text-accent">{{ progress | number:'1.0-2' }}%</div>
                 <div class="text-sm text-base-content/60">Progress</div>
                 <div class="text-xs text-base-content/40">{{ book.totalPages - currentPage }} pages remaining</div>
               </div>
