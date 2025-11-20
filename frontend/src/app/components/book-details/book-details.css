@@ -1,0 +1,4 @@
+/* Active Tab Hover Text Color Override */
+.active-tab:hover {
+    color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+}

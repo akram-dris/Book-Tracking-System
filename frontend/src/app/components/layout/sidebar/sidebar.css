@@ -22,3 +22,8 @@ aside {
 [data-tip]:after {
   z-index: 9999 !important;
 }
+
+/* Active Item Hover Text Color Override */
+.active-item:hover {
+  color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+}
