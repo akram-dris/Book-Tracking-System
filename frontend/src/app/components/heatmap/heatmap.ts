@@ -87,8 +87,9 @@ export class HeatmapComponent implements OnInit {
   hoveredMonth: number | null = null;
   legendItems: LegendItem[] = [
     { label: 'No activity', className: 'day-0', range: '0 pages' },
-    { label: 'Light', className: 'day-1-10', range: '1-10 pages' },
-    { label: 'Active', className: 'day-10-plus', range: '10+ pages' }
+    { label: 'Light', className: 'day-low', range: '1-15 pages' },
+    { label: 'Moderate', className: 'day-medium', range: '16-49 pages' },
+    { label: 'High', className: 'day-high', range: '50+ pages' }
   ];
 
   constructor(private heatmapService: HeatmapService) {
@@ -262,10 +263,12 @@ export class HeatmapComponent implements OnInit {
   getDayClass(pagesRead: number): string {
     if (pagesRead === 0) {
       return 'day-0';
-    } else if (pagesRead > 0 && pagesRead <= 10) {
-      return 'day-1-10';
+    } else if (pagesRead > 0 && pagesRead <= 15) {
+      return 'day-low';
+    } else if (pagesRead > 15 && pagesRead < 50) {
+      return 'day-medium';
     } else {
-      return 'day-10-plus';
+      return 'day-high';
     }
   }
 
