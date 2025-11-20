@@ -100,15 +100,7 @@ namespace BookTrackingSystem.Controllers
                     }
                     existingBook.ImageUrl = "/images/books/" + uniqueFileName;
                 }
-                else if (!string.IsNullOrEmpty(existingBook.ImageUrl)) // If no new image is provided, but an old one exists
-                {
-                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingBook.ImageUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
-                    existingBook.ImageUrl = null; // Set ImageUrl to null
-                }
+                // If no new image is provided, keep the existing image (do nothing)
 
                 var updatedBook = await _bookService.UpdateBookAsync(id, updateBookDto, updateBookDto.ImageFile);
                 if (updatedBook == null)

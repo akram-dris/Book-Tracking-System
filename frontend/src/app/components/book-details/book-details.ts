@@ -202,11 +202,14 @@ export class BookDetailsComponent implements OnInit {
     if (this.summaryForm.valid && this.book) {
       const summaryText = this.summaryForm.get('summary')?.value;
       const startedDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : undefined;
+      
+      // Update UI optimistically
+      this.book.status = ReadingStatus.Summarized;
+      this.book.completedDate = new Date();
+      this.book.summary = summaryText;
+      this.isEditingSummary = false;
+      
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
-        this.book!.status = ReadingStatus.Summarized;
-        this.book!.completedDate = new Date();
-        this.book!.summary = summaryText;
-        this.isEditingSummary = false;
         console.log('BookDetailsComponent saveSummary - Book summary updated');
       });
     }
@@ -220,9 +223,11 @@ export class BookDetailsComponent implements OnInit {
   startReading(): void {
     console.log('BookDetailsComponent startReading - book:', this.book);
     if (this.book) {
+      // Update UI optimistically
+      this.book.status = ReadingStatus.CurrentlyReading;
+      this.book.startedReadingDate = new Date();
+      
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(() => {
-        this.book!.status = ReadingStatus.CurrentlyReading;
-        this.book!.startedReadingDate = new Date(); // Set started reading date
         console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
         this.router.navigate(['/books', this.book!.id, 'set-goal']);
       });
@@ -245,6 +250,12 @@ export class BookDetailsComponent implements OnInit {
 
   handlePlanAndGoalSaved(): void {
     console.log('BookDetailsComponent handlePlanAndGoalSaved - Plan and Goal saved, refreshing data for bookId:', this.book?.id);
+    
+    // Update book status optimistically for immediate UI feedback
+    if (this.book) {
+      this.book.status = ReadingStatus.Planning;
+    }
+    
     this.closePlanAndGoalModal();
     this.refreshBookData(); // Refresh all book-related data
   }
@@ -257,10 +268,13 @@ export class BookDetailsComponent implements OnInit {
   startReadingFromPlanning(): void {
     console.log('BookDetailsComponent startReadingFromPlanning - book:', this.book);
     if (this.book) {
-      const startDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : new Date(); // Use book.startedReadingDate
+      const startDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : new Date();
+      
+      // Update UI optimistically
+      this.book.status = ReadingStatus.CurrentlyReading;
+      this.book.startedReadingDate = startDate;
+      
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(() => {
-        this.book!.status = ReadingStatus.CurrentlyReading;
-        this.book!.startedReadingDate = startDate;
         console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
         // No navigation needed, stay on the same page
       });
@@ -270,11 +284,13 @@ export class BookDetailsComponent implements OnInit {
   markAsCompleted(): void {
     console.log('BookDetailsComponent markAsCompleted - book:', this.book);
     if (this.book) {
+      // Update UI optimistically
+      this.book.status = ReadingStatus.Completed;
+      this.book.completedDate = new Date();
+      this.isSummaryMode = true;
+      this.isEditingSummary = true;
+      
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, this.book.startedReadingDate, new Date()).subscribe(() => {
-        this.book!.status = ReadingStatus.Completed;
-        this.book!.completedDate = new Date();
-        this.isSummaryMode = true;
-        this.isEditingSummary = true;
         console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
       });
     }

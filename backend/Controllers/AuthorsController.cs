@@ -145,15 +145,7 @@ namespace BookTrackingSystem.Controllers
                 }
                 existingAuthor.ImageUrl = "/images/authors/" + uniqueFileName;
             }
-            else if (!string.IsNullOrEmpty(existingAuthor.ImageUrl)) // If no new image is provided, but an old one exists
-            {
-                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingAuthor.ImageUrl.TrimStart('/'));
-                if (System.IO.File.Exists(oldImagePath))
-                {
-                    System.IO.File.Delete(oldImagePath);
-                }
-                existingAuthor.ImageUrl = null; // Set ImageUrl to null
-            }
+            // If no new image is provided, keep the existing image (do nothing)
 
             await _authorService.UpdateAuthorAsync(existingAuthor);
 

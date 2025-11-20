@@ -2,7 +2,7 @@
 <div class="space-y-3">
   <!-- Back Button -->
   <div>
-    <button mat-button routerLink="/books" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+    <button mat-button (click)="goBack()" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
       <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
       <span class="font-medium">Back</span>
     </button>

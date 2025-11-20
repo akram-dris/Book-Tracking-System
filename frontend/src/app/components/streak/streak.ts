@@ -5,6 +5,7 @@ import { StreakService } from '../../services/streak.service';
 import { Streak } from '../../models/streak.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFire, heroTrophy, heroCalendar } from '@ng-icons/heroicons/outline';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-streak',
@@ -32,36 +33,27 @@ import { heroFire, heroTrophy, heroCalendar } from '@ng-icons/heroicons/outline'
   ]
 })
 export class StreakComponent implements OnInit {
-  streakData: Streak | null = null;
+  streakData$: Observable<Streak | null>;
   loading: boolean = false;
   showCelebration: boolean = false;
 
-  constructor(private streakService: StreakService) { }
-
-  ngOnInit(): void {
-    this.loadStreakData();
+  constructor(private streakService: StreakService) {
+    this.streakData$ = this.streakService.getStreakData();
   }
 
-  loadStreakData(): void {
-    this.loading = true;
-    this.streakService.getStreakData().subscribe({
-      next: (data) => {
-        this.streakData = data;
-        this.loading = false;
-        if (data.currentStreak > 0 && data.currentStreak % 7 === 0) {
-          this.showCelebration = true;
-        }
-      },
-      error: (err) => {
-        console.error('Error fetching streak data', err);
-        this.loading = false;
-      },
+  ngOnInit(): void {
+    this.streakData$.subscribe(data => {
+      if (data && data.currentStreak > 0 && data.currentStreak % 7 === 0) {
+        this.showCelebration = true;
+      } else {
+        this.showCelebration = false;
+      }
     });
   }
 
-  getMotivationalMessage(): string {
-    if (!this.streakData) return '';
-    const streak = this.streakData.currentStreak;
+  getMotivationalMessage(streakData: Streak | null): string {
+    if (!streakData) return '';
+    const streak = streakData.currentStreak;
     if (streak === 0) return 'Start your reading journey today!';
     if (streak === 1) return 'Great start! Keep it going! 🌱';
     if (streak < 7) return 'You\'re building momentum! 🔥';
@@ -70,9 +62,9 @@ export class StreakComponent implements OnInit {
     return 'Legendary streak! 👑';
   }
 
-  getStreakEmoji(): string {
-    if (!this.streakData) return '📖';
-    const streak = this.streakData.currentStreak;
+  getStreakEmoji(streakData: Streak | null): string {
+    if (!streakData) return '📖';
+    const streak = streakData.currentStreak;
     if (streak === 0) return '📖';
     if (streak < 7) return '🔥';
     if (streak < 30) return '⚡';

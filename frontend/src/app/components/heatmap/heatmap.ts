@@ -84,13 +84,12 @@ export class HeatmapComponent implements OnInit {
   totalDays: number = 0;
   currentStreak: number = 0;
   longestStreak: number = 0;
+  hoveredMonth: number | null = null;
   legendItems: LegendItem[] = [
     { label: 'No activity', className: 'day-0', range: '0 pages' },
-    { label: 'Light', className: 'day-1-10', range: '1-10 pages' },
-    { label: 'Moderate', className: 'day-11-25', range: '11-25 pages' },
-    { label: 'Active', className: 'day-26-50', range: '26-50 pages' },
-    { label: 'Very Active', className: 'day-51-100', range: '51-100 pages' },
-    { label: 'Super Active', className: 'day-100-plus', range: '100+ pages' }
+    { label: 'Light', className: 'day-low', range: '1-15 pages' },
+    { label: 'Moderate', className: 'day-medium', range: '16-49 pages' },
+    { label: 'High', className: 'day-high', range: '50+ pages' }
   ];
 
   constructor(private heatmapService: HeatmapService) {
@@ -99,6 +98,14 @@ export class HeatmapComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadHeatmapData();
+  }
+
+  setHoveredMonth(index: number): void {
+    this.hoveredMonth = index;
+  }
+
+  clearHoveredMonth(): void {
+    this.hoveredMonth = null;
   }
 
   generateYears(): void {
@@ -256,23 +263,18 @@ export class HeatmapComponent implements OnInit {
   getDayClass(pagesRead: number): string {
     if (pagesRead === 0) {
       return 'day-0';
-    } else if (pagesRead > 0 && pagesRead <= 10) {
-      return 'day-1-10';
-    } else if (pagesRead > 10 && pagesRead <= 25) {
-      return 'day-11-25';
-    } else if (pagesRead > 25 && pagesRead <= 50) {
-      return 'day-26-50';
-    } else if (pagesRead > 50 && pagesRead <= 100) {
-      return 'day-51-100';
+    } else if (pagesRead > 0 && pagesRead <= 15) {
+      return 'day-low';
+    } else if (pagesRead > 15 && pagesRead < 50) {
+      return 'day-medium';
     } else {
-      return 'day-100-plus';
+      return 'day-high';
     }
   }
 
   getTooltipText(day: CalendarDay): string {
     if (!day.isCurrentMonth) return '';
-    const dateStr = day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    return `${dateStr}\n${day.pagesRead} pages read`;
+    return day.pagesRead === 0 ? 'No pages' : `${day.pagesRead} pages`;
   }
 
   isToday(date: Date): boolean {

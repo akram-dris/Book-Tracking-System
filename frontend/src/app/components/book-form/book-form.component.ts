@@ -245,7 +245,7 @@ export class BookFormComponent implements OnInit {
           switchMap(() => this.bookService.assignTags(this.bookId!, bookData.tagIds)),
           finalize(() => this.isLoading = false)
         ).subscribe({
-          next: () => this.router.navigate(['/books']),
+          next: () => this.router.navigate(['/books', this.bookId]),
           error: (err) => console.error(err)
         });
       } else {
@@ -257,6 +257,14 @@ export class BookFormComponent implements OnInit {
           error: (err) => console.error(err)
         });
       }
+    }
+  }
+
+  goBack(): void {
+    if (this.isEditMode && this.bookId) {
+      this.router.navigate(['/books', this.bookId]);
+    } else {
+      this.router.navigate(['/books']);
     }
   }
 }

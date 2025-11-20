@@ -33,13 +33,12 @@ export class App {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      if (event.url.startsWith('/authors')) {
-        // Hide button on author form pages
-        this.showAddButton = !event.url.includes('/authors/new') && !event.url.includes('/authors/edit');
+      // Show button only on exact list pages
+      if (event.url === '/authors') {
+        this.showAddButton = true;
         this.addRouterLink = '/authors/new';
-      } else if (event.url.startsWith('/books')) {
-        // Hide button on book form pages
-        this.showAddButton = !event.url.includes('/books/new') && !event.url.includes('/books/edit');
+      } else if (event.url === '/books') {
+        this.showAddButton = true;
         this.addRouterLink = '/books/new';
       } else {
         this.showAddButton = false;

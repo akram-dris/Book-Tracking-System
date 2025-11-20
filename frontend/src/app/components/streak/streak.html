@@ -1,4 +1,4 @@
-<div class="p-6 max-w-4xl mx-auto" *ngIf="!loading && streakData" @fadeIn>
+<div class="p-6 max-w-4xl mx-auto" *ngIf="(streakData$ | async) as streakData" @fadeIn>
   <!-- Celebration Banner -->
   <div class="alert alert-success mb-6" *ngIf="showCelebration" @celebrate>
     <ng-icon name="heroTrophy" size="24"></ng-icon>
@@ -8,10 +8,10 @@
   <!-- Main Streak Display -->
   <div class="card bg-gradient-to-br from-primary/10 to-secondary/10 p-8 mb-6">
     <div class="flex flex-col items-center justify-center text-center">
-      <div class="text-6xl mb-4" @celebrate>{{ getStreakEmoji() }}</div>
+      <div class="text-6xl mb-4" @celebrate>{{ getStreakEmoji(streakData) }}</div>
       <h2 class="text-4xl font-bold mb-2">{{ streakData.currentStreak }}</h2>
       <p class="text-lg text-base-content/70 mb-4">Day Streak</p>
-      <div class="badge badge-lg badge-primary">{{ getMotivationalMessage() }}</div>
+      <div class="badge badge-lg badge-primary">{{ getMotivationalMessage(streakData) }}</div>
     </div>
   </div>
 
@@ -71,7 +71,7 @@
 </div>
 
 <!-- Loading State -->
-<div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
+<div *ngIf="!(streakData$ | async)" class="flex flex-col items-center justify-center py-20">
   <span class="loading loading-spinner loading-lg text-primary"></span>
   <p class="mt-4 text-base-content/70">Loading streak data...</p>
 </div>

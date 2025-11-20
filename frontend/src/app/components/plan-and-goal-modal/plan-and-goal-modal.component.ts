@@ -18,7 +18,7 @@ export class PlanAndGoalModalComponent implements OnInit {
   @Input() bookId: number | null = null;
   @Input() initialStartedReadingDate: Date | undefined;
   @Input() initialReadingGoal: GetReadingGoal | null = null;
-  @Output() planAndGoalSaved = new EventEmitter<void>();
+  @Output() saved = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
 
   planAndGoalForm: FormGroup;
@@ -82,7 +82,7 @@ export class PlanAndGoalModalComponent implements OnInit {
             this.readingGoalService.updateReadingGoal(this.bookId as number, goalData).subscribe({
               next: () => {
                 this.isLoading = false;
-                this.planAndGoalSaved.emit();
+                this.saved.emit();
                 this.close.emit();
               },
               error: (err) => {
@@ -94,7 +94,7 @@ export class PlanAndGoalModalComponent implements OnInit {
             this.readingGoalService.addReadingGoal(goalData).subscribe({
               next: () => {
                 this.isLoading = false;
-                this.planAndGoalSaved.emit();
+                this.saved.emit();
                 this.close.emit();
               },
               error: (err) => {
