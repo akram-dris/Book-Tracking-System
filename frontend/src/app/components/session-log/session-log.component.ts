@@ -15,6 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { StreakService } from '../../services/streak.service';
 
 @Component({
   selector: 'app-session-log',
@@ -42,7 +43,8 @@ export class SessionLogComponent implements OnInit {
     private router: Router,
     private readingSessionService: ReadingSessionService,
     private bookService: BookService,
-    private readingGoalService: ReadingGoalService
+    private readingGoalService: ReadingGoalService,
+    private streakService: StreakService
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
@@ -177,6 +179,7 @@ export class SessionLogComponent implements OnInit {
         this.readingSessionService.updateReadingSession(this.existingSession.id, updateSession).subscribe({
           next: () => {
             this.isLoading = false;
+            this.streakService.forceReload();
             this.router.navigate(['/books', this.bookId]);
           },
           error: (err) => {
@@ -191,6 +194,7 @@ export class SessionLogComponent implements OnInit {
         this.readingSessionService.addReadingSession(newSession).subscribe({
           next: () => {
             this.isLoading = false;
+            this.streakService.forceReload();
             this.router.navigate(['/books', this.bookId]);
           },
           error: (err) => {
