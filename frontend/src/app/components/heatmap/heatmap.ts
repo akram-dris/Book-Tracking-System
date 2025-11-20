@@ -88,10 +88,7 @@ export class HeatmapComponent implements OnInit {
   legendItems: LegendItem[] = [
     { label: 'No activity', className: 'day-0', range: '0 pages' },
     { label: 'Light', className: 'day-1-10', range: '1-10 pages' },
-    { label: 'Moderate', className: 'day-11-25', range: '11-25 pages' },
-    { label: 'Active', className: 'day-26-50', range: '26-50 pages' },
-    { label: 'Very Active', className: 'day-51-100', range: '51-100 pages' },
-    { label: 'Super Active', className: 'day-100-plus', range: '100+ pages' }
+    { label: 'Active', className: 'day-10-plus', range: '10+ pages' }
   ];
 
   constructor(private heatmapService: HeatmapService) {
@@ -267,14 +264,8 @@ export class HeatmapComponent implements OnInit {
       return 'day-0';
     } else if (pagesRead > 0 && pagesRead <= 10) {
       return 'day-1-10';
-    } else if (pagesRead > 10 && pagesRead <= 25) {
-      return 'day-11-25';
-    } else if (pagesRead > 25 && pagesRead <= 50) {
-      return 'day-26-50';
-    } else if (pagesRead > 50 && pagesRead <= 100) {
-      return 'day-51-100';
     } else {
-      return 'day-100-plus';
+      return 'day-10-plus';
     }
   }
 
