@@ -1,4 +1,3 @@
-/* Enhanced Day Cell Styles */
 .day-cell {
   aspect-ratio: 1;
   display: flex;
@@ -65,20 +64,20 @@
 .day-cell.current-month:hover::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: calc(100% + 12px);
+  bottom: calc(100% + 8px); /* Reduced distance from the cell */
   left: 50%;
   transform: translateX(-50%) scale(0.95);
-  padding: 0.875rem 1rem;
+  padding: 0.5rem 0.75rem; /* Reduced padding */
   background: linear-gradient(135deg, hsl(var(--p)) 0%, hsl(var(--s)) 100%);
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.65rem; /* Reduced font size */
   font-weight: 600;
-  border-radius: 0.75rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  white-space: pre-line;
+  border-radius: 0.5rem; /* Reduced border-radius */
+  box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.4); /* Reduced shadow */
+  white-space: nowrap; /* Prevent line breaks */
   text-align: center;
   z-index: 50;
-  min-width: 160px;
+  min-width: unset; /* Allow width to be determined by content */
   animation: tooltipIn 0.2s ease-out forwards;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);

@@ -84,6 +84,7 @@ export class HeatmapComponent implements OnInit {
   totalDays: number = 0;
   currentStreak: number = 0;
   longestStreak: number = 0;
+  hoveredMonth: number | null = null;
   legendItems: LegendItem[] = [
     { label: 'No activity', className: 'day-0', range: '0 pages' },
     { label: 'Light', className: 'day-1-10', range: '1-10 pages' },
@@ -99,6 +100,14 @@ export class HeatmapComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadHeatmapData();
+  }
+
+  setHoveredMonth(index: number): void {
+    this.hoveredMonth = index;
+  }
+
+  clearHoveredMonth(): void {
+    this.hoveredMonth = null;
   }
 
   generateYears(): void {
@@ -271,8 +280,7 @@ export class HeatmapComponent implements OnInit {
 
   getTooltipText(day: CalendarDay): string {
     if (!day.isCurrentMonth) return '';
-    const dateStr = day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    return `${dateStr}\n${day.pagesRead} pages read`;
+    return day.pagesRead === 0 ? 'No pages' : `${day.pagesRead} pages`;
   }
 
   isToday(date: Date): boolean {

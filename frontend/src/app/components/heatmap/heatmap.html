@@ -94,7 +94,13 @@
 
   <!-- Calendar Grid with Modern Design -->
   <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
-    <div class="month-container group relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200 to-base-300/50 p-5 border border-base-300/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1" *ngFor="let month of calendarMonths">
+    <div 
+      class="month-container group relative rounded-2xl bg-gradient-to-br from-base-200 to-base-300/50 p-5 border border-base-300/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+      *ngFor="let month of calendarMonths; let i = index"
+      (mouseenter)="setHoveredMonth(i)"
+      (mouseleave)="clearHoveredMonth()"
+      [class.z-50]="hoveredMonth === i"
+    >
       <!-- Month Header with Icon -->
       <div class="flex items-center justify-center gap-2 mb-4">
         <ng-icon name="heroCalendar" size="18" class="text-primary opacity-70"></ng-icon>
