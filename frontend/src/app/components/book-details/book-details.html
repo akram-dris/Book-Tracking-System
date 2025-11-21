@@ -58,6 +58,20 @@
                   <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
                   Start Reading
                 </button>
+                <button
+                  *ngIf="book.status === ReadingStatus.Completed && (!book.summary || book.summary.trim().length === 0)"
+                  [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
+                  class="btn-sm w-full gap-2">
+                  <ng-icon name="heroPencil" size="1rem"></ng-icon>
+                  Summarize
+                </button>
+                <button
+                  *ngIf="book.status === ReadingStatus.Summarized || (book.status === ReadingStatus.Completed && book.summary && book.summary.trim().length > 0)"
+                  [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
+                  class="btn-sm w-full gap-2">
+                  <ng-icon name="heroDocumentText" size="1rem"></ng-icon>
+                  View Summary
+                </button>
               </div>
             </div>
           </div>
@@ -307,66 +321,48 @@
       <!-- Notes Tab -->
       <div *ngIf="activeTab === 'notes'">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-2xl font-bold text-base-content">Notes & Summary</h3>
-          <button (click)="openNotesEditor()" mat-raised-button color="primary" class="btn-sm gap-2">
-            <ng-icon [name]="book.summary ? 'heroPencil' : 'heroPlus'" size="1rem"></ng-icon>
-            {{ book.summary ? 'Edit Notes' : 'Add Notes' }}
-          </button>
+          <h3 class="text-2xl font-bold text-base-content">Session Notes</h3>
         </div>
 
-        <div *ngIf="!isEditingNotes">
-          <div *ngIf="book.summary; else noNotes"
-            class="prose max-w-none bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 transition-all duration-300"
-            [innerHTML]="book.summary">
+        <div *ngIf="getSessionsWithNotes().length > 0; else noSessionNotes"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div *ngFor="let session of getSessionsWithNotes()" (click)="openNoteDetailModal(session)"
+            class="group relative bg-base-100 rounded-xl overflow-hidden border-2 border-base-300 hover:border-primary hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+
+            <!-- Card Content -->
+            <div class="p-5">
+              <!-- Date Badge -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <ng-icon name="heroCalendar" size="1.25rem" class="text-primary"></ng-icon>
+                  <p class="font-bold text-sm group-hover:text-primary transition-colors duration-200">
+                    {{ session.date | date:'MMM d, y' }}
+                  </p>
+                </div>
+                <span class="badge badge-primary badge-sm">
+                  {{ calculatePageRange(session).start }}-{{ calculatePageRange(session).end }}
+                </span>
+              </div>
+
+              <!-- Note Preview (truncated with ellipsis) -->
+              <div
+                class="text-sm text-base-content/70 line-clamp-3 group-hover:text-base-content transition-colors duration-200"
+                [innerHTML]="session.summary">
+              </div>
+            </div>
           </div>
-          <ng-template #noNotes>
-            <div class="text-center py-16">
-              <div
-                class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-                <ng-icon name="heroDocumentText" size="3rem" class="text-primary"></ng-icon>
-              </div>
-              <p class="text-base-content/70 text-lg font-medium">No notes or summary available yet.</p>
-              <p class="text-base-content/40 text-sm mt-2">Click "Add Notes" to get started!</p>
-            </div>
-          </ng-template>
         </div>
 
-        <!-- Rich Text Editor -->
-        <div *ngIf="isEditingNotes"
-          class="bg-base-100 rounded-xl border-2 border-base-300 hover:border-primary/30 p-6 transition-all duration-300">
-          <form [formGroup]="notesForm" (ngSubmit)="saveNotes()">
-            <div class="mb-4">
-              <label class="label">
-                <span class="label-text font-semibold flex items-center gap-2">
-                  <ng-icon name="heroDocumentText" size="1.2rem" class="text-primary"></ng-icon>
-                  Note Content
-                </span>
-                <span class="label-text-alt text-error"
-                  *ngIf="notesForm.get('summary')?.invalid && notesForm.get('summary')?.touched">
-                  Note content is required
-                </span>
-              </label>
-              <div
-                class="bg-base-100 rounded-xl border-2 border-base-300 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200">
-                <quill-editor formControlName="summary" [modules]="quillConfig"
-                  [styles]="{'min-height': '300px', 'border': 'none'}"
-                  placeholder="Write your notes and summary here... You can use formatting options above.">
-                </quill-editor>
-              </div>
+        <ng-template #noSessionNotes>
+          <div class="text-center py-16">
+            <div
+              class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+              <ng-icon name="heroDocumentText" size="3rem" class="text-primary"></ng-icon>
             </div>
-
-            <div class="flex justify-end gap-3 mt-6">
-              <button mat-button type="button" class="hover:bg-base-300 hover:scale-105 transition-all duration-200"
-                (click)="cancelNotesEdit()">
-                Cancel
-              </button>
-              <button mat-raised-button color="primary" type="submit" class="gap-2" [disabled]="notesForm.invalid">
-                <ng-icon name="heroCheckCircle" size="1.2rem"></ng-icon>
-                Save Notes
-              </button>
-            </div>
-          </form>
-        </div>
+            <p class="text-base-content/70 text-lg font-medium">No session notes available yet.</p>
+            <p class="text-base-content/40 text-sm mt-2">Add notes when logging reading sessions!</p>
+          </div>
+        </ng-template>
       </div>
 
       <!-- Statistics Tab -->
@@ -423,3 +419,48 @@
 
 <app-reading-log-modal *ngIf="isReadingLogModalOpen" [bookId]="currentBookId!"
   (close)="closeReadingLogModal()"></app-reading-log-modal>
+
+<!-- Note Detail Modal -->
+<div *ngIf="isNoteDetailModalOpen && selectedSession"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+  (click)="closeNoteDetailModal()">
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+    (click)="$event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-primary to-primary/90 p-6 text-primary-content">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-2xl font-bold mb-2">Session Note</h3>
+          <div class="flex items-center gap-4 text-sm opacity-90">
+            <div class="flex items-center gap-2">
+              <ng-icon name="heroCalendar" size="1rem"></ng-icon>
+              <span>{{ selectedSession.date | date:'EEEE, MMMM d, y' }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
+              <span>Pages {{ getSelectedSessionPageRange()?.start }}-{{ getSelectedSessionPageRange()?.end }}</span>
+            </div>
+          </div>
+        </div>
+        <button mat-icon-button (click)="closeNoteDetailModal()"
+          class="!text-primary-content hover:bg-white/20 rounded-full transition-all duration-200">
+          <ng-icon name="heroXMark" size="1.5rem"></ng-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 overflow-y-auto max-h-[calc(80vh-180px)]">
+      <div class="prose max-w-none" [innerHTML]="selectedSession.summary"></div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="bg-base-300 p-4 flex justify-end border-t-2 border-base-300">
+      <button mat-raised-button color="primary" (click)="closeNoteDetailModal()" class="gap-2">
+        <ng-icon name="heroCheckCircle" size="1.2rem"></ng-icon>
+        Close
+      </button>
+    </div>
+  </div>
+</div>

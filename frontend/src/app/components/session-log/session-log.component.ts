@@ -36,6 +36,7 @@ export class SessionLogComponent implements OnInit {
   progress: number = 0;
   currentPagesRead: number = 0;
   existingSession: GetReadingSession | null = null;
+  allSessions: GetReadingSession[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -61,6 +62,10 @@ export class SessionLogComponent implements OnInit {
         this.loadBookData();
       }
     });
+
+    this.sessionForm.get('date')?.valueChanges.subscribe(date => {
+      this.checkForExistingSession(date);
+    });
   }
 
   loadBookData(): void {
@@ -82,25 +87,14 @@ export class SessionLogComponent implements OnInit {
 
       // Fetch all sessions to calculate current progress
       this.readingSessionService.getReadingSessionsForBook(this.bookId!).subscribe(sessions => {
+        this.allSessions = sessions;
         this.currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
         if (this.totalPages && this.totalPages > 0) {
           this.progress = (this.currentPage / this.totalPages) * 100;
         }
 
         // Check for existing session for today's date
-        const todayDate = this.formatDate(new Date());
-        this.existingSession = sessions.find(session => 
-          this.formatDate(new Date(session.date)) === todayDate
-        ) || null;
-
-        if (this.existingSession) {
-          this.sessionForm.patchValue({
-            pagesRead: 0,
-            date: new Date(this.existingSession.date),
-            summary: this.existingSession.summary || ''
-          });
-          this.currentPagesRead = this.existingSession.pagesRead;
-        }
+        this.checkForExistingSession(this.sessionForm.get('date')?.value);
       });
     });
 
@@ -108,6 +102,23 @@ export class SessionLogComponent implements OnInit {
     this.sessionForm.get('pagesRead')?.valueChanges.subscribe(value => {
       this.currentPagesRead = value || 0;
     });
+  }
+
+  checkForExistingSession(date: Date): void {
+    if (!date || !this.allSessions) return;
+
+    const dateStr = this.formatDate(new Date(date));
+    this.existingSession = this.allSessions.find(session =>
+      this.formatDate(new Date(session.date)) === dateStr
+    ) || null;
+
+    if (this.existingSession) {
+      this.sessionForm.patchValue({
+        pagesRead: this.existingSession.pagesRead,
+        summary: this.existingSession.summary || ''
+      }, { emitEvent: false });
+      this.currentPagesRead = this.existingSession.pagesRead;
+    }
   }
 
   private formatDate(date: Date): string {
@@ -173,7 +184,7 @@ export class SessionLogComponent implements OnInit {
         const updateSession: UpdateReadingSession = {
           bookId: sessionData.bookId,
           date: sessionData.date,
-          pagesRead: this.existingSession.pagesRead + (sessionData.pagesRead || 0), // Aggregate pages
+          pagesRead: sessionData.pagesRead, // Use the value from the form directly (it's the new total)
           summary: sessionData.summary // Use the summary from the form
         };
         this.readingSessionService.updateReadingSession(this.existingSession.id, updateSession).subscribe({

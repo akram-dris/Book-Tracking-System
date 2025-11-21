@@ -2,3 +2,12 @@
 .active-tab:hover {
     color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
 }
+
+/* Line clamp utility for note previews */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
+    overflow: hidden;
+}

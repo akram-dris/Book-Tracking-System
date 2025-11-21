@@ -7,6 +7,7 @@ import { AuthorFormComponent } from './components/author-form/author-form.compon
 
 import { AuthorDetailsComponent } from './components/author-details/author-details';
 import { BookDetailsComponent } from './components/book-details/book-details';
+import { BookSummaryComponent } from './components/book-summary/book-summary';
 import { TagManagementComponent } from './components/tag-management/tag-management.component';
 import { SessionLogComponent } from './components/session-log/session-log.component';
 import { HeatmapComponent } from './components/heatmap/heatmap';
@@ -16,6 +17,7 @@ export const routes: Routes = [
     { path: 'books', component: BookListComponent },
     { path: 'books/new', component: BookFormComponent },
     { path: 'books/:id/edit', component: BookFormComponent },
+    { path: 'books/:id/summary', component: BookSummaryComponent },
     { path: 'books/:id', component: BookDetailsComponent },
     { path: 'authors', component: AuthorListComponent },
     { path: 'authors/new', component: AuthorFormComponent },
