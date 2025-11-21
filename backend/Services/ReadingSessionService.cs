@@ -42,6 +42,17 @@ namespace BookTrackingSystem.Services
             {
                 // Aggregate pages if a session for this book and date already exists
                 existingSession.PagesRead += readingSessionDto.PagesRead;
+                if (!string.IsNullOrWhiteSpace(readingSessionDto.Summary))
+                {
+                    if (!string.IsNullOrWhiteSpace(existingSession.Summary))
+                    {
+                        existingSession.Summary += $"\n{readingSessionDto.Summary}";
+                    }
+                    else
+                    {
+                        existingSession.Summary = readingSessionDto.Summary;
+                    }
+                }
                 resultSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
             }
             else
