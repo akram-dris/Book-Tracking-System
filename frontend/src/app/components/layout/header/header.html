@@ -1,19 +1,97 @@
-<header class="sticky top-0 z-10 bg-base-100 border-b border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300 h-16">
+<header
+  class="sticky top-0 z-[100] bg-base-100 border-b border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300 h-16">
   <div class="flex items-center justify-between gap-4 px-6 h-full">
     <!-- Left: Search -->
     <div class="flex-1 max-w-xl">
-      <div class="relative group">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
-          <ng-icon name="heroMagnifyingGlass" size="1.25rem" class="text-primary group-focus-within:text-primary transition-colors"></ng-icon>
+      <div class="relative group w-full transition-all duration-300 focus-within:scale-[1.01]">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
+          <ng-icon name="heroMagnifyingGlass" size="1.2rem"
+            class="text-base-content/40 group-focus-within:text-primary transition-all duration-300 group-focus-within:scale-110"></ng-icon>
         </div>
-        <input 
-          type="text" 
-          placeholder="Search books, authors, tags..." 
-          class="input input-bordered w-full pl-10 pr-4 border-2 border-base-300 
-                 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none
-                 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10
-                 transition-all duration-300 bg-base-100 hover:bg-base-100"
-        />
+        <input #searchInput type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchInput($event)"
+          (focus)="onSearchFocus()" (click)="onSearchFocus()" placeholder="Search books, authors, tags..." class="w-full pl-11 pr-4 py-2.5 bg-base-200/50 border border-transparent rounded-full
+                 text-sm font-medium text-base-content placeholder:text-base-content/40
+                 focus:bg-base-100 focus:border-primary/30 focus:ring-4 focus:ring-primary/10 focus:outline-none
+                 hover:bg-base-200 hover:border-base-300
+                 transition-all duration-300 shadow-sm hover:shadow-md" />
+
+        <!-- Search Dropdown -->
+        <div #dropdown *ngIf="showDropdown && searchResults"
+          class="absolute top-full left-0 right-0 mt-2 bg-base-100 rounded-lg shadow-xl border border-base-300 overflow-hidden z-[1000] max-h-96 overflow-y-auto">
+
+          <!-- Books Section -->
+          <div *ngIf="searchResults.books.length > 0">
+            <div
+              class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between">
+              <span>Books</span>
+              <span class="badge badge-sm badge-primary">{{searchResults.books.length}}</span>
+            </div>
+            <ul>
+              <li *ngFor="let book of searchResults.books">
+                <button (click)="navigateToBook(book.id!)"
+                  class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
+                  <div class="w-8 h-10 bg-base-300 rounded overflow-hidden flex-shrink-0">
+                    <img *ngIf="book.imageUrl" [src]="rootUrl + book.imageUrl" class="w-full h-full object-cover"
+                      alt="Cover">
+                    <div *ngIf="!book.imageUrl"
+                      class="w-full h-full flex items-center justify-center text-base-content/30">
+                      <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="font-medium text-sm line-clamp-1">{{book.title}}</div>
+                    <div class="text-xs text-base-content/60 line-clamp-1">{{book.author?.name}}</div>
+                  </div>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Authors Section -->
+          <div *ngIf="searchResults.authors.length > 0">
+            <div
+              class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-300">
+              <span>Authors</span>
+              <span class="badge badge-sm badge-secondary">{{searchResults.authors.length}}</span>
+            </div>
+            <ul>
+              <li *ngFor="let author of searchResults.authors">
+                <button (click)="navigateToAuthor(author.id)"
+                  class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-base-300 overflow-hidden flex-shrink-0">
+                    <img *ngIf="author.imageUrl" [src]="rootUrl + author.imageUrl" class="w-full h-full object-cover"
+                      alt="Avatar">
+                    <div *ngIf="!author.imageUrl"
+                      class="w-full h-full flex items-center justify-center text-base-content/30">
+                      <ng-icon name="heroUser" size="1rem"></ng-icon>
+                    </div>
+                  </div>
+                  <div class="font-medium text-sm">{{author.name}}</div>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Tags Section -->
+          <div *ngIf="searchResults.tags.length > 0">
+            <div
+              class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-300">
+              <span>Tags</span>
+              <span class="badge badge-sm badge-accent">{{searchResults.tags.length}}</span>
+            </div>
+            <ul>
+              <li *ngFor="let tag of searchResults.tags">
+                <button (click)="navigateToTag(tag.id)"
+                  class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
+                  <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+                    <ng-icon name="heroTag" size="1rem"></ng-icon>
+                  </div>
+                  <div class="font-medium text-sm">{{tag.name}}</div>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -23,12 +101,10 @@
       <app-streak-indicator></app-streak-indicator>
 
       <!-- Theme Toggle -->
-      <button 
-        (click)="toggleTheme()" 
+      <button (click)="toggleTheme()"
         class="btn btn-ghost btn-circle btn-sm hover:bg-primary/10 hover:text-primary hover:scale-110 
                transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border-2 border-transparent hover:border-primary/20"
-        [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
-      >
+        [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
         <ng-icon [name]="isDarkMode ? 'heroSun' : 'heroMoon'" size="1.25rem"></ng-icon>
       </button>
     </div>

@@ -31,9 +31,9 @@ namespace BookTrackingSystem.Services
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null)
+        public async Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null, string? search = null)
         {
-            var books = await _bookRepository.GetBooksAsync(tagId);
+            var books = await _bookRepository.GetBooksAsync(tagId, search);
             return _mapper.Map<IEnumerable<BookDto>>(books);
         }
 

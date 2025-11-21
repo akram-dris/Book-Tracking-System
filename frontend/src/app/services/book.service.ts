@@ -16,10 +16,17 @@ export class BookService {
 
   constructor(private http: HttpClient) { }
 
-  getBooks(tagId: number | null = null): Observable<GetBook[]> {
+  getBooks(tagId: number | null = null, search: string | null = null): Observable<GetBook[]> {
     let url = this.apiUrl;
+    const params: string[] = [];
     if (tagId) {
-      url += `?tagId=${tagId}`;
+      params.push(`tagId=${tagId}`);
+    }
+    if (search) {
+      params.push(`search=${encodeURIComponent(search)}`);
+    }
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
     }
     return this.http.get<GetBook[]>(url);
   }
