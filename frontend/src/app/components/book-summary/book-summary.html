@@ -1,0 +1,93 @@
+<div *ngIf="book" class="min-h-screen bg-base-100">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <button mat-button (click)="goBack()"
+            class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+            <span>←</span>
+            <span class="font-medium">Back</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-base-200 rounded-2xl border-2 border-base-300 shadow-xl p-8">
+            <!-- Book Info (Horizontal Layout) -->
+            <div class="flex items-center justify-center gap-6 mb-8">
+                <!-- Book Cover (Small) -->
+                <div class="w-24 h-36 rounded-lg overflow-hidden border-2 border-base-300 shadow-lg flex-shrink-0">
+                    <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
+                        alt="{{ book.title }}" class="w-full h-full object-cover" />
+                </div>
+
+                <!-- Title and Author -->
+                <div class="text-left">
+                    <h1 class="text-3xl font-bold mb-1">{{ book.title }}</h1>
+                    <h2 class="text-xl text-base-content/70">by {{ book.author?.name }}</h2>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div>
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-base-content">Summarize</h3>
+                    <button *ngIf="!isEditMode && book.summary" (click)="toggleEditMode()"
+                        class="px-4 py-2 bg-primary text-primary-content rounded-xl hover:brightness-110 transition-all duration-200">
+                        Edit
+                    </button>
+                </div>
+
+                <!-- Last Update Date (View Mode) -->
+                <div *ngIf="!isEditMode && book.summary && getLastUpdateDate()" class="mb-4">
+                    <p class="text-sm text-base-content/60">
+                        Last updated: {{ getLastUpdateDate() | date:'MMMM d, y \'at\' h:mm a' }}
+                    </p>
+                </div>
+
+                <!-- View Mode -->
+                <div *ngIf="!isEditMode && book.summary"
+                    class="bg-base-100 rounded-xl p-6 border-2 border-base-300 whitespace-pre-wrap min-h-[400px]">
+                    {{ book.summary }}
+                </div>
+
+                <!-- Edit Mode -->
+                <div *ngIf="isEditMode">
+                    <form [formGroup]="summaryForm" (ngSubmit)="saveSummary()">
+                        <div class="mb-6">
+                            <textarea formControlName="summary"
+                                class="w-full min-h-[500px] p-6 bg-base-100 rounded-xl border-2 border-base-300 focus:border-primary focus:outline-none transition-all duration-200 resize-y"
+                                placeholder="Write your thoughts about this book... What did you learn? What were the key takeaways? Any memorable quotes or moments?"></textarea>
+                            <p *ngIf="summaryForm.get('summary')?.invalid && summaryForm.get('summary')?.touched"
+                                class="text-error text-sm mt-2">
+                                Please write a summary before saving
+                            </p>
+                        </div>
+
+                        <div class="flex justify-end gap-3">
+                            <button *ngIf="book.summary" type="button"
+                                class="px-6 py-2 rounded-xl border-2 border-base-300 hover:bg-base-300 transition-all duration-200"
+                                (click)="cancelEdit()">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                class="px-6 py-2 bg-primary text-primary-content rounded-xl hover:brightness-110 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                [disabled]="summaryForm.invalid">
+                                Save Summary
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Empty State (No Summary Yet) -->
+                <div *ngIf="!isEditMode && !book.summary" class="text-center py-16">
+                    <div
+                        class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl">
+                        ✍️
+                    </div>
+                    <p class="text-base-content/70 text-lg font-medium">No summary written yet.</p>
+                    <p class="text-base-content/40 text-sm mt-2">Click "Edit" to start writing!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -58,6 +58,20 @@
                   <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
                   Start Reading
                 </button>
+                <button
+                  *ngIf="book.status === ReadingStatus.Completed && (!book.summary || book.summary.trim().length === 0)"
+                  [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
+                  class="btn-sm w-full gap-2">
+                  <ng-icon name="heroPencil" size="1rem"></ng-icon>
+                  Summarize
+                </button>
+                <button
+                  *ngIf="book.status === ReadingStatus.Summarized || (book.status === ReadingStatus.Completed && book.summary && book.summary.trim().length > 0)"
+                  [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
+                  class="btn-sm w-full gap-2">
+                  <ng-icon name="heroDocumentText" size="1rem"></ng-icon>
+                  View Summary
+                </button>
               </div>
             </div>
           </div>

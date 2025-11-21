@@ -1,0 +1,7 @@
+/* Sticky book cover on larger screens */
+@media (min-width: 1024px) {
+    .sticky {
+        position: sticky;
+        top: 1.5rem;
+    }
+}
