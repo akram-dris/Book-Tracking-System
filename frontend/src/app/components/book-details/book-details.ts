@@ -17,10 +17,10 @@ import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { MatButtonModule } from '@angular/material/button';
-import { 
-  heroArrowLeft, 
-  heroPencil, 
-  heroTrash, 
+import {
+  heroArrowLeft,
+  heroPencil,
+  heroTrash,
   heroBookOpen,
   heroChartBar,
   heroDocumentText,
@@ -28,7 +28,8 @@ import {
   heroPlus,
   heroCalendar,
   heroCheckCircle,
-  heroTag
+  heroTag,
+  heroXMark
 } from '@ng-icons/heroicons/outline';
 
 type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
@@ -37,11 +38,11 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
   selector: 'app-book-details',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
-    ReactiveFormsModule, 
-    FormsModule, 
-    PlanAndGoalModalComponent, 
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
+    PlanAndGoalModalComponent,
     ReadingLogModalComponent,
     QuillModule,
     NgIconComponent,
@@ -50,10 +51,10 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
   templateUrl: './book-details.html',
   styleUrls: ['./book-details.css'],
   viewProviders: [
-    provideIcons({ 
-      heroArrowLeft, 
-      heroPencil, 
-      heroTrash, 
+    provideIcons({
+      heroArrowLeft,
+      heroPencil,
+      heroTrash,
       heroBookOpen,
       heroChartBar,
       heroDocumentText,
@@ -61,7 +62,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
       heroPlus,
       heroCalendar,
       heroCheckCircle,
-      heroTag
+      heroTag,
+      heroXMark
     })
   ]
 })
@@ -79,25 +81,29 @@ export class BookDetailsComponent implements OnInit {
   isSummaryMode: boolean = false;
   isEditingSummary: boolean = false;
   summaryForm: FormGroup;
-  
+
   // New properties for tabs
   activeTab: TabType = 'overview';
-  
+
   // Notes editor
   isEditingNotes: boolean = false;
   notesForm: FormGroup;
-  
+
   quillConfig = {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
       ['blockquote', 'code-block'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
       [{ 'header': [1, 2, 3, false] }],
       [{ 'color': [] }, { 'background': [] }],
       ['link'],
       ['clean']
     ]
   };
+
+  // Note detail modal
+  selectedSession: GetReadingSession | null = null;
+  isNoteDetailModalOpen: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -202,13 +208,13 @@ export class BookDetailsComponent implements OnInit {
     if (this.summaryForm.valid && this.book) {
       const summaryText = this.summaryForm.get('summary')?.value;
       const startedDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : undefined;
-      
+
       // Update UI optimistically
       this.book.status = ReadingStatus.Summarized;
       this.book.completedDate = new Date();
       this.book.summary = summaryText;
       this.isEditingSummary = false;
-      
+
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
         console.log('BookDetailsComponent saveSummary - Book summary updated');
       });
@@ -226,7 +232,7 @@ export class BookDetailsComponent implements OnInit {
       // Update UI optimistically
       this.book.status = ReadingStatus.CurrentlyReading;
       this.book.startedReadingDate = new Date();
-      
+
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(() => {
         console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
         this.router.navigate(['/books', this.book!.id, 'set-goal']);
@@ -250,12 +256,12 @@ export class BookDetailsComponent implements OnInit {
 
   handlePlanAndGoalSaved(): void {
     console.log('BookDetailsComponent handlePlanAndGoalSaved - Plan and Goal saved, refreshing data for bookId:', this.book?.id);
-    
+
     // Update book status optimistically for immediate UI feedback
     if (this.book) {
       this.book.status = ReadingStatus.Planning;
     }
-    
+
     this.closePlanAndGoalModal();
     this.refreshBookData(); // Refresh all book-related data
   }
@@ -269,11 +275,11 @@ export class BookDetailsComponent implements OnInit {
     console.log('BookDetailsComponent startReadingFromPlanning - book:', this.book);
     if (this.book) {
       const startDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : new Date();
-      
+
       // Update UI optimistically
       this.book.status = ReadingStatus.CurrentlyReading;
       this.book.startedReadingDate = startDate;
-      
+
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(() => {
         console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
         // No navigation needed, stay on the same page
@@ -289,7 +295,7 @@ export class BookDetailsComponent implements OnInit {
       this.book.completedDate = new Date();
       this.isSummaryMode = true;
       this.isEditingSummary = true;
-      
+
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, this.book.startedReadingDate, new Date()).subscribe(() => {
         console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
       });
@@ -393,7 +399,7 @@ export class BookDetailsComponent implements OnInit {
   saveNotes(): void {
     if (this.notesForm.valid && this.book) {
       const summaryText = this.notesForm.get('summary')?.value;
-      
+
       // Update book summary
       this.bookService.updateBookSummary(this.book.id, summaryText).subscribe(() => {
         this.book!.summary = summaryText;
@@ -401,5 +407,46 @@ export class BookDetailsComponent implements OnInit {
         console.log('Book notes updated successfully');
       });
     }
+  }
+
+  // Session notes methods
+  getSessionsWithNotes(): GetReadingSession[] {
+    return this.readingSessions
+      .filter(session => session.summary && session.summary.trim().length > 0)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  calculatePageRange(session: GetReadingSession): { start: number; end: number } {
+    const sortedSessions = [...this.readingSessions].sort((a, b) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    const sessionIndex = sortedSessions.findIndex(s => s.id === session.id);
+
+    // Calculate cumulative pages up to this session
+    let pagesBeforeSession = 0;
+    for (let i = 0; i < sessionIndex; i++) {
+      pagesBeforeSession += sortedSessions[i].pagesRead;
+    }
+
+    const startPage = pagesBeforeSession + 1;
+    const endPage = pagesBeforeSession + session.pagesRead;
+
+    return { start: startPage, end: endPage };
+  }
+
+  openNoteDetailModal(session: GetReadingSession): void {
+    this.selectedSession = session;
+    this.isNoteDetailModalOpen = true;
+  }
+
+  closeNoteDetailModal(): void {
+    this.isNoteDetailModalOpen = false;
+    this.selectedSession = null;
+  }
+
+  getSelectedSessionPageRange(): { start: number; end: number } | null {
+    if (!this.selectedSession) return null;
+    return this.calculatePageRange(this.selectedSession);
   }
 }
