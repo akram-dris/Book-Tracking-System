@@ -40,6 +40,9 @@ namespace BookTrackingSystem.Services
 
             if (existingSession != null)
             {
+                // Validate before aggregating
+                await ValidateTotalPagesLimit(readingSessionDto.BookId, existingSession.PagesRead + readingSessionDto.PagesRead, existingSession.Id);
+
                 // Aggregate pages if a session for this book and date already exists
                 existingSession.PagesRead += readingSessionDto.PagesRead;
                 if (!string.IsNullOrWhiteSpace(readingSessionDto.Summary))
@@ -57,6 +60,9 @@ namespace BookTrackingSystem.Services
             }
             else
             {
+                // Validate before creating
+                await ValidateTotalPagesLimit(readingSessionDto.BookId, readingSessionDto.PagesRead);
+
                 // Create a new session if none exists for this book and date
                 var readingSession = _mapper.Map<ReadingSession>(readingSessionDto);
                 var newReadingSession = await _readingSessionRepository.AddReadingSessionAsync(readingSession);
@@ -84,6 +90,9 @@ namespace BookTrackingSystem.Services
                     throw new InvalidOperationException("Another reading session for this book on this date already exists.");
                 }
             }
+
+            // Validate total pages
+            await ValidateTotalPagesLimit(readingSessionDto.BookId, readingSessionDto.PagesRead, id);
 
             _mapper.Map(readingSessionDto, existingSession);
             var updatedReadingSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
@@ -116,10 +125,23 @@ namespace BookTrackingSystem.Services
                 // Mark as completed
                 await _bookService.UpdateBookStatusAsync(bookId, Models.Enums.ReadingStatus.Completed, book.StartedReadingDate, DateTime.UtcNow);
             }
-            else if (totalPagesRead < book.TotalPages && book.Status == Models.Enums.ReadingStatus.Completed)
             {
                 // Revert from completed if pages read drop below total pages
                 await _bookService.UpdateBookStatusAsync(bookId, Models.Enums.ReadingStatus.CurrentlyReading, book.StartedReadingDate, null);
+            }
+        }
+
+        private async Task ValidateTotalPagesLimit(int bookId, int newSessionPages, int? sessionIdToExclude = null)
+        {
+            var book = await _bookRepository.GetBookAsync(bookId);
+            if (book == null) throw new KeyNotFoundException($"Book with ID {bookId} not found.");
+
+            var allSessions = await _readingSessionRepository.GetReadingSessionsForBookAsync(bookId);
+            var otherSessionsTotal = allSessions.Where(s => s.Id != sessionIdToExclude).Sum(s => s.PagesRead);
+
+            if (otherSessionsTotal + newSessionPages > book.TotalPages)
+            {
+                throw new InvalidOperationException($"Total pages read cannot exceed book total pages ({book.TotalPages}). Remaining pages: {book.TotalPages - otherSessionsTotal}.");
             }
         }
     }

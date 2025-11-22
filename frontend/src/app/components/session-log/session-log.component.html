@@ -1,7 +1,8 @@
 <div class="bg-base-100">
   <!-- Back Button -->
   <div class="mb-6">
-    <button mat-button type="button" (click)="onCancel()" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+    <button mat-button type="button" (click)="onCancel()"
+      class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
       <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
       <span class="font-medium">Back</span>
     </button>
@@ -9,245 +10,243 @@
 
   <div class="container mx-auto max-w-7xl pb-6">
     <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
-      
+
       <!-- Main Content Area -->
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          
-          <!-- Left Column: Progress & Goals -->
-          <div class="xl:col-span-2 flex flex-col gap-6">
-            
-            <!-- Single Progress Card -->
-            <div class="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-4 border-2 border-primary/20 shadow-lg">
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">📚</span>
-                  <h4 class="font-bold text-sm text-base-content">Reading Progress</h4>
-                </div>
-                <div class="text-right flex items-center gap-2">
-                  <div class="text-2xl font-bold text-primary">
-                    {{ totalPages && totalPages > 0 ? ((currentPage + currentPagesRead) / totalPages * 100 | number:'1.0-0') : progress | number:'1.0-0' }}%
-                  </div>
-                  <div *ngIf="currentPagesRead > 0" class="text-sm font-semibold text-success">
-                    (+{{ totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100 | number:'1.0-1') : 0 }}%)
-                  </div>
-                </div>
+
+        <!-- Left Column: Progress & Goals -->
+        <div class="xl:col-span-2 flex flex-col gap-6">
+
+          <!-- Single Progress Card -->
+          <div
+            class="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-4 border-2 border-primary/20 shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">📚</span>
+                <h4 class="font-bold text-sm text-base-content">Reading Progress</h4>
               </div>
-              
-              <!-- Single Progress Bar with Two Segments -->
-              <div class="relative w-full bg-base-300 rounded-full h-4 overflow-hidden border border-base-300">
-                <!-- Current Progress (Blue) -->
-                <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
-                     [style.width.%]="progress">
+              <div class="text-right flex items-center gap-2">
+                <div class="text-2xl font-bold text-primary">
+                  {{ totalPages && totalPages > 0 ? ((currentPage + currentPagesRead) / totalPages * 100 |
+                  number:'1.0-0') : progress | number:'1.0-0' }}%
                 </div>
-                <!-- New Pages Added (Green) -->
-                <div class="absolute top-0 h-full bg-gradient-to-r from-success to-accent transition-all duration-500"
-                     [style.left.%]="progress"
-                     [style.width.%]="totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100) : 0">
-                </div>
-              </div>
-              
-              <!-- Stats Row -->
-              <div class="grid grid-cols-3 gap-2 mt-2 text-xs">
-                <div class="bg-base-100 rounded-lg p-2 text-center border border-base-300">
-                  <div class="text-primary font-bold">{{ currentPage }}</div>
-                  <div class="text-base-content/50">Current</div>
-                </div>
-                <div class="bg-base-100 rounded-lg p-2 text-center border border-success/30"
-                     [class.border-base-300]="currentPagesRead === 0">
-                  <div class="font-bold" [class.text-success]="currentPagesRead > 0">
-                    {{ currentPage + currentPagesRead }}
-                  </div>
-                  <div class="text-base-content/50">After</div>
-                </div>
-                <div class="bg-base-100 rounded-lg p-2 text-center border border-base-300">
-                  <div class="text-secondary font-bold">{{ totalPages! - (currentPage + currentPagesRead) }}</div>
-                  <div class="text-base-content/50">Remaining</div>
+                <div *ngIf="currentPagesRead > 0" class="text-sm font-semibold text-success">
+                  (+{{ totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100 | number:'1.0-1') : 0 }}%)
                 </div>
               </div>
             </div>
 
-            <!-- Daily Goals Section - Compact -->
-            <div *ngIf="readingGoal" class="bg-base-200 rounded-xl p-4 border-2 border-base-300">
-              <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
-                <span class="text-lg">🎯</span>
-                <span class="text-base-content">Daily Goals</span>
-              </h4>
-              
-              <div class="flex flex-col gap-3">
-                <!-- Low Goal -->
-                <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
-                     [class.border-accent]="currentPagesRead >= readingGoal.lowGoal"
-                     [class.bg-accent/5]="currentPagesRead >= readingGoal.lowGoal">
-                  <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <span class="text-base flex-shrink-0">🌱</span>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-bold text-accent">
-                        Low
-                      </div>
-                      <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
-                        <div class="h-full rounded-full transition-all duration-500"
-                             [class.bg-accent]="currentPagesRead >= readingGoal.lowGoal"
-                             [class.bg-base-content/20]="currentPagesRead < readingGoal.lowGoal"
-                             [style.width.%]="(currentPagesRead / readingGoal.lowGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.lowGoal * 100)">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1 ml-2">
-                    <div class="text-right">
-                      <div class="text-sm font-bold text-accent">
-                        {{ readingGoal.lowGoal }}
-                      </div>
-                    </div>
-                    <ng-icon *ngIf="currentPagesRead >= readingGoal.lowGoal" 
-                             name="heroCheckCircle" 
-                             size="1rem"
-                             class="text-accent"></ng-icon>
-                  </div>
-                </div>
+            <!-- Single Progress Bar with Two Segments -->
+            <div class="relative w-full bg-base-300 rounded-full h-4 overflow-hidden border border-base-300">
+              <!-- Current Progress (Blue) -->
+              <div
+                class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
+                [style.width.%]="progress">
+              </div>
+              <!-- New Pages Added (Green) -->
+              <div class="absolute top-0 h-full bg-gradient-to-r from-success to-accent transition-all duration-500"
+                [style.left.%]="progress"
+                [style.width.%]="totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100) : 0">
+              </div>
+            </div>
 
-                <!-- Medium Goal -->
-                <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
-                     [class.border-info]="currentPagesRead >= readingGoal.mediumGoal"
-                     [class.bg-info/5]="currentPagesRead >= readingGoal.mediumGoal">
-                  <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <span class="text-base flex-shrink-0">🔥</span>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-bold text-info">
-                        Medium
-                      </div>
-                      <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
-                        <div class="h-full rounded-full transition-all duration-500"
-                             [class.bg-info]="currentPagesRead >= readingGoal.mediumGoal"
-                             [class.bg-base-content/20]="currentPagesRead < readingGoal.mediumGoal"
-                             [style.width.%]="(currentPagesRead / readingGoal.mediumGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.mediumGoal * 100)">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1 ml-2">
-                    <div class="text-right">
-                      <div class="text-sm font-bold text-info">
-                        {{ readingGoal.mediumGoal }}
-                      </div>
-                    </div>
-                    <ng-icon *ngIf="currentPagesRead >= readingGoal.mediumGoal" 
-                             name="heroCheckCircle" 
-                             size="1rem"
-                             class="text-info"></ng-icon>
-                  </div>
+            <!-- Stats Row -->
+            <div class="grid grid-cols-3 gap-2 mt-2 text-xs">
+              <div class="bg-base-100 rounded-lg p-2 text-center border border-base-300">
+                <div class="text-primary font-bold">{{ currentPage }}</div>
+                <div class="text-base-content/50">Current</div>
+              </div>
+              <div class="bg-base-100 rounded-lg p-2 text-center border border-success/30"
+                [class.border-base-300]="currentPagesRead === 0">
+                <div class="font-bold" [class.text-success]="currentPagesRead > 0">
+                  {{ currentPage + currentPagesRead }}
                 </div>
-
-                <!-- High Goal -->
-                <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
-                     [class.border-error]="currentPagesRead >= readingGoal.highGoal"
-                     [class.bg-error/5]="currentPagesRead >= readingGoal.highGoal">
-                  <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <span class="text-base flex-shrink-0">🚀</span>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-bold text-error">
-                        High
-                      </div>
-                      <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
-                        <div class="h-full rounded-full transition-all duration-500"
-                             [class.bg-error]="currentPagesRead >= readingGoal.highGoal"
-                             [class.bg-base-content/20]="currentPagesRead < readingGoal.highGoal"
-                             [style.width.%]="(currentPagesRead / readingGoal.highGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.highGoal * 100)">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1 ml-2">
-                    <div class="text-right">
-                      <div class="text-sm font-bold text-error">
-                        {{ readingGoal.highGoal }}
-                      </div>
-                    </div>
-                    <ng-icon *ngIf="currentPagesRead >= readingGoal.highGoal" 
-                             name="heroCheckCircle" 
-                             size="1rem"
-                             class="text-error"></ng-icon>
-                  </div>
-                </div>
+                <div class="text-base-content/50">After</div>
+              </div>
+              <div class="bg-base-100 rounded-lg p-2 text-center border border-base-300">
+                <div class="text-secondary font-bold">{{ totalPages! - (currentPage + currentPagesRead) }}</div>
+                <div class="text-base-content/50">Remaining</div>
               </div>
             </div>
           </div>
 
-          <!-- Right Column: Form Inputs -->
-          <div class="flex flex-col gap-4">
-            <!-- Date Input -->
-            <div class="form-control">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-xs font-semibold flex items-center gap-1">
-                  <ng-icon name="heroCalendar" size="0.875rem" class="text-primary"></ng-icon>
-                  Date <span class="text-error">*</span>
-                </span>
-              </label>
-              <mat-form-field appearance="outline" class="w-full mat-form-field-sm">
-                <input matInput [matDatepicker]="picker" formControlName="date" placeholder="Select date">
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-              </mat-form-field>
-              <label *ngIf="sessionForm.get('date')?.invalid && sessionForm.get('date')?.touched" class="label py-0">
-                <span class="label-text-alt text-error">Date is required</span>
-              </label>
-            </div>
+          <!-- Daily Goals Section - Compact -->
+          <div *ngIf="readingGoal" class="bg-base-200 rounded-xl p-4 border-2 border-base-300">
+            <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
+              <span class="text-lg">🎯</span>
+              <span class="text-base-content">Daily Goals</span>
+            </h4>
 
-            <!-- Pages Read Input -->
-            <div class="form-control">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-xs font-semibold flex items-center gap-1">
-                  <ng-icon name="heroBookOpen" size="0.875rem" class="text-primary"></ng-icon>
-                  Pages Read Today <span class="text-error">*</span>
-                </span>
-              </label>
-              <input type="number" 
-                     formControlName="pagesRead" 
-                     class="input input-bordered w-full text-3xl font-bold text-center border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-                     [class.border-accent]="readingGoal && currentPagesRead >= readingGoal.lowGoal && currentPagesRead < readingGoal.mediumGoal"
-                     [class.text-accent]="readingGoal && currentPagesRead >= readingGoal.lowGoal && currentPagesRead < readingGoal.mediumGoal"
-                     [class.border-info]="readingGoal && currentPagesRead >= readingGoal.mediumGoal && currentPagesRead < readingGoal.highGoal"
-                     [class.text-info]="readingGoal && currentPagesRead >= readingGoal.mediumGoal && currentPagesRead < readingGoal.highGoal"
-                     [class.border-error]="readingGoal && currentPagesRead >= readingGoal.highGoal"
-                     [class.text-error]="readingGoal && currentPagesRead >= readingGoal.highGoal"
-                     placeholder="0" 
-                     min="1" />
-              <label *ngIf="sessionForm.get('pagesRead')?.invalid && sessionForm.get('pagesRead')?.touched" class="label py-0">
-                <span class="label-text-alt text-error">
-                  <span *ngIf="sessionForm.get('pagesRead')?.errors?.['required']">Pages read is required</span>
-                  <span *ngIf="sessionForm.get('pagesRead')?.errors?.['min']">Must be at least 1 page</span>
-                </span>
-              </label>
-            </div>
+            <div class="flex flex-col gap-3">
+              <!-- Low Goal -->
+              <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
+                [class.border-accent]="currentPagesRead >= readingGoal.lowGoal"
+                [class.bg-accent/5]="currentPagesRead >= readingGoal.lowGoal">
+                <div class="flex items-center gap-2 flex-1 min-w-0">
+                  <span class="text-base flex-shrink-0">🌱</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-accent">
+                      Low
+                    </div>
+                    <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500"
+                        [class.bg-accent]="currentPagesRead >= readingGoal.lowGoal"
+                        [class.bg-base-content/20]="currentPagesRead < readingGoal.lowGoal"
+                        [style.width.%]="(currentPagesRead / readingGoal.lowGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.lowGoal * 100)">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 ml-2">
+                  <div class="text-right">
+                    <div class="text-sm font-bold text-accent">
+                      {{ readingGoal.lowGoal }}
+                    </div>
+                  </div>
+                  <ng-icon *ngIf="currentPagesRead >= readingGoal.lowGoal" name="heroCheckCircle" size="1rem"
+                    class="text-accent"></ng-icon>
+                </div>
+              </div>
 
-            <!-- Notes/Summary -->
-            <div class="form-control flex-1">
-              <label class="label py-0 pb-1">
-                <span class="label-text text-xs font-semibold flex items-center gap-1">
-                  <ng-icon name="heroDocumentText" size="0.875rem" class="text-primary"></ng-icon>
-                  Notes / Summary
-                </span>
-              </label>
-              <textarea formControlName="summary" 
-                        class="textarea textarea-bordered textarea-sm w-full h-32 border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none"
-                        placeholder="What did you read about? Any thoughts or reflections..."></textarea>
-            </div>
+              <!-- Medium Goal -->
+              <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
+                [class.border-info]="currentPagesRead >= readingGoal.mediumGoal"
+                [class.bg-info/5]="currentPagesRead >= readingGoal.mediumGoal">
+                <div class="flex items-center gap-2 flex-1 min-w-0">
+                  <span class="text-base flex-shrink-0">🔥</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-info">
+                      Medium
+                    </div>
+                    <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500"
+                        [class.bg-info]="currentPagesRead >= readingGoal.mediumGoal"
+                        [class.bg-base-content/20]="currentPagesRead < readingGoal.mediumGoal"
+                        [style.width.%]="(currentPagesRead / readingGoal.mediumGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.mediumGoal * 100)">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 ml-2">
+                  <div class="text-right">
+                    <div class="text-sm font-bold text-info">
+                      {{ readingGoal.mediumGoal }}
+                    </div>
+                  </div>
+                  <ng-icon *ngIf="currentPagesRead >= readingGoal.mediumGoal" name="heroCheckCircle" size="1rem"
+                    class="text-info"></ng-icon>
+                </div>
+              </div>
 
-            <!-- Action Buttons -->
-            <div class="flex items-center justify-end gap-3">
-              <button mat-button type="button" class="hover:bg-base-300 hover:scale-105 transition-all duration-200" (click)="onCancel()">
-                Cancel
-              </button>
-              <button mat-raised-button color="primary" type="submit" 
-                      class="px-8 gap-2" 
-                      [disabled]="sessionForm.invalid || isLoading">
-                <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
-                <ng-icon *ngIf="!isLoading" name="heroCheckCircle" size="1.25rem"></ng-icon>
-                <span>{{ existingSession ? 'Update Session' : 'Save Session' }}</span>
-              </button>
+              <!-- High Goal -->
+              <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
+                [class.border-error]="currentPagesRead >= readingGoal.highGoal"
+                [class.bg-error/5]="currentPagesRead >= readingGoal.highGoal">
+                <div class="flex items-center gap-2 flex-1 min-w-0">
+                  <span class="text-base flex-shrink-0">🚀</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-error">
+                      High
+                    </div>
+                    <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500"
+                        [class.bg-error]="currentPagesRead >= readingGoal.highGoal"
+                        [class.bg-base-content/20]="currentPagesRead < readingGoal.highGoal"
+                        [style.width.%]="(currentPagesRead / readingGoal.highGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.highGoal * 100)">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 ml-2">
+                  <div class="text-right">
+                    <div class="text-sm font-bold text-error">
+                      {{ readingGoal.highGoal }}
+                    </div>
+                  </div>
+                  <ng-icon *ngIf="currentPagesRead >= readingGoal.highGoal" name="heroCheckCircle" size="1rem"
+                    class="text-error"></ng-icon>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Right Column: Form Inputs -->
+        <div class="flex flex-col gap-4">
+          <!-- Date Input -->
+          <div class="form-control">
+            <label class="label py-0 pb-1">
+              <span class="label-text text-xs font-semibold flex items-center gap-1">
+                <ng-icon name="heroCalendar" size="0.875rem" class="text-primary"></ng-icon>
+                Date <span class="text-error">*</span>
+              </span>
+            </label>
+            <!-- Date -->
+            <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+              <mat-label>Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="date" [max]="maxDate" required>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="sessionForm.get('date')?.hasError('required')">
+                Date is required
+              </mat-error>
+              <mat-error *ngIf="sessionForm.get('date')?.hasError('matDatepickerMax')">
+                Date cannot be in the future
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Pages Read Input -->
+          <div class="form-control">
+            <label class="label py-0 pb-1">
+              <span class="label-text text-xs font-semibold flex items-center gap-1">
+                <ng-icon name="heroBookOpen" size="0.875rem" class="text-primary"></ng-icon>
+                Pages Read Today <span class="text-error">*</span>
+              </span>
+            </label>
+            <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+              <mat-label>Pages Read</mat-label>
+              <input matInput type="number" formControlName="pagesRead" placeholder="e.g., 25" min="1" required>
+              <mat-error *ngIf="sessionForm.get('pagesRead')?.hasError('required')">
+                Pages read is required
+              </mat-error>
+              <mat-error *ngIf="sessionForm.get('pagesRead')?.hasError('min')">
+                Must read at least 1 page
+              </mat-error>
+              <mat-error *ngIf="sessionForm.get('pagesRead')?.hasError('max')">
+                Cannot exceed remaining pages
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Notes/Summary -->
+          <div class="form-control flex-1">
+            <label class="label py-0 pb-1">
+              <span class="label-text text-xs font-semibold flex items-center gap-1">
+                <ng-icon name="heroDocumentText" size="0.875rem" class="text-primary"></ng-icon>
+                Notes / Summary
+              </span>
+            </label>
+            <textarea formControlName="summary"
+              class="textarea textarea-bordered textarea-sm w-full h-32 border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none"
+              placeholder="What did you read about? Any thoughts or reflections..."></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center justify-end gap-3">
+            <button mat-button type="button" class="hover:bg-base-300 hover:scale-105 transition-all duration-200"
+              (click)="onCancel()">
+              Cancel
+            </button>
+            <button mat-raised-button color="primary" type="submit" class="px-8 gap-2"
+              [disabled]="sessionForm.invalid || isLoading">
+              <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
+              <ng-icon *ngIf="!isLoading" name="heroCheckCircle" size="1.25rem"></ng-icon>
+              <span>{{ existingSession ? 'Update Session' : 'Save Session' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 </div>

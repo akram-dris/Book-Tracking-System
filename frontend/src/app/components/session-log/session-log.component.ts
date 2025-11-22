@@ -29,6 +29,7 @@ export class SessionLogComponent implements OnInit {
   bookId: number | null = null;
   readingGoal: GetReadingGoal | null = null;
   totalPages: number | null = null;
+  maxDate = new Date();
 
   sessionForm: FormGroup;
   isLoading = false;
@@ -95,6 +96,7 @@ export class SessionLogComponent implements OnInit {
 
         // Check for existing session for today's date
         this.checkForExistingSession(this.sessionForm.get('date')?.value);
+        this.updatePagesReadValidator();
       });
     });
 
@@ -102,6 +104,21 @@ export class SessionLogComponent implements OnInit {
     this.sessionForm.get('pagesRead')?.valueChanges.subscribe(value => {
       this.currentPagesRead = value || 0;
     });
+  }
+
+  updatePagesReadValidator(): void {
+    if (this.totalPages) {
+      const remainingPages = this.totalPages - this.currentPage;
+      // If editing, add back the current session's pages to the allowance
+      const maxPages = this.existingSession ? remainingPages + this.existingSession.pagesRead : remainingPages;
+
+      this.sessionForm.get('pagesRead')?.setValidators([
+        Validators.required,
+        Validators.min(1),
+        Validators.max(maxPages)
+      ]);
+      this.sessionForm.get('pagesRead')?.updateValueAndValidity({ emitEvent: false });
+    }
   }
 
   checkForExistingSession(date: Date): void {
