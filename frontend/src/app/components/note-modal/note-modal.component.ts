@@ -5,9 +5,9 @@ import { GetReadingSession } from '../../models/get-reading-session.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
-  heroDocumentText, 
-  heroBookOpen, 
+import {
+  heroDocumentText,
+  heroBookOpen,
   heroHashtag,
   heroXMark,
   heroCheckCircle
@@ -20,9 +20,9 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [CommonModule, ReactiveFormsModule, QuillModule, NgIconComponent, MatButtonModule],
   templateUrl: './note-modal.component.html',
   styleUrls: ['./note-modal.component.css'],
-  viewProviders: [provideIcons({ 
-    heroDocumentText, 
-    heroBookOpen, 
+  viewProviders: [provideIcons({
+    heroDocumentText,
+    heroBookOpen,
     heroHashtag,
     heroXMark,
     heroCheckCircle
@@ -43,7 +43,7 @@ export class NoteModalComponent implements OnInit {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
       ['blockquote', 'code-block'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
       [{ 'header': [1, 2, 3, false] }],
       ['link'],
       ['clean']
@@ -52,7 +52,7 @@ export class NoteModalComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {
     this.noteForm = this.fb.group({
-      summary: ['', Validators.required],
+      summary: ['', [Validators.required, Validators.maxLength(5000)]],
       pageNumber: [null],
       noteType: ['general']
     });
