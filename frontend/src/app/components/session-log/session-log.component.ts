@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { StreakService } from '../../services/streak.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-session-log',
@@ -46,7 +47,8 @@ export class SessionLogComponent implements OnInit {
     private readingSessionService: ReadingSessionService,
     private bookService: BookService,
     private readingGoalService: ReadingGoalService,
-    private streakService: StreakService
+    private streakService: StreakService,
+    private notificationService: NotificationService
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
@@ -208,6 +210,7 @@ export class SessionLogComponent implements OnInit {
           next: () => {
             this.isLoading = false;
             this.streakService.forceReload();
+            this.notificationService.showSuccess('Reading session updated successfully');
             this.router.navigate(['/books', this.bookId]);
           },
           error: (err) => {
@@ -223,6 +226,7 @@ export class SessionLogComponent implements OnInit {
           next: () => {
             this.isLoading = false;
             this.streakService.forceReload();
+            this.notificationService.showSuccess('Reading session logged successfully');
             this.router.navigate(['/books', this.bookId]);
           },
           error: (err) => {

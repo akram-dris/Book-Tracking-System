@@ -7,6 +7,9 @@ import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { NoteModalComponent } from '../note-modal/note-modal.component';
 import { UpdateReadingSession } from '../../models/update-reading-session.model';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../services/notification.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-reading-log-modal',
@@ -30,7 +33,11 @@ export class ReadingLogModalComponent implements OnInit {
   isNoteModalOpen: boolean = false; // New property
   selectedSessionForNote: GetReadingSession | null = null; // New property
 
-  constructor(private readingSessionService: ReadingSessionService) { }
+  constructor(
+    private readingSessionService: ReadingSessionService,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.loadSessions();
@@ -56,19 +63,31 @@ export class ReadingLogModalComponent implements OnInit {
   }
 
   deleteSession(sessionId: number): void {
-    if (confirm('Are you sure you want to delete this reading session?')) {
-      console.log('Attempting to delete session with ID:', sessionId);
-      this.readingSessionService.deleteReadingSession(sessionId).subscribe({
-        next: () => {
-          console.log('Reading session deleted successfully. Reloading sessions...');
-          this.loadSessions(); // Refresh the list after deletion
-          this.sessionDeleted.emit(); // Emit event to notify parent
-        },
-        error: (err) => {
-          console.error('Error deleting reading session:', err);
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Reading Session',
+        message: 'Are you sure you want to delete this reading session?',
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Attempting to delete session with ID:', sessionId);
+        this.readingSessionService.deleteReadingSession(sessionId).subscribe({
+          next: () => {
+            console.log('Reading session deleted successfully. Reloading sessions...');
+            this.notificationService.showSuccess('Reading session deleted successfully');
+            this.loadSessions(); // Refresh the list after deletion
+            this.sessionDeleted.emit(); // Emit event to notify parent
+          },
+          error: (err) => {
+            console.error('Error deleting reading session:', err);
+          }
+        });
+      }
+    });
   }
 
   getGoalStatus(pagesRead: number): string {
@@ -123,6 +142,7 @@ export class ReadingLogModalComponent implements OnInit {
       this.readingSessionService.updateReadingSession(updatedSession.id, updateDto).subscribe({
         next: () => {
           console.log('Note saved successfully.');
+          this.notificationService.showSuccess('Note saved successfully');
           this.loadSessions(); // Refresh the list
           this.closeNoteModal();
         },
