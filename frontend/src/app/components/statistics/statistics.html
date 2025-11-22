@@ -1,170 +1,75 @@
 <div>
-  <!-- Ultra Modern Collapsible Filter Section -->
-  <div class="mb-6 animate-fade-in">
-    <!-- Collapsed State - Click to Expand -->
-    <div 
-      *ngIf="!filtersExpanded"
-      class="relative overflow-hidden rounded-xl bg-gradient-to-br from-base-100 via-base-100 to-primary/5 shadow-lg border border-primary/10 backdrop-blur-xl cursor-pointer hover:shadow-xl hover:border-primary/20 transition-all duration-300"
-      (click)="filtersExpanded = true">
-      <div class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-      
-      <div class="relative z-10 p-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="p-2 bg-gradient-to-br from-primary to-primary/70 rounded-lg shadow-lg shadow-primary/20">
-            <ng-icon name="heroAdjustmentsHorizontal" size="1.25rem" class="text-white"></ng-icon>
-          </div>
-          <div>
-            <h3 class="text-base font-bold">Filters</h3>
-            <p class="text-xs text-base-content/60">
-              {{ selectedFilter === 'day' ? 'Today' : selectedFilter === 'week' ? 'Week' : selectedFilter === 'month' ? 'Month' : selectedFilter === 'year' ? 'Year' : 'Custom' }}
-            </p>
-          </div>
+  <!-- Compact Filter Toolbar -->
+  <div class="mb-6">
+    <div
+      class="bg-base-200/50 backdrop-blur-sm rounded-2xl p-4 border border-base-300/50 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+
+      <!-- Filter Label -->
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="p-2 bg-primary/10 rounded-lg text-primary">
+          <ng-icon name="heroAdjustmentsHorizontal" size="1.25rem"></ng-icon>
         </div>
-        
-        <div class="flex items-center gap-3">
-          <div class="badge badge-primary badge-sm gap-1.5">
-            <ng-icon name="heroCalendarDays" size="0.75rem"></ng-icon>
-            {{ selectedFilter === 'day' ? 'Today' : selectedFilter === 'week' ? 'Week' : selectedFilter === 'month' ? 'Month' : selectedFilter === 'year' ? 'Year' : 'Custom' }}
-          </div>
-          <ng-icon name="heroChevronDown" size="1.25rem" class="text-primary"></ng-icon>
+        <div>
+          <h3 class="font-bold text-sm">Time Period</h3>
+          <p class="text-xs text-base-content/60">{{ getDateRangeLabel() }}</p>
         </div>
+      </div>
+
+      <!-- Filter Options -->
+      <div class="join bg-base-100/80 rounded-full p-1 border border-base-300 overflow-x-auto max-w-full">
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-3 sm:px-4 transition-all duration-200"
+          [class.bg-primary]="selectedFilter === 'day'" [class.text-primary-content]="selectedFilter === 'day'"
+          (click)="onFilterChange('day')">
+          Today
+        </button>
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-3 sm:px-4 transition-all duration-200"
+          [class.bg-primary]="selectedFilter === 'week'" [class.text-primary-content]="selectedFilter === 'week'"
+          (click)="onFilterChange('week')">
+          Week
+        </button>
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-3 sm:px-4 transition-all duration-200"
+          [class.bg-primary]="selectedFilter === 'month'" [class.text-primary-content]="selectedFilter === 'month'"
+          (click)="onFilterChange('month')">
+          Month
+        </button>
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-3 sm:px-4 transition-all duration-200"
+          [class.bg-primary]="selectedFilter === 'year'" [class.text-primary-content]="selectedFilter === 'year'"
+          (click)="onFilterChange('year')">
+          Year
+        </button>
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-3 sm:px-4 transition-all duration-200"
+          [class.bg-secondary]="selectedFilter === 'custom'"
+          [class.text-secondary-content]="selectedFilter === 'custom'" (click)="onFilterChange('custom')">
+          Custom
+        </button>
       </div>
     </div>
 
-    <!-- Expanded State - Full Filters -->
-    <div 
-      *ngIf="filtersExpanded"
-      class="relative overflow-hidden rounded-xl bg-gradient-to-br from-base-100 via-base-100 to-primary/5 shadow-xl border border-primary/10 backdrop-blur-xl">
-      <div class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-      <div class="absolute bottom-0 left-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-      
-      <div class="relative z-10 p-5">
-        <!-- Header with Close Button -->
-        <div class="flex items-center justify-between mb-5">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-gradient-to-br from-primary to-primary/70 rounded-lg shadow-lg shadow-primary/20">
-              <ng-icon name="heroAdjustmentsHorizontal" size="1.25rem" class="text-white"></ng-icon>
-            </div>
-            <h3 class="text-lg font-bold">Advanced Filters</h3>
-          </div>
-          
-          <button 
-            class="btn btn-ghost btn-sm btn-circle hover:bg-error/10 hover:text-error"
-            (click)="filtersExpanded = false">
-            <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+    <!-- Custom Date Inputs (Inline/Expandable) -->
+    <div *ngIf="showCustomDateInputs"
+      class="mt-4 p-4 bg-base-200/50 backdrop-blur-sm rounded-2xl border border-base-300/50 shadow-sm animate-in slide-in-from-top-2 duration-200">
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <mat-form-field appearance="outline" class="w-full sm:w-auto flex-grow">
+          <mat-label>Select Date Range</mat-label>
+          <mat-date-range-input [rangePicker]="picker" [max]="today" [comparisonStart]="comparisonStart"
+            [comparisonEnd]="comparisonEnd">
+            <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
+            <input matEndDate [(ngModel)]="endDate" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <div class="flex gap-2 w-full sm:w-auto justify-end">
+          <button class="btn btn-secondary btn-sm gap-2" (click)="applyCustomFilter()">
+            <ng-icon name="heroCheckCircle" size="1rem"></ng-icon>
+            Apply
+          </button>
+          <button class="btn btn-ghost btn-sm gap-2 text-error hover:bg-error/10" (click)="resetFilter()">
+            <ng-icon name="heroXCircle" size="1rem"></ng-icon>
+            Reset
           </button>
         </div>
-
-        <!-- Time Period Section -->
-        <div class="mb-5 p-4 rounded-lg bg-base-200/30 border border-base-300/30">
-          <div class="flex items-center gap-2 mb-3">
-            <ng-icon name="heroCalendarDays" size="1rem" class="text-primary"></ng-icon>
-            <h4 class="font-bold text-sm">Time Period</h4>
-          </div>
-          
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500"
-              [class]="selectedFilter === 'day' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200/50 hover:bg-base-200 border-2 border-base-300 hover:border-primary/50'"
-              (click)="onFilterChange('day')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-3 flex flex-col items-center gap-1.5">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="selectedFilter === 'day' ? 'bg-white/20' : 'bg-primary/10'">
-                  <ng-icon name="heroSun" size="1.25rem" [class]="selectedFilter === 'day' ? 'text-white' : 'text-primary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Today</span>
-              </div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500"
-              [class]="selectedFilter === 'week' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200/50 hover:bg-base-200 border-2 border-base-300 hover:border-primary/50'"
-              (click)="onFilterChange('week')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-3 flex flex-col items-center gap-1.5">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="selectedFilter === 'week' ? 'bg-white/20' : 'bg-primary/10'">
-                  <ng-icon name="heroCalendarDays" size="1.25rem" [class]="selectedFilter === 'week' ? 'text-white' : 'text-primary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Week</span>
-              </div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500"
-              [class]="selectedFilter === 'month' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200/50 hover:bg-base-200 border-2 border-base-300 hover:border-primary/50'"
-              (click)="onFilterChange('month')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-3 flex flex-col items-center gap-1.5">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="selectedFilter === 'month' ? 'bg-white/20' : 'bg-primary/10'">
-                  <ng-icon name="heroCalendar" size="1.25rem" [class]="selectedFilter === 'month' ? 'text-white' : 'text-primary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Month</span>
-              </div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500"
-              [class]="selectedFilter === 'year' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200/50 hover:bg-base-200 border-2 border-base-300 hover:border-primary/50'"
-              (click)="onFilterChange('year')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-3 flex flex-col items-center gap-1.5">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="selectedFilter === 'year' ? 'bg-white/20' : 'bg-primary/10'">
-                  <ng-icon name="heroCalendar" size="1.25rem" [class]="selectedFilter === 'year' ? 'text-white' : 'text-primary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Year</span>
-              </div>
-            </button>
-
-            <button 
-              class="group relative overflow-hidden rounded-lg transition-all duration-500"
-              [class]="selectedFilter === 'custom' ? 'bg-gradient-to-br from-secondary to-secondary/80 text-white shadow-lg shadow-secondary/30' : 'bg-base-200/50 hover:bg-base-200 border-2 border-base-300 hover:border-secondary/50'"
-              (click)="onFilterChange('custom')">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="relative p-3 flex flex-col items-center gap-1.5">
-                <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-                     [class]="selectedFilter === 'custom' ? 'bg-white/20' : 'bg-secondary/10'">
-                  <ng-icon name="heroAdjustmentsHorizontal" size="1.25rem" [class]="selectedFilter === 'custom' ? 'text-white' : 'text-secondary'"></ng-icon>
-                </div>
-                <span class="font-semibold text-xs">Custom</span>
-              </div>
-            </button>
-          </div>
-
-          <!-- Custom Date Range -->
-          <div *ngIf="showCustomDateInputs" class="mt-4 p-3 rounded-lg bg-secondary/10 border border-secondary/20">
-            <div class="flex flex-col sm:flex-row items-stretch gap-3">
-              <mat-form-field appearance="outline" class="flex-grow">
-                <mat-label>Select Date Range</mat-label>
-                <mat-date-range-input [rangePicker]="picker" [max]="today" [comparisonStart]="comparisonStart" [comparisonEnd]="comparisonEnd">
-                  <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
-                  <input matEndDate [(ngModel)]="endDate" placeholder="End date">
-                </mat-date-range-input>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-              </mat-form-field>
-
-              <div class="flex gap-2 sm:self-end">
-                <button 
-                  class="btn btn-secondary btn-sm gap-2 hover:scale-105 hover:shadow-lg hover:shadow-secondary/30 transition-all duration-300"
-                  (click)="applyCustomFilter()">
-                  <ng-icon name="heroCheckCircle" size="1rem"></ng-icon>
-                  Apply
-                </button>
-                <button 
-                  class="btn btn-ghost btn-sm gap-2 hover:bg-error/10 hover:text-error hover:scale-105 transition-all duration-300"
-                  (click)="resetFilter()">
-                  <ng-icon name="heroXCircle" size="1rem"></ng-icon>
-                  Reset
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -175,111 +80,135 @@
       <ng-icon name="heroChartBarSquare" size="1rem" class="text-secondary"></ng-icon>
       <h4 class="font-bold text-sm">Statistics Category</h4>
     </div>
-    
+
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'overview' ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('overview')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'overview' ? 'bg-white/20' : 'bg-primary/10'">
-            <ng-icon name="heroSquares2x2" size="1.125rem" [class]="activeTab === 'overview' ? 'text-white' : 'text-primary'"></ng-icon>
+            [class]="activeTab === 'overview' ? 'bg-white/20' : 'bg-primary/10'">
+            <ng-icon name="heroSquares2x2" size="1.125rem"
+              [class]="activeTab === 'overview' ? 'text-white' : 'text-primary'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Overview</span>
         </div>
-        <div *ngIf="activeTab === 'overview'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+        <div *ngIf="activeTab === 'overview'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full">
+        </div>
       </button>
 
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'authors' ? 'bg-gradient-to-br from-info to-info/80 text-white shadow-lg shadow-info/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('authors')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'authors' ? 'bg-white/20' : 'bg-info/10'">
-            <ng-icon name="heroUserGroup" size="1.125rem" [class]="activeTab === 'authors' ? 'text-white' : 'text-info'"></ng-icon>
+            [class]="activeTab === 'authors' ? 'bg-white/20' : 'bg-info/10'">
+            <ng-icon name="heroUserGroup" size="1.125rem"
+              [class]="activeTab === 'authors' ? 'text-white' : 'text-info'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Authors</span>
         </div>
-        <div *ngIf="activeTab === 'authors'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+        <div *ngIf="activeTab === 'authors'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full">
+        </div>
       </button>
 
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'tags' ? 'bg-gradient-to-br from-success to-success/80 text-white shadow-lg shadow-success/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('tags')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'tags' ? 'bg-white/20' : 'bg-success/10'">
-            <ng-icon name="heroTag" size="1.125rem" [class]="activeTab === 'tags' ? 'text-white' : 'text-success'"></ng-icon>
+            [class]="activeTab === 'tags' ? 'bg-white/20' : 'bg-success/10'">
+            <ng-icon name="heroTag" size="1.125rem"
+              [class]="activeTab === 'tags' ? 'text-white' : 'text-success'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Tags</span>
         </div>
         <div *ngIf="activeTab === 'tags'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
       </button>
 
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'time' ? 'bg-gradient-to-br from-warning to-warning/80 text-white shadow-lg shadow-warning/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('time')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'time' ? 'bg-white/20' : 'bg-warning/10'">
-            <ng-icon name="heroClock" size="1.125rem" [class]="activeTab === 'time' ? 'text-white' : 'text-warning'"></ng-icon>
+            [class]="activeTab === 'time' ? 'bg-white/20' : 'bg-warning/10'">
+            <ng-icon name="heroClock" size="1.125rem"
+              [class]="activeTab === 'time' ? 'text-white' : 'text-warning'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Time</span>
         </div>
         <div *ngIf="activeTab === 'time'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
       </button>
 
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'goals' ? 'bg-gradient-to-br from-secondary to-secondary/80 text-white shadow-lg shadow-secondary/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('goals')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'goals' ? 'bg-white/20' : 'bg-secondary/10'">
-            <ng-icon name="heroTrophy" size="1.125rem" [class]="activeTab === 'goals' ? 'text-white' : 'text-secondary'"></ng-icon>
+            [class]="activeTab === 'goals' ? 'bg-white/20' : 'bg-secondary/10'">
+            <ng-icon name="heroTrophy" size="1.125rem"
+              [class]="activeTab === 'goals' ? 'text-white' : 'text-secondary'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Goals</span>
         </div>
         <div *ngIf="activeTab === 'goals'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
       </button>
 
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'books' ? 'bg-gradient-to-br from-accent to-accent/80 text-white shadow-lg shadow-accent/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('books')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'books' ? 'bg-white/20' : 'bg-accent/10'">
-            <ng-icon name="heroBookOpen" size="1.125rem" [class]="activeTab === 'books' ? 'text-white' : 'text-accent'"></ng-icon>
+            [class]="activeTab === 'books' ? 'bg-white/20' : 'bg-accent/10'">
+            <ng-icon name="heroBookOpen" size="1.125rem"
+              [class]="activeTab === 'books' ? 'text-white' : 'text-accent'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Books</span>
         </div>
         <div *ngIf="activeTab === 'books'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
       </button>
 
-      <button 
+      <button
         class="group relative overflow-hidden rounded-lg transition-all duration-500 transform hover:-translate-y-1"
         [class]="activeTab === 'records' ? 'bg-gradient-to-br from-error to-error/80 text-white shadow-lg shadow-error/30' : 'bg-base-200 hover:bg-base-300 hover:shadow-md'"
         (click)="setActiveTab('records')">
-        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="relative p-2.5 flex flex-col items-center gap-1">
           <div class="p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300"
-               [class]="activeTab === 'records' ? 'bg-white/20' : 'bg-error/10'">
-            <ng-icon name="heroFire" size="1.125rem" [class]="activeTab === 'records' ? 'text-white' : 'text-error'"></ng-icon>
+            [class]="activeTab === 'records' ? 'bg-white/20' : 'bg-error/10'">
+            <ng-icon name="heroFire" size="1.125rem"
+              [class]="activeTab === 'records' ? 'text-white' : 'text-error'"></ng-icon>
           </div>
           <span class="font-semibold text-xs">Records</span>
         </div>
-        <div *ngIf="activeTab === 'records'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full"></div>
+        <div *ngIf="activeTab === 'records'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-t-full">
+        </div>
       </button>
     </div>
   </div>
@@ -297,7 +226,7 @@
     <!-- Overview Tab -->
     <div *ngIf="activeTab === 'overview'">
       <h2 class="text-2xl font-bold mb-4">Reading Overview</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
           <div class="stat-figure text-primary">
@@ -353,7 +282,7 @@
     <!-- Authors Tab -->
     <div *ngIf="activeTab === 'authors'">
       <h2 class="text-2xl font-bold mb-4">Author Statistics</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
           <div class="stat-title">Authors Read</div>
@@ -377,10 +306,7 @@
         <div class="card-body">
           <h3 class="card-title">Top Authors by Books</h3>
           <div style="height: 300px;">
-            <canvas baseChart
-              [data]="authorBooksChart"
-              [options]="barChartOptions"
-              type="bar">
+            <canvas baseChart [data]="authorBooksChart" [options]="barChartOptions" type="bar">
             </canvas>
           </div>
         </div>
@@ -409,7 +335,7 @@
     <!-- Tags Tab -->
     <div *ngIf="activeTab === 'tags'">
       <h2 class="text-2xl font-bold mb-4">Tag Statistics</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
           <div class="stat-title">Total Tags</div>
@@ -433,10 +359,7 @@
           <div class="card-body">
             <h3 class="card-title">📊 Books by Tag</h3>
             <div style="height: 300px;">
-              <canvas baseChart
-                [data]="tagBooksChart"
-                [options]="pieChartOptions"
-                type="pie">
+              <canvas baseChart [data]="tagBooksChart" [options]="pieChartOptions" type="pie">
               </canvas>
             </div>
           </div>
@@ -471,7 +394,7 @@
     <!-- Time Analysis Tab -->
     <div *ngIf="activeTab === 'time'">
       <h2 class="text-2xl font-bold mb-4">Time-Based Analysis</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
           <div class="stat-title">Best Reading Month</div>
@@ -490,10 +413,7 @@
         <div class="card-body">
           <h3 class="card-title">Monthly Reading Trend</h3>
           <div style="height: 300px;">
-            <canvas baseChart
-              [data]="monthlyTrendChart"
-              [options]="lineChartOptions"
-              type="line">
+            <canvas baseChart [data]="monthlyTrendChart" [options]="lineChartOptions" type="line">
             </canvas>
           </div>
         </div>
@@ -503,10 +423,7 @@
         <div class="card-body">
           <h3 class="card-title">Weekly Reading Pattern</h3>
           <div style="height: 300px;">
-            <canvas baseChart
-              [data]="weeklyPatternChart"
-              [options]="barChartOptions"
-              type="bar">
+            <canvas baseChart [data]="weeklyPatternChart" [options]="barChartOptions" type="bar">
             </canvas>
           </div>
         </div>
@@ -516,7 +433,7 @@
     <!-- Goals Tab -->
     <div *ngIf="activeTab === 'goals'">
       <h2 class="text-2xl font-bold mb-4">Goal Performance</h2>
-      
+
       <!-- Overall Goal Achievement Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
@@ -550,10 +467,7 @@
           <div class="card-body">
             <h3 class="card-title">Goal Achievement Overview</h3>
             <div style="height: 300px;">
-              <canvas baseChart
-                [data]="goalAchievementChart"
-                [options]="barChartOptions"
-                type="bar">
+              <canvas baseChart [data]="goalAchievementChart" [options]="barChartOptions" type="bar">
               </canvas>
             </div>
           </div>
@@ -563,10 +477,7 @@
           <div class="card-body">
             <h3 class="card-title">Completion Distribution</h3>
             <div style="height: 300px;">
-              <canvas baseChart
-                [data]="goalCompletionChart"
-                [options]="doughnutChartOptions"
-                type="doughnut">
+              <canvas baseChart [data]="goalCompletionChart" [options]="doughnutChartOptions" type="doughnut">
               </canvas>
             </div>
           </div>
@@ -580,15 +491,17 @@
             <h3 class="card-title">Current Reading Goals</h3>
             <div class="flex gap-2 w-full md:w-auto">
               <!-- Status Filter -->
-              <select class="select select-bordered select-sm flex-1 md:w-48" [(ngModel)]="selectedStatusFilter" (change)="filterGoals()">
+              <select class="select select-bordered select-sm flex-1 md:w-48" [(ngModel)]="selectedStatusFilter"
+                (change)="filterGoals()">
                 <option value="all">All Statuses</option>
                 <option value="reading">📖 Currently Reading</option>
                 <option value="completed">✅ Completed</option>
                 <option value="both">📚 Both</option>
               </select>
-              
+
               <!-- Book Filter -->
-              <select class="select select-bordered select-sm flex-1 md:w-64" [(ngModel)]="selectedBookFilter" (change)="filterGoals()">
+              <select class="select select-bordered select-sm flex-1 md:w-64" [(ngModel)]="selectedBookFilter"
+                (change)="filterGoals()">
                 <option value="all">All Books ({{ getFilteredCount() }})</option>
                 <option *ngFor="let goal of getAvailableBooks()" [value]="goal.bookId">
                   {{ goal.bookTitle }}
@@ -605,37 +518,47 @@
               </div>
               <div class="badge badge-lg badge-primary">{{ getOverallProgress(goal) }}%</div>
             </div>
-            
+
             <!-- Visual Goal Progress -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-              <div class="text-center p-3 rounded-lg" [class.bg-info/20]="goal.lowProgress >= 100" [class.bg-base-200]="goal.lowProgress < 100">
+              <div class="text-center p-3 rounded-lg" [class.bg-info/20]="goal.lowProgress >= 100"
+                [class.bg-base-200]="goal.lowProgress < 100">
                 <div class="text-xs font-semibold text-info mb-1">LOW GOAL</div>
                 <div class="text-2xl font-bold" [class.text-info]="goal.lowProgress >= 100">{{ goal.lowGoal }}</div>
                 <div class="text-xs text-base-content/60">pages</div>
                 <div class="mt-2">
-                  <div class="radial-progress text-info" [style.--value]="goal.lowProgress > 100 ? 100 : goal.lowProgress" [style.--size]="'3rem'" [style.--thickness]="'4px'">
+                  <div class="radial-progress text-info"
+                    [style.--value]="goal.lowProgress > 100 ? 100 : goal.lowProgress" [style.--size]="'3rem'"
+                    [style.--thickness]="'4px'">
                     <span class="text-xs">{{ goal.lowProgress > 100 ? 100 : goal.lowProgress }}%</span>
                   </div>
                 </div>
               </div>
 
-              <div class="text-center p-3 rounded-lg" [class.bg-warning/20]="goal.mediumProgress >= 100" [class.bg-base-200]="goal.mediumProgress < 100">
+              <div class="text-center p-3 rounded-lg" [class.bg-warning/20]="goal.mediumProgress >= 100"
+                [class.bg-base-200]="goal.mediumProgress < 100">
                 <div class="text-xs font-semibold text-warning mb-1">MEDIUM GOAL</div>
-                <div class="text-2xl font-bold" [class.text-warning]="goal.mediumProgress >= 100">{{ goal.mediumGoal }}</div>
+                <div class="text-2xl font-bold" [class.text-warning]="goal.mediumProgress >= 100">{{ goal.mediumGoal }}
+                </div>
                 <div class="text-xs text-base-content/60">pages</div>
                 <div class="mt-2">
-                  <div class="radial-progress text-warning" [style.--value]="goal.mediumProgress > 100 ? 100 : goal.mediumProgress" [style.--size]="'3rem'" [style.--thickness]="'4px'">
+                  <div class="radial-progress text-warning"
+                    [style.--value]="goal.mediumProgress > 100 ? 100 : goal.mediumProgress" [style.--size]="'3rem'"
+                    [style.--thickness]="'4px'">
                     <span class="text-xs">{{ goal.mediumProgress > 100 ? 100 : goal.mediumProgress }}%</span>
                   </div>
                 </div>
               </div>
 
-              <div class="text-center p-3 rounded-lg" [class.bg-error/20]="goal.highProgress >= 100" [class.bg-base-200]="goal.highProgress < 100">
+              <div class="text-center p-3 rounded-lg" [class.bg-error/20]="goal.highProgress >= 100"
+                [class.bg-base-200]="goal.highProgress < 100">
                 <div class="text-xs font-semibold text-error mb-1">HIGH GOAL</div>
                 <div class="text-2xl font-bold" [class.text-error]="goal.highProgress >= 100">{{ goal.highGoal }}</div>
                 <div class="text-xs text-base-content/60">pages</div>
                 <div class="mt-2">
-                  <div class="radial-progress text-error" [style.--value]="goal.highProgress > 100 ? 100 : goal.highProgress" [style.--size]="'3rem'" [style.--thickness]="'4px'">
+                  <div class="radial-progress text-error"
+                    [style.--value]="goal.highProgress > 100 ? 100 : goal.highProgress" [style.--size]="'3rem'"
+                    [style.--thickness]="'4px'">
                     <span class="text-xs">{{ goal.highProgress > 100 ? 100 : goal.highProgress }}%</span>
                   </div>
                 </div>
@@ -649,23 +572,26 @@
                   <span class="text-info">Low Goal</span>
                   <span class="font-semibold">{{ goal.currentPages }} / {{ goal.lowGoal }}</span>
                 </div>
-                <progress class="progress progress-info h-2" [value]="goal.lowProgress > 100 ? 100 : goal.lowProgress" max="100"></progress>
+                <progress class="progress progress-info h-2" [value]="goal.lowProgress > 100 ? 100 : goal.lowProgress"
+                  max="100"></progress>
               </div>
-              
+
               <div>
                 <div class="flex justify-between text-xs mb-1">
                   <span class="text-warning">Medium Goal</span>
                   <span class="font-semibold">{{ goal.currentPages }} / {{ goal.mediumGoal }}</span>
                 </div>
-                <progress class="progress progress-warning h-2" [value]="goal.mediumProgress > 100 ? 100 : goal.mediumProgress" max="100"></progress>
+                <progress class="progress progress-warning h-2"
+                  [value]="goal.mediumProgress > 100 ? 100 : goal.mediumProgress" max="100"></progress>
               </div>
-              
+
               <div>
                 <div class="flex justify-between text-xs mb-1">
                   <span class="text-error">High Goal</span>
                   <span class="font-semibold">{{ goal.currentPages }} / {{ goal.highGoal }}</span>
                 </div>
-                <progress class="progress progress-error h-2" [value]="goal.highProgress > 100 ? 100 : goal.highProgress" max="100"></progress>
+                <progress class="progress progress-error h-2"
+                  [value]="goal.highProgress > 100 ? 100 : goal.highProgress" max="100"></progress>
               </div>
             </div>
           </div>
@@ -680,7 +606,7 @@
     <!-- Books Tab -->
     <div *ngIf="activeTab === 'books'">
       <h2 class="text-2xl font-bold mb-4">Book Statistics</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="stat bg-base-200 rounded-lg shadow">
           <div class="stat-title">Avg Book Length</div>
@@ -704,12 +630,10 @@
       <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
         <div class="card-body">
           <h3 class="card-title">Book Status Timeline ({{ getFilterDisplayName() }})</h3>
-          <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved over the selected period</p>
+          <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved over the selected period
+          </p>
           <div style="height: 400px;">
-            <canvas baseChart
-              [data]="statusTimelineChart"
-              [options]="lineChartOptions"
-              type="line">
+            <canvas baseChart [data]="statusTimelineChart" [options]="lineChartOptions" type="line">
             </canvas>
           </div>
         </div>
@@ -739,10 +663,7 @@
         <div class="card-body">
           <h3 class="card-title">Books by Status Distribution</h3>
           <div style="height: 350px;">
-            <canvas baseChart
-              [data]="statusChart"
-              [options]="doughnutChartOptions"
-              type="doughnut">
+            <canvas baseChart [data]="statusChart" [options]="doughnutChartOptions" type="doughnut">
             </canvas>
           </div>
         </div>
@@ -752,7 +673,7 @@
     <!-- Records Tab -->
     <div *ngIf="activeTab === 'records'">
       <h2 class="text-2xl font-bold mb-4">🏆 Personal Records</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.mostPagesInDay">
           <div class="card-body">
