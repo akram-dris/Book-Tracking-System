@@ -222,6 +222,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
         console.log('BookDetailsComponent saveSummary - Book summary updated');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Summarized`);
       });
     }
   }
@@ -240,6 +241,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(() => {
         console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
         this.router.navigate(['/books', this.book!.id, 'set-goal']);
       });
     }
@@ -287,6 +289,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(() => {
         console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
         // No navigation needed, stay on the same page
       });
     }
@@ -303,6 +306,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, this.book.startedReadingDate, new Date()).subscribe(() => {
         console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed`);
       });
     }
   }

@@ -8,6 +8,7 @@ import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-plan-and-goal-modal',
@@ -18,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class PlanAndGoalModalComponent implements OnInit {
   @Input() bookId: number | null = null;
+  @Input() bookTitle: string = '';
   @Input() initialStartedReadingDate: Date | undefined;
   @Input() initialReadingGoal: GetReadingGoal | null = null;
   @Input() totalPages: number | null = null; // New input
@@ -30,7 +32,8 @@ export class PlanAndGoalModalComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private readingGoalService: ReadingGoalService,
-    private bookService: BookService
+    private bookService: BookService,
+    private notificationService: NotificationService
   ) {
     this.planAndGoalForm = this.fb.group({
       targetStartDate: [this.formatDate(new Date()), Validators.required],
@@ -111,6 +114,7 @@ export class PlanAndGoalModalComponent implements OnInit {
             this.readingGoalService.updateReadingGoal(this.bookId as number, goalData).subscribe({
               next: () => {
                 this.isLoading = false;
+                this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
                 this.saved.emit();
                 this.close.emit();
               },
@@ -123,6 +127,7 @@ export class PlanAndGoalModalComponent implements OnInit {
             this.readingGoalService.addReadingGoal(goalData).subscribe({
               next: () => {
                 this.isLoading = false;
+                this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
                 this.saved.emit();
                 this.close.emit();
               },
