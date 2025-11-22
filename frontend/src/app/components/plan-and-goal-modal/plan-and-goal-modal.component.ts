@@ -6,11 +6,13 @@ import { BookService } from '../../services/book.service';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-plan-and-goal-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './plan-and-goal-modal.component.html',
   styleUrls: ['./plan-and-goal-modal.component.css']
 })
@@ -18,6 +20,7 @@ export class PlanAndGoalModalComponent implements OnInit {
   @Input() bookId: number | null = null;
   @Input() initialStartedReadingDate: Date | undefined;
   @Input() initialReadingGoal: GetReadingGoal | null = null;
+  @Input() totalPages: number | null = null; // New input
   @Output() saved = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
 
@@ -34,7 +37,7 @@ export class PlanAndGoalModalComponent implements OnInit {
       lowGoal: [null, [Validators.required, Validators.min(1)]],
       mediumGoal: [null, [Validators.required, Validators.min(1)]],
       highGoal: [null, [Validators.required, Validators.min(1)]]
-    });
+    }, { validators: this.goalHierarchyValidator });
   }
 
   ngOnInit(): void {
@@ -44,6 +47,32 @@ export class PlanAndGoalModalComponent implements OnInit {
     if (this.initialReadingGoal) {
       this.planAndGoalForm.patchValue(this.initialReadingGoal);
     }
+    this.updateHighGoalValidator();
+  }
+
+  updateHighGoalValidator(): void {
+    if (this.totalPages) {
+      this.planAndGoalForm.get('highGoal')?.setValidators([
+        Validators.required,
+        Validators.min(1),
+        Validators.max(this.totalPages)
+      ]);
+      this.planAndGoalForm.get('highGoal')?.updateValueAndValidity();
+    }
+  }
+
+  goalHierarchyValidator(group: FormGroup): any {
+    const low = group.get('lowGoal')?.value;
+    const medium = group.get('mediumGoal')?.value;
+    const high = group.get('highGoal')?.value;
+
+    if (low && medium && low >= medium) {
+      return { lowNotLessThanMedium: true };
+    }
+    if (medium && high && medium >= high) {
+      return { mediumNotLessThanHigh: true };
+    }
+    return null;
   }
 
   private formatDate(date: Date): string {

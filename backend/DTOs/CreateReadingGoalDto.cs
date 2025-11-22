@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using BookTrackingSystem.ValidationAttributes;
 
 namespace BookTrackingSystem.DTOs
 {
+    [ReadingGoalHierarchy]
     public class CreateReadingGoalDto
     {
         [Required]
