@@ -31,7 +31,7 @@ export class TagManagementComponent implements OnInit {
     private tagService: TagService
   ) {
     this.tagForm = this.fb.group({
-      name: ['', Validators.required]
+      name: ['', [Validators.required, Validators.maxLength(50)]]
     });
   }
 
