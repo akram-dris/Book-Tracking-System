@@ -2,7 +2,8 @@
 <div class="space-y-3">
   <!-- Back Button -->
   <div>
-    <button mat-button (click)="goBack()" class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
+    <button mat-button (click)="goBack()"
+      class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
       <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
       <span class="font-medium">Back</span>
     </button>
@@ -18,13 +19,11 @@
             <h3 class="text-sm font-semibold mb-2 text-base-content">Author Photo</h3>
             <div class="aspect-[3/4] w-full max-w-[220px] mx-auto lg:mx-0">
               <!-- Upload Area -->
-              <div
-                *ngIf="!imagePreviewUrl"
-                (click)="fileInput.click()"
-                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-xl bg-base-200 hover:bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group"
-              >
+              <div *ngIf="!imagePreviewUrl" (click)="fileInput.click()"
+                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-xl bg-base-200 hover:bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group">
                 <div class="flex flex-col items-center justify-center p-4">
-                  <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
+                  <div
+                    class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
                     <mat-icon class="text-primary !text-3xl !w-8 !h-8">photo_camera</mat-icon>
                   </div>
                   <p class="text-sm font-medium text-center">Drop photo</p>
@@ -34,17 +33,15 @@
 
               <!-- Image Preview -->
               <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
-                <div class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg" (click)="fileInput.click()">
-                  <img [src]="imagePreviewUrl" alt="Author photo" class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" />
+                <div
+                  class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg"
+                  (click)="fileInput.click()">
+                  <img [src]="imagePreviewUrl" alt="Author photo"
+                    class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" />
                 </div>
-                <button
-                  mat-mini-fab
-                  color="warn"
-                  type="button"
-                  (click)="removeImage($event)"
+                <button mat-mini-fab color="warn" type="button" (click)="removeImage($event)"
                   class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity !shadow-lg !w-7 !h-7"
-                  aria-label="Remove image"
-                >
+                  aria-label="Remove image">
                   <mat-icon class="!text-lg">close</mat-icon>
                 </button>
               </div>
@@ -59,29 +56,27 @@
               <!-- Name -->
               <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Author Name</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  formControlName="name"
-                  placeholder="Enter author name"
-                  required
-                />
+                <input matInput type="text" formControlName="name" placeholder="Enter author name" required />
                 <mat-error *ngIf="authorForm.get('name')?.hasError('required')">
                   Name is required
+                </mat-error>
+                <mat-error *ngIf="authorForm.get('name')?.hasError('minlength')">
+                  Name must be at least 2 characters
+                </mat-error>
+                <mat-error *ngIf="authorForm.get('name')?.hasError('maxlength')">
+                  Name cannot exceed 100 characters
                 </mat-error>
               </mat-form-field>
 
               <!-- Biography -->
               <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Biography</mat-label>
-                <textarea
-                  matInput
-                  formControlName="bio"
-                  placeholder="Write a brief biography..."
-                  rows="6"
-                  class="resize-none"
-                ></textarea>
-                <mat-hint>Optional author biography</mat-hint>
+                <textarea matInput formControlName="bio" placeholder="Write a brief biography..." rows="6"
+                  class="resize-none"></textarea>
+                <mat-hint align="end">{{authorForm.get('bio')?.value?.length || 0}}/1000</mat-hint>
+                <mat-error *ngIf="authorForm.get('bio')?.hasError('maxlength')">
+                  Bio cannot exceed 1000 characters
+                </mat-error>
               </mat-form-field>
             </div>
           </div>
@@ -94,12 +89,7 @@
           <mat-icon>close</mat-icon>
           Cancel
         </button>
-        <button
-          mat-raised-button 
-          color="primary"
-          type="submit"
-          [disabled]="authorForm.invalid || isLoading"
-        >
+        <button mat-raised-button color="primary" type="submit" [disabled]="authorForm.invalid || isLoading">
           <mat-spinner *ngIf="isLoading" diameter="20" class="mr-2"></mat-spinner>
           <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
           {{ isEditMode ? 'Update Author' : 'Add Author' }}

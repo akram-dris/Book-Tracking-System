@@ -53,10 +53,10 @@ export class BookFormComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
   showCropper = false;
-  
+
   // For ng-select custom items
   selectedTags: any[] = [];
-  
+
   // For Material chips
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
@@ -69,9 +69,9 @@ export class BookFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.bookForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(1)]],
+      title: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(200)]],
       authorId: [null, Validators.required],
-      totalPages: [null, [Validators.required, Validators.min(1)]],
+      totalPages: [null, [Validators.required, Validators.min(1), Validators.max(10000)]],
       imageFile: [null],
       tagIds: [[]]
     });
@@ -113,22 +113,22 @@ export class BookFormComponent implements OnInit {
     const tagIds = tags.map(t => t.id);
     this.bookForm.patchValue({ tagIds: tagIds });
   }
-  
+
   removeTag(tag: GetTag) {
     this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
     this.onTagsChange(this.selectedTags);
   }
-  
+
   removeTagById(tagId: number) {
     const currentTags = this.bookForm.get('tagIds')?.value || [];
     const updatedTags = currentTags.filter((id: number) => id !== tagId);
     this.bookForm.patchValue({ tagIds: updatedTags });
   }
-  
+
   toggleTag(tagId: number) {
     const currentTags = this.bookForm.get('tagIds')?.value || [];
     const index = currentTags.indexOf(tagId);
-    
+
     if (index > -1) {
       // Tag is already selected, remove it
       currentTags.splice(index, 1);
@@ -136,24 +136,24 @@ export class BookFormComponent implements OnInit {
       // Tag is not selected, add it
       currentTags.push(tagId);
     }
-    
+
     this.bookForm.patchValue({ tagIds: [...currentTags] });
   }
-  
+
   isTagSelected(tagId: number): boolean {
     const currentTags = this.bookForm.get('tagIds')?.value || [];
     return currentTags.includes(tagId);
   }
-  
+
   getTagName(tagId: number): string {
     const tag = this.tags.find(t => t.id === tagId);
     return tag?.name || '';
   }
-  
+
   onAuthorChange(authorId: number | null) {
     this.bookForm.patchValue({ authorId: authorId });
   }
-  
+
   // Handle file drop - show preview directly
   onFilesAdded(files: File[]) {
     if (files.length > 0) {
@@ -174,7 +174,7 @@ export class BookFormComponent implements OnInit {
   getRootUrl(): string {
     return environment.rootUrl;
   }
-  
+
   onFileRemoved() {
     this.selectedFile = null;
     this.imagePreviewUrl = null;

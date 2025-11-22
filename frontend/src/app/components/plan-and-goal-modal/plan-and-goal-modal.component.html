@@ -8,39 +8,43 @@
           <span class="label-text">Target Start Date</span>
         </label>
         <input type="date" formControlName="targetStartDate" class="input input-bordered w-full">
-        <label class="label" *ngIf="planAndGoalForm.controls['targetStartDate'].invalid && planAndGoalForm.controls['targetStartDate'].touched">
+        <label class="label"
+          *ngIf="planAndGoalForm.controls['targetStartDate'].invalid && planAndGoalForm.controls['targetStartDate'].touched">
           <span class="label-text-alt text-error">Target start date is required.</span>
         </label>
       </div>
 
       <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text">Low Goal (pages)</span>
-        </label>
-        <input type="number" formControlName="lowGoal" class="input input-bordered w-full" placeholder="e.g., 50">
-        <label class="label" *ngIf="planAndGoalForm.controls['lowGoal'].invalid && planAndGoalForm.controls['lowGoal'].touched">
-          <span class="label-text-alt text-error">Low goal is required and must be at least 1.</span>
-        </label>
+        <!-- Low Goal -->
+        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Low Goal</mat-label>
+          <input matInput type="number" formControlName="lowGoal" min="1" required>
+          <mat-error *ngIf="planAndGoalForm.get('lowGoal')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="planAndGoalForm.get('lowGoal')?.hasError('min')">Min 1</mat-error>
+          <mat-error *ngIf="planAndGoalForm.hasError('lowNotLessThanMedium')">Must be &lt; Medium</mat-error>
+        </mat-form-field>
       </div>
 
       <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text">Medium Goal (pages)</span>
-        </label>
-        <input type="number" formControlName="mediumGoal" class="input input-bordered w-full" placeholder="e.g., 100">
-        <label class="label" *ngIf="planAndGoalForm.controls['mediumGoal'].invalid && planAndGoalForm.controls['mediumGoal'].touched">
-          <span class="label-text-alt text-error">Medium goal is required and must be at least 1.</span>
-        </label>
+        <!-- Medium Goal -->
+        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Medium Goal</mat-label>
+          <input matInput type="number" formControlName="mediumGoal" min="1" required>
+          <mat-error *ngIf="planAndGoalForm.get('mediumGoal')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="planAndGoalForm.get('mediumGoal')?.hasError('min')">Min 1</mat-error>
+          <mat-error *ngIf="planAndGoalForm.hasError('mediumNotLessThanHigh')">Must be &lt; High</mat-error>
+        </mat-form-field>
       </div>
 
       <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text">High Goal (pages)</span>
-        </label>
-        <input type="number" formControlName="highGoal" class="input input-bordered w-full" placeholder="e.g., 200">
-        <label class="label" *ngIf="planAndGoalForm.controls['highGoal'].invalid && planAndGoalForm.controls['highGoal'].touched">
-          <span class="label-text-alt text-error">High goal is required and must be at least 1.</span>
-        </label>
+        <!-- High Goal -->
+        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+          <mat-label>High Goal</mat-label>
+          <input matInput type="number" formControlName="highGoal" min="1" required>
+          <mat-error *ngIf="planAndGoalForm.get('highGoal')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="planAndGoalForm.get('highGoal')?.hasError('min')">Min 1</mat-error>
+          <mat-error *ngIf="planAndGoalForm.get('highGoal')?.hasError('max')">Max {{ totalPages }}</mat-error>
+        </mat-form-field>
       </div>
 
       <div class="modal-action">

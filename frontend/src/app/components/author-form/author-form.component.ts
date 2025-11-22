@@ -20,10 +20,10 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-author-form',
   standalone: true,
   imports: [
-    ReactiveFormsModule, 
-    RouterModule, 
-    CommonModule, 
-    NgIconComponent, 
+    ReactiveFormsModule,
+    RouterModule,
+    CommonModule,
+    NgIconComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
@@ -50,8 +50,8 @@ export class AuthorFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.authorForm = this.fb.group({
-      name: ['', Validators.required],
-      bio: [''],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      bio: ['', [Validators.maxLength(1000)]],
       imageFile: [null]
     });
   }

@@ -59,7 +59,10 @@
                                 placeholder="Write your thoughts about this book... What did you learn? What were the key takeaways? Any memorable quotes or moments?"></textarea>
                             <p *ngIf="summaryForm.get('summary')?.invalid && summaryForm.get('summary')?.touched"
                                 class="text-error text-sm mt-2">
-                                Please write a summary before saving
+                                <span *ngIf="summaryForm.get('summary')?.hasError('required')">Please write a summary
+                                    before saving</span>
+                                <span *ngIf="summaryForm.get('summary')?.hasError('maxlength')">Summary cannot exceed
+                                    10000 characters</span>
                             </p>
                         </div>
 

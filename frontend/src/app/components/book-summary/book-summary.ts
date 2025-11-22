@@ -33,7 +33,7 @@ export class BookSummaryComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.summaryForm = this.fb.group({
-      summary: ['', Validators.required]
+      summary: ['', [Validators.required, Validators.maxLength(10000)]]
     });
   }
 

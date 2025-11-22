@@ -414,8 +414,10 @@
 </div>
 
 <!-- Modals (keep existing ones) -->
-<app-plan-and-goal-modal *ngIf="isPlanAndGoalModalOpen" [bookId]="currentBookId!" (close)="closePlanAndGoalModal()"
-  (saved)="handlePlanAndGoalSaved()"></app-plan-and-goal-modal>
+<app-plan-and-goal-modal *ngIf="isPlanAndGoalModalOpen" [bookId]="book?.id || null"
+  [initialStartedReadingDate]="book?.startedReadingDate" [initialReadingGoal]="readingGoal"
+  [totalPages]="book?.totalPages || null" (saved)="handlePlanAndGoalSaved()" (close)="closePlanAndGoalModal()">
+</app-plan-and-goal-modal>
 
 <app-reading-log-modal *ngIf="isReadingLogModalOpen" [bookId]="currentBookId!"
   (close)="closeReadingLogModal()"></app-reading-log-modal>
