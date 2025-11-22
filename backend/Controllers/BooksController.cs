@@ -24,9 +24,9 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] int? tagId = null)
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] int? tagId = null, [FromQuery] string? search = null)
         {
-            var books = await _bookService.GetBooksAsync(tagId);
+            var books = await _bookService.GetBooksAsync(tagId, search);
             return Ok(books);
         }
 

@@ -1,7 +1,6 @@
 import { Component, output, OnInit, inject } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFunnel, heroXMark } from '@ng-icons/heroicons/outline';
-import { ButtonComponent } from '../../shared/button/button';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthorService } from '../../../services/author.service';
@@ -16,7 +15,7 @@ export interface BookFilters {
 
 @Component({
   selector: 'app-book-filters',
-  imports: [NgIconComponent, ButtonComponent, CommonModule, FormsModule],
+  imports: [NgIconComponent, CommonModule, FormsModule],
   templateUrl: './book-filters.html',
   styleUrl: './book-filters.css',
   standalone: true,
@@ -25,13 +24,12 @@ export interface BookFilters {
 export class BookFiltersComponent implements OnInit {
   private authorService = inject(AuthorService);
   private tagService = inject(TagService);
-  
+
   filtersChanged = output<BookFilters>();
-  
-  isExpanded = false;
+
   authors: any[] = [];
   tags: any[] = [];
-  
+
   currentFilters: BookFilters = {};
 
   // Reading status options
@@ -62,16 +60,16 @@ export class BookFiltersComponent implements OnInit {
     });
   }
 
-  toggleFilters(): void {
-    this.isExpanded = !this.isExpanded;
-  }
-
-  applyFilters(): void {
+  onFilterChange(): void {
     this.filtersChanged.emit(this.currentFilters);
   }
 
   clearFilters(): void {
     this.currentFilters = {};
     this.filtersChanged.emit(this.currentFilters);
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!this.currentFilters.status || !!this.currentFilters.authorId || !!this.currentFilters.tagId;
   }
 }

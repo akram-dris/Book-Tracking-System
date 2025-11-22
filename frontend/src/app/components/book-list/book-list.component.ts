@@ -5,7 +5,7 @@ import { BookService } from '../../services/book.service';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { ReadingStatusService } from '../../services/reading-status';
 import { NgFor } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { environment } from 'src/environments/environment';
@@ -31,10 +31,10 @@ type ViewMode = 'grid' | 'list';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, 
-    NgFor, 
-    RouterModule, 
-    BookFiltersComponent, 
+    FormsModule,
+    NgFor,
+    RouterModule,
+    BookFiltersComponent,
     BookStatsComponent,
     EmptyStateComponent,
     LoadingSpinnerComponent,
@@ -73,25 +73,34 @@ export class BookListComponent implements OnInit {
     summarized: 0
   };
 
+
+
+  // ... imports
+
   constructor(
     private bookService: BookService,
     private readingSessionService: ReadingSessionService,
-    private readingStatusService: ReadingStatusService
+    private readingStatusService: ReadingStatusService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.loadBooks();
+    this.route.queryParams.subscribe(params => {
+      const search = params['search'] || null;
+      const tagId = params['tagId'] ? +params['tagId'] : (this.selectedTagId || null);
+      this.loadBooks(tagId, search);
+    });
   }
 
-  loadBooks(tagId: number | null = null): void {
+  loadBooks(tagId: number | null = null, search: string | null = null): void {
     this.isLoading = true;
-    console.log('BookListComponent - Loading books with tagId:', tagId);
-    
+    console.log('BookListComponent - Loading books with tagId:', tagId, 'search:', search);
+
     // First load all status info
     this.readingStatusService.getAllStatuses().subscribe(statuses => {
       const statusMap = new Map(statuses.map(s => [s.value, s]));
-      
-      this.bookService.getBooks(tagId).subscribe(data => {
+
+      this.bookService.getBooks(tagId, search).subscribe(data => {
         this.books = data.map(book => {
           const statusInfo = statusMap.get(book.status);
           return {
@@ -107,26 +116,26 @@ export class BookListComponent implements OnInit {
 
         this.books.forEach(book => {
           if (book.id && book.totalPages && book.totalPages > 0) {
-          this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
-            next: sessions => {
-              const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-              book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
-            },
-            error: err => {
-              if (err.status === 404) {
-                book.progressPercentage = 0;
-              } else {
-                console.error(`Error fetching reading sessions for book ${book.id}:`, err);
-                book.progressPercentage = 0;
+            this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
+              next: sessions => {
+                const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+                book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
+              },
+              error: err => {
+                if (err.status === 404) {
+                  book.progressPercentage = 0;
+                } else {
+                  console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+                  book.progressPercentage = 0;
+                }
               }
-            }
-          });
-        } else {
-          book.progressPercentage = 0;
-        }
+            });
+          } else {
+            book.progressPercentage = 0;
+          }
           console.log('BookListComponent - Book ImageUrl:', book.imageUrl, 'Status:', book.status, 'Progress:', book.progressPercentage);
         });
-        
+
         this.sortBooks();
         this.isLoading = false;
       });
@@ -136,7 +145,7 @@ export class BookListComponent implements OnInit {
   calculateStats(): void {
     const summarizedCount = this.books.filter(b => b.status === ReadingStatus.Summarized).length;
     const completedCount = this.books.filter(b => b.status === ReadingStatus.Completed).length;
-    
+
     this.bookStats = {
       total: this.books.length,
       notReading: this.books.filter(b => b.status === ReadingStatus.NotReading).length,
@@ -149,24 +158,24 @@ export class BookListComponent implements OnInit {
 
   onFiltersChanged(filters: BookFilters): void {
     console.log('Filters changed:', filters);
-    
+
     // Apply filters
     let filteredBooks = [...this.books];
-    
+
     if (filters.status !== undefined) {
       filteredBooks = filteredBooks.filter(book => book.status === filters.status);
     }
-    
+
     if (filters.authorId) {
       filteredBooks = filteredBooks.filter(book => book.author?.id === filters.authorId);
     }
-    
+
     if (filters.tagId) {
-      filteredBooks = filteredBooks.filter(book => 
+      filteredBooks = filteredBooks.filter(book =>
         book.tags?.some(tag => tag.id === filters.tagId)
       );
     }
-    
+
     // For now, just reload with tag filter if provided
     if (filters.tagId) {
       this.loadBooks(filters.tagId);
