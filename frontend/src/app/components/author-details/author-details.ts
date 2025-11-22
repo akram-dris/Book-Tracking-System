@@ -13,6 +13,9 @@ import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../services/notification.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
@@ -31,13 +34,13 @@ export class AuthorDetailsComponent implements OnInit {
   authorBooks: BookWithStatus[] = [];
   rootUrl = environment.rootUrl;
   ReadingStatus = ReadingStatus;
-  
+
   // Statistics
   totalBooks = 0;
   booksCompleted = 0;
   booksReading = 0;
   totalPagesRead = 0;
-  
+
   // UI state
   bioExpanded = false;
 
@@ -47,7 +50,9 @@ export class AuthorDetailsComponent implements OnInit {
     private authorService: AuthorService,
     private bookService: BookService,
     private readingStatusService: ReadingStatusService,
-    private location: Location
+    private location: Location,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -67,7 +72,7 @@ export class AuthorDetailsComponent implements OnInit {
   loadAuthorBooks(authorId: number): void {
     this.readingStatusService.getAllStatuses().subscribe(statuses => {
       const statusMap = new Map(statuses.map(s => [s.value, s]));
-      
+
       this.bookService.getBooks().subscribe(books => {
         this.authorBooks = books
           .filter(book => book.authorId === authorId)
@@ -79,7 +84,7 @@ export class AuthorDetailsComponent implements OnInit {
               statusDisplayName: statusInfo?.displayName || 'Unknown'
             };
           });
-        
+
         this.calculateStatistics();
       });
     });
@@ -87,11 +92,11 @@ export class AuthorDetailsComponent implements OnInit {
 
   calculateStatistics(): void {
     this.totalBooks = this.authorBooks.length;
-    this.booksCompleted = this.authorBooks.filter(book => 
+    this.booksCompleted = this.authorBooks.filter(book =>
       book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized
     ).length;
     this.booksReading = this.authorBooks.filter(book => book.status === ReadingStatus.CurrentlyReading).length;
-    
+
     // Calculate total pages read from completed and summarized books
     this.totalPagesRead = this.authorBooks.reduce((total, book) => {
       if (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) {
@@ -106,11 +111,25 @@ export class AuthorDetailsComponent implements OnInit {
   }
 
   deleteAuthor(): void {
-    if (this.author && confirm('Are you sure you want to delete this author? This will also remove all their books.')) {
-      this.authorService.deleteAuthor(this.author.id).subscribe(() => {
-        this.router.navigate(['/authors']);
-      });
-    }
+    if (!this.author) return;
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Author',
+        message: 'Are you sure you want to delete this author? This will also remove all their books.',
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && this.author) {
+        this.authorService.deleteAuthor(this.author.id).subscribe(() => {
+          this.notificationService.showSuccess('Author deleted successfully');
+          this.router.navigate(['/authors']);
+        });
+      }
+    });
   }
 
   goBack(): void {
