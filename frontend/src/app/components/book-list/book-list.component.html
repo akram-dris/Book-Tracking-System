@@ -9,178 +9,182 @@
   <app-book-filters (filtersChanged)="onFiltersChanged($event)"></app-book-filters>
 
   <!-- Controls Bar -->
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-    <!-- Sort Options -->
-    <div class="flex items-center gap-2">
-      <label class="text-sm font-medium whitespace-nowrap">Sort by:</label>
-      <select 
-        class="select select-bordered select-sm"
-        [(ngModel)]="sortBy"
-        (change)="onSortChange(sortBy)"
-      >
-        @for (option of sortOptions; track option.value) {
-          <option [value]="option.value">{{ option.label }}</option>
-        }
-      </select>
-    </div>
+  <div class="mb-6">
+    <div
+      class="bg-base-200/50 backdrop-blur-sm rounded-2xl p-4 border border-base-300/50 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
 
-    <!-- View Toggle -->
-    <div class="join">
-      <button 
-        mat-button
-        class="join-item"
-        [class.mat-primary]="viewMode === 'grid'"
-        (click)="toggleView('grid')"
-      >
-        <ng-icon name="heroSquares2x2" size="1.25rem"></ng-icon>
-      </button>
-      <button 
-        mat-button
-        class="join-item"
-        [class.mat-primary]="viewMode === 'list'"
-        (click)="toggleView('list')"
-      >
-        <ng-icon name="heroBars3" size="1.25rem"></ng-icon>
-      </button>
+      <!-- Sort Options -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <span class="text-base-content/70 font-medium text-sm whitespace-nowrap">Sort by</span>
+        <select
+          class="select select-sm select-bordered rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all w-full sm:w-auto"
+          [(ngModel)]="sortBy" (change)="onSortChange(sortBy)">
+          @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- View Toggle -->
+      <div class="join bg-base-100/80 rounded-full p-1 border border-base-300">
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-4 transition-all duration-200"
+          [class.bg-primary]="viewMode === 'grid'" [class.text-primary-content]="viewMode === 'grid'"
+          [class.hover:bg-primary]="viewMode === 'grid'" (click)="toggleView('grid')" title="Grid View">
+          <ng-icon name="heroSquares2x2" size="1.25rem"></ng-icon>
+        </button>
+        <button class="join-item btn btn-sm btn-ghost rounded-full px-4 transition-all duration-200"
+          [class.bg-primary]="viewMode === 'list'" [class.text-primary-content]="viewMode === 'list'"
+          [class.hover:bg-primary]="viewMode === 'list'" (click)="toggleView('list')" title="List View">
+          <ng-icon name="heroBars3" size="1.25rem"></ng-icon>
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Loading State -->
   @if (isLoading) {
-    <div class="flex justify-center items-center py-20">
-      <app-loading-spinner [size]="'lg'" [color]="'primary'"></app-loading-spinner>
-    </div>
+  <div class="flex justify-center items-center py-20">
+    <app-loading-spinner [size]="'lg'" [color]="'primary'"></app-loading-spinner>
+  </div>
   }
 
   <!-- Empty State -->
   @else if (books.length === 0) {
-    <app-empty-state
-      [icon]="'heroBookOpen'"
-      [title]="'No books yet'"
-      [description]="'Start building your reading library by adding your first book!'"
-    >
+  <app-empty-state [icon]="'heroBookOpen'" [title]="'No books yet'"
+    [description]="'Start building your reading library by adding your first book!'">
 
-    </app-empty-state>
+  </app-empty-state>
   }
 
   <!-- Books Grid -->
   @else {
-    <!-- Grid View -->
-    @if (viewMode === 'grid') {
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        <div *ngFor="let book of books" 
-             class="card bg-base-200 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 group border-2 border-base-300 hover:border-primary hover:-translate-y-1">
-          <!-- Book Cover with Hover Overlay -->
-          <figure class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-base-300 to-base-200 cursor-pointer" 
-                  [routerLink]="['/books', book.id]">
-            <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
-                 alt="{{ book.title }}" 
-                 class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-90" />
-            
-            <!-- Dark Overlay on Hover -->
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            
-            <!-- Status Badge (Always Visible) -->
-            <div class="absolute top-2 right-2 z-10">
-              <span class="badge badge-sm {{ getStatusClass(book) }} shadow-xl border-0 transition-transform group-hover:scale-110">
-                {{ book.statusName }}
-              </span>
-            </div>
-            
-            <!-- Book Info on Hover -->
-            <div class="absolute inset-0 flex flex-col justify-end p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
-              <h3 class="text-white font-bold text-base mb-1 line-clamp-2 drop-shadow-lg">
-                {{ book.title }}
-              </h3>
-              <p class="text-white/90 text-sm mb-2 drop-shadow-md">
-                {{ book.author?.name }}
-              </p>
-              
-              <!-- Tags -->
-              @if (book.tags && book.tags.length > 0) {
-                <div class="flex flex-wrap gap-1 mb-2">
-                  <span *ngFor="let tag of book.tags.slice(0, 2)" class="badge badge-xs bg-white/20 text-white border-0 backdrop-blur-sm">
-                    {{ tag.name }}
-                  </span>
-                  @if (book.tags.length > 2) {
-                    <span class="badge badge-xs bg-white/20 text-white border-0 backdrop-blur-sm">+{{ book.tags.length - 2 }}</span>
-                  }
-                </div>
-              }
-              
-              <!-- Progress Bar (Enhanced) -->
-              @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
-                <div class="space-y-1">
-                  <div class="flex justify-between items-center">
-                    <span class="text-white text-xs font-medium drop-shadow-md">Reading Progress</span>
-                    <span class="text-white text-xs font-bold drop-shadow-md">{{ book.progressPercentage | number:'1.0-0' }}%</span>
-                  </div>
-                  <div class="w-full bg-white/20 rounded-full h-2 backdrop-blur-sm overflow-hidden">
-                    <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-300 shadow-lg"
-                         [style.width.%]="book.progressPercentage">
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-          </figure>
+  <!-- Grid View -->
+  @if (viewMode === 'grid') {
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    <div *ngFor="let book of books"
+      class="card bg-base-200 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 group border-2 border-base-300 hover:border-primary hover:-translate-y-1">
+      <!-- Book Cover with Hover Overlay -->
+      <figure class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-base-300 to-base-200 cursor-pointer"
+        [routerLink]="['/books', book.id]">
+        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
+          class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-90" />
+
+        <!-- Dark Overlay on Hover -->
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         </div>
-      </div>
-    }
-    
-    <!-- List View -->
-    @else {
-      <div class="space-y-3">
-        <div *ngFor="let book of books" 
-             class="card card-side bg-base-200 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:bg-primary/5 transition-all duration-300 border-2 border-base-300 hover:border-primary group">
-          <figure class="w-24 flex-shrink-0 cursor-pointer" [routerLink]="['/books', book.id]">
-            <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
-                 alt="{{ book.title }}"
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          </figure>
-          <div class="card-body p-4 flex-row items-center justify-between">
-            <div class="flex-1 cursor-pointer" [routerLink]="['/books', book.id]">
-              <h2 class="card-title text-base group-hover:text-primary transition-colors">{{ book.title }}</h2>
-              <p class="text-sm text-base-content/70">{{ book.author?.name }}</p>
-              <div class="flex flex-wrap gap-1 mt-2">
-                <span *ngFor="let tag of book.tags" class="badge badge-primary badge-sm hover:scale-105 transition-transform">{{ tag.name }}</span>
-              </div>
-              @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
-                <div class="mt-2 max-w-xs">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span>Progress</span>
-                    <span class="font-medium">{{ book.progressPercentage | number:'1.0-0' }}%</span>
-                  </div>
-                  <progress class="progress progress-primary w-full" [value]="book.progressPercentage" max="100"></progress>
-                </div>
-              }
+
+        <!-- Status Badge (Always Visible) -->
+        <div class="absolute top-2 right-2 z-10">
+          <span
+            class="badge badge-sm {{ getStatusClass(book) }} shadow-xl border-0 transition-transform group-hover:scale-110">
+            {{ book.statusName }}
+          </span>
+        </div>
+
+        <!-- Book Info on Hover -->
+        <div
+          class="absolute inset-0 flex flex-col justify-end p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+          <h3 class="text-white font-bold text-base mb-1 line-clamp-2 drop-shadow-lg">
+            {{ book.title }}
+          </h3>
+          <p class="text-white/90 text-sm mb-2 drop-shadow-md">
+            {{ book.author?.name }}
+          </p>
+
+          <!-- Tags -->
+          @if (book.tags && book.tags.length > 0) {
+          <div class="flex flex-wrap gap-1 mb-2">
+            <span *ngFor="let tag of book.tags.slice(0, 2)"
+              class="badge badge-xs bg-white/20 text-white border-0 backdrop-blur-sm">
+              {{ tag.name }}
+            </span>
+            @if (book.tags.length > 2) {
+            <span class="badge badge-xs bg-white/20 text-white border-0 backdrop-blur-sm">+{{ book.tags.length - 2
+              }}</span>
+            }
+          </div>
+          }
+
+          <!-- Progress Bar (Enhanced) -->
+          @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="text-white text-xs font-medium drop-shadow-md">Reading Progress</span>
+              <span class="text-white text-xs font-bold drop-shadow-md">{{ book.progressPercentage | number:'1.0-0'
+                }}%</span>
             </div>
-            <div class="flex items-center gap-3" (click)="$event.stopPropagation()">
-              <span class="badge {{ getStatusClass(book) }} group-hover:scale-105 transition-transform shadow-md">{{ book.statusName }}</span>
-              <div class="dropdown dropdown-hover dropdown-end">
-                <button tabindex="0" class="btn btn-circle btn-sm btn-ghost hover:bg-primary hover:text-primary-content">
-                  <ng-icon name="heroEllipsisVertical" size="1.25rem"></ng-icon>
-                </button>
-                <ul tabindex="0" class="dropdown-content z-[100] menu p-2 shadow-2xl bg-base-100 rounded-box w-44 border border-base-300">
-                  <li><a [routerLink]="['/books', book.id]" class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
-                    <ng-icon name="heroBookOpen" size="1.1rem"></ng-icon>
-                    <span class="font-medium">View Details</span>
-                  </a></li>
-                  <li><a [routerLink]="['/books', book.id, 'edit']" class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
-                    <ng-icon name="heroPencil" size="1.1rem"></ng-icon>
-                    <span class="font-medium">Edit</span>
-                  </a></li>
-                  <li><a class="text-error gap-2 hover:bg-error/10 transition-colors" (click)="deleteBook(book.id!)">
-                    <ng-icon name="heroTrash" size="1.1rem"></ng-icon>
-                    <span class="font-medium">Delete</span>
-                  </a></li>
-                </ul>
+            <div class="w-full bg-white/20 rounded-full h-2 backdrop-blur-sm overflow-hidden">
+              <div
+                class="bg-gradient-to-r from-primary to-secondary h-full rounded-full transition-all duration-300 shadow-lg"
+                [style.width.%]="book.progressPercentage">
               </div>
             </div>
           </div>
+          }
+        </div>
+      </figure>
+    </div>
+  </div>
+  }
+
+  <!-- List View -->
+  @else {
+  <div class="space-y-3">
+    <div *ngFor="let book of books"
+      class="card card-side bg-base-200 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:bg-primary/5 transition-all duration-300 border-2 border-base-300 hover:border-primary group">
+      <figure class="w-24 flex-shrink-0 cursor-pointer" [routerLink]="['/books', book.id]">
+        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      </figure>
+      <div class="card-body p-4 flex-row items-center justify-between">
+        <div class="flex-1 cursor-pointer" [routerLink]="['/books', book.id]">
+          <h2 class="card-title text-base group-hover:text-primary transition-colors">{{ book.title }}</h2>
+          <p class="text-sm text-base-content/70">{{ book.author?.name }}</p>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <span *ngFor="let tag of book.tags"
+              class="badge badge-primary badge-sm hover:scale-105 transition-transform">{{ tag.name }}</span>
+          </div>
+          @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
+          <div class="mt-2 max-w-xs">
+            <div class="flex justify-between text-xs mb-1">
+              <span>Progress</span>
+              <span class="font-medium">{{ book.progressPercentage | number:'1.0-0' }}%</span>
+            </div>
+            <progress class="progress progress-primary w-full" [value]="book.progressPercentage" max="100"></progress>
+          </div>
+          }
+        </div>
+        <div class="flex items-center gap-3" (click)="$event.stopPropagation()">
+          <span class="badge {{ getStatusClass(book) }} group-hover:scale-105 transition-transform shadow-md">{{
+            book.statusName }}</span>
+          <div class="dropdown dropdown-hover dropdown-end">
+            <button tabindex="0" class="btn btn-circle btn-sm btn-ghost hover:bg-primary hover:text-primary-content">
+              <ng-icon name="heroEllipsisVertical" size="1.25rem"></ng-icon>
+            </button>
+            <ul tabindex="0"
+              class="dropdown-content z-[100] menu p-2 shadow-2xl bg-base-100 rounded-box w-44 border border-base-300">
+              <li><a [routerLink]="['/books', book.id]"
+                  class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
+                  <ng-icon name="heroBookOpen" size="1.1rem"></ng-icon>
+                  <span class="font-medium">View Details</span>
+                </a></li>
+              <li><a [routerLink]="['/books', book.id, 'edit']"
+                  class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
+                  <ng-icon name="heroPencil" size="1.1rem"></ng-icon>
+                  <span class="font-medium">Edit</span>
+                </a></li>
+              <li><a class="text-error gap-2 hover:bg-error/10 transition-colors" (click)="deleteBook(book.id!)">
+                  <ng-icon name="heroTrash" size="1.1rem"></ng-icon>
+                  <span class="font-medium">Delete</span>
+                </a></li>
+            </ul>
+          </div>
         </div>
       </div>
-    }
+    </div>
+  </div>
+  }
   }
 
 </div>
