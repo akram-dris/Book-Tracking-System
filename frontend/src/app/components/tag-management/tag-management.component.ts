@@ -6,6 +6,9 @@ import { TagService } from '../../services/tag.service';
 import { GetTag } from '../../models/get-tag.model';
 import { CreateTag } from '../../models/create-tag.model';
 import { UpdateTag } from '../../models/update-tag.model';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../services/notification.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-tag-management',
@@ -28,7 +31,9 @@ export class TagManagementComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private tagService: TagService
+    private tagService: TagService,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) {
     this.tagForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(50)]]
@@ -73,6 +78,7 @@ export class TagManagementComponent implements OnInit {
             this.isEditingTag = false;
             this.editingTagId = null;
             this.loadTags();
+            this.notificationService.showSuccess('Tag updated successfully');
             this.isLoading = false;
           },
           error: (err) => {
@@ -87,6 +93,7 @@ export class TagManagementComponent implements OnInit {
             this.tagForm.reset();
             this.loadTags();
             this.loadTagUsageCounts();
+            this.notificationService.showSuccess('Tag added successfully');
             this.isLoading = false;
           },
           error: (err) => {
@@ -111,16 +118,28 @@ export class TagManagementComponent implements OnInit {
   }
 
   deleteTag(id: number): void {
-    if (confirm('Are you sure you want to delete this tag?')) {
-      this.tagService.deleteTag(id).subscribe({
-        next: () => {
-          this.loadTags();
-          this.loadTagUsageCounts();
-        },
-        error: (err) => {
-          console.error('Error deleting tag', err);
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Tag',
+        message: 'Are you sure you want to delete this tag?',
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.tagService.deleteTag(id).subscribe({
+          next: () => {
+            this.loadTags();
+            this.loadTagUsageCounts();
+            this.notificationService.showSuccess('Tag deleted successfully');
+          },
+          error: (err) => {
+            console.error('Error deleting tag', err);
+          }
+        });
+      }
+    });
   }
 }
