@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { HeatmapService } from '../../services/heatmap.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
-  heroChevronLeft, 
-  heroChevronRight, 
-  heroCalendarDays, 
+import {
+  heroChevronLeft,
+  heroChevronRight,
+  heroCalendarDays,
   heroCalendar,
-  heroFire, 
-  heroBookOpen, 
-  heroChartBarSquare, 
+  heroFire,
+  heroBookOpen,
+  heroChartBarSquare,
   heroTrophy,
   heroSparkles
 } from '@ng-icons/heroicons/outline';
@@ -42,14 +42,14 @@ interface LegendItem {
   selector: 'app-heatmap',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent],
-  viewProviders: [provideIcons({ 
-    heroChevronLeft, 
-    heroChevronRight, 
-    heroCalendarDays, 
+  viewProviders: [provideIcons({
+    heroChevronLeft,
+    heroChevronRight,
+    heroCalendarDays,
     heroCalendar,
-    heroFire, 
-    heroBookOpen, 
-    heroChartBarSquare, 
+    heroFire,
+    heroBookOpen,
+    heroChartBarSquare,
     heroTrophy,
     heroSparkles
   })],
@@ -110,7 +110,7 @@ export class HeatmapComponent implements OnInit {
 
   generateYears(): void {
     const currentYear = new Date().getFullYear();
-    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+    for (let i = currentYear - 5; i <= currentYear; i++) {
       this.years.push(i);
     }
   }
@@ -173,7 +173,7 @@ export class HeatmapComponent implements OnInit {
     current = 0;
     const lastDate = new Date(sortedDates[sortedDates.length - 1]);
     lastDate.setHours(0, 0, 0, 0);
-    
+
     if (lastDate.getTime() === today.getTime()) {
       current = 1;
       for (let i = sortedDates.length - 2; i >= 0; i--) {
@@ -198,8 +198,11 @@ export class HeatmapComponent implements OnInit {
   }
 
   nextYear(): void {
-    this.currentYear++;
-    this.loadHeatmapData();
+    const currentYear = new Date().getFullYear();
+    if (this.currentYear < currentYear) {
+      this.currentYear++;
+      this.loadHeatmapData();
+    }
   }
 
   generateCalendarGrid(): void {
@@ -280,8 +283,8 @@ export class HeatmapComponent implements OnInit {
   isToday(date: Date): boolean {
     const today = new Date();
     return date.getDate() === today.getDate() &&
-           date.getMonth() === today.getMonth() &&
-           date.getFullYear() === today.getFullYear();
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
   }
 
   getMonthTotal(month: CalendarMonth): number {
