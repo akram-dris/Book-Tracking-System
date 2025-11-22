@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthorService } from '../../services/author.service';
+import { NotificationService } from '../../services/notification.service';
 import { CreateAuthor } from '../../models/create-author.model';
 import { GetAuthor } from '../../models/get-author.model';
 import { UpdateAuthor } from '../../models/update-author.model';
@@ -47,7 +48,8 @@ export class AuthorFormComponent implements OnInit {
     private fb: FormBuilder,
     private authorService: AuthorService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private notificationService: NotificationService
   ) {
     this.authorForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -98,6 +100,7 @@ export class AuthorFormComponent implements OnInit {
 
       if (this.isEditMode && this.authorId) {
         this.authorService.updateAuthor(this.authorId, authorData as UpdateAuthor).subscribe(() => {
+          this.notificationService.showSuccess('Author updated successfully');
           this.router.navigate(['/authors', this.authorId]);
           this.isLoading = false;
         }, () => {
@@ -105,6 +108,7 @@ export class AuthorFormComponent implements OnInit {
         });
       } else {
         this.authorService.addAuthor(authorData as CreateAuthor).subscribe(() => {
+          this.notificationService.showSuccess('Author added successfully');
           this.router.navigate(['/authors']);
           this.isLoading = false;
         }, () => {

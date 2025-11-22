@@ -17,6 +17,9 @@ import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { NotificationService } from '../../services/notification.service';
 import {
   heroArrowLeft,
   heroPencil,
@@ -112,7 +115,9 @@ export class BookDetailsComponent implements OnInit {
     private readingSessionService: ReadingSessionService,
     private readingGoalService: ReadingGoalService,
     private location: Location,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) {
     this.summaryForm = this.fb.group({
       summary: ['', Validators.required]
@@ -217,6 +222,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
         console.log('BookDetailsComponent saveSummary - Book summary updated');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Summarized`);
       });
     }
   }
@@ -235,6 +241,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(() => {
         console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
         this.router.navigate(['/books', this.book!.id, 'set-goal']);
       });
     }
@@ -282,6 +289,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(() => {
         console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
         // No navigation needed, stay on the same page
       });
     }
@@ -298,6 +306,7 @@ export class BookDetailsComponent implements OnInit {
 
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, this.book.startedReadingDate, new Date()).subscribe(() => {
         console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed`);
       });
     }
   }
@@ -352,8 +361,22 @@ export class BookDetailsComponent implements OnInit {
 
   deleteBook(): void {
     if (this.book) {
-      this.bookService.deleteBook(this.book.id).subscribe(() => {
-        this.router.navigate(['/books']);
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Delete Book',
+          message: `Are you sure you want to delete "${this.book.title}"? This action cannot be undone.`,
+          confirmText: 'Delete',
+          confirmColor: 'warn'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.bookService.deleteBook(this.book!.id).subscribe(() => {
+            this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
+            this.router.navigate(['/books']);
+          });
+        }
       });
     }
   }

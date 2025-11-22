@@ -11,6 +11,9 @@ import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpD
 import { BookService } from '../../services/book.service';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../services/notification.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 interface AuthorWithCount extends GetAuthor {
   bookCount?: number;
@@ -42,7 +45,9 @@ export class AuthorListComponent implements OnInit {
 
   constructor(
     private authorService: AuthorService,
-    private bookService: BookService
+    private bookService: BookService,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -53,7 +58,7 @@ export class AuthorListComponent implements OnInit {
     this.isLoading = true;
     this.authorService.getAuthors().subscribe(authors => {
       // Get book count for each author
-      const bookCountRequests = authors.map(author => 
+      const bookCountRequests = authors.map(author =>
         this.bookService.getBooks().pipe()
       );
 
@@ -77,7 +82,7 @@ export class AuthorListComponent implements OnInit {
     // Search filter
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
-      result = result.filter(author => 
+      result = result.filter(author =>
         author.name.toLowerCase().includes(query) ||
         (author.bio && author.bio.toLowerCase().includes(query))
       );
@@ -124,11 +129,23 @@ export class AuthorListComponent implements OnInit {
   }
 
   deleteAuthor(id: number): void {
-    if (confirm('Are you sure you want to delete this author?')) {
-      this.authorService.deleteAuthor(id).subscribe(() => {
-        this.loadAuthors();
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Author',
+        message: 'Are you sure you want to delete this author? This will also remove all their books.',
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authorService.deleteAuthor(id).subscribe(() => {
+          this.notificationService.showSuccess('Author deleted successfully');
+          this.loadAuthors();
+        });
+      }
+    });
   }
 
   onImageError(event: Event, author: AuthorWithCount): void {

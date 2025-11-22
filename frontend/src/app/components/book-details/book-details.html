@@ -414,7 +414,7 @@
 </div>
 
 <!-- Modals (keep existing ones) -->
-<app-plan-and-goal-modal *ngIf="isPlanAndGoalModalOpen" [bookId]="book?.id || null"
+<app-plan-and-goal-modal *ngIf="isPlanAndGoalModalOpen" [bookId]="book?.id || null" [bookTitle]="book?.title || ''"
   [initialStartedReadingDate]="book?.startedReadingDate" [initialReadingGoal]="readingGoal"
   [totalPages]="book?.totalPages || null" (saved)="handlePlanAndGoalSaved()" (close)="closePlanAndGoalModal()">
 </app-plan-and-goal-modal>
