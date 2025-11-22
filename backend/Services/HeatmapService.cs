@@ -9,24 +9,33 @@ namespace BookTrackingSystem.Services
     public class HeatmapService : IHeatmapService
     {
         private readonly IReadingSessionRepository _readingSessionRepository;
+        private readonly ICacheService _cacheService;
 
-        public HeatmapService(IReadingSessionRepository readingSessionRepository)
+        public HeatmapService(IReadingSessionRepository readingSessionRepository, ICacheService cacheService)
         {
             _readingSessionRepository = readingSessionRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<Dictionary<string, int>> GetHeatmapDataAsync(int year)
         {
-            var sessions = await _readingSessionRepository.GetReadingSessionsByYearAsync(year);
+            return await _cacheService.GetOrCreateAsync(
+                $"{CacheService.HEATMAP_PREFIX}{year}",
+                async () =>
+                {
+                    var sessions = await _readingSessionRepository.GetReadingSessionsByYearAsync(year);
 
-            var heatmapData = sessions
-                .GroupBy(s => s.Date.Date) // Group by date only
-                .ToDictionary(
-                    g => g.Key.ToString("yyyy-MM-dd"), // Key: "YYYY-MM-DD"
-                    g => g.Sum(s => s.PagesRead) // Value: Total pages read for the day
-                );
+                    var heatmapData = sessions
+                        .GroupBy(s => s.Date.Date) // Group by date only
+                        .ToDictionary(
+                            g => g.Key.ToString("yyyy-MM-dd"), // Key: "YYYY-MM-DD"
+                            g => g.Sum(s => s.PagesRead) // Value: Total pages read for the day
+                        );
 
-            return heatmapData;
+                    return heatmapData;
+                },
+                TimeSpan.FromMinutes(30)
+            ) ?? new Dictionary<string, int>();
         }
     }
 }

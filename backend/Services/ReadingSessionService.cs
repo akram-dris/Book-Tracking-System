@@ -11,13 +11,15 @@ namespace BookTrackingSystem.Services
         private readonly IBookRepository _bookRepository; // New
         private readonly IBookService _bookService; // New
         private readonly IMapper _mapper;
+        private readonly ICacheService _cacheService;
 
-        public ReadingSessionService(IReadingSessionRepository readingSessionRepository, IBookRepository bookRepository, IBookService bookService, IMapper mapper)
+        public ReadingSessionService(IReadingSessionRepository readingSessionRepository, IBookRepository bookRepository, IBookService bookService, IMapper mapper, ICacheService cacheService)
         {
             _readingSessionRepository = readingSessionRepository;
             _bookRepository = bookRepository;
             _bookService = bookService;
             _mapper = mapper;
+            _cacheService = cacheService;
         }
 
         public async Task<IEnumerable<ReadingSessionDto>> GetReadingSessionsForBookAsync(int bookId)
@@ -70,6 +72,11 @@ namespace BookTrackingSystem.Services
             }
 
             await CheckBookCompletion(readingSessionDto.BookId);
+            
+            // Invalidate caches
+            _cacheService.InvalidateHeatmap(readingSessionDto.Date.Year);
+            _cacheService.InvalidateStreak();
+            
             return _mapper.Map<ReadingSessionDto>(resultSession);
         }
 
@@ -97,6 +104,11 @@ namespace BookTrackingSystem.Services
             _mapper.Map(readingSessionDto, existingSession);
             var updatedReadingSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
             await CheckBookCompletion(updatedReadingSession.BookId);
+            
+            // Invalidate caches
+            _cacheService.InvalidateHeatmap(readingSessionDto.Date.Year);
+            _cacheService.InvalidateStreak();
+            
             return _mapper.Map<ReadingSessionDto>(updatedReadingSession);
         }
 
@@ -110,6 +122,10 @@ namespace BookTrackingSystem.Services
 
             await _readingSessionRepository.DeleteReadingSessionAsync(id);
             await CheckBookCompletion(sessionToDelete.BookId);
+            
+            // Invalidate caches
+            _cacheService.InvalidateHeatmap(sessionToDelete.Date.Year);
+            _cacheService.InvalidateStreak();
         }
 
         private async Task CheckBookCompletion(int bookId)

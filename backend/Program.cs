@@ -46,6 +46,13 @@ builder.Services.AddScoped<BookTrackingSystem.Services.IReadingStatusService, Bo
 builder.Services.AddScoped<BookTrackingSystem.Services.IStatisticsService, BookTrackingSystem.Services.StatisticsService>();
 builder.Services.AddScoped<BookTrackingSystem.Services.ISearchService, BookTrackingSystem.Services.SearchService>();
 
+// Add Memory Cache
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024; // Limit cache size to prevent memory issues
+});
+builder.Services.AddSingleton<BookTrackingSystem.Services.ICacheService, BookTrackingSystem.Services.CacheService>();
+
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
