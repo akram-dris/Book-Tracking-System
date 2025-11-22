@@ -17,6 +17,9 @@ import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { NotificationService } from '../../services/notification.service';
 import {
   heroArrowLeft,
   heroPencil,
@@ -112,7 +115,9 @@ export class BookDetailsComponent implements OnInit {
     private readingSessionService: ReadingSessionService,
     private readingGoalService: ReadingGoalService,
     private location: Location,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) {
     this.summaryForm = this.fb.group({
       summary: ['', Validators.required]
@@ -352,8 +357,22 @@ export class BookDetailsComponent implements OnInit {
 
   deleteBook(): void {
     if (this.book) {
-      this.bookService.deleteBook(this.book.id).subscribe(() => {
-        this.router.navigate(['/books']);
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Delete Book',
+          message: `Are you sure you want to delete "${this.book.title}"? This action cannot be undone.`,
+          confirmText: 'Delete',
+          confirmColor: 'warn'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.bookService.deleteBook(this.book!.id).subscribe(() => {
+            this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
+            this.router.navigate(['/books']);
+          });
+        }
       });
     }
   }

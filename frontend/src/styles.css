@@ -11,53 +11,93 @@
 }
 
 [data-theme="light"] {
-  --p: 217 91% 59%; /* Primary - blue-500 */
-  --pf: 217 91% 50%; /* Primary focus - darker blue */
-  --s: 262 83% 58%; /* Secondary - deep purple for Summarized */
-  --sf: 262 83% 48%; /* Secondary focus - darker purple */
-  --a: 160 84% 39%; /* Accent - emerald green for Completed */
-  --af: 160 84% 32%; /* Accent focus - darker emerald */
-  --n: 220 9% 46%; /* Neutral - slate gray for Not Reading */
-  --nf: 220 9% 38%; /* Neutral focus - darker slate */
-  --b1: 0 0% 100%; /* Base-100 - white */
-  --b2: 210 40% 96%; /* Base-200 - gray-100 */
-  --b3: 210 40% 90%; /* Base-300 - gray-200 */
-  --in: 199 89% 48%; /* Info - sky blue for Planning */
-  --su: 142 76% 36%; /* Success - green-600 (kept for other uses) */
-  --wa: 24 95% 53%; /* Warning - coral orange for Currently Reading */
-  --er: 0 84% 60%; /* Error - red-600 */
+  --p: 217 91% 59%;
+  /* Primary - blue-500 */
+  --pf: 217 91% 50%;
+  /* Primary focus - darker blue */
+  --s: 262 83% 58%;
+  /* Secondary - deep purple for Summarized */
+  --sf: 262 83% 48%;
+  /* Secondary focus - darker purple */
+  --a: 160 84% 39%;
+  /* Accent - emerald green for Completed */
+  --af: 160 84% 32%;
+  /* Accent focus - darker emerald */
+  --n: 220 9% 46%;
+  /* Neutral - slate gray for Not Reading */
+  --nf: 220 9% 38%;
+  /* Neutral focus - darker slate */
+  --b1: 0 0% 100%;
+  /* Base-100 - white */
+  --b2: 210 40% 96%;
+  /* Base-200 - gray-100 */
+  --b3: 210 40% 90%;
+  /* Base-300 - gray-200 */
+  --in: 199 89% 48%;
+  /* Info - sky blue for Planning */
+  --su: 142 76% 36%;
+  /* Success - green-600 (kept for other uses) */
+  --wa: 24 95% 53%;
+  /* Warning - coral orange for Currently Reading */
+  --er: 0 84% 60%;
+  /* Error - red-600 */
 
   /* Text colors for contrast */
-  --pc: 0 0% 100%; /* Primary content - white */
-  --sc: 0 0% 100%; /* Secondary content - white */
-  --ac: 0 0% 100%; /* Accent content - white */
-  --nc: 0 0% 100%; /* Neutral content - white */
-  --bc: 215 14% 34%; /* Base content - gray-700 */
+  --pc: 0 0% 100%;
+  /* Primary content - white */
+  --sc: 0 0% 100%;
+  /* Secondary content - white */
+  --ac: 0 0% 100%;
+  /* Accent content - white */
+  --nc: 0 0% 100%;
+  /* Neutral content - white */
+  --bc: 215 14% 34%;
+  /* Base content - gray-700 */
 }
 
 [data-theme="dark"] {
-  --p: 217 91% 65%; /* Primary - brighter blue for dark mode */
-  --pf: 217 91% 75%; /* Primary focus - even brighter blue */
-  --s: 262 83% 68%; /* Secondary - brighter purple for Summarized */
-  --sf: 262 83% 78%; /* Secondary focus - even brighter purple */
-  --a: 160 84% 49%; /* Accent - brighter emerald for Completed */
-  --af: 160 84% 59%; /* Accent focus - even brighter emerald */
-  --n: 220 9% 56%; /* Neutral - lighter slate gray for Not Reading */
-  --nf: 220 9% 66%; /* Neutral focus - even lighter slate */
-  --b1: 222 47% 11%; /* Base-100 - slate-900 */
-  --b2: 222 47% 15%; /* Base-200 - slate-800 */
-  --b3: 222 47% 20%; /* Base-300 - slate-700 */
-  --in: 199 89% 58%; /* Info - brighter sky blue for Planning */
-  --su: 142 76% 46%; /* Success - brighter green (kept for other uses) */
-  --wa: 24 95% 63%; /* Warning - brighter coral for Currently Reading */
-  --er: 0 84% 70%; /* Error - brighter red */
+  --p: 217 91% 65%;
+  /* Primary - brighter blue for dark mode */
+  --pf: 217 91% 75%;
+  /* Primary focus - even brighter blue */
+  --s: 262 83% 68%;
+  /* Secondary - brighter purple for Summarized */
+  --sf: 262 83% 78%;
+  /* Secondary focus - even brighter purple */
+  --a: 160 84% 49%;
+  /* Accent - brighter emerald for Completed */
+  --af: 160 84% 59%;
+  /* Accent focus - even brighter emerald */
+  --n: 220 9% 56%;
+  /* Neutral - lighter slate gray for Not Reading */
+  --nf: 220 9% 66%;
+  /* Neutral focus - even lighter slate */
+  --b1: 222 47% 11%;
+  /* Base-100 - slate-900 */
+  --b2: 222 47% 15%;
+  /* Base-200 - slate-800 */
+  --b3: 222 47% 20%;
+  /* Base-300 - slate-700 */
+  --in: 199 89% 58%;
+  /* Info - brighter sky blue for Planning */
+  --su: 142 76% 46%;
+  /* Success - brighter green (kept for other uses) */
+  --wa: 24 95% 63%;
+  /* Warning - brighter coral for Currently Reading */
+  --er: 0 84% 70%;
+  /* Error - brighter red */
 
   /* Text colors for contrast */
-  --pc: 222 47% 11%; /* Primary content - dark for contrast */
-  --sc: 222 47% 11%; /* Secondary content - dark for contrast */
-  --ac: 222 47% 11%; /* Accent content - dark for contrast */
-  --nc: 222 47% 11%; /* Neutral content - dark for contrast */
-  --bc: 210 40% 96%; /* Base content - light gray */
+  --pc: 222 47% 11%;
+  /* Primary content - dark for contrast */
+  --sc: 222 47% 11%;
+  /* Secondary content - dark for contrast */
+  --ac: 222 47% 11%;
+  /* Accent content - dark for contrast */
+  --nc: 222 47% 11%;
+  /* Neutral content - dark for contrast */
+  --bc: 210 40% 96%;
+  /* Base content - light gray */
 }
 
 /* Design Tokens - Custom CSS Variables */
@@ -167,7 +207,7 @@ a:not(.no-hover):hover,
 .card-side:hover {
   @apply shadow-2xl;
   box-shadow: 0 8px 24px -4px hsl(var(--p) / 0.15),
-              0 4px 8px -2px hsl(var(--p) / 0.1);
+    0 4px 8px -2px hsl(var(--p) / 0.1);
 }
 
 /* Link Hover - Consistent Blue Personality */
@@ -226,13 +266,13 @@ select:focus {
 }
 
 /* Dropdown & Menu Items */
-.menu li > *,
+.menu li>*,
 .dropdown-content li,
 [role="menuitem"] {
   @apply cursor-pointer;
 }
 
-.menu li > *:hover,
+.menu li>*:hover,
 .dropdown-content li:hover,
 [role="menuitem"]:hover {
   @apply bg-primary/10 text-primary;
@@ -324,18 +364,17 @@ button:active:not(:disabled),
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--b2)) 0%,
-    hsl(var(--p) / 0.1) 50%,
-    hsl(var(--b2)) 100%
-  );
+  background: linear-gradient(90deg,
+      hsl(var(--b2)) 0%,
+      hsl(var(--p) / 0.1) 50%,
+      hsl(var(--b2)) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -510,7 +549,12 @@ body {
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   @apply font-semibold;
 }
 
@@ -537,6 +581,7 @@ h5 {
 h6 {
   @apply text-base;
 }
+
 /* ng-select Styles */
 @import '@ng-select/ng-select/themes/default.theme.css';
 
@@ -873,3 +918,118 @@ h6 {
   gap: 0.5rem !important;
 }
 
+
+/* Modern Standard Snackbar Styles */
+.success-snackbar {
+  --mdc-snackbar-container-color: hsl(var(--a));
+  /* Accent color (Emerald) for Success */
+  --mdc-snackbar-supporting-text-color: hsl(var(--ac));
+  /* Accent content color for text */
+  --mat-snack-bar-button-color: hsl(var(--ac));
+  /* Accent content color for action button */
+}
+
+.success-snackbar .mdc-snackbar__surface {
+  background-color: hsl(var(--a)) !important;
+}
+
+.success-snackbar .mdc-snackbar__label {
+  color: hsl(var(--ac)) !important;
+}
+
+.success-snackbar .mat-mdc-snack-bar-action {
+  color: hsl(var(--ac)) !important;
+  background-color: transparent !important;
+  border: 1px solid hsl(var(--ac) / 0.3) !important;
+  /* Subtle border */
+  border-radius: var(--radius-md) !important;
+  margin-right: 8px;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.success-snackbar .mat-mdc-snack-bar-action:hover {
+  background-color: hsl(var(--ac)) !important;
+  /* Text color becomes background */
+  color: hsl(var(--a)) !important;
+  /* Background color becomes text */
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: hsl(var(--er));
+  /* Error color */
+  --mdc-snackbar-supporting-text-color: white;
+  /* Error usually has white text on red */
+  --mat-snack-bar-button-color: white;
+}
+
+.error-snackbar .mdc-snackbar__surface {
+  background-color: hsl(var(--er)) !important;
+}
+
+.error-snackbar .mdc-snackbar__label {
+  color: white !important;
+}
+
+.error-snackbar .mat-mdc-snack-bar-action {
+  color: white !important;
+  background-color: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: var(--radius-md) !important;
+  margin-right: 8px;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.error-snackbar .mat-mdc-snack-bar-action:hover {
+  background-color: white !important;
+  color: hsl(var(--er)) !important;
+}
+
+/* Common Snackbar Styling for "Modern" feel */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-shape: var(--radius-xl);
+  /* Consistent border radius */
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  box-shadow: var(--shadow-lg) !important;
+  /* Consistent shadow */
+  font-family: var(--font-sans) !important;
+}
+
+/* Ensure the text is bold enough to be readable on colored backgrounds */
+.success-snackbar .mdc-snackbar__label,
+.error-snackbar .mdc-snackbar__label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Modern Dialog Styling */
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: var(--radius-xl) !important;
+  background-color: hsl(var(--b1)) !important;
+  /* Base-100 background */
+  box-shadow: var(--shadow-xl) !important;
+  padding: 0 !important;
+  /* Reset padding to handle it in the component or standard classes */
+}
+
+.mat-mdc-dialog-title {
+  color: hsl(var(--bc)) !important;
+  /* Base content color */
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  padding: 24px 24px 0 24px !important;
+}
+
+.mat-mdc-dialog-content {
+  color: hsl(var(--bc) / 0.7) !important;
+  /* Slightly muted content */
+  font-family: var(--font-sans) !important;
+  padding: 0 24px 20px 24px !important;
+}
+
+.mat-mdc-dialog-actions {
+  padding: 12px 24px 24px 24px !important;
+  border-top: 1px solid hsl(var(--bc) / 0.1);
+  /* Subtle separator */
+}

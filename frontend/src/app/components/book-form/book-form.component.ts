@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BookService } from '../../services/book.service';
 import { AuthorService } from '../../services/author.service';
 import { TagService } from '../../services/tag.service';
+import { NotificationService } from '../../services/notification.service';
 import { NgFor, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { switchMap, finalize } from 'rxjs/operators';
@@ -66,7 +67,8 @@ export class BookFormComponent implements OnInit {
     private authorService: AuthorService,
     private tagService: TagService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private notificationService: NotificationService
   ) {
     this.bookForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(200)]],
@@ -245,7 +247,10 @@ export class BookFormComponent implements OnInit {
           switchMap(() => this.bookService.assignTags(this.bookId!, bookData.tagIds)),
           finalize(() => this.isLoading = false)
         ).subscribe({
-          next: () => this.router.navigate(['/books', this.bookId]),
+          next: () => {
+            this.notificationService.showSuccess('Book updated successfully');
+            this.router.navigate(['/books', this.bookId]);
+          },
           error: (err) => console.error(err)
         });
       } else {
@@ -253,7 +258,10 @@ export class BookFormComponent implements OnInit {
           switchMap((newBook) => this.bookService.assignTags(newBook.id, bookData.tagIds)),
           finalize(() => this.isLoading = false)
         ).subscribe({
-          next: () => this.router.navigate(['/books']),
+          next: () => {
+            this.notificationService.showSuccess('Book added successfully');
+            this.router.navigate(['/books']);
+          },
           error: (err) => console.error(err)
         });
       }
