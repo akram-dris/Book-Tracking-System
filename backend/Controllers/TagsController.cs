@@ -1,9 +1,10 @@
-
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Services;
+using BookTrackingSystem.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace BookTrackingSystem.Controllers
 {
@@ -12,28 +13,50 @@ namespace BookTrackingSystem.Controllers
     public class TagsController : ControllerBase
     {
         private readonly ITagService _tagService;
+        private readonly ITagRepository _tagRepository;
 
-        public TagsController(ITagService tagService)
+        public TagsController(ITagService tagService, ITagRepository tagRepository)
         {
             _tagService = tagService;
+            _tagRepository = tagRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TagDto>>> GetTags()
         {
-            var tags = await _tagService.GetAllTagsAsync();
-            return Ok(tags);
+            var tags = await _tagRepository.GetAllAsync();
+            
+            var tagDtos = tags.Select(tag => new TagDto
+            {
+                Id = tag.Id,
+                Name = tag.Name,
+                AverageRating = tag.BookTagAssignments != null && tag.BookTagAssignments.Any(bta => bta.Book?.Rating != null)
+                    ? tag.BookTagAssignments.Where(bta => bta.Book?.Rating != null).Average(bta => bta.Book!.Rating!.Value)
+                    : null
+            }).ToList();
+            
+            return Ok(tagDtos);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TagDto>> GetTag(int id)
         {
-            var tag = await _tagService.GetTagByIdAsync(id);
+            var tag = await _tagRepository.GetByIdAsync(id);
             if (tag == null)
             {
                 return NotFound();
             }
-            return Ok(tag);
+            
+            var tagDto = new TagDto
+            {
+                Id = tag.Id,
+                Name = tag.Name,
+                AverageRating = tag.BookTagAssignments != null && tag.BookTagAssignments.Any(bta => bta.Book?.Rating != null)
+                    ? tag.BookTagAssignments.Where(bta => bta.Book?.Rating != null).Average(bta => bta.Book!.Rating!.Value)
+                    : null
+            };
+            
+            return Ok(tagDto);
         }
 
         [HttpPost]
