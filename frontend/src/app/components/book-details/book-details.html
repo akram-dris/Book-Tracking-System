@@ -37,19 +37,19 @@
                 <h3 class="text-white font-bold text-xl drop-shadow-lg">Rate This Book</h3>
 
                 <!-- Star Rating Component -->
-                <div class="scale-150">
+                <div class="scale-150 book-cover-rating">
                   <p-rating [(ngModel)]="tempCoverRating" [stars]="5" (ngModelChange)="onCoverRatingChange($event)">
                   </p-rating>
                 </div>
 
                 <!-- Selected Rating Display -->
                 <div *ngIf="tempCoverRating" class="text-white text-2xl font-bold drop-shadow-lg">
-                  {{ tempCoverRating | number:'1.1-1' }} / 5
+                  {{ tempCoverRating | number:'1.0-0' }} / 5
                 </div>
 
                 <!-- Save Button -->
-                <button *ngIf="tempCoverRating" (click)="saveCoverRating()" mat-raised-button
-                  class="!bg-gradient-to-r !from-green-400 !to-emerald-500 !text-white !font-semibold !px-6 !py-2 !rounded-lg !shadow-xl hover:!scale-105 transition-all gap-2">
+                <button *ngIf="tempCoverRating" (click)="saveCoverRating()" mat-raised-button color="primary"
+                  class="!font-semibold !px-6 !py-2 !rounded-lg !shadow-xl hover:!scale-105 transition-all gap-2">
                   <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
                   Save Rating
                 </button>
@@ -282,50 +282,87 @@
             </div>
           </div>
 
-          <!-- Rating Card (for Completed/Summarized books WITH rating) -->
+          <!-- Rating Card (for Completed/Summarized books WITH rating) - Modern Redesign -->
           <div
             *ngIf="book.rating && (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized)"
-            class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl p-6 border-2 border-amber-300/50 hover:border-amber-400/70 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300">
-            <div class="flex items-center gap-2 mb-4">
-              <ng-icon name="heroStar" size="1.5rem" class="text-amber-500"></ng-icon>
-              <h4 class="font-semibold text-lg text-base-content">Your Rating</h4>
-            </div>
-            <div class="flex flex-col items-center gap-3">
-              <!-- Large star rating display -->
-              <div class="flex flex-col items-center gap-2">
-                <p-rating [ngModel]="isEditingRating ? tempRating : book.rating" [readonly]="!isEditingRating"
-                  [stars]="5" class="transition-all duration-300" [class.scale-110]="isEditingRating"
-                  (ngModelChange)="isEditingRating ? tempRating = $event : null">
-                </p-rating>
+            class="group relative bg-white/60 dark:bg-base-200/60 backdrop-blur-sm rounded-2xl p-6 border border-amber-200/40 dark:border-amber-700/30 hover:border-amber-300/60 dark:hover:border-amber-600/40 hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-500">
 
-                <!-- Inline Edit Actions -->
-                <div *ngIf="isEditingRating" class="flex items-center gap-2 mt-2 animate-fadeIn">
-                  <button (click)="saveRatingInline()" mat-mini-fab color="primary"
-                    class="!bg-green-500 !text-white !w-8 !h-8" matTooltip="Save">
-                    <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
-                  </button>
-                  <button (click)="cancelRatingInline()" mat-mini-fab color="warn"
-                    class="!bg-red-500 !text-white !w-8 !h-8" matTooltip="Cancel">
-                    <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
-                  </button>
+            <!-- Subtle Accent Line -->
+            <div
+              class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400 rounded-t-2xl opacity-60">
+            </div>
+
+            <!-- Header with Edit/Save/Cancel Buttons -->
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                  <ng-icon name="heroStar" size="1.25rem" class="text-white"></ng-icon>
+                </div>
+                <div>
+                  <h4 class="font-bold text-lg text-base-content">Your Rating</h4>
+                  <p class="text-xs text-base-content/50">How did you enjoy this book?</p>
                 </div>
               </div>
 
-              <!-- Numeric rating (Hidden when editing) -->
-              <div *ngIf="!isEditingRating"
-                class="text-4xl font-bold bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                {{ book.rating | number:'1.0-1' }}
-              </div>
-              <div *ngIf="!isEditingRating" class="text-sm text-base-content/60">out of 5</div>
+              <!-- Action Buttons (Edit or Save/Cancel) -->
+              <div class="flex items-center gap-2">
+                <!-- Edit Button (when not editing) -->
+                <button *ngIf="!isEditingRating" (click)="editRating()" mat-mini-fab color="primary"
+                  class="!w-9 !h-9 !shadow-md hover:!shadow-lg hover:!scale-105 transition-all"
+                  matTooltip="Edit your rating">
+                  <ng-icon name="heroPencil" size="1.125rem" class="text-white"></ng-icon>
+                </button>
 
-              <!-- Edit button (Hidden when editing) -->
-              <button *ngIf="!isEditingRating" (click)="editRating()" mat-stroked-button color="primary"
-                class="mt-2 border-primary/30 hover:bg-primary/5 hover:border-primary text-primary gap-2 rounded-full px-6">
-                <ng-icon name="heroPencil" size="1rem"></ng-icon>
-                Edit Rating
-              </button>
+                <!-- Save/Cancel Buttons (when editing) -->
+                <ng-container *ngIf="isEditingRating">
+                  <button (click)="saveRatingInline()" mat-mini-fab color="primary"
+                    class="!w-9 !h-9 !shadow-md hover:!shadow-lg hover:!scale-105 transition-all"
+                    matTooltip="Save rating">
+                    <ng-icon name="heroCheckCircle" size="1.125rem" class="text-white"></ng-icon>
+                  </button>
+                  <button (click)="cancelRatingInline()" mat-mini-fab color="warn"
+                    class="!w-9 !h-9 !shadow-md hover:!shadow-lg hover:!scale-105 transition-all" matTooltip="Cancel">
+                    <ng-icon name="heroXMark" size="1.125rem" class="text-white"></ng-icon>
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+
+            <!-- Rating Display -->
+            <div class="flex items-center justify-between gap-6">
+              <!-- Large Score Display -->
+              <div class="flex items-end gap-2">
+                <div
+                  class="text-6xl font-black bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent leading-none tracking-tight">
+                  {{ isEditingRating ? (tempRating || 0) : book.rating }}
+                </div>
+                <div class="text-base text-base-content/40 font-medium mb-2 pb-1">/5</div>
+              </div>
+
+              <!-- Stars Section -->
+              <div class="flex-1 flex flex-col items-end gap-3">
+                <!-- Star Rating -->
+                <p-rating [ngModel]="isEditingRating ? tempRating : book.rating" [readonly]="!isEditingRating"
+                  [stars]="5" class="rating-display-modern transition-all duration-300"
+                  (ngModelChange)="isEditingRating ? tempRating = $event : null">
+                </p-rating>
+              </div>
+            </div>
+
+            <!-- Optional: Rating Description (only when not editing) -->
+            <div *ngIf="!isEditingRating" class="mt-4 pt-4 border-t border-base-300/50">
+              <p class="text-sm text-base-content/60 italic">
+                <span *ngIf="book.rating === 5">★ Absolutely loved it!</span>
+                <span *ngIf="book.rating === 4">★ Really enjoyed this one</span>
+                <span *ngIf="book.rating === 3">★ It was okay</span>
+                <span *ngIf="book.rating === 2">★ Not my favorite</span>
+                <span *ngIf="book.rating === 1">★ Didn't enjoy it</span>
+              </p>
             </div>
           </div>
+
+
 
 
           <!-- Reading Goals Card -->
