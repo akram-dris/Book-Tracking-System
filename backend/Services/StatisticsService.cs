@@ -413,6 +413,27 @@ namespace BookTrackingSystem.Services
                 }
             }
 
+            // Rating trend - monthly average ratings
+            var ratingTrend = new Dictionary<string, double>();
+            var ratedBooks = await _context.Books
+                .Where(b => b.Rating.HasValue && 
+                           b.CompletedDate.HasValue && 
+                           b.CompletedDate.Value >= startDate && 
+                           b.CompletedDate.Value <= endDate)
+                .ToListAsync();
+
+            if (ratedBooks.Any())
+            {
+                var monthlyRatings = ratedBooks
+                    .GroupBy(b => b.CompletedDate!.Value.ToString("yyyy-MM"))
+                    .OrderBy(g => g.Key);
+
+                foreach (var group in monthlyRatings)
+                {
+                    ratingTrend[group.Key] = Math.Round(group.Average(b => b.Rating!.Value), 2);
+                }
+            }
+
             return new TimeBasedStatisticsDto
             {
                 BestReadingMonth = bestMonth != null ? bestMonth.Date.ToString("MMMM yyyy") : null,
@@ -422,7 +443,8 @@ namespace BookTrackingSystem.Services
                 MonthlyTrend = monthlyTrend,
                 WeeklyPattern = weeklyPattern,
                 YearOverYear = yearOverYear,
-                StatusTimeline = new Dictionary<string, StatusTimelineDataDto> { { "data", statusTimeline } }
+                StatusTimeline = new Dictionary<string, StatusTimelineDataDto> { { "data", statusTimeline } },
+                RatingTrend = ratingTrend
             };
         }
 
