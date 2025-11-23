@@ -123,10 +123,33 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
-    <span class="loading loading-spinner loading-lg text-primary"></span>
-    <p class="mt-4 text-base-content/70">Loading your reading data...</p>
+  <!-- Skeleton Loading State -->
+  <div *ngIf="loading" class="animate-pulse">
+    <!-- Stats Cards Skeleton -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div *ngFor="let i of [1,2,3,4]" class="bg-base-100/40 rounded-2xl p-6 h-32 border border-base-300/50">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-base-300"></div>
+          <div class="h-4 w-24 bg-base-300 rounded"></div>
+        </div>
+        <div class="h-10 w-16 bg-base-300 rounded mt-2"></div>
+      </div>
+    </div>
+
+    <!-- Calendar Grid Skeleton -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+      <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]"
+        class="rounded-2xl p-5 bg-base-100/40 border border-base-300/50 h-[320px]">
+        <div class="h-6 w-24 bg-base-300 rounded mx-auto mb-4"></div>
+        <div class="grid grid-cols-7 gap-1.5 mb-3">
+          <div *ngFor="let d of [1,2,3,4,5,6,7]" class="h-4 w-4 bg-base-300 rounded mx-auto"></div>
+        </div>
+        <div class="grid grid-cols-7 gap-1.5">
+          <div *ngFor="let d of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]"
+            class="aspect-square bg-base-300 rounded-sm opacity-50"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Calendar Grid with Modern Design -->

@@ -6,11 +6,12 @@ import { Recommendation } from '../../models/recommendation.model';
 import { environment } from '../../../environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroStar, heroBookOpen, heroSparkles } from '@ng-icons/heroicons/outline';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @Component({
   selector: 'app-recommendations',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, NgIconComponent, NgxSkeletonLoaderModule],
   templateUrl: './recommendations.html',
   styleUrl: './recommendations.css',
   providers: [provideIcons({ heroStar, heroBookOpen, heroSparkles })]

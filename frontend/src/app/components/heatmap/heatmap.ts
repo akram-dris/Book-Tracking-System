@@ -15,6 +15,7 @@ import {
   heroTrophy,
   heroSparkles
 } from '@ng-icons/heroicons/outline';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 interface CalendarDay {
   date: Date;
@@ -41,7 +42,7 @@ interface LegendItem {
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, NgxSkeletonLoaderModule],
   viewProviders: [provideIcons({
     heroChevronLeft,
     heroChevronRight,

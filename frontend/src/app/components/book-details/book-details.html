@@ -1,4 +1,54 @@
-<div *ngIf="book" class="min-h-screen bg-base-100">
+<!-- Skeleton Loading State -->
+<div *ngIf="isLoading" class="min-h-screen bg-base-100 p-6">
+  <!-- Back Button Skeleton -->
+  <div class="mb-6">
+    <div class="h-10 w-24 bg-base-200 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Header Section Skeleton -->
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 overflow-hidden mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+      <!-- Left Side - Book Cover Skeleton -->
+      <div class="lg:col-span-3 relative">
+        <div class="aspect-[2/3] lg:h-full bg-base-300 animate-pulse"></div>
+      </div>
+
+      <!-- Right Side - Book Info Skeleton -->
+      <div class="lg:col-span-9 p-8 space-y-6">
+        <!-- Title & Author -->
+        <div>
+          <div class="h-10 bg-base-300 rounded w-3/4 mb-4 animate-pulse"></div>
+          <div class="h-6 bg-base-300 rounded w-1/2 animate-pulse"></div>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="flex gap-2">
+          <div class="h-8 w-24 bg-base-300 rounded-full animate-pulse"></div>
+          <div class="h-8 w-20 bg-base-300 rounded-full animate-pulse"></div>
+          <div class="h-8 w-20 bg-base-300 rounded-full animate-pulse"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <div class="h-10 w-24 bg-base-300 rounded-lg animate-pulse"></div>
+          <div class="h-10 w-24 bg-base-300 rounded-lg animate-pulse"></div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div *ngFor="let i of [1,2,3,4]"
+            class="bg-base-100 rounded-xl p-4 border-2 border-base-300 h-24 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Skeleton -->
+  <div class="h-12 bg-base-200 rounded-2xl mb-6 animate-pulse"></div>
+  <div class="h-64 bg-base-200 rounded-2xl animate-pulse"></div>
+</div>
+
+<div *ngIf="!isLoading && book" class="min-h-screen bg-base-100">
   <!-- Back Button -->
   <div class="mb-6">
     <button mat-button (click)="goBack()"

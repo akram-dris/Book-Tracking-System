@@ -46,6 +46,7 @@ export class AuthorDetailsComponent implements OnInit {
   // UI state
   bioExpanded = false;
   sortBy: string = 'title-asc';
+  isLoading = true;
 
   sortOptions = [
     { value: 'title-asc', label: 'Title (A-Z)' },
@@ -74,9 +75,16 @@ export class AuthorDetailsComponent implements OnInit {
   }
 
   loadAuthorData(id: number): void {
-    this.authorService.getAuthor(id).subscribe(author => {
-      this.author = author;
-      this.loadAuthorBooks(id);
+    this.isLoading = true;
+    this.authorService.getAuthor(id).subscribe({
+      next: (author) => {
+        this.author = author;
+        this.loadAuthorBooks(id);
+      },
+      error: (err) => {
+        console.error('Error loading author:', err);
+        this.isLoading = false;
+      }
     });
   }
 
@@ -84,20 +92,27 @@ export class AuthorDetailsComponent implements OnInit {
     this.readingStatusService.getAllStatuses().subscribe(statuses => {
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-      this.bookService.getBooks().subscribe(books => {
-        this.authorBooks = books
-          .filter(book => book.authorId === authorId)
-          .map(book => {
-            const statusInfo = statusMap.get(book.status);
-            return {
-              ...book,
-              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-              statusDisplayName: statusInfo?.displayName || 'Unknown'
-            };
-          });
+      this.bookService.getBooks().subscribe({
+        next: (books) => {
+          this.authorBooks = books
+            .filter(book => book.authorId === authorId)
+            .map(book => {
+              const statusInfo = statusMap.get(book.status);
+              return {
+                ...book,
+                statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                statusDisplayName: statusInfo?.displayName || 'Unknown'
+              };
+            });
 
-        this.sortBooks();
-        this.calculateStatistics();
+          this.sortBooks();
+          this.calculateStatistics();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading author books:', err);
+          this.isLoading = false;
+        }
       });
     });
   }

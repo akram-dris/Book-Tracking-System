@@ -1,4 +1,57 @@
-<div *ngIf="author" class="min-h-screen bg-base-100">
+<!-- Skeleton Loading State -->
+<div *ngIf="isLoading" class="min-h-screen bg-base-100 p-6">
+  <!-- Back Button Skeleton -->
+  <div class="mb-6">
+    <div class="h-10 w-24 bg-base-200 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Hero Section Skeleton -->
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 mb-6">
+    <div class="p-8">
+      <div class="flex flex-col md:flex-row gap-8 items-start">
+        <!-- Author Image Skeleton -->
+        <div class="flex-shrink-0">
+          <div class="w-48 h-48 rounded-2xl bg-base-300 animate-pulse"></div>
+        </div>
+
+        <!-- Author Info Skeleton -->
+        <div class="flex-1 w-full space-y-6">
+          <div>
+            <div class="h-10 bg-base-300 rounded w-1/2 mb-2 animate-pulse"></div>
+            <div class="h-4 bg-base-300 rounded w-32 animate-pulse"></div>
+          </div>
+
+          <!-- Stats Cards Skeleton -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div *ngFor="let i of [1,2,3,4,5]" class="bg-base-100 rounded-xl p-4 h-20 animate-pulse"></div>
+          </div>
+
+          <!-- Bio Skeleton -->
+          <div class="bg-base-100 rounded-xl p-6 h-32 animate-pulse"></div>
+
+          <!-- Action Buttons Skeleton -->
+          <div class="flex gap-3">
+            <div class="h-10 w-32 bg-base-300 rounded-lg animate-pulse"></div>
+            <div class="h-10 w-24 bg-base-300 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Books Section Skeleton -->
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 p-6">
+    <div class="flex justify-between mb-6">
+      <div class="h-8 w-48 bg-base-300 rounded animate-pulse"></div>
+      <div class="h-8 w-32 bg-base-300 rounded animate-pulse"></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div *ngFor="let i of [1,2,3,4,5]" class="bg-base-100 rounded-xl aspect-[2/3] animate-pulse"></div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!isLoading && author" class="min-h-screen bg-base-100">
   <!-- Back Button -->
   <div class="mb-6">
     <button mat-button (click)="goBack()"

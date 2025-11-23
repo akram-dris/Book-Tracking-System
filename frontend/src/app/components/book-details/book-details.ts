@@ -120,6 +120,8 @@ export class BookDetailsComponent implements OnInit {
   tempRating: number | null = null;
   tempCoverRating: number | null = null; // Temporary rating for cover overlay
 
+  isLoading: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -147,48 +149,60 @@ export class BookDetailsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     console.log('BookDetailsComponent refreshBookData - Route ID:', id);
     if (id) {
-      this.bookService.getBook(+id).subscribe(book => {
-        this.book = book;
-        this.currentBookId = book.id; // Assign book.id to currentBookId
-        if (this.book.summary) {
-          this.summaryForm.patchValue({ summary: this.book.summary });
-        }
-        console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
+      this.isLoading = true;
+      this.bookService.getBook(+id).subscribe({
+        next: (book) => {
+          this.book = book;
+          this.currentBookId = book.id; // Assign book.id to currentBookId
+          if (this.book.summary) {
+            this.summaryForm.patchValue({ summary: this.book.summary });
+          }
+          console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
 
-        // Initialize temporary rating if book has no rating
-        if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
-          this.tempCoverRating = null;
+          // Initialize temporary rating if book has no rating
+          if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
+            this.tempCoverRating = null;
+          }
+
+          // Load other data in parallel-ish (nested subscriptions for now)
+          this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
+            next: sessions => {
+              this.readingSessions = sessions;
+              this.calculateProgress(); // Calculate progress after sessions are loaded
+              console.log('BookDetailsComponent refreshBookData - readingSessions loaded:', this.readingSessions);
+            },
+            error: err => {
+              if (err.status === 404) {
+                console.log('BookDetailsComponent refreshBookData - No reading sessions found for bookId:', id);
+                this.readingSessions = []; // Ensure it's an empty array
+                this.calculateProgress(); // Calculate progress even if no sessions
+              } else {
+                console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', err);
+              }
+            }
+          });
+
+          this.readingGoalService.getReadingGoalForBook(+id).subscribe({
+            next: goal => {
+              this.readingGoal = goal;
+              console.log('BookDetailsComponent refreshBookData - readingGoal loaded:', this.readingGoal);
+            },
+            error: err => {
+              if (err.status === 404) {
+                console.log('BookDetailsComponent refreshBookData - No reading goal found for bookId:', id);
+                this.readingGoal = null; // Ensure it's null
+              } else {
+                console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', err);
+              }
+            }
+          });
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading book:', err);
+          this.isLoading = false;
         }
-        this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
-          next: sessions => {
-            this.readingSessions = sessions;
-            this.calculateProgress(); // Calculate progress after sessions are loaded
-            console.log('BookDetailsComponent refreshBookData - readingSessions loaded:', this.readingSessions);
-          },
-          error: err => {
-            if (err.status === 404) {
-              console.log('BookDetailsComponent refreshBookData - No reading sessions found for bookId:', id);
-              this.readingSessions = []; // Ensure it's an empty array
-              this.calculateProgress(); // Calculate progress even if no sessions
-            } else {
-              console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', err);
-            }
-          }
-        });
-        this.readingGoalService.getReadingGoalForBook(+id).subscribe({
-          next: goal => {
-            this.readingGoal = goal;
-            console.log('BookDetailsComponent refreshBookData - readingGoal loaded:', this.readingGoal);
-          },
-          error: err => {
-            if (err.status === 404) {
-              console.log('BookDetailsComponent refreshBookData - No reading goal found for bookId:', id);
-              this.readingGoal = null; // Ensure it's null
-            } else {
-              console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', err);
-            }
-          }
-        });
       });
     }
   }

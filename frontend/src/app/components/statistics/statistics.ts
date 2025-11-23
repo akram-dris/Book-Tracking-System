@@ -5,7 +5,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { StatisticService } from '../../services/statistic.service';
 import { Statistics, StatisticsFilter } from '../../models/statistics.model';
-import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
+
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
@@ -18,6 +18,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -28,12 +29,13 @@ Chart.register(...registerables);
     CommonModule,
     FormsModule,
     BaseChartDirective,
-    LoadingSpinnerComponent,
     NgIconComponent,
     MatDatepickerModule,
     MatFormFieldModule,
     MatNativeDateModule,
-    MatInputModule
+    MatNativeDateModule,
+    MatInputModule,
+    NgxSkeletonLoaderModule
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',

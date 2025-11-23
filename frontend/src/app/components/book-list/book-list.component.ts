@@ -12,7 +12,6 @@ import { environment } from 'src/environments/environment';
 import { BookFiltersComponent, BookFilters } from './book-filters/book-filters';
 import { BookStatsComponent, BookStatistics } from './book-stats/book-stats';
 import { EmptyStateComponent } from '../shared/empty-state/empty-state';
-import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus, heroStar } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,7 +36,6 @@ type ViewMode = 'grid' | 'list';
     BookFiltersComponent,
     BookStatsComponent,
     EmptyStateComponent,
-    LoadingSpinnerComponent,
     NgIconComponent,
     MatButtonModule
   ],
