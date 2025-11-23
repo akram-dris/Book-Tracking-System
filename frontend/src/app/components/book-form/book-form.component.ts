@@ -100,6 +100,12 @@ export class BookFormComponent implements OnInit {
           authorId: book.authorId,
           totalPages: book.totalPages
         });
+
+        // Disable totalPages field if reading has started
+        if (book.status === 2 || book.status === 3 || book.status === 4) { // CurrentlyReading, Completed, Summarized
+          this.bookForm.get('totalPages')?.disable();
+        }
+
         if (book.imageUrl) {
           this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
         }

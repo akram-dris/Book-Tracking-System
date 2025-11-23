@@ -74,6 +74,17 @@ namespace BookTrackingSystem.Services
         public async Task<BookDto> UpdateBookAsync(int id, UpdateBookDto updateBookDto, IFormFile? imageFile)
         {
             var book = await _bookRepository.GetBookAsync(id);
+            
+            // Validate that total pages cannot be changed if book is currently reading or completed
+            if (book != null && book.TotalPages != updateBookDto.TotalPages)
+            {
+                if (book.Status == ReadingStatus.CurrentlyReading || 
+                    book.Status == ReadingStatus.Completed || 
+                    book.Status == ReadingStatus.Summarized)
+                {
+                    throw new InvalidOperationException("Cannot change total pages after reading has started. The book must be in 'Not Reading' or 'Planning' status to modify total pages.");
+                }
+            }
 
             _mapper.Map(updateBookDto, book);
 
