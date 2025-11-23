@@ -14,8 +14,10 @@ export interface GetBook {
     startedReadingDate?: Date; // New property
     completedDate?: Date; // New property
     summary?: string;
+    rating?: number; // Rating from 0.5 to 5.0
     createdAt: Date;
     updatedAt: Date;
     author?: GetAuthor;
     tags?: GetTag[];
 }
+

@@ -66,17 +66,21 @@ export class BookService {
     return this.http.post<any>(`${this.apiUrl}/${bookId}/tags`, tagIds);
   }
 
-  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date, completedDate?: Date, summary?: string): Observable<any> {
+  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date, completedDate?: Date, summary?: string, rating?: number): Observable<any> {
     const body: any = { status: status };
     if (startedReadingDate) {
-      body.startedReadingDate = startedReadingDate.toISOString();
+      body.startedReadingDate = startedReadingDate instanceof Date ? startedReadingDate.toISOString() : startedReadingDate;
     }
     if (completedDate) {
-      body.completedDate = completedDate.toISOString();
+      body.completedDate = completedDate instanceof Date ? completedDate.toISOString() : completedDate;
     }
     if (summary) {
       body.summary = summary;
     }
+    if (rating !== undefined && rating !== null) {
+      body.rating = rating;
+    }
+    console.log('BookService updateBookStatus payload:', JSON.stringify(body, null, 2));
     return this.http.put<any>(`${this.apiUrl}/${bookId}/status`, body);
   }
 
