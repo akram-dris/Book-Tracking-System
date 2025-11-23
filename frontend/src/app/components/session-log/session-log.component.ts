@@ -72,6 +72,8 @@ export class SessionLogComponent implements OnInit {
     });
   }
 
+  totalReadPages: number = 0;
+
   loadBookData(): void {
     if (!this.bookId) return;
 
@@ -92,7 +94,9 @@ export class SessionLogComponent implements OnInit {
       // Fetch all sessions to calculate current progress
       this.readingSessionService.getReadingSessionsForBook(this.bookId!).subscribe(sessions => {
         this.allSessions = sessions;
-        this.currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+        this.totalReadPages = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+        this.currentPage = this.totalReadPages;
+
         if (this.totalPages && this.totalPages > 0) {
           this.progress = (this.currentPage / this.totalPages) * 100;
         }
@@ -111,9 +115,15 @@ export class SessionLogComponent implements OnInit {
 
   updatePagesReadValidator(): void {
     if (this.totalPages) {
-      const remainingPages = this.totalPages - this.currentPage;
-      // If editing, add back the current session's pages to the allowance
-      const maxPages = this.existingSession ? remainingPages + this.existingSession.pagesRead : remainingPages;
+      // Calculate remaining pages based on total read pages excluding current session if editing
+      let basePagesRead = this.totalReadPages;
+      if (this.existingSession) {
+        basePagesRead -= this.existingSession.pagesRead;
+      }
+
+      const remainingPages = this.totalPages - basePagesRead;
+      // The max pages allowed is the remaining pages (which implicitly allows the current session's pages if editing)
+      const maxPages = remainingPages;
 
       this.sessionForm.get('pagesRead')?.setValidators([
         Validators.required,
@@ -138,6 +148,12 @@ export class SessionLogComponent implements OnInit {
         summary: this.existingSession.summary || ''
       }, { emitEvent: false });
       this.currentPagesRead = this.existingSession.pagesRead;
+      // If editing, currentPage should be total pages read MINUS the pages from this session
+      // so that the UI shows "Current: X" (before this session) and "After: X + NewValue"
+      this.currentPage = this.totalReadPages - this.existingSession.pagesRead;
+    } else {
+      // If not editing (new session), currentPage is just the total read so far
+      this.currentPage = this.totalReadPages;
     }
   }
 
