@@ -53,6 +53,7 @@
     </div>
   </div>
   }
+
   <!-- List View Skeleton -->
   @else {
   <div class="space-y-3">
@@ -161,12 +162,22 @@
         </div>
       </figure>
     </div>
+
+    <!-- Infinite Scroll Sentinel -->
+    <div appInfiniteScroll (scrolled)="loadMore()" class="h-4 w-full col-span-full"></div>
+
+    <!-- Loading indicator for infinite scroll -->
+    @if (isLoadingMore) {
+    <div class="flex justify-center py-8 col-span-full">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+    }
   </div>
   }
 
   <!-- List View -->
   @else {
-  <div class="space-y-3">
+  <div class="space-y-2">
     <div *ngFor="let book of displayedBooks"
       class="card card-side bg-base-200 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:bg-primary/5 transition-all duration-300 border-2 border-base-300 hover:border-primary group">
       <figure class="w-24 flex-shrink-0 cursor-pointer" [routerLink]="['/books', book.id]">
@@ -219,8 +230,18 @@
         </div>
       </div>
     </div>
+
+  </div>
+
+  <!-- Infinite Scroll Sentinel -->
+  <div appInfiniteScroll (scrolled)="loadMore()" class="h-4 w-full"></div>
+
+  <!-- Loading indicator for infinite scroll -->
+  @if (isLoadingMore) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
   </div>
   }
   }
-
+  }
 </div>

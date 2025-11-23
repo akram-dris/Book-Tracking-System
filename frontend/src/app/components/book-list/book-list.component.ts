@@ -15,6 +15,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus, heroStar } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 
 interface BookWithProgress extends GetBook {
   progressPercentage?: number;
@@ -37,7 +38,8 @@ type ViewMode = 'grid' | 'list';
     BookStatsComponent,
     EmptyStateComponent,
     NgIconComponent,
-    MatButtonModule
+    MatButtonModule,
+    InfiniteScrollDirective
   ],
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.css'],
@@ -50,6 +52,12 @@ export class BookListComponent implements OnInit {
   selectedTagId: number | null = null;
   ReadingStatus = ReadingStatus;
   isLoading = true;
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 20;
+  hasMorePages = true;
+  isLoadingMore = false;
 
   // View and sorting
   viewMode: ViewMode = 'grid';
@@ -93,50 +101,34 @@ export class BookListComponent implements OnInit {
 
   loadBooks(tagId: number | null = null, search: string | null = null): void {
     this.isLoading = true;
+    this.currentPage = 1;
+    this.books = [];
+    this.hasMorePages = true;
     console.log('BookListComponent - Loading books with tagId:', tagId, 'search:', search);
 
-    // First load all status info
     this.readingStatusService.getAllStatuses().subscribe(statuses => {
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-      this.bookService.getBooks(tagId, search).subscribe(data => {
-        this.books = data.map(book => {
-          const statusInfo = statusMap.get(book.status);
-          return {
-            ...book,
-            statusName: statusInfo?.displayName || 'Unknown',
-            statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
-          };
-        });
-        console.log('BookListComponent - Books loaded:', this.books);
+      this.bookService.getBooksPaginated(this.currentPage, this.pageSize, search, tagId).subscribe(result => {
+        if (result.isSuccess && result.data) {
+          this.books = result.data.items.map(book => {
+            const statusInfo = statusMap.get(book.status);
+            return {
+              ...book,
+              statusName: statusInfo?.displayName || 'Unknown',
+              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+            };
+          });
 
-        // Calculate statistics
-        this.calculateStats();
+          this.hasMorePages = result.data.hasNextPage;
+          console.log('BookListComponent - Books loaded:', this.books, 'Has more:', this.hasMorePages);
 
-        this.books.forEach(book => {
-          if (book.id && book.totalPages && book.totalPages > 0) {
-            this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
-              next: sessions => {
-                const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-                book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
-              },
-              error: err => {
-                if (err.status === 404) {
-                  book.progressPercentage = 0;
-                } else {
-                  console.error(`Error fetching reading sessions for book ${book.id}:`, err);
-                  book.progressPercentage = 0;
-                }
-              }
-            });
-          } else {
-            book.progressPercentage = 0;
-          }
-          console.log('BookListComponent - Book ImageUrl:', book.imageUrl, 'Status:', book.status, 'Progress:', book.progressPercentage);
-        });
-
-        this.sortBooks();
-        this.displayedBooks = [...this.books]; // Initialize displayed books
+          this.calculateStats();
+          this.loadProgressForBooks(this.books);
+          this.applySortAndFilter();
+        } else {
+          console.error('Error loading books:', result.errors);
+        }
         this.isLoading = false;
       });
     });
@@ -154,6 +146,69 @@ export class BookListComponent implements OnInit {
       completed: completedCount + summarizedCount, // Summarized books are also completed
       summarized: summarizedCount
     };
+  }
+
+  loadMore(): void {
+    if (!this.hasMorePages || this.isLoadingMore) {
+      return;
+    }
+
+    this.isLoadingMore = true;
+    this.currentPage++;
+    console.log('Loading more books, page:', this.currentPage);
+
+    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+      const statusMap = new Map(statuses.map(s => [s.value, s]));
+
+      this.bookService.getBooksPaginated(this.currentPage, this.pageSize, null, this.selectedTagId).subscribe(result => {
+        if (result.isSuccess && result.data) {
+          const newBooks = result.data.items.map(book => {
+            const statusInfo = statusMap.get(book.status);
+            return {
+              ...book,
+              statusName: statusInfo?.displayName || 'Unknown',
+              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+            };
+          });
+
+          this.books = [...this.books, ...newBooks];
+          this.hasMorePages = result.data.hasNextPage;
+          console.log('More books loaded:', newBooks.length, 'Total now:', this.books.length, 'Has more:', this.hasMorePages);
+
+          this.loadProgressForBooks(newBooks);
+          this.applySortAndFilter();
+        }
+        this.isLoadingMore = false;
+      });
+    });
+  }
+
+  private loadProgressForBooks(books: BookWithProgress[]): void {
+    books.forEach(book => {
+      if (book.id && book.totalPages && book.totalPages > 0) {
+        this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
+          next: sessions => {
+            const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+            book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
+          },
+          error: err => {
+            if (err.status === 404) {
+              book.progressPercentage = 0;
+            } else {
+              console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+              book.progressPercentage = 0;
+            }
+          }
+        });
+      } else {
+        book.progressPercentage = 0;
+      }
+    });
+  }
+
+  private applySortAndFilter(): void {
+    this.sortBooks();
+    this.displayedBooks = [...this.books];
   }
 
   onFiltersChanged(filters: BookFilters): void {
