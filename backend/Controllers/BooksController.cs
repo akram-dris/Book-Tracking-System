@@ -4,7 +4,9 @@ using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Models.Enums;
+using BookTrackingSystem.Models.Pagination;
 
 namespace BookTrackingSystem.Controllers
 {
@@ -28,6 +30,30 @@ namespace BookTrackingSystem.Controllers
         {
             var books = await _bookService.GetBooksAsync(tagId, search);
             return Ok(books);
+        }
+
+        [HttpGet("paginated")]
+        public async Task<ActionResult<Result<PaginatedResult<BookDto>>>> GetBooksPaginated(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] string? search = null,
+            [FromQuery] int? tagId = null)
+        {
+            var paginationParams = new PaginationParams
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Search = search
+            };
+
+            var result = await _bookService.GetBooksPaginatedAsync(paginationParams, tagId);
+            
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

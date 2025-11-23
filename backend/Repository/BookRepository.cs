@@ -1,6 +1,7 @@
 
 using BookTrackingSystem.Data;
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookTrackingSystem.Repository
@@ -39,6 +40,45 @@ namespace BookTrackingSystem.Repository
             }
 
             return await query.ToListAsync();
+        }
+
+        public async Task<PaginatedResult<Book>> GetBooksPaginatedAsync(PaginationParams paginationParams, int? tagId = null)
+        {
+            var query = _context.Books
+                .AsNoTracking()
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments!)
+                    .ThenInclude(bta => bta.BookTag)
+                .AsQueryable();
+
+            // Apply tag filter
+            if (tagId.HasValue)
+            {
+                query = query.Where(b => b.BookTagAssignments != null && b.BookTagAssignments.Any(bta => bta.TagId == tagId.Value));
+            }
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(paginationParams.Search))
+            {
+                var search = paginationParams.Search.ToLower();
+                query = query.Where(b => 
+                    b.Title.ToLower().Contains(search) || 
+                    (b.Author != null && b.Author.Name.ToLower().Contains(search)) ||
+                    (b.BookTagAssignments != null && b.BookTagAssignments.Any(bta => bta.BookTag != null && bta.BookTag.Name.ToLower().Contains(search)))
+                );
+            }
+
+            // Get total count before pagination
+            var totalCount = await query.CountAsync();
+
+            // Apply pagination
+            var items = await query
+                .OrderByDescending(b => b.CreatedAt)
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<Book>(items, totalCount, paginationParams.PageNumber, paginationParams.PageSize);
         }
 
         public async Task<Book?> GetBookAsync(int id)

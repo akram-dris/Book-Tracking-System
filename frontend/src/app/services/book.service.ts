@@ -7,6 +7,7 @@ import { GetBook } from '../models/get-book.model';
 import { CreateBook } from '../models/create-book.model';
 import { UpdateBook } from '../models/update-book.model';
 import { ReadingStatus } from '../models/enums/reading-status.enum';
+import { Result, PaginatedResult } from '../models/result';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,17 @@ export class BookService {
       url += `?${params.join('&')}`;
     }
     return this.http.get<GetBook[]>(url);
+  }
+
+  getBooksPaginated(pageNumber: number, pageSize: number, search: string | null = null, tagId: number | null = null): Observable<Result<PaginatedResult<GetBook>>> {
+    let url = `${this.apiUrl}/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (tagId) {
+      url += `&tagId=${tagId}`;
+    }
+    return this.http.get<Result<PaginatedResult<GetBook>>>(url);
   }
 
   getBook(id: number): Observable<GetBook> {

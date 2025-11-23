@@ -2,7 +2,9 @@
 using AutoMapper;
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Models.Enums;
+using BookTrackingSystem.Models.Pagination;
 using BookTrackingSystem.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +43,29 @@ namespace BookTrackingSystem.Services
                 var books = await _bookRepository.GetBooksAsync(tagId, search);
                 return _mapper.Map<IEnumerable<BookDto>>(books);
             }) ?? Enumerable.Empty<BookDto>();
+        }
+
+        public async Task<Result<PaginatedResult<BookDto>>> GetBooksPaginatedAsync(PaginationParams paginationParams, int? tagId = null)
+        {
+            try
+            {
+                var paginatedBooks = await _bookRepository.GetBooksPaginatedAsync(paginationParams, tagId);
+                
+                var bookDtos = _mapper.Map<List<BookDto>>(paginatedBooks.Items);
+                
+                var result = new PaginatedResult<BookDto>(
+                    bookDtos,
+                    paginatedBooks.TotalCount,
+                    paginatedBooks.PageNumber,
+                    paginatedBooks.PageSize
+                );
+
+                return Result<PaginatedResult<BookDto>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Result<PaginatedResult<BookDto>>.Failure($"Error retrieving paginated books: {ex.Message}");
+            }
         }
 
         public async Task<BookDto?> GetBookAsync(int id)

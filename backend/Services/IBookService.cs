@@ -1,6 +1,8 @@
 
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Models.Enums;
+using BookTrackingSystem.Models.Pagination;
 using Microsoft.AspNetCore.Http;
 
 namespace BookTrackingSystem.Services
@@ -8,6 +10,7 @@ namespace BookTrackingSystem.Services
     public interface IBookService
     {
         Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null, string? search = null);
+        Task<Result<PaginatedResult<BookDto>>> GetBooksPaginatedAsync(PaginationParams paginationParams, int? tagId = null);
         Task<BookDto?> GetBookAsync(int id);
         Task<BookDto> AddBookAsync(CreateBookDto book, IFormFile? imageFile);
         Task<BookDto> UpdateBookAsync(int id, UpdateBookDto book, IFormFile? imageFile);
