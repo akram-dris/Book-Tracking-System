@@ -25,12 +25,15 @@ export interface AuthorStatistics {
   authorDiversityScore: number;
   topAuthorsByBooks: AuthorBookCount[];
   authorsByPages: AuthorPages[];
+  averageAuthorRating: number;
+  topAuthorsByRating: AuthorBookCount[];
 }
 
 export interface AuthorBookCount {
   authorId: number;
   authorName: string;
   bookCount: number;
+  averageRating?: number;
 }
 
 export interface AuthorPages {
@@ -46,12 +49,15 @@ export interface TagStatistics {
   tagDiversityScore: number;
   topTagsByBooks: TagBookCount[];
   tagsByPages: TagPages[];
+  averageTagRating: number;
+  topTagsByRating: TagBookCount[];
 }
 
 export interface TagBookCount {
   tagId: number;
   tagName: string;
   bookCount: number;
+  averageRating?: number;
 }
 
 export interface TagPages {
@@ -110,6 +116,10 @@ export interface BookStatistics {
   averageReadingSpeed: number;
   completionRate: number;
   booksByStatus: { [key: string]: number };
+  averageRating: number;
+  highestRatedBook: BookInfo | null;
+  lowestRatedBook: BookInfo | null;
+  ratingDistribution: { [key: number]: number };
 }
 
 export interface BookInfo {
@@ -117,6 +127,7 @@ export interface BookInfo {
   title: string;
   totalPages: number;
   authorName: string | null;
+  rating?: number;
 }
 
 export interface PersonalRecords {

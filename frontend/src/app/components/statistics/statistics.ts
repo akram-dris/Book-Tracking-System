@@ -7,7 +7,7 @@ import { StatisticService } from '../../services/statistic.service';
 import { Statistics, StatisticsFilter } from '../../models/statistics.model';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
+import {
   heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
   heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
   heroCalendarDays, heroAdjustmentsHorizontal, heroCheckCircle,
@@ -25,10 +25,10 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-statistics',
   imports: [
-    CommonModule, 
-    FormsModule, 
-    BaseChartDirective, 
-    LoadingSpinnerComponent, 
+    CommonModule,
+    FormsModule,
+    BaseChartDirective,
+    LoadingSpinnerComponent,
     NgIconComponent,
     MatDatepickerModule,
     MatFormFieldModule,
@@ -37,7 +37,7 @@ Chart.register(...registerables);
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
-  viewProviders: [provideIcons({ 
+  viewProviders: [provideIcons({
     heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
     heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
     heroCalendarDays, heroAdjustmentsHorizontal, heroCheckCircle,
@@ -51,7 +51,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   comparisonStart: Date | null = null;
   comparisonEnd: Date | null = null;
   today = new Date();
-  
+
   statistics: Statistics | null = null;
   loading = true;
   error: string | null = null;
@@ -76,6 +76,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   goalAchievementChart: ChartConfiguration<'bar'>['data'] | undefined;
   goalCompletionChart: ChartConfiguration<'doughnut'>['data'] | undefined;
   statusTimelineChart: ChartConfiguration<'line'>['data'] | undefined;
+  ratingDistributionChart: ChartConfiguration<'bar'>['data'] | undefined;
 
   // Goal filter
   selectedBookFilter = 'all';
@@ -87,8 +88,8 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { 
-        display: false 
+      legend: {
+        display: false
       },
       tooltip: {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -227,31 +228,31 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private statisticService: StatisticService) {}
+  constructor(private statisticService: StatisticService) { }
 
   ngOnInit(): void {
     // Set default date range to last year
     const today = new Date();
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(today.getFullYear() - 1);
-    
+
     this.startDate = oneYearAgo;
     this.endDate = today;
-    
+
     // Set comparison range (previous year for comparison)
     this.setComparisonRange(oneYearAgo, today);
-    
+
     this.loadStatistics();
   }
 
   setComparisonRange(start: Date, end: Date): void {
     // Calculate the duration of the selected range
     const duration = end.getTime() - start.getTime();
-    
+
     // Set comparison range to the same duration, ending the day before the start
     const compEnd = new Date(start.getTime() - 24 * 60 * 60 * 1000); // Day before start
     const compStart = new Date(compEnd.getTime() - duration);
-    
+
     this.comparisonStart = compStart;
     this.comparisonEnd = compEnd;
   }
@@ -286,7 +287,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
       }
       return undefined;
     }
-    
+
     return {
       filterType: this.selectedFilter
     };
@@ -296,13 +297,13 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     console.log('🎯 Filter changed to:', filterType);
     this.selectedFilter = filterType;
     this.showCustomDateInputs = filterType === 'custom';
-    
+
     if (filterType !== 'custom') {
       // Reset dates
       const today = new Date();
       const oneYearAgo = new Date();
       oneYearAgo.setFullYear(today.getFullYear() - 1);
-      
+
       this.startDate = oneYearAgo;
       this.endDate = today;
       this.customStartDate = '';
@@ -319,10 +320,10 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         setTimeout(() => this.error = null, 3000);
         return;
       }
-      
+
       // Update comparison range
       this.setComparisonRange(this.startDate, this.endDate);
-      
+
       this.customStartDate = this.startDate.toISOString().split('T')[0];
       this.customEndDate = this.endDate.toISOString().split('T')[0];
       this.loadStatistics();
@@ -336,23 +337,23 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     console.log('🔄 Reset filter called');
     this.selectedFilter = 'year';
     this.showCustomDateInputs = false;
-    
+
     const today = new Date();
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(today.getFullYear() - 1);
-    
+
     this.startDate = oneYearAgo;
     this.endDate = today;
     this.customStartDate = '';
     this.customEndDate = '';
     this.customDateRange = '';
-    
+
     console.log('✅ Reset complete:', {
       startDate: this.startDate,
       endDate: this.endDate,
       selectedFilter: this.selectedFilter
     });
-    
+
     this.loadStatistics();
   }
 
@@ -397,7 +398,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         'rgba(34, 197, 94, 0.85)',    // Green
         'rgba(20, 184, 166, 0.85)'    // Teal
       ];
-      
+
       this.authorBooksChart = {
         labels: this.statistics.authors.topAuthorsByBooks.map(a => a.authorName),
         datasets: [{
@@ -424,7 +425,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         'rgba(236, 72, 153, 0.9)',   // Pink
         'rgba(99, 102, 241, 0.9)'    // Indigo
       ];
-      
+
       this.tagBooksChart = {
         labels: this.statistics.tags.topTagsByBooks.map(t => t.tagName),
         datasets: [{
@@ -466,12 +467,12 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     const weekOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const weeklyData = weekOrder.map(day => this.statistics!.timeBased.weeklyPattern[day] || 0);
     const maxValue = Math.max(...weeklyData);
-    
+
     const weekColors = weeklyData.map(value => {
       const intensity = maxValue > 0 ? value / maxValue : 0;
       return `rgba(251, 191, 36, ${0.5 + intensity * 0.4})`;
     });
-    
+
     this.weeklyPatternChart = {
       labels: weekOrder,
       datasets: [{
@@ -492,10 +493,10 @@ export class StatisticsComponent implements OnInit, OnDestroy {
         'Planning': 'rgba(168, 85, 247, 0.9)',      // Purple
         'NotReading': 'rgba(156, 163, 175, 0.9)'    // Gray
       };
-      
+
       const statuses = Object.keys(this.statistics.books.booksByStatus);
       const colors = statuses.map(status => statusColors[status] || 'rgba(100, 100, 100, 0.9)');
-      
+
       this.statusChart = {
         labels: statuses,
         datasets: [{
@@ -509,10 +510,10 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     }
 
     // Goal achievement chart
-    const totalBooks = this.statistics.goals.lowGoalSuccessCount + 
-                       this.statistics.goals.mediumGoalSuccessCount + 
-                       this.statistics.goals.highGoalSuccessCount;
-    
+    const totalBooks = this.statistics.goals.lowGoalSuccessCount +
+      this.statistics.goals.mediumGoalSuccessCount +
+      this.statistics.goals.highGoalSuccessCount;
+
     if (totalBooks > 0) {
       this.goalAchievementChart = {
         labels: ['Low Goals', 'Medium Goals', 'High Goals'],
@@ -557,6 +558,32 @@ export class StatisticsComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Rating distribution chart
+    if (this.statistics.books.ratingDistribution && Object.keys(this.statistics.books.ratingDistribution).length > 0) {
+      const ratingColors: { [key: number]: string } = {
+        5: 'rgba(251, 191, 36, 0.85)',    // Gold/Amber
+        4: 'rgba(34, 197, 94, 0.85)',     // Emerald/Green
+        3: 'rgba(6, 182, 212, 0.85)',     // Cyan
+        2: 'rgba(251, 146, 60, 0.85)',    // Orange
+        1: 'rgba(244, 63, 94, 0.85)'      // Rose/Red
+      };
+
+      const ratings = Object.keys(this.statistics.books.ratingDistribution)
+        .map(k => parseInt(k))
+        .sort((a, b) => b - a); // Sort descending (5 to 1)
+
+      this.ratingDistributionChart = {
+        labels: ratings.map(r => `${r} ⭐`),
+        datasets: [{
+          label: 'Books',
+          data: ratings.map(r => this.statistics!.books.ratingDistribution[r]),
+          backgroundColor: ratings.map(r => ratingColors[r] || 'rgba(156, 163, 175, 0.85)'),
+          borderRadius: 8,
+          borderWidth: 0
+        }]
+      };
+    }
+
     // Status timeline chart - Books added over time by status
     this.createStatusTimelineChart();
   }
@@ -586,9 +613,9 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     } else if (this.selectedStatusFilter === 'completed') {
       goals = goals.filter(g => g.bookStatus === 'Completed' || g.bookStatus === 'Summarized');
     } else if (this.selectedStatusFilter === 'both') {
-      goals = goals.filter(g => 
-        g.bookStatus === 'CurrentlyReading' || 
-        g.bookStatus === 'Completed' || 
+      goals = goals.filter(g =>
+        g.bookStatus === 'CurrentlyReading' ||
+        g.bookStatus === 'Completed' ||
         g.bookStatus === 'Summarized'
       );
     }
@@ -612,9 +639,9 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     } else if (this.selectedStatusFilter === 'completed') {
       goals = goals.filter(g => g.bookStatus === 'Completed' || g.bookStatus === 'Summarized');
     } else if (this.selectedStatusFilter === 'both') {
-      goals = goals.filter(g => 
-        g.bookStatus === 'CurrentlyReading' || 
-        g.bookStatus === 'Completed' || 
+      goals = goals.filter(g =>
+        g.bookStatus === 'CurrentlyReading' ||
+        g.bookStatus === 'Completed' ||
         g.bookStatus === 'Summarized'
       );
     }
@@ -633,7 +660,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
   getGoalPercentage(level: 'low' | 'medium' | 'high'): number {
     if (!this.statistics) return 0;
-    
+
     const totalCompleted = this.statistics.overview.totalBooksRead;
     if (totalCompleted === 0) return 0;
 
@@ -754,7 +781,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
   getFilterDisplayName(): string {
     if (!this.selectedFilter) return '2025';
-    
+
     switch (this.selectedFilter) {
       case 'day':
         return this.customStartDate ? new Date(this.customStartDate).toLocaleDateString() : 'Today';

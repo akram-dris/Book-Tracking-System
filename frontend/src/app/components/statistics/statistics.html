@@ -244,6 +244,7 @@
               <th>Author</th>
               <th>Books</th>
               <th>Total Pages</th>
+              <th>Avg Rating</th>
             </tr>
           </thead>
           <tbody>
@@ -251,6 +252,12 @@
               <td>{{ author.authorName }}</td>
               <td>{{ author.bookCount }}</td>
               <td>{{ getAuthorPages(author.authorId) }}</td>
+              <td>
+                <span *ngIf="author.averageRating" class="badge badge-warning">
+                  {{ author.averageRating | number:'1.1-1' }} ⭐
+                </span>
+                <span *ngIf="!author.averageRating" class="text-base-content/40">N/A</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -300,6 +307,7 @@
                     <th>Tag</th>
                     <th>Books</th>
                     <th>Pages</th>
+                    <th>Avg Rating</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -307,6 +315,12 @@
                     <td>{{ tag.tagName }}</td>
                     <td>{{ tag.bookCount }}</td>
                     <td>{{ getTagPages(tag.tagId) }}</td>
+                    <td>
+                      <span *ngIf="tag.averageRating" class="badge badge-warning badge-sm">
+                        {{ tag.averageRating | number:'1.1-1' }} ⭐
+                      </span>
+                      <span *ngIf="!tag.averageRating" class="text-base-content/40 text-xs">N/A</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -548,6 +562,57 @@
         <div class="stat bg-base-200 rounded-lg shadow">
           <div class="stat-title">Completion Rate</div>
           <div class="stat-value text-success">{{ statistics.books.completionRate }}%</div>
+        </div>
+
+        <div class="stat bg-base-200 rounded-lg shadow">
+          <div class="stat-figure text-warning">
+            <ng-icon name="heroStar" size="2rem"></ng-icon>
+          </div>
+          <div class="stat-title">Avg Rating</div>
+          <div class="stat-value text-warning">{{ statistics.books.averageRating | number:'1.1-1' }} ⭐</div>
+          <div class="stat-desc">From rated books</div>
+        </div>
+      </div>
+
+      <!-- Rating Distribution Chart -->
+      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="ratingDistributionChart">
+        <div class="card-body">
+          <h3 class="card-title">📊 Rating Distribution</h3>
+          <div style="height: 300px;">
+            <canvas baseChart [data]="ratingDistributionChart" [options]="barChartOptions" type="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Highest & Lowest Rated Books -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.highestRatedBook">
+          <div class="card-body">
+            <h3 class="card-title text-warning">⭐ Highest Rated</h3>
+            <p class="text-lg font-bold">{{ statistics.books.highestRatedBook.title }}</p>
+            <p>{{ statistics.books.highestRatedBook.authorName }}</p>
+            <div class="flex items-center gap-2 mt-2">
+              <div class="badge badge-warning badge-lg">
+                {{ statistics.books.highestRatedBook.rating }} ⭐
+              </div>
+              <span class="text-sm text-base-content/60">{{ statistics.books.highestRatedBook.totalPages }} pages</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.lowestRatedBook">
+          <div class="card-body">
+            <h3 class="card-title text-base-content/70">Lowest Rated</h3>
+            <p class="text-lg font-bold">{{ statistics.books.lowestRatedBook.title }}</p>
+            <p>{{ statistics.books.lowestRatedBook.authorName }}</p>
+            <div class="flex items-center gap-2 mt-2">
+              <div class="badge badge-ghost badge-lg">
+                {{ statistics.books.lowestRatedBook.rating }} ⭐
+              </div>
+              <span class="text-sm text-base-content/60">{{ statistics.books.lowestRatedBook.totalPages }} pages</span>
+            </div>
+          </div>
         </div>
       </div>
 
