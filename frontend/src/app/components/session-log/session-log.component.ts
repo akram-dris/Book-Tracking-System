@@ -155,6 +155,13 @@ export class SessionLogComponent implements OnInit {
       // If not editing (new session), currentPage is just the total read so far
       this.currentPage = this.totalReadPages;
     }
+
+    // Recalculate progress based on the updated currentPage
+    if (this.totalPages && this.totalPages > 0) {
+      this.progress = (this.currentPage / this.totalPages) * 100;
+    } else {
+      this.progress = 0;
+    }
   }
 
   private formatDate(date: Date): string {
