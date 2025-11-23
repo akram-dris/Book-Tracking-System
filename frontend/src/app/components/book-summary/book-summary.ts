@@ -7,6 +7,8 @@ import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { environment } from '../../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';
+import { RatingModule } from 'primeng/rating';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-book-summary',
@@ -14,7 +16,9 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule,
+    RatingModule,
+    FormsModule
   ],
   templateUrl: './book-summary.html',
   styleUrls: ['./book-summary.css']
@@ -47,6 +51,13 @@ export class BookSummaryComponent implements OnInit {
   loadBook(id: number): void {
     this.bookService.getBook(id).subscribe(book => {
       this.book = book;
+
+      // Guard: If book is completed but has no rating, redirect to details
+      if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
+        console.log('Book has no rating, redirecting to details page');
+        this.router.navigate(['/books', id]);
+        return;
+      }
 
       // If book has no summary, start in edit mode
       if (!book.summary || book.summary.trim().length === 0) {

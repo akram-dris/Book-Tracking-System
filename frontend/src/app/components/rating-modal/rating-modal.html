@@ -1,0 +1,45 @@
+<div *ngIf="isOpen" class="modal-backdrop" [class.active]="isAnimatingIn" (click)="onBackdropClick($event)">
+    <div class="modal-container" [class.active]="isAnimatingIn">
+        <!-- Close button -->
+        <button class="close-button" (click)="onCancel()" type="button" aria-label="Close">
+            <ng-icon name="heroXMark" size="24"></ng-icon>
+        </button>
+
+        <!-- Book cover -->
+        <div class="book-cover-wrapper">
+            <img *ngIf="bookCover" [src]="rootUrl + bookCover" [alt]="bookTitle" class="book-cover">
+            <div *ngIf="!bookCover" class="book-cover-placeholder">
+                <ng-icon name="heroStar" size="48"></ng-icon>
+            </div>
+        </div>
+
+        <!-- Book title -->
+        <h2 class="book-title">{{ bookTitle }}</h2>
+
+        <!-- Heading -->
+        <div class="heading-wrapper">
+            <ng-icon name="heroStar" size="20" class="heading-icon"></ng-icon>
+            <h3 class="heading">Rate this book</h3>
+        </div>
+
+        <!-- Star rating component -->
+        <p-rating [(ngModel)]="selectedRating" [stars]="5" (ngModelChange)="onRatingChange($event)">
+        </p-rating>
+
+        <!-- Rating text -->
+        <p class="rating-text" [class.selected]="selectedRating !== null">
+            {{ ratingText }}
+        </p>
+
+        <!-- Action buttons -->
+        <div class="button-group">
+            <button class="btn btn-primary" [disabled]="!canSave" [class.pulse]="canSave" (click)="onSave()"
+                type="button">
+                Confirm Rating
+            </button>
+            <button class="btn btn-ghost" (click)="onCancel()" type="button">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>

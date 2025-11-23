@@ -14,11 +14,13 @@ import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component';
 import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { RatingModalComponent } from '../rating-modal/rating-modal';
+import { RatingModule } from 'primeng/rating';
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+// import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 import {
   heroArrowLeft,
@@ -32,7 +34,8 @@ import {
   heroCalendar,
   heroCheckCircle,
   heroTag,
-  heroXMark
+  heroXMark,
+  heroStar
 } from '@ng-icons/heroicons/outline';
 
 type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
@@ -47,6 +50,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
     FormsModule,
     PlanAndGoalModalComponent,
     ReadingLogModalComponent,
+    RatingModalComponent,
+    RatingModule,
     QuillModule,
     NgIconComponent,
     MatButtonModule
@@ -66,7 +71,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
       heroCalendar,
       heroCheckCircle,
       heroTag,
-      heroXMark
+      heroXMark,
+      heroStar
     })
   ]
 })
@@ -108,6 +114,12 @@ export class BookDetailsComponent implements OnInit {
   selectedSession: GetReadingSession | null = null;
   isNoteDetailModalOpen: boolean = false;
 
+  // Rating modal
+  isRatingModalOpen = false;
+  isEditingRating = false;
+  tempRating: number | null = null;
+  tempCoverRating: number | null = null; // Temporary rating for cover overlay
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -142,6 +154,11 @@ export class BookDetailsComponent implements OnInit {
           this.summaryForm.patchValue({ summary: this.book.summary });
         }
         console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
+
+        // Initialize temporary rating if book has no rating
+        if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
+          this.tempCoverRating = null;
+        }
         this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
           next: sessions => {
             this.readingSessions = sessions;
@@ -298,18 +315,85 @@ export class BookDetailsComponent implements OnInit {
   markAsCompleted(): void {
     console.log('BookDetailsComponent markAsCompleted - book:', this.book);
     if (this.book) {
+      // Open rating modal instead of immediately marking as completed
+      this.isRatingModalOpen = true;
+    }
+  }
+
+  // Rating modal handlers
+  openRatingModal(): void {
+    this.isRatingModalOpen = true;
+  }
+
+  closeRatingModal(): void {
+    this.isRatingModalOpen = false;
+  }
+
+  saveRating(rating: number): void {
+    console.log('BookDetailsComponent saveRating - rating:', rating);
+    if (this.book) {
+      // Save rating to book object
+      this.book.rating = rating;
+
       // Update UI optimistically
-      this.book.status = ReadingStatus.Completed;
-      this.book.completedDate = new Date();
+      if (this.book.status !== ReadingStatus.Completed && this.book.status !== ReadingStatus.Summarized) {
+        this.book.status = ReadingStatus.Completed;
+        this.book.completedDate = new Date();
+      }
       this.isSummaryMode = true;
       this.isEditingSummary = true;
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Completed, this.book.startedReadingDate, new Date()).subscribe(() => {
-        console.log('BookDetailsComponent markAsCompleted - Book status updated to Completed');
-        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed`);
+      // Close rating modal
+      this.isRatingModalOpen = false;
+
+      // Update book status with rating
+      this.bookService.updateBookStatus(
+        this.book.id,
+        ReadingStatus.Completed,
+        this.book.startedReadingDate,
+        this.book.completedDate,
+        undefined,
+        rating
+      ).subscribe(() => {
+        console.log('BookDetailsComponent saveRating - Book status updated to Completed with rating');
+        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed with ${rating} stars!`);
       });
     }
   }
+
+  // Cover overlay rating methods
+  onCoverRatingChange(rating: number): void {
+    this.tempCoverRating = rating;
+  }
+
+  editRating(): void {
+    if (this.book && (this.book.status === ReadingStatus.Completed || this.book.status === ReadingStatus.Summarized)) {
+      this.isEditingRating = true;
+      this.tempRating = this.book.rating || null;
+    }
+  }
+
+  saveRatingInline(): void {
+    if (this.book && this.tempRating !== null) {
+      this.saveRating(this.tempRating);
+      this.isEditingRating = false;
+      this.tempRating = null;
+    }
+  }
+
+  cancelRatingInline(): void {
+    this.isEditingRating = false;
+    this.tempRating = null;
+  }
+
+  saveCoverRating(): void {
+    if (this.tempCoverRating && this.book) {
+      // Save rating using the same logic as modal
+      this.saveRating(this.tempCoverRating);
+      this.tempCoverRating = null;
+    }
+  }
+
 
   private calculateProgress(): void {
     if (this.book && this.readingSessions.length > 0) {
@@ -361,22 +445,10 @@ export class BookDetailsComponent implements OnInit {
 
   deleteBook(): void {
     if (this.book) {
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          title: 'Delete Book',
-          message: `Are you sure you want to delete "${this.book.title}"? This action cannot be undone.`,
-          confirmText: 'Delete',
-          confirmColor: 'warn'
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.bookService.deleteBook(this.book!.id).subscribe(() => {
-            this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
-            this.router.navigate(['/books']);
-          });
-        }
+      // Directly delete without confirmation dialog
+      this.bookService.deleteBook(this.book.id).subscribe(() => {
+        this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
+        this.router.navigate(['/books']);
       });
     }
   }

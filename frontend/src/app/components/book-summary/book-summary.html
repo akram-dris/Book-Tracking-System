@@ -23,6 +23,14 @@
                 <div class="text-left">
                     <h1 class="text-3xl font-bold mb-1">{{ book.title }}</h1>
                     <h2 class="text-xl text-base-content/70">by {{ book.author?.name }}</h2>
+
+                    <!-- Rating Display -->
+                    <div *ngIf="book.rating" class="flex items-center gap-2 mt-3">
+                        <p-rating [ngModel]="book.rating" [readonly]="true" [stars]="5">
+                        </p-rating>
+                        <span class="text-sm font-semibold text-base-content/70">{{ book.rating | number:'1.0-1' }} /
+                            5</span>
+                    </div>
                 </div>
             </div>
 
