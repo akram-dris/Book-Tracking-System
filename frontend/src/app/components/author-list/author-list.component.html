@@ -63,8 +63,8 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
     @for (author of filteredAuthors; track author.id) {
     <div
-      class="card bg-base-200 group relative overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-1 border-2 border-base-300 hover:border-primary"
-      [routerLink]="['/authors', author.id]">
+      class="card bg-base-200 group relative overflow-hidden cursor-pointer shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 border-base-300"
+      [ngClass]="getRatingBorderClass(author.averageRating)" [routerLink]="['/authors', author.id]">
       <!-- Author Image -->
       <figure class="h-64 bg-base-300 relative overflow-hidden">
         <img [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'"
@@ -72,13 +72,26 @@
           class="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-300"
           (error)="onImageError($event, author)" />
 
-        <!-- Hover Overlay with Primary Blue -->
+        <!-- Hover Overlay with Dynamic Rating Color -->
         <div
-          class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          class="absolute inset-0 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
+          [ngClass]="getRatingColorClass(author.averageRating)">
           @if (author.bio) {
           <p class="text-white text-sm line-clamp-3 drop-shadow-lg">{{ author.bio }}</p>
           }
         </div>
+
+        <!-- Rating Badge (Top Left - Always Visible) -->
+        @if (author.averageRating) {
+        <div class="absolute top-2 left-2 z-20">
+          <div
+            class="relative flex items-center gap-1 rounded-full px-2 py-1 border transition-all duration-300 hover:scale-105"
+            [ngClass]="getRatingBadgeClass(author.averageRating)">
+            <ng-icon name="heroStar" size="0.875rem" class="text-white"></ng-icon>
+            <span class="font-bold text-xs tracking-tight text-white">{{ author.averageRating | number:'1.1-1' }}</span>
+          </div>
+        </div>
+        }
       </figure>
 
       <!-- Author Info -->

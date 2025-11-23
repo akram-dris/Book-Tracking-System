@@ -1,13 +1,13 @@
 
 import { Component, OnInit } from '@angular/core';
 import { AuthorService } from '../../services/author.service';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { GetAuthor } from '../../models/get-author.model';
 import { environment } from 'src/environments/environment';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus } from '@ng-icons/heroicons/outline';
+import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar } from '@ng-icons/heroicons/outline';
 import { BookService } from '../../services/book.service';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,10 +22,10 @@ interface AuthorWithCount extends GetAuthor {
 @Component({
   selector: 'app-author-list',
   standalone: true,
-  imports: [RouterModule, FormsModule, NgIconComponent, DatePipe, MatButtonModule],
+  imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule],
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.css'],
-  viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus })]
+  viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar })]
 })
 export class AuthorListComponent implements OnInit {
   authors: AuthorWithCount[] = [];
@@ -40,6 +40,7 @@ export class AuthorListComponent implements OnInit {
     { value: 'name-desc', label: 'Name (Z-A)' },
     { value: 'books-desc', label: 'Most Books' },
     { value: 'books-asc', label: 'Least Books' },
+    { value: 'rating-desc', label: 'Highest Rated' },
     { value: 'recent', label: 'Recently Added' }
   ];
 
@@ -104,6 +105,8 @@ export class AuthorListComponent implements OnInit {
         return authors.sort((a, b) => (b.bookCount || 0) - (a.bookCount || 0));
       case 'books-asc':
         return authors.sort((a, b) => (a.bookCount || 0) - (b.bookCount || 0));
+      case 'rating-desc':
+        return authors.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
       case 'recent':
         return authors.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -152,5 +155,50 @@ export class AuthorListComponent implements OnInit {
     console.error('Failed to load image for author:', author.name, 'URL:', this.rootUrl + author.imageUrl);
     const img = event.target as HTMLImageElement;
     img.style.display = 'none';
+  }
+
+  getRatingColorClass(rating: number | undefined): string {
+    if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
+
+    const roundedRating = Math.round(rating);
+
+    switch (roundedRating) {
+      case 5: return 'bg-gradient-to-t from-amber-600/90 via-amber-500/60 to-transparent'; // Gold/Masterpiece
+      case 4: return 'bg-gradient-to-t from-emerald-600/90 via-emerald-500/60 to-transparent'; // Emerald/Great
+      case 3: return 'bg-gradient-to-t from-cyan-600/90 via-cyan-500/60 to-transparent'; // Cyan/Good
+      case 2: return 'bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-transparent'; // Orange/Fair
+      case 1: return 'bg-gradient-to-t from-rose-600/90 via-rose-500/60 to-transparent'; // Rose/Poor
+      default: return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
+    }
+  }
+
+  getRatingBorderClass(rating: number | undefined): string {
+    if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
+
+    const roundedRating = Math.round(rating);
+
+    switch (roundedRating) {
+      case 5: return 'hover:shadow-amber-500/40 hover:border-amber-400';
+      case 4: return 'hover:shadow-emerald-500/40 hover:border-emerald-400';
+      case 3: return 'hover:shadow-cyan-500/40 hover:border-cyan-400';
+      case 2: return 'hover:shadow-orange-500/40 hover:border-orange-400';
+      case 1: return 'hover:shadow-rose-500/40 hover:border-rose-400';
+      default: return 'hover:shadow-primary/20 hover:border-primary';
+    }
+  }
+
+  getRatingBadgeClass(rating: number | undefined): string {
+    if (!rating) return '';
+
+    const roundedRating = Math.round(rating);
+
+    switch (roundedRating) {
+      case 5: return 'bg-amber-500 border-amber-400';
+      case 4: return 'bg-emerald-500 border-emerald-400';
+      case 3: return 'bg-cyan-500 border-cyan-400';
+      case 2: return 'bg-orange-500 border-orange-400';
+      case 1: return 'bg-rose-500 border-rose-400';
+      default: return 'bg-gray-500 border-gray-400';
+    }
   }
 }
