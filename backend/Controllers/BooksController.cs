@@ -149,7 +149,8 @@ namespace BookTrackingSystem.Controllers
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateBookStatus(int id, [FromBody] UpdateBookStatusDto updateBookStatusDto)
         {
-            await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate, updateBookStatusDto.CompletedDate, updateBookStatusDto.Summary);
+            _logger.LogInformation("Updating book status for id {Id}. Status: {Status}, Rating: {Rating}", id, updateBookStatusDto.Status, updateBookStatusDto.Rating);
+            await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate, updateBookStatusDto.CompletedDate, updateBookStatusDto.Summary, updateBookStatusDto.Rating);
             return NoContent();
         }
 
