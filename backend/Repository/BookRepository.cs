@@ -34,7 +34,7 @@ namespace BookTrackingSystem.Repository
                 query = query.Where(b => 
                     b.Title.ToLower().Contains(search) || 
                     (b.Author != null && b.Author.Name.ToLower().Contains(search)) ||
-                    (b.BookTagAssignments != null && b.BookTagAssignments.Any(bta => bta.BookTag.Name.ToLower().Contains(search)))
+                    (b.BookTagAssignments != null && b.BookTagAssignments.Any(bta => bta.BookTag != null && bta.BookTag.Name.ToLower().Contains(search)))
                 );
             }
 

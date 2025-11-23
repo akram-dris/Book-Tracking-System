@@ -85,7 +85,7 @@ namespace BookTrackingSystem.Services
                 .ToListAsync();
 
             var sessions = await _context.ReadingSessions
-                .Include(s => s.Book)
+                .Include(s => s.Book!)
                 .ThenInclude(b => b.Author)
                 .Where(s => s.Date >= startDate && s.Date <= endDate)
                 .ToListAsync();
@@ -172,8 +172,8 @@ namespace BookTrackingSystem.Services
                 .ToListAsync();
 
             var sessions = await _context.ReadingSessions
-                .Include(s => s.Book)
-                .ThenInclude(b => b.BookTagAssignments)
+                .Include(s => s.Book!)
+                .ThenInclude(b => b.BookTagAssignments!)
                 .ThenInclude(bta => bta.BookTag)
                 .Where(s => s.Date >= startDate && s.Date <= endDate)
                 .ToListAsync();
@@ -454,7 +454,7 @@ namespace BookTrackingSystem.Services
             var (startDate, endDate) = GetDateRangeFromFilter(filter);
 
             var goals = await _context.ReadingGoals
-                .Include(g => g.Book)
+                .Include(g => g.Book!)
                 .ThenInclude(b => b.ReadingSessions)
                 .ToListAsync();
 

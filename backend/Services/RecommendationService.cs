@@ -21,7 +21,7 @@ namespace BookTrackingSystem.Services
             // Get all unread books (Planning or NotReading status)
             var unreadBooks = await _context.Books
                 .Include(b => b.Author)
-                .Include(b => b.BookTagAssignments)
+                .Include(b => b.BookTagAssignments!)
                 .ThenInclude(bta => bta.BookTag)
                 .Where(b => b.Status == ReadingStatus.Planning || b.Status == ReadingStatus.NotReading)
                 .ToListAsync();
