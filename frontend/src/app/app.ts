@@ -28,20 +28,17 @@ import { trigger, transition, style, animate, query } from '@angular/animations'
       transition('* <=> *', [
         query(':enter', [
           style({
-            opacity: 0,
-            transform: 'translateX(10px)'
+            opacity: 0
           })
         ], { optional: true }),
         query(':leave', [
-          animate('150ms ease-out', style({
-            opacity: 0,
-            transform: 'translateX(-10px)'
+          animate('40ms ease-out', style({
+            opacity: 0
           }))
         ], { optional: true }),
         query(':enter', [
-          animate('200ms ease-out', style({
-            opacity: 1,
-            transform: 'translateX(0)'
+          animate('80ms ease-out', style({
+            opacity: 1
           }))
         ], { optional: true })
       ])

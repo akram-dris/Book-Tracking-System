@@ -30,7 +30,7 @@
           [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
           [attr.data-tip]="isCollapsed() ? item.tooltip : null" [class.tooltip]="isCollapsed()"
           [class.tooltip-right]="isCollapsed()"
-          class="flex items-center rounded-xl transition-all duration-200 ease-out hover:bg-base-300 hover:shadow-md"
+          class="flex items-center rounded-xl transition-all duration-100 ease-out hover:bg-base-300 hover:shadow-md"
           [class.gap-3]="!isCollapsed()">
           <ng-icon [name]="item.icon" size="1.25rem"></ng-icon>
           @if (!isCollapsed()) {
