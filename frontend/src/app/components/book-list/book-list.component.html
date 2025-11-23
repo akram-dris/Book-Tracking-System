@@ -62,17 +62,30 @@
   @if (viewMode === 'grid') {
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
     <div *ngFor="let book of displayedBooks"
-      class="card bg-base-200 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 group border-2 border-base-300 hover:border-primary hover:-translate-y-1">
+      class="card bg-base-200 shadow-lg transition-all duration-300 group border-2 border-base-300 hover:-translate-y-1"
+      [ngClass]="getRatingBorderClass(book.rating)">
       <!-- Book Cover with Hover Overlay -->
       <figure class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-base-300 to-base-200 cursor-pointer"
         [routerLink]="['/books', book.id]">
         <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
           class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-90" />
 
-        <!-- Dark Overlay on Hover -->
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <!-- Dark Overlay on Hover - Dynamic gradient based on rating -->
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
+          [ngClass]="getRatingColorClass(book.rating)">
         </div>
+
+        <!-- Rating Badge (Top Left - Always Visible) -->
+        @if (book.rating) {
+        <div class="absolute top-2 left-2 z-20">
+          <div
+            class="relative flex items-center gap-1 rounded-full px-2 py-1 border transition-all duration-300 hover:scale-105"
+            [ngClass]="getRatingBadgeClass(book.rating)">
+            <ng-icon name="heroStar" size="0.875rem" class="text-white"></ng-icon>
+            <span class="font-bold text-xs tracking-tight text-white">{{ book.rating }}</span>
+          </div>
+        </div>
+        }
 
         <!-- Status Badge (Always Visible) -->
         <div class="absolute top-2 right-2 z-10">

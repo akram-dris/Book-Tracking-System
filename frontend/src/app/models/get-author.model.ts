@@ -6,4 +6,5 @@ export interface GetAuthor {
     imageUrl?: string;
     createdAt?: Date;
     updatedAt?: Date;
+    averageRating?: number;
 }

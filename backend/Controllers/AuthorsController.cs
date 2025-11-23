@@ -34,7 +34,10 @@ namespace BookTrackingSystem.Controllers
                 Bio = author.Bio,
                 ImageUrl = author.ImageUrl,
                 CreatedAt = author.CreatedAt,
-                UpdatedAt = author.UpdatedAt
+                UpdatedAt = author.UpdatedAt,
+                AverageRating = author.Books != null && author.Books.Any(b => b.Rating != null)
+                    ? author.Books.Where(b => b.Rating != null).Average(b => b.Rating)
+                    : null
             }).ToList();
             return Ok(authorDtos);
         }
@@ -53,7 +56,10 @@ namespace BookTrackingSystem.Controllers
                 Bio = author.Bio,
                 ImageUrl = author.ImageUrl,
                 CreatedAt = author.CreatedAt,
-                UpdatedAt = author.UpdatedAt
+                UpdatedAt = author.UpdatedAt,
+                AverageRating = author.Books != null && author.Books.Any(b => b.Rating != null)
+                    ? author.Books.Where(b => b.Rating != null).Average(b => b.Rating)
+                    : null
             };
             return Ok(authorDto);
         }

@@ -11,6 +11,7 @@ namespace BookTrackingSystem.Models
         public int TotalPages { get; set; }
         public string? ImageUrl { get; set; }
         public ReadingStatus Status { get; set; } = ReadingStatus.NotReading; // Add Status property
+        public int? Rating { get; set; } // New property for rating (1-5)
         public DateTime? StartedReadingDate { get; set; } // New property
         public DateTime? CompletedDate { get; set; } // New property for completion date
         public string? Summary { get; set; }

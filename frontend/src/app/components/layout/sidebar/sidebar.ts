@@ -1,15 +1,16 @@
 import { Component, input, output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
+import {
   heroHome,
-  heroBookOpen, 
-  heroUserGroup, 
-  heroTag, 
+  heroBookOpen,
+  heroUserGroup,
+  heroTag,
   heroCalendarDays,
   heroBars3,
   heroChartBarSquare,
-  heroChartBar
+  heroChartBar,
+  heroSparkles
 } from '@ng-icons/heroicons/outline';
 
 interface NavItem {
@@ -27,15 +28,16 @@ interface NavItem {
   styleUrl: './sidebar.css',
   standalone: true,
   viewProviders: [
-    provideIcons({ 
+    provideIcons({
       heroHome,
-      heroBookOpen, 
-      heroUserGroup, 
-      heroTag, 
+      heroBookOpen,
+      heroUserGroup,
+      heroTag,
       heroCalendarDays,
       heroBars3,
       heroChartBarSquare,
-      heroChartBar
+      heroChartBar,
+      heroSparkles
     })
   ]
 })
@@ -49,6 +51,7 @@ export class SidebarComponent {
     { path: '/authors', label: 'Authors', icon: 'heroUserGroup', tooltip: 'Manage authors' },
     { path: '/tags', label: 'Tags', icon: 'heroTag', tooltip: 'Organize with tags' },
     { path: '/statistics', label: 'Statistics', icon: 'heroChartBar', tooltip: 'Analytics & Stats' },
+    { path: '/recommendations', label: 'Recommendations', icon: 'heroSparkles', tooltip: 'Recommended books' },
     { path: '/heatmap', label: 'Heatmap', icon: 'heroChartBarSquare', tooltip: 'Reading activity' }
   ];
 

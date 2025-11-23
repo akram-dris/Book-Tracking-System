@@ -18,12 +18,19 @@ namespace BookTrackingSystem.Repository
 
         public async Task<IEnumerable<BookTag>> GetAllAsync()
         {
-            return await _context.BookTags.ToListAsync();
+            return await _context.BookTags
+                .Include(t => t.BookTagAssignments)
+                .ThenInclude(bta => bta.Book)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<BookTag?> GetByIdAsync(int id)
         {
-            return await _context.BookTags.FindAsync(id);
+            return await _context.BookTags
+                .Include(t => t.BookTagAssignments)
+                .ThenInclude(bta => bta.Book)
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<BookTag> AddAsync(BookTag tag)

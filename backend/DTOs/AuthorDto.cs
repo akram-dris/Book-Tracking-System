@@ -11,5 +11,6 @@ namespace BookTrackingSystem.DTOs
         public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public double? AverageRating { get; set; }
     }
 }

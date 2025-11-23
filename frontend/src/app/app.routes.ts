@@ -12,6 +12,7 @@ import { TagManagementComponent } from './components/tag-management/tag-manageme
 import { SessionLogComponent } from './components/session-log/session-log.component';
 import { HeatmapComponent } from './components/heatmap/heatmap';
 import { StatisticsComponent } from './components/statistics/statistics';
+import { RecommendationsComponent } from './components/recommendations/recommendations';
 export const routes: Routes = [
     { path: '', component: Dashboard },
     { path: 'books', component: BookListComponent },
@@ -26,5 +27,6 @@ export const routes: Routes = [
     { path: 'tags', component: TagManagementComponent },
     { path: 'books/:bookId/session/log', component: SessionLogComponent },
     { path: 'heatmap', component: HeatmapComponent },
-    { path: 'statistics', component: StatisticsComponent }
+    { path: 'statistics', component: StatisticsComponent },
+    { path: 'recommendations', component: RecommendationsComponent }
 ];

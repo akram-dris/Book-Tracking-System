@@ -45,6 +45,7 @@ builder.Services.AddScoped<BookTrackingSystem.Services.IStreakService, BookTrack
 builder.Services.AddScoped<BookTrackingSystem.Services.IReadingStatusService, BookTrackingSystem.Services.ReadingStatusService>();
 builder.Services.AddScoped<BookTrackingSystem.Services.IStatisticsService, BookTrackingSystem.Services.StatisticsService>();
 builder.Services.AddScoped<BookTrackingSystem.Services.ISearchService, BookTrackingSystem.Services.SearchService>();
+builder.Services.AddScoped<BookTrackingSystem.Services.IRecommendationService, BookTrackingSystem.Services.RecommendationService>();
 
 // Add Memory Cache
 builder.Services.AddMemoryCache(options =>

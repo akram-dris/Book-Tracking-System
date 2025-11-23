@@ -16,12 +16,12 @@ namespace BookTrackingSystem.Repository
 
         public async Task<IEnumerable<Author>> GetAuthorsAsync()
         {
-            return await _context.Authors.AsNoTracking().ToListAsync();
+            return await _context.Authors.Include(a => a.Books).AsNoTracking().ToListAsync();
         }
 
         public async Task<Author?> GetAuthorAsync(int id)
         {
-            return await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
+            return await _context.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<Author> AddAuthorAsync(Author author)

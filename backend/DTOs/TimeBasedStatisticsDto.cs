@@ -10,6 +10,7 @@ namespace BookTrackingSystem.DTOs
         public Dictionary<string, int> WeeklyPattern { get; set; } = new();
         public Dictionary<int, int> YearOverYear { get; set; } = new();
         public Dictionary<string, StatusTimelineDataDto> StatusTimeline { get; set; } = new();
+        public Dictionary<string, double> RatingTrend { get; set; } = new();
     }
 
     public class StatusTimelineDataDto

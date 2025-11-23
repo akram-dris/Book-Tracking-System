@@ -11,6 +11,7 @@ namespace BookTrackingSystem.DTOs
         public int TotalPages { get; set; }
         public string? ImageUrl { get; set; }
         public Models.Enums.ReadingStatus Status { get; set; }
+        public int? Rating { get; set; }
         public DateTime? StartedReadingDate { get; set; }
         public DateTime? CompletedDate { get; set; } // New property
         public string? Summary { get; set; }

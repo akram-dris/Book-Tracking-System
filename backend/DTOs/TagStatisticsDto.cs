@@ -8,6 +8,8 @@ namespace BookTrackingSystem.DTOs
         public double TagDiversityScore { get; set; }
         public List<TagBookCountDto> TopTagsByBooks { get; set; } = new();
         public List<TagPagesDto> TagsByPages { get; set; } = new();
+        public double AverageTagRating { get; set; }
+        public List<TagBookCountDto> TopTagsByRating { get; set; } = new();
     }
 
     public class TagBookCountDto
@@ -15,6 +17,7 @@ namespace BookTrackingSystem.DTOs
         public int TagId { get; set; }
         public string TagName { get; set; } = string.Empty;
         public int BookCount { get; set; }
+        public double? AverageRating { get; set; }
     }
 
     public class TagPagesDto
