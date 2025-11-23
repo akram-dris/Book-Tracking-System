@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { BookService } from '../../services/book.service';
@@ -48,7 +48,8 @@ export class SessionLogComponent implements OnInit {
     private bookService: BookService,
     private readingGoalService: ReadingGoalService,
     private streakService: StreakService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
@@ -185,7 +186,7 @@ export class SessionLogComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/books', this.bookId]);
+    this.location.back();
   }
 
   onSubmit(): void {
@@ -211,7 +212,7 @@ export class SessionLogComponent implements OnInit {
             this.isLoading = false;
             this.streakService.forceReload();
             this.notificationService.showSuccess('Reading session updated successfully');
-            this.router.navigate(['/books', this.bookId]);
+            this.location.back();
           },
           error: (err) => {
             this.isLoading = false;
@@ -227,7 +228,7 @@ export class SessionLogComponent implements OnInit {
             this.isLoading = false;
             this.streakService.forceReload();
             this.notificationService.showSuccess('Reading session logged successfully');
-            this.router.navigate(['/books', this.bookId]);
+            this.location.back();
           },
           error: (err) => {
             this.isLoading = false;
