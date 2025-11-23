@@ -137,6 +137,7 @@ export class BookListComponent implements OnInit {
         });
 
         this.sortBooks();
+        this.displayedBooks = [...this.books]; // Initialize displayed books
         this.isLoading = false;
       });
     });
@@ -162,7 +163,7 @@ export class BookListComponent implements OnInit {
     // Apply filters
     let filteredBooks = [...this.books];
 
-    if (filters.status !== undefined) {
+    if (filters.status !== undefined && filters.status !== null) {
       filteredBooks = filteredBooks.filter(book => book.status === filters.status);
     }
 
@@ -176,12 +177,11 @@ export class BookListComponent implements OnInit {
       );
     }
 
-    // For now, just reload with tag filter if provided
-    if (filters.tagId) {
-      this.loadBooks(filters.tagId);
-    } else {
-      this.loadBooks(null);
-    }
+    // Update displayed books with filtered results
+    this.displayedBooks = filteredBooks;
+
+    // Sort the filtered books
+    this.sortFilteredBooks();
   }
 
   filterBooksByTag(tagId: number | null): void {
@@ -223,6 +223,28 @@ export class BookListComponent implements OnInit {
       case 'dateAdded':
       default:
         this.books.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+    }
+  }
+
+  sortFilteredBooks(): void {
+    switch (this.sortBy) {
+      case 'title':
+        this.displayedBooks.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'author':
+        this.displayedBooks.sort((a, b) => (a.author?.name || '').localeCompare(b.author?.name || ''));
+        break;
+      case 'progress':
+        this.displayedBooks.sort((a, b) => (b.progressPercentage || 0) - (a.progressPercentage || 0));
+        break;
+      case 'dateAdded':
+      default:
+        this.displayedBooks.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
           return dateB - dateA;

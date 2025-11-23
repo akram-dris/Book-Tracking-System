@@ -42,7 +42,7 @@ export class StreakIndicatorComponent implements OnInit {
     this.streakService.getStreakData().subscribe({
       next: (data) => {
         this.streakData = data;
-        this.isStreakActive = data.currentStreak > 0;
+        this.isStreakActive = data.currentStreak > 0 && data.hasReadToday;
         this.loading = false;
         if (this.isStreakActive) {
           this.animationTrigger++;
@@ -57,6 +57,12 @@ export class StreakIndicatorComponent implements OnInit {
 
   getStreakColor(): string {
     if (!this.streakData) return 'text-base-content/40';
+
+    // If not read today, show as inactive (gray)
+    if (!this.streakData.hasReadToday) {
+      return 'text-base-content/40';
+    }
+
     const streak = this.streakData.currentStreak;
     if (streak === 0) return 'text-base-content/40';
     if (streak < 7) return 'text-orange-500';

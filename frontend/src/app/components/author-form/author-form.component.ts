@@ -7,7 +7,7 @@ import { CreateAuthor } from '../../models/create-author.model';
 import { GetAuthor } from '../../models/get-author.model';
 import { UpdateAuthor } from '../../models/update-author.model';
 import { environment } from '../../../environments/environment';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil, heroArrowLeft } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
@@ -49,7 +49,8 @@ export class AuthorFormComponent implements OnInit {
     private authorService: AuthorService,
     private router: Router,
     private route: ActivatedRoute,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) {
     this.authorForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -101,7 +102,7 @@ export class AuthorFormComponent implements OnInit {
       if (this.isEditMode && this.authorId) {
         this.authorService.updateAuthor(this.authorId, authorData as UpdateAuthor).subscribe(() => {
           this.notificationService.showSuccess('Author updated successfully');
-          this.router.navigate(['/authors', this.authorId]);
+          this.location.back();
           this.isLoading = false;
         }, () => {
           this.isLoading = false;
@@ -119,10 +120,6 @@ export class AuthorFormComponent implements OnInit {
   }
 
   goBack(): void {
-    if (this.isEditMode && this.authorId) {
-      this.router.navigate(['/authors', this.authorId]);
-    } else {
-      this.router.navigate(['/authors']);
-    }
+    this.location.back();
   }
 }

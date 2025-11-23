@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { BookService } from '../../services/book.service';
@@ -48,7 +48,8 @@ export class SessionLogComponent implements OnInit {
     private bookService: BookService,
     private readingGoalService: ReadingGoalService,
     private streakService: StreakService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
@@ -71,6 +72,8 @@ export class SessionLogComponent implements OnInit {
     });
   }
 
+  totalReadPages: number = 0;
+
   loadBookData(): void {
     if (!this.bookId) return;
 
@@ -91,7 +94,9 @@ export class SessionLogComponent implements OnInit {
       // Fetch all sessions to calculate current progress
       this.readingSessionService.getReadingSessionsForBook(this.bookId!).subscribe(sessions => {
         this.allSessions = sessions;
-        this.currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+        this.totalReadPages = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+        this.currentPage = this.totalReadPages;
+
         if (this.totalPages && this.totalPages > 0) {
           this.progress = (this.currentPage / this.totalPages) * 100;
         }
@@ -110,9 +115,15 @@ export class SessionLogComponent implements OnInit {
 
   updatePagesReadValidator(): void {
     if (this.totalPages) {
-      const remainingPages = this.totalPages - this.currentPage;
-      // If editing, add back the current session's pages to the allowance
-      const maxPages = this.existingSession ? remainingPages + this.existingSession.pagesRead : remainingPages;
+      // Calculate remaining pages based on total read pages excluding current session if editing
+      let basePagesRead = this.totalReadPages;
+      if (this.existingSession) {
+        basePagesRead -= this.existingSession.pagesRead;
+      }
+
+      const remainingPages = this.totalPages - basePagesRead;
+      // The max pages allowed is the remaining pages (which implicitly allows the current session's pages if editing)
+      const maxPages = remainingPages;
 
       this.sessionForm.get('pagesRead')?.setValidators([
         Validators.required,
@@ -137,6 +148,19 @@ export class SessionLogComponent implements OnInit {
         summary: this.existingSession.summary || ''
       }, { emitEvent: false });
       this.currentPagesRead = this.existingSession.pagesRead;
+      // If editing, currentPage should be total pages read MINUS the pages from this session
+      // so that the UI shows "Current: X" (before this session) and "After: X + NewValue"
+      this.currentPage = this.totalReadPages - this.existingSession.pagesRead;
+    } else {
+      // If not editing (new session), currentPage is just the total read so far
+      this.currentPage = this.totalReadPages;
+    }
+
+    // Recalculate progress based on the updated currentPage
+    if (this.totalPages && this.totalPages > 0) {
+      this.progress = (this.currentPage / this.totalPages) * 100;
+    } else {
+      this.progress = 0;
     }
   }
 
@@ -185,7 +209,7 @@ export class SessionLogComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/books', this.bookId]);
+    this.location.back();
   }
 
   onSubmit(): void {
@@ -197,6 +221,10 @@ export class SessionLogComponent implements OnInit {
         pagesRead: this.sessionForm.value.pagesRead,
         summary: this.sessionForm.value.summary
       };
+
+      // Check if this session will complete the book
+      const willCompleteBook = this.totalPages &&
+        (this.currentPage + this.currentPagesRead >= this.totalPages);
 
       if (this.existingSession) {
         // Update existing session
@@ -210,8 +238,14 @@ export class SessionLogComponent implements OnInit {
           next: () => {
             this.isLoading = false;
             this.streakService.forceReload();
-            this.notificationService.showSuccess('Reading session updated successfully');
-            this.router.navigate(['/books', this.bookId]);
+
+            if (willCompleteBook) {
+              this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+            } else {
+              this.notificationService.showSuccess('Reading session updated successfully');
+            }
+
+            this.location.back();
           },
           error: (err) => {
             this.isLoading = false;
@@ -226,8 +260,14 @@ export class SessionLogComponent implements OnInit {
           next: () => {
             this.isLoading = false;
             this.streakService.forceReload();
-            this.notificationService.showSuccess('Reading session logged successfully');
-            this.router.navigate(['/books', this.bookId]);
+
+            if (willCompleteBook) {
+              this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+            } else {
+              this.notificationService.showSuccess('Reading session logged successfully');
+            }
+
+            this.location.back();
           },
           error: (err) => {
             this.isLoading = false;

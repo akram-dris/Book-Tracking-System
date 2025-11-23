@@ -16,7 +16,11 @@ export class StreakService {
     this.reload$.next(); // Initial load
     this.streakData$ = this.reload$.pipe(
       startWith(null), // Start the stream immediately
-      switchMap(() => this.http.get<Streak>(this.apiUrl)),
+      switchMap(() => {
+        const d = new Date();
+        const localDate = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        return this.http.get<Streak>(`${this.apiUrl}?localDate=${localDate}`);
+      }),
       tap(data => console.log("Streak data loaded: ", data))
     );
   }

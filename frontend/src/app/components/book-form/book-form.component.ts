@@ -5,7 +5,7 @@ import { BookService } from '../../services/book.service';
 import { AuthorService } from '../../services/author.service';
 import { TagService } from '../../services/tag.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgFor, CommonModule } from '@angular/common';
+import { NgFor, CommonModule, Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { switchMap, finalize } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -68,7 +68,8 @@ export class BookFormComponent implements OnInit {
     private tagService: TagService,
     private router: Router,
     private route: ActivatedRoute,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) {
     this.bookForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(200)]],
@@ -99,6 +100,12 @@ export class BookFormComponent implements OnInit {
           authorId: book.authorId,
           totalPages: book.totalPages
         });
+
+        // Disable totalPages field if reading has started
+        if (book.status === 2 || book.status === 3 || book.status === 4) { // CurrentlyReading, Completed, Summarized
+          this.bookForm.get('totalPages')?.disable();
+        }
+
         if (book.imageUrl) {
           this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
         }
@@ -249,7 +256,7 @@ export class BookFormComponent implements OnInit {
         ).subscribe({
           next: () => {
             this.notificationService.showSuccess('Book updated successfully');
-            this.router.navigate(['/books', this.bookId]);
+            this.location.back();
           },
           error: (err) => console.error(err)
         });
@@ -269,10 +276,6 @@ export class BookFormComponent implements OnInit {
   }
 
   goBack(): void {
-    if (this.isEditMode && this.bookId) {
-      this.router.navigate(['/books', this.bookId]);
-    } else {
-      this.router.navigate(['/books']);
-    }
+    this.location.back();
   }
 }

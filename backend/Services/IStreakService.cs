@@ -5,6 +5,6 @@ namespace BookTrackingSystem.Services
 {
     public interface IStreakService
     {
-        Task<StreakDto> GetStreakDataAsync();
+        Task<StreakDto> GetStreakDataAsync(DateTime? clientLocalToday = null);
     }
 }
