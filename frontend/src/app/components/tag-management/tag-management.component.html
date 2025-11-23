@@ -72,14 +72,31 @@
         </div>
       </div>
 
-      <!-- Tags Grid -->
       <div class="lg:col-span-2">
         <div
           class="bg-base-200 backdrop-blur-sm rounded-2xl border border-base-300 hover:border-primary/30 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-base-content">All Tags</h2>
-            <div class="text-sm text-primary font-semibold bg-primary/10 px-3 py-1 rounded-full">
-              {{ tags.length }} tag{{ tags.length !== 1 ? 's' : '' }}
+            <div class="flex items-center gap-3">
+              <h2 class="text-xl font-bold text-base-content">All Tags</h2>
+              <div class="text-sm text-primary font-semibold bg-primary/10 px-3 py-1 rounded-full">
+                {{ tags.length }} tag{{ tags.length !== 1 ? 's' : '' }}
+              </div>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div *ngIf="tags.length > 0" class="flex items-center gap-3">
+              <span class="text-base-content/70 font-medium text-sm whitespace-nowrap hidden sm:inline">Sort by</span>
+              <div class="relative">
+                <ng-icon name="heroArrowsUpDown" size="1.25rem"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none z-10"></ng-icon>
+                <select
+                  class="select select-bordered select-sm w-48 pl-10 rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                  [(ngModel)]="sortBy" (change)="onSortChange()">
+                  @for (option of sortOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
             </div>
           </div>
 
@@ -97,9 +114,29 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" *ngIf="tags.length > 0">
-            <div *ngFor="let tag of tags"
-              class="group bg-primary/5 border-2 border-primary/20 rounded-xl p-4 hover:border-primary hover:bg-primary/10 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 cursor-pointer">
-              <div class="flex items-start justify-between">
+            <div *ngFor="let tag of displayedTags"
+              class="group relative bg-primary/5 border-2 border-primary/20 rounded-xl p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer overflow-hidden"
+              [ngClass]="getRatingBorderClass(tag.averageRating)">
+
+              <!-- Hover Overlay with Dynamic Rating Color -->
+              <div
+                class="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"
+                [ngClass]="getRatingColorClass(tag.averageRating)">
+              </div>
+
+              <!-- Rating Badge (Bottom Right) -->
+              @if (tag.averageRating) {
+              <div class="absolute bottom-2 right-2 z-20">
+                <div class="flex items-center gap-1 rounded-full px-2 py-1 border transition-all duration-300"
+                  [ngClass]="getRatingBadgeClass(tag.averageRating)">
+                  <ng-icon name="heroStar" size="0.75rem" class="text-white"></ng-icon>
+                  <span class="font-bold text-xs tracking-tight text-white">{{ tag.averageRating | number:'1.1-1'
+                    }}</span>
+                </div>
+              </div>
+              }
+
+              <div class="flex items-start justify-between relative z-10">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 mb-2">
                     <span class="inline-block w-2 h-2 rounded-full bg-primary shadow-sm shadow-primary/50"></span>
