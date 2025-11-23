@@ -119,6 +119,33 @@ namespace BookTrackingSystem.Services
 
             var mostReadAuthor = authorBookCounts.FirstOrDefault();
 
+            // Calculate author ratings
+            var authorRatings = books
+                .Where(b => b.Rating.HasValue)
+                .GroupBy(b => new { b.AuthorId, AuthorName = b.Author!.Name })
+                .Select(g => new AuthorBookCountDto
+                {
+                    AuthorId = g.Key.AuthorId,
+                    AuthorName = g.Key.AuthorName,
+                    BookCount = g.Count(),
+                    AverageRating = g.Average(b => b.Rating!.Value)
+                })
+                .OrderByDescending(a => a.AverageRating)
+                .Take(10)
+                .ToList();
+
+            var allRatings = books.Where(b => b.Rating.HasValue).Select(b => (double)b.Rating!.Value);
+            var averageAuthorRating = allRatings.Any() ? Math.Round(allRatings.Average(), 2) : 0;
+
+            // Add ratings to existing author book counts
+            foreach (var authorCount in authorBookCounts)
+            {
+                var authorBooks = books.Where(b => b.AuthorId == authorCount.AuthorId && b.Rating.HasValue);
+                authorCount.AverageRating = authorBooks.Any() 
+                    ? Math.Round(authorBooks.Average(b => b.Rating!.Value), 2) 
+                    : null;
+            }
+
             return new AuthorStatisticsDto
             {
                 TotalAuthorsRead = totalUniqueAuthors,
@@ -126,7 +153,9 @@ namespace BookTrackingSystem.Services
                 MostReadAuthorBookCount = mostReadAuthor?.BookCount ?? 0,
                 AuthorDiversityScore = totalBooks > 0 ? Math.Round((double)totalUniqueAuthors / totalBooks, 2) : 0,
                 TopAuthorsByBooks = authorBookCounts.Take(10).ToList(),
-                AuthorsByPages = authorPageCounts.Take(10).ToList()
+                AuthorsByPages = authorPageCounts.Take(10).ToList(),
+                AverageAuthorRating = averageAuthorRating,
+                TopAuthorsByRating = authorRatings
             };
         }
 
@@ -179,6 +208,39 @@ namespace BookTrackingSystem.Services
 
             var favoriteTag = tagBookCounts.FirstOrDefault();
 
+            // Calculate tag ratings
+            var tagRatings = bookTagAssignments
+                .Where(bta => bta.Book!.Rating.HasValue)
+                .GroupBy(bta => new { bta.TagId, TagName = bta.BookTag!.Name })
+                .Select(g => new TagBookCountDto
+                {
+                    TagId = g.Key.TagId,
+                    TagName = g.Key.TagName,
+                    BookCount = g.Select(x => x.BookId).Distinct().Count(),
+                    AverageRating = g.Average(bta => bta.Book!.Rating!.Value)
+                })
+                .OrderByDescending(t => t.AverageRating)
+                .Take(10)
+                .ToList();
+
+            var allTaggedBookRatings = bookTagAssignments
+                .Where(bta => bta.Book!.Rating.HasValue)
+                .Select(bta => (double)bta.Book!.Rating!.Value);
+            var averageTagRating = allTaggedBookRatings.Any() 
+                ? Math.Round(allTaggedBookRatings.Average(), 2) 
+                : 0;
+
+            // Add ratings to existing tag book counts
+            foreach (var tagCount in tagBookCounts)
+            {
+                var tagBooks = bookTagAssignments
+                    .Where(bta => bta.TagId == tagCount.TagId && bta.Book!.Rating.HasValue)
+                    .Select(bta => bta.Book!.Rating!.Value);
+                tagCount.AverageRating = tagBooks.Any() 
+                    ? Math.Round(tagBooks.Average(), 2) 
+                    : null;
+            }
+
             return new TagStatisticsDto
             {
                 TotalTags = totalUniqueTags,
@@ -186,7 +248,9 @@ namespace BookTrackingSystem.Services
                 FavoriteTagBookCount = favoriteTag?.BookCount ?? 0,
                 TagDiversityScore = totalBooks > 0 ? Math.Round((double)totalUniqueTags / totalBooks, 2) : 0,
                 TopTagsByBooks = tagBookCounts.Take(10).ToList(),
-                TagsByPages = tagPageCounts.Take(10).ToList()
+                TagsByPages = tagPageCounts.Take(10).ToList(),
+                AverageTagRating = averageTagRating,
+                TopTagsByRating = tagRatings
             };
         }
 
@@ -484,6 +548,17 @@ namespace BookTrackingSystem.Services
                 .GroupBy(b => b.Status.ToString())
                 .ToDictionary(g => g.Key, g => g.Count());
 
+            // Rating statistics
+            var ratedBooks = completedBooks.Where(b => b.Rating.HasValue).ToList();
+            var avgRating = ratedBooks.Any() ? Math.Round(ratedBooks.Average(b => b.Rating!.Value), 2) : 0;
+
+            var highestRatedBook = ratedBooks.OrderByDescending(b => b.Rating).FirstOrDefault();
+            var lowestRatedBook = ratedBooks.OrderBy(b => b.Rating).FirstOrDefault();
+
+            var ratingDistribution = ratedBooks
+                .GroupBy(b => b.Rating!.Value)
+                .ToDictionary(g => g.Key, g => g.Count());
+
             return new BookStatisticsDto
             {
                 AverageBookLength = avgBookLength,
@@ -492,18 +567,38 @@ namespace BookTrackingSystem.Services
                     Id = shortestBook.Id,
                     Title = shortestBook.Title,
                     TotalPages = shortestBook.TotalPages,
-                    AuthorName = shortestBook.Author?.Name
+                    AuthorName = shortestBook.Author?.Name,
+                    Rating = shortestBook.Rating
                 } : null,
                 LongestBook = longestBook != null ? new BookInfoDto
                 {
                     Id = longestBook.Id,
                     Title = longestBook.Title,
                     TotalPages = longestBook.TotalPages,
-                    AuthorName = longestBook.Author?.Name
+                    AuthorName = longestBook.Author?.Name,
+                    Rating = longestBook.Rating
                 } : null,
                 AverageReadingSpeed = avgReadingSpeed,
                 CompletionRate = completionRate,
-                BooksByStatus = booksByStatus
+                BooksByStatus = booksByStatus,
+                AverageRating = avgRating,
+                HighestRatedBook = highestRatedBook != null ? new BookInfoDto
+                {
+                    Id = highestRatedBook.Id,
+                    Title = highestRatedBook.Title,
+                    TotalPages = highestRatedBook.TotalPages,
+                    AuthorName = highestRatedBook.Author?.Name,
+                    Rating = highestRatedBook.Rating
+                } : null,
+                LowestRatedBook = lowestRatedBook != null ? new BookInfoDto
+                {
+                    Id = lowestRatedBook.Id,
+                    Title = lowestRatedBook.Title,
+                    TotalPages = lowestRatedBook.TotalPages,
+                    AuthorName = lowestRatedBook.Author?.Name,
+                    Rating = lowestRatedBook.Rating
+                } : null,
+                RatingDistribution = ratingDistribution
             };
         }
 

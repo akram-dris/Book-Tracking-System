@@ -8,6 +8,10 @@ namespace BookTrackingSystem.DTOs
         public double AverageReadingSpeed { get; set; }
         public double CompletionRate { get; set; }
         public Dictionary<string, int> BooksByStatus { get; set; } = new();
+        public double AverageRating { get; set; }
+        public BookInfoDto? HighestRatedBook { get; set; }
+        public BookInfoDto? LowestRatedBook { get; set; }
+        public Dictionary<int, int> RatingDistribution { get; set; } = new();
     }
 
     public class BookInfoDto
@@ -16,5 +20,6 @@ namespace BookTrackingSystem.DTOs
         public string Title { get; set; } = string.Empty;
         public int TotalPages { get; set; }
         public string? AuthorName { get; set; }
+        public int? Rating { get; set; }
     }
 }

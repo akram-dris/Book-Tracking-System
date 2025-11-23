@@ -8,6 +8,8 @@ namespace BookTrackingSystem.DTOs
         public double AuthorDiversityScore { get; set; }
         public List<AuthorBookCountDto> TopAuthorsByBooks { get; set; } = new();
         public List<AuthorPagesDto> AuthorsByPages { get; set; } = new();
+        public double AverageAuthorRating { get; set; }
+        public List<AuthorBookCountDto> TopAuthorsByRating { get; set; } = new();
     }
 
     public class AuthorBookCountDto
@@ -15,6 +17,7 @@ namespace BookTrackingSystem.DTOs
         public int AuthorId { get; set; }
         public string AuthorName { get; set; } = string.Empty;
         public int BookCount { get; set; }
+        public double? AverageRating { get; set; }
     }
 
     public class AuthorPagesDto
