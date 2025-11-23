@@ -77,6 +77,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   goalCompletionChart: ChartConfiguration<'doughnut'>['data'] | undefined;
   statusTimelineChart: ChartConfiguration<'line'>['data'] | undefined;
   ratingDistributionChart: ChartConfiguration<'bar'>['data'] | undefined;
+  ratingTrendChart: ChartConfiguration<'line'>['data'] | undefined;
 
   // Goal filter
   selectedBookFilter = 'all';
@@ -580,6 +581,32 @@ export class StatisticsComponent implements OnInit, OnDestroy {
           backgroundColor: ratings.map(r => ratingColors[r] || 'rgba(156, 163, 175, 0.85)'),
           borderRadius: 8,
           borderWidth: 0
+        }]
+      };
+    }
+
+    // Rating trend chart - Monthly average ratings over time
+    if (this.statistics.timeBased.ratingTrend && Object.keys(this.statistics.timeBased.ratingTrend).length > 0) {
+      const trendKeys = Object.keys(this.statistics.timeBased.ratingTrend).sort();
+
+      this.ratingTrendChart = {
+        labels: trendKeys,
+        datasets: [{
+          label: 'Average Rating',
+          data: trendKeys.map(key => this.statistics!.timeBased.ratingTrend[key]),
+          borderColor: 'rgba(251, 191, 36, 1)',      // Amber/Gold
+          backgroundColor: 'rgba(251, 191, 36, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: 'rgba(251, 191, 36, 1)',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: 'rgba(251, 191, 36, 1)',
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 3
         }]
       };
     }

@@ -75,6 +75,7 @@ export interface TimeBasedStatistics {
   weeklyPattern: { [key: string]: number };
   yearOverYear: { [key: number]: number };
   statusTimeline: { [key: string]: StatusTimelineData };
+  ratingTrend: { [key: string]: number };
 }
 
 export interface StatusTimelineData {

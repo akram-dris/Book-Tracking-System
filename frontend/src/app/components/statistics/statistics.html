@@ -616,6 +616,18 @@
         </div>
       </div>
 
+      <!-- Rating Trend Chart -->
+      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="ratingTrendChart">
+        <div class="card-body">
+          <h3 class="card-title">📈 Rating Trend Over Time</h3>
+          <p class="text-sm text-base-content/60 mb-4">See how your reading taste evolves</p>
+          <div style="height: 300px;">
+            <canvas baseChart [data]="ratingTrendChart" [options]="lineChartOptions" type="line">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
       <!-- Status Over Time Chart (NEW) -->
       <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
         <div class="card-body">
