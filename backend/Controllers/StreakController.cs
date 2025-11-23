@@ -20,11 +20,11 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<StreakDto>> GetStreakData()
+        public async Task<ActionResult<StreakDto>> GetStreakData([FromQuery] DateTime? localDate = null)
         {
             try
             {
-                var streakData = await _streakService.GetStreakDataAsync();
+                var streakData = await _streakService.GetStreakDataAsync(localDate);
                 return Ok(streakData);
             }
             catch (System.Exception ex)

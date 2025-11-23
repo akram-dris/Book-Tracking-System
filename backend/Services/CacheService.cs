@@ -104,7 +104,7 @@ namespace BookTrackingSystem.Services
 
         public void InvalidateStreak()
         {
-            Remove(STREAK_DATA);
+            RemoveByPattern(STREAK_DATA);
         }
 
         public void InvalidateReadingData()
