@@ -222,6 +222,10 @@ export class SessionLogComponent implements OnInit {
         summary: this.sessionForm.value.summary
       };
 
+      // Check if this session will complete the book
+      const willCompleteBook = this.totalPages &&
+        (this.currentPage + this.currentPagesRead >= this.totalPages);
+
       if (this.existingSession) {
         // Update existing session
         const updateSession: UpdateReadingSession = {
@@ -234,7 +238,13 @@ export class SessionLogComponent implements OnInit {
           next: () => {
             this.isLoading = false;
             this.streakService.forceReload();
-            this.notificationService.showSuccess('Reading session updated successfully');
+
+            if (willCompleteBook) {
+              this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+            } else {
+              this.notificationService.showSuccess('Reading session updated successfully');
+            }
+
             this.location.back();
           },
           error: (err) => {
@@ -250,7 +260,13 @@ export class SessionLogComponent implements OnInit {
           next: () => {
             this.isLoading = false;
             this.streakService.forceReload();
-            this.notificationService.showSuccess('Reading session logged successfully');
+
+            if (willCompleteBook) {
+              this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+            } else {
+              this.notificationService.showSuccess('Reading session logged successfully');
+            }
+
             this.location.back();
           },
           error: (err) => {

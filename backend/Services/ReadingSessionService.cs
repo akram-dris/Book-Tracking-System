@@ -141,6 +141,7 @@ namespace BookTrackingSystem.Services
                 // Mark as completed
                 await _bookService.UpdateBookStatusAsync(bookId, Models.Enums.ReadingStatus.Completed, book.StartedReadingDate, DateTime.UtcNow);
             }
+            else if (totalPagesRead < book.TotalPages && book.Status == Models.Enums.ReadingStatus.Completed)
             {
                 // Revert from completed if pages read drop below total pages
                 await _bookService.UpdateBookStatusAsync(bookId, Models.Enums.ReadingStatus.CurrentlyReading, book.StartedReadingDate, null);
