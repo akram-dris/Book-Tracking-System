@@ -23,7 +23,7 @@ interface BookWithProgress extends GetBook {
   statusBadgeClass?: string;
 }
 
-type SortOption = 'title' | 'dateAdded' | 'progress' | 'author';
+type SortOption = 'title' | 'dateAdded' | 'progress' | 'author' | 'rating';
 type ViewMode = 'grid' | 'list';
 
 @Component({
@@ -57,10 +57,11 @@ export class BookListComponent implements OnInit {
   viewMode: ViewMode = 'grid';
   sortBy: SortOption = 'dateAdded';
   sortOptions = [
-    { value: 'title' as SortOption, label: 'Title' },
     { value: 'dateAdded' as SortOption, label: 'Date Added' },
+    { value: 'title' as SortOption, label: 'Title' },
+    { value: 'author' as SortOption, label: 'Author' },
     { value: 'progress' as SortOption, label: 'Progress' },
-    { value: 'author' as SortOption, label: 'Author' }
+    { value: 'rating' as SortOption, label: 'Rating' }
   ];
 
   // Statistics
@@ -177,6 +178,10 @@ export class BookListComponent implements OnInit {
       );
     }
 
+    if (filters.rating) {
+      filteredBooks = filteredBooks.filter(book => book.rating === filters.rating);
+    }
+
     // Update displayed books with filtered results
     this.displayedBooks = filteredBooks;
 
@@ -220,6 +225,9 @@ export class BookListComponent implements OnInit {
       case 'progress':
         this.books.sort((a, b) => (b.progressPercentage || 0) - (a.progressPercentage || 0));
         break;
+      case 'rating':
+        this.books.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
       case 'dateAdded':
       default:
         this.books.sort((a, b) => {
@@ -241,6 +249,9 @@ export class BookListComponent implements OnInit {
         break;
       case 'progress':
         this.displayedBooks.sort((a, b) => (b.progressPercentage || 0) - (a.progressPercentage || 0));
+        break;
+      case 'rating':
+        this.displayedBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case 'dateAdded':
       default:
