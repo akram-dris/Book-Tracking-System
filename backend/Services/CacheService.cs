@@ -113,5 +113,16 @@ namespace BookTrackingSystem.Services
             InvalidateAllHeatmaps();
             InvalidateStreak();
         }
+
+        public void InvalidateBooks()
+        {
+            RemoveByPattern("books_");
+        }
+
+        public void InvalidateBook(int bookId)
+        {
+            Remove($"book_{bookId}");
+            RemoveByPattern("books_"); // Invalidate lists as well
+        }
     }
 }

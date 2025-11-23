@@ -61,5 +61,15 @@ namespace BookTrackingSystem.Services
         /// Invalidates all reading-related caches (statistics, heatmap, streak)
         /// </summary>
         void InvalidateReadingData();
+
+        /// <summary>
+        /// Invalidates all book-related caches
+        /// </summary>
+        void InvalidateBooks();
+
+        /// <summary>
+        /// Invalidates a specific book cache
+        /// </summary>
+        void InvalidateBook(int bookId);
     }
 }

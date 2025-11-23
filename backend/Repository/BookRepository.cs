@@ -17,6 +17,7 @@ namespace BookTrackingSystem.Repository
         public async Task<IEnumerable<Book>> GetBooksAsync(int? tagId = null, string? search = null)
         {
             var query = _context.Books
+                .AsNoTracking()
                 .Include(b => b.Author)
                 .Include(b => b.BookTagAssignments!)
                     .ThenInclude(bta => bta.BookTag)
@@ -43,6 +44,7 @@ namespace BookTrackingSystem.Repository
         public async Task<Book?> GetBookAsync(int id)
         {
             return await _context.Books
+                .AsNoTracking()
                 .Include(b => b.Author)
                 .Include(b => b.BookTagAssignments!)
                     .ThenInclude(bta => bta.BookTag)

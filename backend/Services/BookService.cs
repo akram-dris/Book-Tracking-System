@@ -21,30 +21,40 @@ namespace BookTrackingSystem.Services
         private readonly ITagRepository _tagRepository;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ICacheService _cacheService;
 
-        public BookService(IBookRepository bookRepository, IBookTagAssignmentRepository bookTagAssignmentRepository, ITagRepository tagRepository, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public BookService(IBookRepository bookRepository, IBookTagAssignmentRepository bookTagAssignmentRepository, ITagRepository tagRepository, IMapper mapper, IWebHostEnvironment webHostEnvironment, ICacheService cacheService)
         {
             _bookRepository = bookRepository;
             _bookTagAssignmentRepository = bookTagAssignmentRepository;
             _tagRepository = tagRepository;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _cacheService = cacheService;
         }
 
         public async Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null, string? search = null)
         {
-            var books = await _bookRepository.GetBooksAsync(tagId, search);
-            return _mapper.Map<IEnumerable<BookDto>>(books);
+            string cacheKey = $"books_list_{tagId}_{search}";
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            {
+                var books = await _bookRepository.GetBooksAsync(tagId, search);
+                return _mapper.Map<IEnumerable<BookDto>>(books);
+            }) ?? Enumerable.Empty<BookDto>();
         }
 
         public async Task<BookDto?> GetBookAsync(int id)
         {
-            var book = await _bookRepository.GetBookAsync(id);
-            if (book == null)
+            string cacheKey = $"book_{id}";
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () =>
             {
-                return null;
-            }
-            return _mapper.Map<BookDto>(book)!;
+                var book = await _bookRepository.GetBookAsync(id);
+                if (book == null)
+                {
+                    return null;
+                }
+                return _mapper.Map<BookDto>(book);
+            });
         }
 
         public async Task<BookDto> AddBookAsync(CreateBookDto createBookDto, IFormFile? imageFile)
@@ -68,6 +78,7 @@ namespace BookTrackingSystem.Services
             }
 
             var newBook = await _bookRepository.AddBookAsync(book);
+            _cacheService.InvalidateBooks();
             return _mapper.Map<BookDto>(newBook);
         }
 
@@ -114,12 +125,14 @@ namespace BookTrackingSystem.Services
             }
 
             var updatedBook = await _bookRepository.UpdateBookAsync(book!);
+            _cacheService.InvalidateBook(id);
             return _mapper.Map<BookDto>(updatedBook);
         }
 
         public async Task DeleteBookAsync(int id)
         {
             await _bookRepository.DeleteBookAsync(id);
+            _cacheService.InvalidateBook(id);
         }
 
         public async Task AssignTagsAsync(int bookId, IEnumerable<int> tagIds)
@@ -143,6 +156,7 @@ namespace BookTrackingSystem.Services
                     await _bookTagAssignmentRepository.AddAsync(newAssignment);
                 }
             }
+            _cacheService.InvalidateBook(bookId);
         }
 
         public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null, string? summary = null, int? rating = null)
@@ -168,6 +182,7 @@ namespace BookTrackingSystem.Services
                     book.Rating = rating.Value;
                 }
                 await _bookRepository.UpdateBookAsync(book);
+                _cacheService.InvalidateBook(bookId);
             }
         }
 
@@ -178,6 +193,7 @@ namespace BookTrackingSystem.Services
             {
                 book.CompletedDate = completedDate;
                 await _bookRepository.UpdateBookAsync(book); // Ensure the book is updated in the repository
+                _cacheService.InvalidateBook(bookId);
             }
         }
 
@@ -188,6 +204,7 @@ namespace BookTrackingSystem.Services
             {
                 book.Summary = summary;
                 await _bookRepository.UpdateBookAsync(book);
+                _cacheService.InvalidateBook(bookId);
             }
         }
     }

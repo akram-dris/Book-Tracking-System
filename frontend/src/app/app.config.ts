@@ -8,11 +8,13 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes), 
+    provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     provideAnimations(),
@@ -20,6 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideNgIconsConfig({
       size: '1.5rem',
       color: 'currentColor'
-    })
+    }),
+    provideCharts(withDefaultRegisterables())
   ]
 };
