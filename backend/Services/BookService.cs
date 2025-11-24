@@ -64,10 +64,15 @@ namespace BookTrackingSystem.Services
             }
             catch (Exception ex)
             {
-                return Result<PaginatedResult<BookDto>>.Failure($"Error retrieving paginated books: {ex.Message}");
+                return Result<PaginatedResult<BookDto>>.Failure($"An error occurred while retrieving books: {ex.Message}");
             }
         }
 
+        public async Task<Dictionary<int, int>> GetBookCountsByStatusAsync()
+        {
+            return await _bookRepository.GetBookCountsByStatusAsync();
+        }
+        
         public async Task<BookDto?> GetBookAsync(int id)
         {
             string cacheKey = $"book_{id}";

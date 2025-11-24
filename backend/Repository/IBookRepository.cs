@@ -8,6 +8,7 @@ namespace BookTrackingSystem.Repository
     {
         Task<IEnumerable<Book>> GetBooksAsync(int? tagId = null, string? search = null);
         Task<PaginatedResult<Book>> GetBooksPaginatedAsync(PaginationParams paginationParams, int? tagId = null);
+        Task<Dictionary<int, int>> GetBookCountsByStatusAsync();
         Task<Book?> GetBookAsync(int id);
         Task<Book> AddBookAsync(Book book);
         Task<Book> UpdateBookAsync(Book book);

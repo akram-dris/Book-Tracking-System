@@ -11,6 +11,7 @@ namespace BookTrackingSystem.Services
     {
         Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null, string? search = null);
         Task<Result<PaginatedResult<BookDto>>> GetBooksPaginatedAsync(PaginationParams paginationParams, int? tagId = null);
+        Task<Dictionary<int, int>> GetBookCountsByStatusAsync();
         Task<BookDto?> GetBookAsync(int id);
         Task<BookDto> AddBookAsync(CreateBookDto book, IFormFile? imageFile);
         Task<BookDto> UpdateBookAsync(int id, UpdateBookDto book, IFormFile? imageFile);

@@ -56,6 +56,13 @@ namespace BookTrackingSystem.Controllers
             return Ok(result);
         }
 
+        [HttpGet("counts-by-status")]
+        public async Task<ActionResult<Dictionary<int, int>>> GetBookCountsByStatus()
+        {
+            var counts = await _bookService.GetBookCountsByStatusAsync();
+            return Ok(counts);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDto>> GetBook(int id)
         {

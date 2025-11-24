@@ -43,6 +43,10 @@ export class BookService {
     return this.http.get<Result<PaginatedResult<GetBook>>>(url);
   }
 
+  getBookCountsByStatus(): Observable<{ [key: number]: number }> {
+    return this.http.get<{ [key: number]: number }>(`${this.apiUrl}/counts-by-status`);
+  }
+
   getBook(id: number): Observable<GetBook> {
     return this.http.get<GetBook>(`${this.apiUrl}/${id}`);
   }

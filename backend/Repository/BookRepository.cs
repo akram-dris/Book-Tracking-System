@@ -81,6 +81,14 @@ namespace BookTrackingSystem.Repository
             return new PaginatedResult<Book>(items, totalCount, paginationParams.PageNumber, paginationParams.PageSize);
         }
 
+        public async Task<Dictionary<int, int>> GetBookCountsByStatusAsync()
+        {
+            return await _context.Books
+                .GroupBy(b => b.Status)
+                .Select(g => new { Status = (int)g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Status, x => x.Count);
+        }
+
         public async Task<Book?> GetBookAsync(int id)
         {
             return await _context.Books

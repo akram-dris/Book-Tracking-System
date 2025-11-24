@@ -123,7 +123,7 @@ export class BookListComponent implements OnInit {
           this.hasMorePages = result.data.hasNextPage;
           console.log('BookListComponent - Books loaded:', this.books, 'Has more:', this.hasMorePages);
 
-          this.calculateStats();
+          this.loadBookStats();
           this.loadProgressForBooks(this.books);
           this.applySortAndFilter();
         } else {
@@ -134,18 +134,28 @@ export class BookListComponent implements OnInit {
     });
   }
 
-  calculateStats(): void {
-    const summarizedCount = this.books.filter(b => b.status === ReadingStatus.Summarized).length;
-    const completedCount = this.books.filter(b => b.status === ReadingStatus.Completed).length;
+  loadBookStats(): void {
+    this.bookService.getBookCountsByStatus().subscribe({
+      next: (counts) => {
+        const summarizedCount = counts[ReadingStatus.Summarized] || 0;
+        const completedCount = counts[ReadingStatus.Completed] || 0;
 
-    this.bookStats = {
-      total: this.books.length,
-      notReading: this.books.filter(b => b.status === ReadingStatus.NotReading).length,
-      planning: this.books.filter(b => b.status === ReadingStatus.Planning).length,
-      currentlyReading: this.books.filter(b => b.status === ReadingStatus.CurrentlyReading).length,
-      completed: completedCount + summarizedCount, // Summarized books are also completed
-      summarized: summarizedCount
-    };
+        // Calculate total from all status counts
+        const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+
+        this.bookStats = {
+          total: total,
+          notReading: counts[ReadingStatus.NotReading] || 0,
+          planning: counts[ReadingStatus.Planning] || 0,
+          currentlyReading: counts[ReadingStatus.CurrentlyReading] || 0,
+          completed: completedCount + summarizedCount,
+          summarized: summarizedCount
+        };
+      },
+      error: (err) => {
+        console.error('Error loading book stats:', err);
+      }
+    });
   }
 
   loadMore(): void {
