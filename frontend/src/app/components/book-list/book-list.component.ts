@@ -61,13 +61,20 @@ export class BookListComponent implements OnInit {
 
   // View and sorting
   viewMode: ViewMode = 'grid';
-  sortBy: SortOption = 'dateAdded';
+  sortBy: string = 'title-asc';
+  currentStatusFilter: number | null = null;
+  currentAuthorId: number | null = null;
+  currentRating: number | null = null;
+  currentSearch: string = '';
   sortOptions = [
-    { value: 'dateAdded' as SortOption, label: 'Date Added' },
-    { value: 'title' as SortOption, label: 'Title' },
-    { value: 'author' as SortOption, label: 'Author' },
-    { value: 'progress' as SortOption, label: 'Progress' },
-    { value: 'rating' as SortOption, label: 'Rating' }
+    { value: 'title-asc', label: 'Title (A-Z)' },
+    { value: 'title-desc', label: 'Title (Z-A)' },
+    { value: 'author-asc', label: 'Author (A-Z)' },
+    { value: 'author-desc', label: 'Author (Z-A)' },
+    { value: 'date-newest', label: 'Newest' },
+    { value: 'date-oldest', label: 'Oldest' },
+    { value: 'rating-desc', label: 'Highest Rated' },
+    { value: 'rating-asc', label: 'Lowest Rated' }
   ];
 
   // Statistics
@@ -104,12 +111,27 @@ export class BookListComponent implements OnInit {
     this.currentPage = 1;
     this.books = [];
     this.hasMorePages = true;
-    console.log('BookListComponent - Loading books with tagId:', tagId, 'search:', search);
+
+    if (search !== null) {
+      this.currentSearch = search;
+    }
+    if (tagId !== null) {
+      this.selectedTagId = tagId;
+    }
 
     this.readingStatusService.getAllStatuses().subscribe(statuses => {
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-      this.bookService.getBooksPaginated(this.currentPage, this.pageSize, search, tagId).subscribe(result => {
+      this.bookService.getBooksPaginated(
+        this.currentPage,
+        this.pageSize,
+        this.currentSearch || null,
+        this.selectedTagId,
+        this.currentStatusFilter,
+        this.sortBy,
+        this.currentAuthorId,
+        this.currentRating
+      ).subscribe(result => {
         if (result.isSuccess && result.data) {
           this.books = result.data.items.map(book => {
             const statusInfo = statusMap.get(book.status);
@@ -119,13 +141,11 @@ export class BookListComponent implements OnInit {
               statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
             };
           });
+          this.displayedBooks = this.books;
 
           this.hasMorePages = result.data.hasNextPage;
-          console.log('BookListComponent - Books loaded:', this.books, 'Has more:', this.hasMorePages);
-
           this.loadBookStats();
           this.loadProgressForBooks(this.books);
-          this.applySortAndFilter();
         } else {
           console.error('Error loading books:', result.errors);
         }
@@ -159,18 +179,33 @@ export class BookListComponent implements OnInit {
   }
 
   loadMore(): void {
-    if (!this.hasMorePages || this.isLoadingMore) {
-      return;
-    }
+    if (this.isLoadingMore || !this.hasMorePages) return;
 
     this.isLoadingMore = true;
     this.currentPage++;
-    console.log('Loading more books, page:', this.currentPage);
 
     this.readingStatusService.getAllStatuses().subscribe(statuses => {
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-      this.bookService.getBooksPaginated(this.currentPage, this.pageSize, null, this.selectedTagId).subscribe(result => {
+      console.log('LoadMore - Parameters:', {
+        page: this.currentPage,
+        pageSize: this.pageSize,
+        search: this.currentSearch,
+        tagId: this.selectedTagId,
+        statusFilter: this.currentStatusFilter,
+        sort: this.sortBy
+      });
+
+      this.bookService.getBooksPaginated(
+        this.currentPage,
+        this.pageSize,
+        this.currentSearch || null,
+        this.selectedTagId,
+        this.currentStatusFilter,
+        this.sortBy,
+        this.currentAuthorId,
+        this.currentRating
+      ).subscribe(result => {
         if (result.isSuccess && result.data) {
           const newBooks = result.data.items.map(book => {
             const statusInfo = statusMap.get(book.status);
@@ -182,15 +217,29 @@ export class BookListComponent implements OnInit {
           });
 
           this.books = [...this.books, ...newBooks];
+          this.displayedBooks = this.books;
           this.hasMorePages = result.data.hasNextPage;
-          console.log('More books loaded:', newBooks.length, 'Total now:', this.books.length, 'Has more:', this.hasMorePages);
 
           this.loadProgressForBooks(newBooks);
-          this.applySortAndFilter();
         }
         this.isLoadingMore = false;
       });
     });
+  }
+
+  onStatusFilterChange(status: number | null): void {
+    this.currentStatusFilter = status;
+    this.loadBooks();
+  }
+
+  onSortChange(sort: string): void {
+    this.sortBy = sort;
+    this.loadBooks();
+  }
+
+  onSearchChange(search: string): void {
+    this.currentSearch = search;
+    this.loadBooks();
   }
 
   private loadProgressForBooks(books: BookWithProgress[]): void {
@@ -216,40 +265,17 @@ export class BookListComponent implements OnInit {
     });
   }
 
-  private applySortAndFilter(): void {
-    this.sortBooks();
-    this.displayedBooks = [...this.books];
-  }
-
   onFiltersChanged(filters: BookFilters): void {
     console.log('Filters changed:', filters);
 
-    // Apply filters
-    let filteredBooks = [...this.books];
+    // Update filter state - if undefined or null, clear the filter
+    this.currentStatusFilter = (filters.status !== undefined && filters.status !== null) ? filters.status : null;
+    this.selectedTagId = filters.tagId ?? null;
+    this.currentAuthorId = filters.authorId ?? null;
+    this.currentRating = filters.rating ?? null;
 
-    if (filters.status !== undefined && filters.status !== null) {
-      filteredBooks = filteredBooks.filter(book => book.status === filters.status);
-    }
-
-    if (filters.authorId) {
-      filteredBooks = filteredBooks.filter(book => book.author?.id === filters.authorId);
-    }
-
-    if (filters.tagId) {
-      filteredBooks = filteredBooks.filter(book =>
-        book.tags?.some(tag => tag.id === filters.tagId)
-      );
-    }
-
-    if (filters.rating) {
-      filteredBooks = filteredBooks.filter(book => book.rating === filters.rating);
-    }
-
-    // Update displayed books with filtered results
-    this.displayedBooks = filteredBooks;
-
-    // Sort the filtered books
-    this.sortFilteredBooks();
+    // Reload from server with new filters
+    this.loadBooks();
   }
 
   filterBooksByTag(tagId: number | null): void {
@@ -317,36 +343,6 @@ export class BookListComponent implements OnInit {
   // View and sorting methods
   toggleView(mode: ViewMode): void {
     this.viewMode = mode;
-  }
-
-  onSortChange(sortOption: SortOption): void {
-    this.sortBy = sortOption;
-    this.sortBooks();
-  }
-
-  sortBooks(): void {
-    switch (this.sortBy) {
-      case 'title':
-        this.books.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-        break;
-      case 'author':
-        this.books.sort((a, b) => (a.author?.name || '').localeCompare(b.author?.name || ''));
-        break;
-      case 'progress':
-        this.books.sort((a, b) => (b.progressPercentage || 0) - (a.progressPercentage || 0));
-        break;
-      case 'rating':
-        this.books.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        break;
-      case 'dateAdded':
-      default:
-        this.books.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateB - dateA;
-        });
-        break;
-    }
   }
 
   sortFilteredBooks(): void {

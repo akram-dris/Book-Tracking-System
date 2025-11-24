@@ -32,14 +32,37 @@ export class BookService {
     return this.http.get<GetBook[]>(url);
   }
 
-  getBooksPaginated(pageNumber: number, pageSize: number, search: string | null = null, tagId: number | null = null): Observable<Result<PaginatedResult<GetBook>>> {
+  getBooksPaginated(
+    pageNumber: number,
+    pageSize: number,
+    search: string | null = null,
+    tagId: number | null = null,
+    statusFilter: number | null = null,
+    sort: string | null = null,
+    authorId: number | null = null,
+    rating: number | null = null
+  ): Observable<Result<PaginatedResult<GetBook>>> {
     let url = `${this.apiUrl}/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
     }
     if (tagId) {
       url += `&tagId=${tagId}`;
     }
+    if (statusFilter !== null) {
+      url += `&statusFilter=${statusFilter}`;
+    }
+    if (sort) {
+      url += `&sort=${sort}`;
+    }
+    if (authorId !== null) {
+      url += `&authorId=${authorId}`;
+    }
+    if (rating !== null) {
+      url += `&rating=${rating}`;
+    }
+
     return this.http.get<Result<PaginatedResult<GetBook>>>(url);
   }
 

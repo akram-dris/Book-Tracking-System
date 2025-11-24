@@ -37,13 +37,21 @@ namespace BookTrackingSystem.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20,
             [FromQuery] string? search = null,
-            [FromQuery] int? tagId = null)
+            [FromQuery] int? tagId = null,
+            [FromQuery] int? statusFilter = null,
+            [FromQuery] string? sort = null,
+            [FromQuery] int? authorId = null,
+            [FromQuery] int? rating = null)
         {
             var paginationParams = new PaginationParams
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                Search = search
+                Search = search,
+                Sort = sort,
+                StatusFilter = statusFilter,
+                AuthorId = authorId,
+                Rating = rating
             };
 
             var result = await _bookService.GetBooksPaginatedAsync(paginationParams, tagId);
