@@ -10,11 +10,13 @@ import { NotificationService } from '../../services/notification.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroStar, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { PaginationParams } from '../../models/result';
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgFor, FormsModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgFor, FormsModule, NgIconComponent, InfiniteScrollDirective],
   templateUrl: './tag-management.component.html',
   styleUrls: ['./tag-management.component.css'],
   viewProviders: [provideIcons({ heroStar, heroArrowsUpDown })]
@@ -28,6 +30,10 @@ export class TagManagementComponent implements OnInit {
   isEditingTag: boolean = false;
   editingTagId: number | null = null;
   sortBy: string = 'name-asc';
+  currentPage: number = 1;
+  pageSize: number = 20;
+  hasMorePages: boolean = true;
+  isLoadingMore: boolean = false;
 
   sortOptions = [
     { value: 'name-asc', label: 'Name (A-Z)' },
@@ -57,36 +63,66 @@ export class TagManagementComponent implements OnInit {
   }
 
   loadTags(): void {
-    this.tagService.getTags().subscribe({
-      next: (tags) => {
-        this.tags = tags;
-        this.sortTags();
+    this.isLoading = true;
+    this.currentPage = 1;
+    this.tags = [];
+    this.displayedTags = [];
+    this.hasMorePages = true;
+
+    const params: PaginationParams = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+      sort: this.sortBy
+    };
+
+    this.tagService.getTagsPaginated(params).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.tags = result.data.items;
+          this.displayedTags = result.data.items;
+          this.hasMorePages = result.data.items.length === this.pageSize;
+        }
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading tags', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadMore(): void {
+    if (this.isLoadingMore || !this.hasMorePages) return;
+
+    this.isLoadingMore = true;
+    this.currentPage++;
+
+    const params: PaginationParams = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+      sort: this.sortBy
+    };
+
+    this.tagService.getTagsPaginated(params).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          const newTags = result.data.items;
+          this.tags = [...this.tags, ...newTags];
+          this.displayedTags = [...this.displayedTags, ...newTags];
+          this.hasMorePages = newTags.length === this.pageSize;
+        }
+        this.isLoadingMore = false;
+      },
+      error: (err) => {
+        console.error('Error loading more tags', err);
+        this.isLoadingMore = false;
       }
     });
   }
 
   sortTags(): void {
-    let sorted = [...this.tags];
-
-    switch (this.sortBy) {
-      case 'name-asc':
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name-desc':
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case 'rating-desc':
-        sorted.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
-        break;
-      case 'usage-desc':
-        sorted.sort((a, b) => (this.tagUsageCounts[b.id] || 0) - (this.tagUsageCounts[a.id] || 0));
-        break;
-    }
-
-    this.displayedTags = sorted;
+    // For paginated data, re-fetch with new sort
+    this.loadTags();
   }
 
   onSortChange(): void {

@@ -113,7 +113,9 @@
             <p class="text-base-content/50 text-sm mt-1">Create your first tag to get started</p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" *ngIf="tags.length > 0">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" *ngIf="tags.length > 0"
+               appInfiniteScroll
+               (scrolled)="loadMore()">
             <div *ngFor="let tag of displayedTags"
               class="group relative bg-primary/5 border-2 border-primary/20 rounded-xl p-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer overflow-hidden"
               [ngClass]="getRatingBorderClass(tag.averageRating)">
@@ -177,6 +179,13 @@
               </div>
             </div>
           </div>
+
+          <!-- Infinite Scroll Loading Indicator -->
+          @if (isLoadingMore) {
+          <div class="flex justify-center py-8">
+            <span class="loading loading-spinner loading-lg text-primary"></span>
+          </div>
+          }
         </div>
       </div>
     </div>
