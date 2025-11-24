@@ -1,5 +1,8 @@
 
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Common;
+using BookTrackingSystem.Models.Pagination;
+using BookTrackingSystem.DTOs;
 
 namespace BookTrackingSystem.Services
 {
@@ -10,5 +13,6 @@ namespace BookTrackingSystem.Services
         Task<Author> AddAuthorAsync(Author author);
         Task<Author> UpdateAuthorAsync(Author author);
         Task DeleteAuthorAsync(int id);
+        Task<Result<PaginatedResult<AuthorDto>>> GetAuthorsPaginatedAsync(PaginationParams paginationParams);
     }
 }

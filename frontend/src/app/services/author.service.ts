@@ -6,6 +6,8 @@ import { environment } from 'src/environments/environment';
 import { GetAuthor } from '../models/get-author.model';
 import { CreateAuthor } from '../models/create-author.model';
 import { UpdateAuthor } from '../models/update-author.model';
+import { Result, PaginatedResult, PaginationParams } from '../models/result';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,22 @@ export class AuthorService {
 
   getAuthors(): Observable<GetAuthor[]> {
     return this.http.get<GetAuthor[]>(this.apiUrl);
+  }
+
+  getAuthorsPaginated(params: PaginationParams): Observable<Result<PaginatedResult<GetAuthor>>> {
+    let httpParams = new HttpParams()
+      .set('pageNumber', params.pageNumber.toString())
+      .set('pageSize', params.pageSize.toString());
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+
+    if (params.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<Result<PaginatedResult<GetAuthor>>>(`${this.apiUrl}/paginated`, { params: httpParams });
   }
 
   getAuthor(id: number): Observable<GetAuthor> {

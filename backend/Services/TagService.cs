@@ -3,6 +3,8 @@ using AutoMapper;
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Models;
 using BookTrackingSystem.Repository;
+using BookTrackingSystem.Models.Common;
+using BookTrackingSystem.Models.Pagination;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -84,5 +86,37 @@ namespace BookTrackingSystem.Services
                 TimeSpan.FromMinutes(30)
             ) ?? new Dictionary<int, int>();
         }
+
+        public async Task<Result<PaginatedResult<TagDto>>> GetTagsPaginatedAsync(PaginationParams paginationParams)
+        {
+            try
+            {
+                var paginatedTags = await _tagRepository.GetTagsPaginatedAsync(paginationParams);
+
+                var tagDtos = paginatedTags.Items.Select(tag => new TagDto
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    AverageRating = tag.BookTagAssignments != null && tag.BookTagAssignments.Any(bta => bta.Book?.Rating != null)
+                        ? tag.BookTagAssignments.Where(bta => bta.Book?.Rating != null).Average(bta => bta.Book!.Rating!.Value)
+                        : null
+                }).ToList();
+
+                var result = new PaginatedResult<TagDto>
+                {
+                    Items = tagDtos,
+                    TotalCount = paginatedTags.TotalCount,
+                    PageNumber = paginatedTags.PageNumber,
+                    PageSize = paginatedTags.PageSize
+                };
+
+                return Result<PaginatedResult<TagDto>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Result<PaginatedResult<TagDto>>.Failure($"An error occurred while retrieving tags: {ex.Message}");
+            }
+        }
     }
 }
+

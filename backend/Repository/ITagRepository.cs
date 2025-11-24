@@ -1,5 +1,6 @@
 
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Pagination;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,5 +14,6 @@ namespace BookTrackingSystem.Repository
         Task<BookTag> UpdateAsync(BookTag tag);
         Task DeleteAsync(int id);
         Task<Dictionary<int, int>> GetTagUsageCountsAsync();
+        Task<PaginatedResult<BookTag>> GetTagsPaginatedAsync(PaginationParams paginationParams);
     }
 }

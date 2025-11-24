@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookTrackingSystem.DTOs;
 using Microsoft.AspNetCore.Hosting;
+using BookTrackingSystem.Models.Common;
+using BookTrackingSystem.Models.Pagination;
 
 namespace BookTrackingSystem.Controllers
 {
@@ -41,6 +43,18 @@ namespace BookTrackingSystem.Controllers
             }).ToList();
             return Ok(authorDtos);
         }
+
+        [HttpGet("paginated")]
+        public async Task<ActionResult<Result<PaginatedResult<AuthorDto>>>> GetAuthorsPaginated([FromQuery] PaginationParams paginationParams)
+        {
+            var result = await _authorService.GetAuthorsPaginatedAsync(paginationParams);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<AuthorDto>> GetAuthor(int id)
         {

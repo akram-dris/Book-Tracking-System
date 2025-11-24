@@ -1,6 +1,8 @@
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Services;
 using BookTrackingSystem.Repository;
+using BookTrackingSystem.Models.Common;
+using BookTrackingSystem.Models.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,6 +38,17 @@ namespace BookTrackingSystem.Controllers
             }).ToList();
             
             return Ok(tagDtos);
+        }
+
+        [HttpGet("paginated")]
+        public async Task<ActionResult<Result<PaginatedResult<TagDto>>>> GetTagsPaginated([FromQuery] PaginationParams paginationParams)
+        {
+            var result = await _tagService.GetTagsPaginatedAsync(paginationParams);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

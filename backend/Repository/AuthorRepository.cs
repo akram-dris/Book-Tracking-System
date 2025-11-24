@@ -1,6 +1,7 @@
 
 using BookTrackingSystem.Data;
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookTrackingSystem.Repository
@@ -46,6 +47,33 @@ namespace BookTrackingSystem.Repository
                 _context.Authors.Remove(author);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<PaginatedResult<Author>> GetAuthorsPaginatedAsync(PaginationParams paginationParams)
+        {
+            var query = _context.Authors.Include(a => a.Books).AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(paginationParams.Search))
+            {
+                var search = paginationParams.Search.ToLower();
+                query = query.Where(a => a.Name.ToLower().Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(a => a.Name)
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<Author>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = paginationParams.PageNumber,
+                PageSize = paginationParams.PageSize
+            };
         }
     }
 }

@@ -1,5 +1,6 @@
 
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Pagination;
 
 namespace BookTrackingSystem.Repository
 {
@@ -10,5 +11,6 @@ namespace BookTrackingSystem.Repository
         Task<Author> AddAuthorAsync(Author author);
         Task<Author> UpdateAuthorAsync(Author author);
         Task DeleteAuthorAsync(int id);
+        Task<PaginatedResult<Author>> GetAuthorsPaginatedAsync(PaginationParams paginationParams);
     }
 }

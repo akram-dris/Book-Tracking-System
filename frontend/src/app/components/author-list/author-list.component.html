@@ -63,7 +63,8 @@
 
   <!-- Authors Grid -->
   @if (!isLoading && filteredAuthors.length > 0) {
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" appInfiniteScroll
+    (scrolled)="loadMore()">
     @for (author of filteredAuthors; track author.id) {
     <div
       class="card bg-base-200 group relative overflow-hidden cursor-pointer shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 border-base-300"
@@ -115,6 +116,13 @@
     </div>
     }
   </div>
+
+  <!-- Infinite Scroll Loading Indicator -->
+  @if (isLoadingMore) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+  }
   }
 
   <!-- Empty State -->

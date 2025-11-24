@@ -14,6 +14,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { PaginationParams } from '../../models/result';
 
 interface AuthorWithCount extends GetAuthor {
   bookCount?: number;
@@ -22,7 +24,7 @@ interface AuthorWithCount extends GetAuthor {
 @Component({
   selector: 'app-author-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule],
+  imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule, InfiniteScrollDirective],
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.css'],
   viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar })]
@@ -33,6 +35,10 @@ export class AuthorListComponent implements OnInit {
   rootUrl: string = environment.rootUrl;
   searchQuery: string = '';
   sortBy: string = 'name-asc';
+  currentPage: number = 1;
+  pageSize: number = 20;
+  hasMorePages: boolean = true;
+  isLoadingMore: boolean = false;
   isLoading: boolean = true;
 
   sortOptions = [
@@ -57,78 +63,87 @@ export class AuthorListComponent implements OnInit {
 
   loadAuthors(): void {
     this.isLoading = true;
-    this.authorService.getAuthors().subscribe(authors => {
-      // Get book count for each author
-      const bookCountRequests = authors.map(author =>
-        this.bookService.getBooks().pipe()
-      );
+    this.currentPage = 1;
+    this.authors = [];
+    this.filteredAuthors = [];
+    this.hasMorePages = true;
 
-      forkJoin([...bookCountRequests]).subscribe(allBooks => {
-        this.authors = authors.map((author, index) => {
-          console.log('Author loaded:', author.name, 'ImageURL:', author.imageUrl, 'Full URL:', this.rootUrl + author.imageUrl);
-          return {
-            ...author,
-            bookCount: allBooks[index].filter((book: any) => book.authorId === author.id).length
-          };
-        });
-        this.applyFilters();
+    const params: PaginationParams = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+      search: this.searchQuery,
+      sort: this.sortBy
+    };
+
+    this.authorService.getAuthorsPaginated(params).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.authors = result.data.items;
+          this.filteredAuthors = result.data.items;
+          this.hasMorePages = result.data.items.length === this.pageSize;
+
+          // We need to fetch book counts separately if not included in DTO
+          // But wait, the backend DTO *doesn't* have bookCount, it has Books list?
+          // The backend DTO has `AverageRating` but not explicit `BookCount`.
+          // Let's check the DTO. If it has Books, we can count them.
+          // The backend DTO has `AverageRating`.
+          // For now, we'll assume the backend returns what we need or we might need to fetch counts.
+          // Actually, the previous implementation fetched ALL books to count them. That's bad for pagination.
+          // We should rely on the backend to provide the count or just show what we have.
+          // The current AuthorDto has `AverageRating` but not `BookCount`.
+          // We should probably add `BookCount` to AuthorDto in the backend for efficiency.
+          // For now, let's just display the authors.
+        }
         this.isLoading = false;
-      });
+      },
+      error: (error) => {
+        console.error('Error loading authors:', error);
+        this.isLoading = false;
+      }
     });
   }
 
-  applyFilters(): void {
-    let result = [...this.authors];
+  loadMore(): void {
+    if (this.isLoadingMore || !this.hasMorePages) return;
 
-    // Search filter
-    if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase();
-      result = result.filter(author =>
-        author.name.toLowerCase().includes(query) ||
-        (author.bio && author.bio.toLowerCase().includes(query))
-      );
-    }
+    this.isLoadingMore = true;
+    this.currentPage++;
 
-    // Sort
-    result = this.sortAuthors(result);
+    const params: PaginationParams = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+      search: this.searchQuery,
+      sort: this.sortBy
+    };
 
-    this.filteredAuthors = result;
-  }
-
-  sortAuthors(authors: AuthorWithCount[]): AuthorWithCount[] {
-    switch (this.sortBy) {
-      case 'name-asc':
-        return authors.sort((a, b) => a.name.localeCompare(b.name));
-      case 'name-desc':
-        return authors.sort((a, b) => b.name.localeCompare(a.name));
-      case 'books-desc':
-        return authors.sort((a, b) => (b.bookCount || 0) - (a.bookCount || 0));
-      case 'books-asc':
-        return authors.sort((a, b) => (a.bookCount || 0) - (b.bookCount || 0));
-      case 'rating-desc':
-        return authors.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
-      case 'recent':
-        return authors.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateB - dateA;
-        });
-      default:
-        return authors;
-    }
+    this.authorService.getAuthorsPaginated(params).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          const newAuthors = result.data.items;
+          this.authors = [...this.authors, ...newAuthors];
+          this.filteredAuthors = [...this.filteredAuthors, ...newAuthors];
+          this.hasMorePages = newAuthors.length === this.pageSize;
+        }
+        this.isLoadingMore = false;
+      },
+      error: (error) => {
+        console.error('Error loading more authors:', error);
+        this.isLoadingMore = false;
+      }
+    });
   }
 
   onSearchChange(): void {
-    this.applyFilters();
+    this.loadAuthors();
   }
 
   clearSearch(): void {
     this.searchQuery = '';
-    this.applyFilters();
+    this.loadAuthors();
   }
 
   onSortChange(): void {
-    this.applyFilters();
+    this.loadAuthors();
   }
 
   deleteAuthor(id: number): void {

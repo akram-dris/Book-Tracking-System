@@ -1,6 +1,7 @@
 
 using BookTrackingSystem.Data;
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -63,6 +64,33 @@ namespace BookTrackingSystem.Repository
                 .GroupBy(bta => bta.TagId)
                 .Select(g => new { TagId = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.TagId, x => x.Count);
+        }
+
+        public async Task<PaginatedResult<BookTag>> GetTagsPaginatedAsync(PaginationParams paginationParams)
+        {
+            var query = _context.BookTags.Include(t => t.BookTagAssignments).ThenInclude(bta => bta.Book).AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(paginationParams.Search))
+            {
+                var search = paginationParams.Search.ToLower();
+                query = query.Where(t => t.Name.ToLower().Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(t => t.Name)
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<BookTag>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = paginationParams.PageNumber,
+                PageSize = paginationParams.PageSize
+            };
         }
     }
 }
