@@ -17,7 +17,7 @@ export class BookService {
 
   constructor(private http: HttpClient) { }
 
-  getBooks(tagId: number | null = null, search: string | null = null): Observable<GetBook[]> {
+  getBooks(tagId: number | null = null, search: string | null = null): Observable<Result<GetBook[]>> {
     let url = this.apiUrl;
     const params: string[] = [];
     if (tagId) {
@@ -29,7 +29,7 @@ export class BookService {
     if (params.length > 0) {
       url += `?${params.join('&')}`;
     }
-    return this.http.get<GetBook[]>(url);
+    return this.http.get<Result<GetBook[]>>(url);
   }
 
   getBooksPaginated(
@@ -66,15 +66,15 @@ export class BookService {
     return this.http.get<Result<PaginatedResult<GetBook>>>(url);
   }
 
-  getBookCountsByStatus(): Observable<{ [key: number]: number }> {
-    return this.http.get<{ [key: number]: number }>(`${this.apiUrl}/counts-by-status`);
+  getBookCountsByStatus(): Observable<Result<{ [key: number]: number }>> {
+    return this.http.get<Result<{ [key: number]: number }>>(`${this.apiUrl}/status-counts`);
   }
 
-  getBook(id: number): Observable<GetBook> {
-    return this.http.get<GetBook>(`${this.apiUrl}/${id}`);
+  getBook(id: number): Observable<Result<GetBook>> {
+    return this.http.get<Result<GetBook>>(`${this.apiUrl}/${id}`);
   }
 
-  addBook(book: CreateBook): Observable<GetBook> {
+  addBook(book: CreateBook): Observable<Result<GetBook>> {
     const formData = new FormData();
     formData.append('authorId', book.authorId.toString());
     formData.append('title', book.title);
@@ -82,10 +82,10 @@ export class BookService {
     if (book.imageFile) {
       formData.append('imageFile', book.imageFile, book.imageFile.name);
     }
-    return this.http.post<GetBook>(this.apiUrl, formData);
+    return this.http.post<Result<GetBook>>(this.apiUrl, formData);
   }
 
-  updateBook(id: number, book: UpdateBook): Observable<any> {
+  updateBook(id: number, book: UpdateBook): Observable<Result<any>> {
     const formData = new FormData();
     formData.append('id', id.toString());
     formData.append('authorId', book.authorId.toString());
@@ -94,18 +94,18 @@ export class BookService {
     if (book.imageFile) {
       formData.append('imageFile', book.imageFile, book.imageFile.name);
     }
-    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+    return this.http.put<Result<any>>(`${this.apiUrl}/${id}`, formData);
   }
 
-  deleteBook(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  deleteBook(id: number): Observable<Result<any>> {
+    return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`);
   }
 
-  assignTags(bookId: number, tagIds: number[]): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${bookId}/tags`, tagIds);
+  assignTags(bookId: number, tagIds: number[]): Observable<Result<any>> {
+    return this.http.post<Result<any>>(`${this.apiUrl}/${bookId}/tags`, tagIds);
   }
 
-  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date, completedDate?: Date, summary?: string, rating?: number): Observable<any> {
+  updateBookStatus(bookId: number, status: ReadingStatus, startedReadingDate?: Date, completedDate?: Date, summary?: string, rating?: number): Observable<Result<any>> {
     const body: any = { status: status };
     if (startedReadingDate) {
       body.startedReadingDate = startedReadingDate instanceof Date ? startedReadingDate.toISOString() : startedReadingDate;
@@ -120,10 +120,10 @@ export class BookService {
       body.rating = rating;
     }
     console.log('BookService updateBookStatus payload:', JSON.stringify(body, null, 2));
-    return this.http.put<any>(`${this.apiUrl}/${bookId}/status`, body);
+    return this.http.put<Result<any>>(`${this.apiUrl}/${bookId}/status`, body);
   }
 
-  updateBookSummary(bookId: number, summary: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${bookId}/summary`, { summary });
+  updateBookSummary(bookId: number, summary: string): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/${bookId}/summary`, { summary });
   }
 }

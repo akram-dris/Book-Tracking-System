@@ -78,33 +78,55 @@ export class SessionLogComponent implements OnInit {
     if (!this.bookId) return;
 
     // Fetch book details
-    this.bookService.getBook(this.bookId).subscribe(book => {
-      this.totalPages = book.totalPages;
+    this.bookService.getBook(this.bookId).subscribe({
+      next: (bookResult) => {
+        if (bookResult.isSuccess && bookResult.data) {
+          const book = bookResult.data;
+          this.totalPages = book.totalPages;
 
-      // Fetch reading goal for this book
-      this.readingGoalService.getReadingGoalForBook(this.bookId!).subscribe({
-        next: (goal) => {
-          this.readingGoal = goal;
-        },
-        error: () => {
-          // No reading goal, that's fine
+          // Fetch reading goal for this book
+          this.readingGoalService.getReadingGoalForBook(this.bookId!).subscribe({
+            next: (goalResult) => {
+              if (goalResult.isSuccess && goalResult.data) {
+                this.readingGoal = goalResult.data;
+              }
+            },
+            error: () => {
+              // No reading goal, that's fine
+            }
+          });
+
+          // Fetch all sessions to calculate current progress
+          this.readingSessionService.getReadingSessionsForBook(this.bookId!).subscribe({
+            next: (sessionsResult) => {
+              if (sessionsResult.isSuccess && sessionsResult.data) {
+                const sessions = sessionsResult.data;
+                this.allSessions = sessions;
+                this.totalReadPages = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+                this.currentPage = this.totalReadPages;
+
+                if (this.totalPages && this.totalPages > 0) {
+                  this.progress = (this.currentPage / this.totalPages) * 100;
+                }
+
+                // Check for existing session for today's date
+                this.checkForExistingSession(this.sessionForm.get('date')?.value);
+                this.updatePagesReadValidator();
+              } else {
+                console.error('Error loading sessions:', sessionsResult.errors);
+              }
+            },
+            error: (err) => {
+              console.error('Error loading sessions:', err);
+            }
+          });
+        } else {
+          console.error('Error loading book:', bookResult.errors);
         }
-      });
-
-      // Fetch all sessions to calculate current progress
-      this.readingSessionService.getReadingSessionsForBook(this.bookId!).subscribe(sessions => {
-        this.allSessions = sessions;
-        this.totalReadPages = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-        this.currentPage = this.totalReadPages;
-
-        if (this.totalPages && this.totalPages > 0) {
-          this.progress = (this.currentPage / this.totalPages) * 100;
-        }
-
-        // Check for existing session for today's date
-        this.checkForExistingSession(this.sessionForm.get('date')?.value);
-        this.updatePagesReadValidator();
-      });
+      },
+      error: (err) => {
+        console.error('Error loading book:', err);
+      }
     });
 
     // Subscribe to pagesRead changes
@@ -235,17 +257,23 @@ export class SessionLogComponent implements OnInit {
           summary: sessionData.summary // Use the summary from the form
         };
         this.readingSessionService.updateReadingSession(this.existingSession.id, updateSession).subscribe({
-          next: () => {
-            this.isLoading = false;
-            this.streakService.forceReload();
+          next: (result) => {
+            if (result.isSuccess) {
+              this.isLoading = false;
+              this.streakService.forceReload();
 
-            if (willCompleteBook) {
-              this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+              if (willCompleteBook) {
+                this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+              } else {
+                this.notificationService.showSuccess('Reading session updated successfully');
+              }
+
+              this.location.back();
             } else {
-              this.notificationService.showSuccess('Reading session updated successfully');
+              this.isLoading = false;
+              console.error('Error updating reading session', result.errors);
+              alert('Failed to update reading session. Please try again.');
             }
-
-            this.location.back();
           },
           error: (err) => {
             this.isLoading = false;
@@ -257,17 +285,23 @@ export class SessionLogComponent implements OnInit {
         // Add new session
         const newSession: CreateReadingSession = sessionData;
         this.readingSessionService.addReadingSession(newSession).subscribe({
-          next: () => {
-            this.isLoading = false;
-            this.streakService.forceReload();
+          next: (result) => {
+            if (result.isSuccess) {
+              this.isLoading = false;
+              this.streakService.forceReload();
 
-            if (willCompleteBook) {
-              this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+              if (willCompleteBook) {
+                this.notificationService.showSuccess('🎉 Congratulations! You completed the book!');
+              } else {
+                this.notificationService.showSuccess('Reading session logged successfully');
+              }
+
+              this.location.back();
             } else {
-              this.notificationService.showSuccess('Reading session logged successfully');
+              this.isLoading = false;
+              console.error('Error logging reading session', result.errors);
+              alert('Failed to log reading session. Please try again.');
             }
-
-            this.location.back();
           },
           error: (err) => {
             this.isLoading = false;

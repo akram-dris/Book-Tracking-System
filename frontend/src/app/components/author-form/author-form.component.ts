@@ -63,10 +63,21 @@ export class AuthorFormComponent implements OnInit {
     this.authorId = this.route.snapshot.params['id'];
     if (this.authorId) {
       this.isEditMode = true;
-      this.authorService.getAuthor(this.authorId).subscribe((data: GetAuthor) => {
-        this.authorForm.patchValue(data);
-        if (data.imageUrl) {
-          this.imagePreviewUrl = environment.rootUrl + data.imageUrl;
+      this.authorService.getAuthor(this.authorId).subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.authorForm.patchValue(result.data);
+            if (result.data.imageUrl) {
+              this.imagePreviewUrl = environment.rootUrl + result.data.imageUrl;
+            }
+          } else {
+            console.error('Error loading author:', result.errors);
+            this.notificationService.showError('Failed to load author details');
+          }
+        },
+        error: (err) => {
+          console.error('Error loading author:', err);
+          this.notificationService.showError('Failed to load author details');
         }
       });
     }
@@ -100,20 +111,40 @@ export class AuthorFormComponent implements OnInit {
       }
 
       if (this.isEditMode && this.authorId) {
-        this.authorService.updateAuthor(this.authorId, authorData as UpdateAuthor).subscribe(() => {
-          this.notificationService.showSuccess('Author updated successfully');
-          this.location.back();
-          this.isLoading = false;
-        }, () => {
-          this.isLoading = false;
+        this.authorService.updateAuthor(this.authorId, authorData as UpdateAuthor).subscribe({
+          next: (result) => {
+            if (result.isSuccess) {
+              this.notificationService.showSuccess('Author updated successfully');
+              this.location.back();
+            } else {
+              console.error('Error updating author:', result.errors);
+              this.notificationService.showError('Failed to update author');
+            }
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Error updating author:', err);
+            this.notificationService.showError('Failed to update author');
+            this.isLoading = false;
+          }
         });
       } else {
-        this.authorService.addAuthor(authorData as CreateAuthor).subscribe(() => {
-          this.notificationService.showSuccess('Author added successfully');
-          this.router.navigate(['/authors']);
-          this.isLoading = false;
-        }, () => {
-          this.isLoading = false;
+        this.authorService.addAuthor(authorData as CreateAuthor).subscribe({
+          next: (result) => {
+            if (result.isSuccess) {
+              this.notificationService.showSuccess('Author added successfully');
+              this.router.navigate(['/authors']);
+            } else {
+              console.error('Error adding author:', result.errors);
+              this.notificationService.showError('Failed to add author');
+            }
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Error adding author:', err);
+            this.notificationService.showError('Failed to add author');
+            this.isLoading = false;
+          }
         });
       }
     }

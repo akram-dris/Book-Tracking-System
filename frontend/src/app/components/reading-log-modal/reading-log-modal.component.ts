@@ -48,10 +48,14 @@ export class ReadingLogModalComponent implements OnInit {
       this.isLoading = true;
       console.log('Loading sessions for bookId:', this.bookId);
       this.readingSessionService.getReadingSessionsForBook(this.bookId).subscribe({
-        next: (sessions) => {
-          console.log('Sessions fetched:', sessions);
-          this.readingSessions = sessions;
-          console.log('readingSessions after update:', this.readingSessions);
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            console.log('Sessions fetched:', result.data);
+            this.readingSessions = result.data;
+            console.log('readingSessions after update:', this.readingSessions);
+          } else {
+            console.error('Error fetching reading sessions for log modal:', result.errors);
+          }
           this.isLoading = false;
         },
         error: (err) => {
@@ -76,14 +80,20 @@ export class ReadingLogModalComponent implements OnInit {
       if (result) {
         console.log('Attempting to delete session with ID:', sessionId);
         this.readingSessionService.deleteReadingSession(sessionId).subscribe({
-          next: () => {
-            console.log('Reading session deleted successfully. Reloading sessions...');
-            this.notificationService.showSuccess('Reading session deleted successfully');
-            this.loadSessions(); // Refresh the list after deletion
-            this.sessionDeleted.emit(); // Emit event to notify parent
+          next: (deleteResult) => {
+            if (deleteResult.isSuccess) {
+              console.log('Reading session deleted successfully. Reloading sessions...');
+              this.notificationService.showSuccess('Reading session deleted successfully');
+              this.loadSessions(); // Refresh the list after deletion
+              this.sessionDeleted.emit(); // Emit event to notify parent
+            } else {
+              console.error('Error deleting reading session:', deleteResult.errors);
+              this.notificationService.showError('Failed to delete reading session');
+            }
           },
           error: (err) => {
             console.error('Error deleting reading session:', err);
+            this.notificationService.showError('Failed to delete reading session');
           }
         });
       }
@@ -140,14 +150,20 @@ export class ReadingLogModalComponent implements OnInit {
         summary: updatedSession.summary
       };
       this.readingSessionService.updateReadingSession(updatedSession.id, updateDto).subscribe({
-        next: () => {
-          console.log('Note saved successfully.');
-          this.notificationService.showSuccess('Note saved successfully');
-          this.loadSessions(); // Refresh the list
-          this.closeNoteModal();
+        next: (result) => {
+          if (result.isSuccess) {
+            console.log('Note saved successfully.');
+            this.notificationService.showSuccess('Note saved successfully');
+            this.loadSessions(); // Refresh the list
+            this.closeNoteModal();
+          } else {
+            console.error('Error saving note:', result.errors);
+            this.notificationService.showError('Failed to save note');
+          }
         },
         error: (err) => {
           console.error('Error saving note:', err);
+          this.notificationService.showError('Failed to save note');
         }
       });
     }

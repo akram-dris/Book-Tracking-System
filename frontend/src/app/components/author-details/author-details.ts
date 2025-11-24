@@ -77,9 +77,14 @@ export class AuthorDetailsComponent implements OnInit {
   loadAuthorData(id: number): void {
     this.isLoading = true;
     this.authorService.getAuthor(id).subscribe({
-      next: (author) => {
-        this.author = author;
-        this.loadAuthorBooks(id);
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.author = result.data;
+          this.loadAuthorBooks(id);
+        } else {
+          console.error('Error loading author:', result.errors);
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         console.error('Error loading author:', err);
@@ -89,24 +94,36 @@ export class AuthorDetailsComponent implements OnInit {
   }
 
   loadAuthorBooks(authorId: number): void {
-    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
+      if (!statusResult.isSuccess || !statusResult.data) {
+        console.error('Error loading statuses:', statusResult.errors);
+        this.isLoading = false;
+        return;
+      }
+
+      const statuses = statusResult.data;
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
       this.bookService.getBooks().subscribe({
-        next: (books) => {
-          this.authorBooks = books
-            .filter(book => book.authorId === authorId)
-            .map(book => {
-              const statusInfo = statusMap.get(book.status);
-              return {
-                ...book,
-                statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-                statusDisplayName: statusInfo?.displayName || 'Unknown'
-              };
-            });
+        next: (bookResult) => {
+          if (bookResult.isSuccess && bookResult.data) {
+            const books = bookResult.data;
+            this.authorBooks = books
+              .filter(book => book.authorId === authorId)
+              .map(book => {
+                const statusInfo = statusMap.get(book.status);
+                return {
+                  ...book,
+                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                  statusDisplayName: statusInfo?.displayName || 'Unknown'
+                };
+              });
 
-          this.sortBooks();
-          this.calculateStatistics();
+            this.sortBooks();
+            this.calculateStatistics();
+          } else {
+            console.error('Error loading author books:', bookResult.errors);
+          }
           this.isLoading = false;
         },
         error: (err) => {
@@ -183,9 +200,14 @@ export class AuthorDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.author) {
-        this.authorService.deleteAuthor(this.author.id).subscribe(() => {
-          this.notificationService.showSuccess('Author deleted successfully');
-          this.router.navigate(['/authors']);
+        this.authorService.deleteAuthor(this.author.id).subscribe(deleteResult => {
+          if (deleteResult.isSuccess) {
+            this.notificationService.showSuccess('Author deleted successfully');
+            this.router.navigate(['/authors']);
+          } else {
+            console.error('Error deleting author:', deleteResult.errors);
+            this.notificationService.showError('Failed to delete author');
+          }
         });
       }
     });

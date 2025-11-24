@@ -1,6 +1,7 @@
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
+using BookTrackingSystem.Models.Common;
 using Microsoft.Extensions.Logging;
 
 namespace BookTrackingSystem.Controllers
@@ -19,84 +20,46 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("book/{bookId}")]
-        public async Task<ActionResult<IEnumerable<ReadingSessionDto>>> GetReadingSessionsForBook(int bookId)
+        public async Task<ActionResult<Result<IEnumerable<ReadingSessionDto>>>> GetReadingSessionsForBook(int bookId)
         {
-            var readingSessions = await _readingSessionService.GetReadingSessionsForBookAsync(bookId);
-            if (!readingSessions.Any())
-            {
-                return NotFound();
-            }
-            return Ok(readingSessions);
+            var result = await _readingSessionService.GetReadingSessionsForBookAsync(bookId);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReadingSessionDto>> GetReadingSession(int id)
+        public async Task<ActionResult<Result<ReadingSessionDto>>> GetReadingSession(int id)
         {
-            var readingSession = await _readingSessionService.GetReadingSessionAsync(id);
-            if (readingSession == null)
+            var result = await _readingSessionService.GetReadingSessionAsync(id);
+            if (!result.IsSuccess)
             {
-                return NotFound();
+                return Ok(result);
             }
-            return Ok(readingSession);
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ReadingSessionDto>> PostReadingSession(CreateReadingSessionDto createReadingSessionDto)
+        public async Task<ActionResult<Result<ReadingSessionDto>>> PostReadingSession(CreateReadingSessionDto createReadingSessionDto)
         {
-            try
+            var result = await _readingSessionService.AddReadingSessionAsync(createReadingSessionDto);
+            if (result.IsSuccess)
             {
-                var newReadingSession = await _readingSessionService.AddReadingSessionAsync(createReadingSessionDto);
-                return CreatedAtAction(nameof(GetReadingSession), new { id = newReadingSession.Id }, newReadingSession);
+                return CreatedAtAction(nameof(GetReadingSession), new { id = result.Data!.Id }, result);
             }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message); // 409 Conflict for "one session per book per day" constraint violation
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding new reading session");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReadingSession(int id, UpdateReadingSessionDto updateReadingSessionDto)
+        public async Task<ActionResult<Result>> PutReadingSession(int id, UpdateReadingSessionDto updateReadingSessionDto)
         {
-            try
-            {
-                var updatedReadingSession = await _readingSessionService.UpdateReadingSessionAsync(id, updateReadingSessionDto);
-                if (updatedReadingSession == null)
-                {
-                    return NotFound();
-                }
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message); // 409 Conflict for "one session per book per day" constraint violation
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating reading session");
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _readingSessionService.UpdateReadingSessionAsync(id, updateReadingSessionDto);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReadingSession(int id)
+        public async Task<ActionResult<Result>> DeleteReadingSession(int id)
         {
-            var readingSessionToDelete = await _readingSessionService.GetReadingSessionAsync(id);
-            if (readingSessionToDelete == null)
-            {
-                return NotFound();
-            }
-
-            await _readingSessionService.DeleteReadingSessionAsync(id);
-            return NoContent();
+            var result = await _readingSessionService.DeleteReadingSessionAsync(id);
+            return Ok(result);
         }
     }
 }

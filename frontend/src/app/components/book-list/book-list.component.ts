@@ -119,7 +119,14 @@ export class BookListComponent implements OnInit {
       this.selectedTagId = tagId;
     }
 
-    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
+      if (!statusResult.isSuccess || !statusResult.data) {
+        console.error('Error loading statuses:', statusResult.errors);
+        this.isLoading = false;
+        return;
+      }
+
+      const statuses = statusResult.data;
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
       this.bookService.getBooksPaginated(
@@ -156,21 +163,26 @@ export class BookListComponent implements OnInit {
 
   loadBookStats(): void {
     this.bookService.getBookCountsByStatus().subscribe({
-      next: (counts) => {
-        const summarizedCount = counts[ReadingStatus.Summarized] || 0;
-        const completedCount = counts[ReadingStatus.Completed] || 0;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          const counts = result.data;
+          const summarizedCount = counts[ReadingStatus.Summarized] || 0;
+          const completedCount = counts[ReadingStatus.Completed] || 0;
 
-        // Calculate total from all status counts
-        const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+          // Calculate total from all status counts
+          const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
-        this.bookStats = {
-          total: total,
-          notReading: counts[ReadingStatus.NotReading] || 0,
-          planning: counts[ReadingStatus.Planning] || 0,
-          currentlyReading: counts[ReadingStatus.CurrentlyReading] || 0,
-          completed: completedCount + summarizedCount,
-          summarized: summarizedCount
-        };
+          this.bookStats = {
+            total: total,
+            notReading: counts[ReadingStatus.NotReading] || 0,
+            planning: counts[ReadingStatus.Planning] || 0,
+            currentlyReading: counts[ReadingStatus.CurrentlyReading] || 0,
+            completed: completedCount + summarizedCount,
+            summarized: summarizedCount
+          };
+        } else {
+          console.error('Error loading book stats:', result.errors);
+        }
       },
       error: (err) => {
         console.error('Error loading book stats:', err);
@@ -184,7 +196,14 @@ export class BookListComponent implements OnInit {
     this.isLoadingMore = true;
     this.currentPage++;
 
-    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
+      if (!statusResult.isSuccess || !statusResult.data) {
+        console.error('Error loading statuses:', statusResult.errors);
+        this.isLoadingMore = false;
+        return;
+      }
+
+      const statuses = statusResult.data;
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
       console.log('LoadMore - Parameters:', {
@@ -246,17 +265,19 @@ export class BookListComponent implements OnInit {
     books.forEach(book => {
       if (book.id && book.totalPages && book.totalPages > 0) {
         this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
-          next: sessions => {
-            const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-            book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
-          },
-          error: err => {
-            if (err.status === 404) {
-              book.progressPercentage = 0;
+          next: result => {
+            if (result.isSuccess && result.data) {
+              const sessions = result.data;
+              const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+              book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
             } else {
-              console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+              console.error(`Error fetching reading sessions for book ${book.id}:`, result.errors);
               book.progressPercentage = 0;
             }
+          },
+          error: err => {
+            console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+            book.progressPercentage = 0;
           }
         });
       } else {
@@ -335,8 +356,12 @@ export class BookListComponent implements OnInit {
   }
 
   deleteBook(id: number): void {
-    this.bookService.deleteBook(id).subscribe(() => {
-      this.loadBooks();
+    this.bookService.deleteBook(id).subscribe(result => {
+      if (result.isSuccess) {
+        this.loadBooks();
+      } else {
+        console.error('Error deleting book:', result.errors);
+      }
     });
   }
 

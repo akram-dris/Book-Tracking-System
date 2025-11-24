@@ -58,14 +58,26 @@ export class BookFiltersComponent implements OnInit {
 
   loadAuthors(): void {
     this.authorService.getAuthors().subscribe({
-      next: (authors) => this.authors = authors,
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.authors = result.data;
+        } else {
+          console.error('Error loading authors:', result.errors);
+        }
+      },
       error: (err) => console.error('Error loading authors:', err)
     });
   }
 
   loadTags(): void {
     this.tagService.getTags().subscribe({
-      next: (tags) => this.tags = tags,
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.tags = result.data;
+        } else {
+          console.error('Error loading tags:', result.errors);
+        }
+      },
       error: (err) => console.error('Error loading tags:', err)
     });
   }

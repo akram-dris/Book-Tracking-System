@@ -17,8 +17,8 @@ export class AuthorService {
 
   constructor(private http: HttpClient) { }
 
-  getAuthors(): Observable<GetAuthor[]> {
-    return this.http.get<GetAuthor[]>(this.apiUrl);
+  getAuthors(): Observable<Result<GetAuthor[]>> {
+    return this.http.get<Result<GetAuthor[]>>(this.apiUrl);
   }
 
   getAuthorsPaginated(params: PaginationParams): Observable<Result<PaginatedResult<GetAuthor>>> {
@@ -37,11 +37,11 @@ export class AuthorService {
     return this.http.get<Result<PaginatedResult<GetAuthor>>>(`${this.apiUrl}/paginated`, { params: httpParams });
   }
 
-  getAuthor(id: number): Observable<GetAuthor> {
-    return this.http.get<GetAuthor>(`${this.apiUrl}/${id}`);
+  getAuthor(id: number): Observable<Result<GetAuthor>> {
+    return this.http.get<Result<GetAuthor>>(`${this.apiUrl}/${id}`);
   }
 
-  addAuthor(author: CreateAuthor): Observable<GetAuthor> {
+  addAuthor(author: CreateAuthor): Observable<Result<GetAuthor>> {
     const formData = new FormData();
     formData.append('name', author.name);
     if (author.bio) {
@@ -50,10 +50,10 @@ export class AuthorService {
     if (author.imageFile) {
       formData.append('imageFile', author.imageFile, author.imageFile.name);
     }
-    return this.http.post<GetAuthor>(this.apiUrl, formData);
+    return this.http.post<Result<GetAuthor>>(this.apiUrl, formData);
   }
 
-  updateAuthor(id: number, author: UpdateAuthor): Observable<any> {
+  updateAuthor(id: number, author: UpdateAuthor): Observable<Result<any>> {
     const formData = new FormData();
     formData.append('name', author.name);
     if (author.bio) {
@@ -62,10 +62,10 @@ export class AuthorService {
     if (author.imageFile) {
       formData.append('imageFile', author.imageFile, author.imageFile.name);
     }
-    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+    return this.http.put<Result<any>>(`${this.apiUrl}/${id}`, formData);
   }
 
-  deleteAuthor(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  deleteAuthor(id: number): Observable<Result<any>> {
+    return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`);
   }
 }

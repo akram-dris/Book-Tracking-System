@@ -266,10 +266,16 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
     const filter = this.buildFilter();
     this.statisticService.getCompleteStatistics(filter).subscribe({
-      next: (data) => {
-        this.statistics = data;
-        this.prepareCharts();
-        this.loading = false;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.statistics = result.data;
+          this.prepareCharts();
+          this.loading = false;
+        } else {
+          console.error('Error loading statistics:', result.errors);
+          this.error = 'Failed to load statistics. Please try again later.';
+          this.loading = false;
+        }
       },
       error: (err) => {
         console.error('Error loading statistics:', err);

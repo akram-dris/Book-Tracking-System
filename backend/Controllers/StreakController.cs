@@ -1,4 +1,5 @@
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,18 +21,10 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<StreakDto>> GetStreakData([FromQuery] DateTime? localDate = null)
+        public async Task<ActionResult<Result<StreakDto>>> GetStreakData([FromQuery] DateTime? localDate = null)
         {
-            try
-            {
-                var streakData = await _streakService.GetStreakDataAsync(localDate);
-                return Ok(streakData);
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError(ex, "Error getting streak data");
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _streakService.GetStreakDataAsync(localDate);
+            return Ok(result);
         }
     }
 }

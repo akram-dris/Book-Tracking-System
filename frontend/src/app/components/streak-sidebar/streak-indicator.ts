@@ -40,13 +40,17 @@ export class StreakIndicatorComponent implements OnInit {
   loadStreakData(): void {
     this.loading = true;
     this.streakService.getStreakData().subscribe({
-      next: (data) => {
-        this.streakData = data;
-        this.isStreakActive = data.currentStreak > 0 && data.hasReadToday;
-        this.loading = false;
-        if (this.isStreakActive) {
-          this.animationTrigger++;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.streakData = result.data;
+          this.isStreakActive = result.data.currentStreak > 0 && result.data.hasReadToday;
+          if (this.isStreakActive) {
+            this.animationTrigger++;
+          }
+        } else {
+          console.error('Error fetching streak data', result.errors);
         }
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error fetching streak data', err);

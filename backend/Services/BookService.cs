@@ -35,14 +35,22 @@ namespace BookTrackingSystem.Services
             _cacheService = cacheService;
         }
 
-        public async Task<IEnumerable<BookDto>> GetBooksAsync(int? tagId = null, string? search = null)
+        public async Task<Result<IEnumerable<BookDto>>> GetBooksAsync(int? tagId = null, string? search = null)
         {
-            string cacheKey = $"books_list_{tagId}_{search}";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            try
             {
-                var books = await _bookRepository.GetBooksAsync(tagId, search);
-                return _mapper.Map<IEnumerable<BookDto>>(books);
-            }) ?? Enumerable.Empty<BookDto>();
+                string cacheKey = $"books_list_{tagId}_{search}";
+                var books = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+                {
+                    var books = await _bookRepository.GetBooksAsync(tagId, search);
+                    return _mapper.Map<IEnumerable<BookDto>>(books);
+                }) ?? Enumerable.Empty<BookDto>();
+                return Result<IEnumerable<BookDto>>.Success(books);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<BookDto>>.Failure($"An error occurred while retrieving books: {ex.Message}");
+            }
         }
 
         public async Task<Result<PaginatedResult<BookDto>>> GetBooksPaginatedAsync(PaginationParams paginationParams, int? tagId = null)
@@ -68,173 +76,278 @@ namespace BookTrackingSystem.Services
             }
         }
 
-        public async Task<Dictionary<int, int>> GetBookCountsByStatusAsync()
+        public async Task<Result<Dictionary<int, int>>> GetBookCountsByStatusAsync()
         {
-            return await _bookRepository.GetBookCountsByStatusAsync();
+            try
+            {
+                var counts = await _bookRepository.GetBookCountsByStatusAsync();
+                return Result<Dictionary<int, int>>.Success(counts);
+            }
+            catch (Exception ex)
+            {
+                return Result<Dictionary<int, int>>.Failure($"An error occurred while retrieving book counts: {ex.Message}");
+            }
         }
         
-        public async Task<BookDto?> GetBookAsync(int id)
+        public async Task<Result<BookDto>> GetBookAsync(int id)
         {
-            string cacheKey = $"book_{id}";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            try
+            {
+                string cacheKey = $"book_{id}";
+                var bookDto = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+                {
+                    var book = await _bookRepository.GetBookAsync(id);
+                    if (book == null)
+                    {
+                        return null;
+                    }
+                    return _mapper.Map<BookDto>(book);
+                });
+
+                if (bookDto == null)
+                {
+                    return Result<BookDto>.Failure("Book not found");
+                }
+
+                return Result<BookDto>.Success(bookDto);
+            }
+            catch (Exception ex)
+            {
+                return Result<BookDto>.Failure($"An error occurred while retrieving the book: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<BookDto>> AddBookAsync(CreateBookDto createBookDto, IFormFile? imageFile)
+        {
+            try
+            {
+                var book = _mapper.Map<Book>(createBookDto);
+
+                if (imageFile != null)
+                {
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(fileStream);
+                    }
+                    book.ImageUrl = "/images/books/" + uniqueFileName;
+                }
+
+                var newBook = await _bookRepository.AddBookAsync(book);
+                _cacheService.InvalidateBooks();
+                return Result<BookDto>.Success(_mapper.Map<BookDto>(newBook));
+            }
+            catch (Exception ex)
+            {
+                return Result<BookDto>.Failure($"An error occurred while adding the book: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<BookDto>> UpdateBookAsync(int id, UpdateBookDto updateBookDto, IFormFile? imageFile)
+        {
+            try
+            {
+                var book = await _bookRepository.GetBookAsync(id);
+                
+                if (book == null)
+                {
+                    return Result<BookDto>.Failure("Book not found");
+                }
+
+                // Validate that total pages cannot be changed if book is currently reading or completed
+                if (book.TotalPages != updateBookDto.TotalPages)
+                {
+                    if (book.Status == ReadingStatus.CurrentlyReading || 
+                        book.Status == ReadingStatus.Completed || 
+                        book.Status == ReadingStatus.Summarized)
+                    {
+                        return Result<BookDto>.Failure("Cannot change total pages after reading has started. The book must be in 'Not Reading' or 'Planning' status to modify total pages.");
+                    }
+                }
+
+                _mapper.Map(updateBookDto, book);
+
+                if (imageFile != null)
+                {
+                    if (!string.IsNullOrEmpty(book!.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, book.ImageUrl.TrimStart('/'));
+                        if (File.Exists(oldImagePath))
+                        {
+                            File.Delete(oldImagePath);
+                        }
+                    }
+
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(fileStream);
+                    }
+                    book.ImageUrl = "/images/books/" + uniqueFileName;
+                }
+
+                var updatedBook = await _bookRepository.UpdateBookAsync(book!);
+                _cacheService.InvalidateBook(id);
+                return Result<BookDto>.Success(_mapper.Map<BookDto>(updatedBook));
+            }
+            catch (Exception ex)
+            {
+                return Result<BookDto>.Failure($"An error occurred while updating the book: {ex.Message}");
+            }
+        }
+
+        public async Task<Result> DeleteBookAsync(int id)
+        {
+            try
             {
                 var book = await _bookRepository.GetBookAsync(id);
                 if (book == null)
                 {
-                    return null;
+                    return Result.Failure("Book not found");
                 }
-                return _mapper.Map<BookDto>(book);
-            });
-        }
 
-        public async Task<BookDto> AddBookAsync(CreateBookDto createBookDto, IFormFile? imageFile)
-        {
-            var book = _mapper.Map<Book>(createBookDto);
-
-            if (imageFile != null)
-            {
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
-                if (!Directory.Exists(uploadsFolder))
+                if (!string.IsNullOrEmpty(book.ImageUrl))
                 {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-                book.ImageUrl = "/images/books/" + uniqueFileName;
-            }
-
-            var newBook = await _bookRepository.AddBookAsync(book);
-            _cacheService.InvalidateBooks();
-            return _mapper.Map<BookDto>(newBook);
-        }
-
-        public async Task<BookDto> UpdateBookAsync(int id, UpdateBookDto updateBookDto, IFormFile? imageFile)
-        {
-            var book = await _bookRepository.GetBookAsync(id);
-            
-            // Validate that total pages cannot be changed if book is currently reading or completed
-            if (book != null && book.TotalPages != updateBookDto.TotalPages)
-            {
-                if (book.Status == ReadingStatus.CurrentlyReading || 
-                    book.Status == ReadingStatus.Completed || 
-                    book.Status == ReadingStatus.Summarized)
-                {
-                    throw new InvalidOperationException("Cannot change total pages after reading has started. The book must be in 'Not Reading' or 'Planning' status to modify total pages.");
-                }
-            }
-
-            _mapper.Map(updateBookDto, book);
-
-            if (imageFile != null)
-            {
-                if (!string.IsNullOrEmpty(book!.ImageUrl))
-                {
-                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, book.ImageUrl.TrimStart('/'));
-                    if (File.Exists(oldImagePath))
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, book.ImageUrl.TrimStart('/'));
+                    if (File.Exists(imagePath))
                     {
-                        File.Delete(oldImagePath);
+                        File.Delete(imagePath);
                     }
                 }
 
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-                book.ImageUrl = "/images/books/" + uniqueFileName;
+                await _bookRepository.DeleteBookAsync(id);
+                _cacheService.InvalidateBook(id);
+                return Result.Success();
             }
-
-            var updatedBook = await _bookRepository.UpdateBookAsync(book!);
-            _cacheService.InvalidateBook(id);
-            return _mapper.Map<BookDto>(updatedBook);
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred while deleting the book: {ex.Message}");
+            }
         }
 
-        public async Task DeleteBookAsync(int id)
+        public async Task<Result> AssignTagsAsync(int bookId, IEnumerable<int> tagIds)
         {
-            await _bookRepository.DeleteBookAsync(id);
-            _cacheService.InvalidateBook(id);
-        }
-
-        public async Task AssignTagsAsync(int bookId, IEnumerable<int> tagIds)
-        {
-            var existingAssignments = await _bookTagAssignmentRepository.GetByBookIdAsync(bookId);
-            foreach (var assignment in existingAssignments)
+            try
             {
-                await _bookTagAssignmentRepository.RemoveAsync(assignment);
-            }
-
-            foreach (var tagId in tagIds)
-            {
-                var tag = await _tagRepository.GetByIdAsync(tagId);
-                if (tag != null)
+                var book = await _bookRepository.GetBookAsync(bookId);
+                if (book == null)
                 {
-                    var newAssignment = new BookTagAssignment
+                    return Result.Failure("Book not found");
+                }
+
+                var existingAssignments = await _bookTagAssignmentRepository.GetByBookIdAsync(bookId);
+                foreach (var assignment in existingAssignments)
+                {
+                    await _bookTagAssignmentRepository.RemoveAsync(assignment);
+                }
+
+                foreach (var tagId in tagIds)
+                {
+                    var tag = await _tagRepository.GetByIdAsync(tagId);
+                    if (tag != null)
                     {
-                        BookId = bookId,
-                        TagId = tagId
-                    };
-                    await _bookTagAssignmentRepository.AddAsync(newAssignment);
+                        var newAssignment = new BookTagAssignment
+                        {
+                            BookId = bookId,
+                            TagId = tagId
+                        };
+                        await _bookTagAssignmentRepository.AddAsync(newAssignment);
+                    }
                 }
+                _cacheService.InvalidateBook(bookId);
+                return Result.Success();
             }
-            _cacheService.InvalidateBook(bookId);
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred while assigning tags: {ex.Message}");
+            }
         }
 
-        public async Task UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null, string? summary = null, int? rating = null)
+        public async Task<Result> UpdateBookStatusAsync(int bookId, ReadingStatus status, DateTime? startedReadingDate = null, DateTime? completedDate = null, string? summary = null, int? rating = null)
         {
-            var book = await _bookRepository.GetBookAsync(bookId);
-            if (book != null)
+            try
             {
-                book.Status = status;
-                if (startedReadingDate.HasValue)
+                var book = await _bookRepository.GetBookAsync(bookId);
+                if (book != null)
                 {
-                    book.StartedReadingDate = startedReadingDate.Value;
+                    book.Status = status;
+                    if (startedReadingDate.HasValue)
+                    {
+                        book.StartedReadingDate = startedReadingDate.Value;
+                    }
+                    if (completedDate.HasValue)
+                    {
+                        book.CompletedDate = completedDate.Value;
+                    }
+                    if (!string.IsNullOrEmpty(summary))
+                    {
+                        book.Summary = summary;
+                    }
+                    if (rating.HasValue)
+                    {
+                        book.Rating = rating.Value;
+                    }
+                    await _bookRepository.UpdateBookAsync(book);
+                    _cacheService.InvalidateBook(bookId);
+                    return Result.Success();
                 }
-                if (completedDate.HasValue)
+                return Result.Failure("Book not found");
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred while updating book status: {ex.Message}");
+            }
+        }
+
+        public async Task<Result> UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate)
+        {
+            try
+            {
+                var book = await _bookRepository.GetBookAsync(bookId);
+                if (book != null)
                 {
-                    book.CompletedDate = completedDate.Value;
+                    book.CompletedDate = completedDate;
+                    await _bookRepository.UpdateBookAsync(book); // Ensure the book is updated in the repository
+                    _cacheService.InvalidateBook(bookId);
+                    return Result.Success();
                 }
-                if (!string.IsNullOrEmpty(summary))
+                return Result.Failure("Book not found");
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred while updating book completed date: {ex.Message}");
+            }
+        }
+
+        public async Task<Result> UpdateBookSummaryAsync(int bookId, string summary)
+        {
+            try
+            {
+                var book = await _bookRepository.GetBookAsync(bookId);
+                if (book != null)
                 {
                     book.Summary = summary;
+                    await _bookRepository.UpdateBookAsync(book);
+                    _cacheService.InvalidateBook(bookId);
+                    return Result.Success();
                 }
-                if (rating.HasValue)
-                {
-                    book.Rating = rating.Value;
-                }
-                await _bookRepository.UpdateBookAsync(book);
-                _cacheService.InvalidateBook(bookId);
+                return Result.Failure("Book not found");
             }
-        }
-
-        public async Task UpdateBookCompletedDateAsync(int bookId, DateTime? completedDate)
-        {
-            var book = await _bookRepository.GetBookAsync(bookId);
-            if (book != null)
+            catch (Exception ex)
             {
-                book.CompletedDate = completedDate;
-                await _bookRepository.UpdateBookAsync(book); // Ensure the book is updated in the repository
-                _cacheService.InvalidateBook(bookId);
-            }
-        }
-
-        public async Task UpdateBookSummaryAsync(int bookId, string summary)
-        {
-            var book = await _bookRepository.GetBookAsync(bookId);
-            if (book != null)
-            {
-                book.Summary = summary;
-                await _bookRepository.UpdateBookAsync(book);
-                _cacheService.InvalidateBook(bookId);
+                return Result.Failure($"An error occurred while updating book summary: {ex.Message}");
             }
         }
     }

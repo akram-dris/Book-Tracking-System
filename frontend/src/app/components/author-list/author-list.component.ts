@@ -81,18 +81,8 @@ export class AuthorListComponent implements OnInit {
           this.authors = result.data.items;
           this.filteredAuthors = result.data.items;
           this.hasMorePages = result.data.items.length === this.pageSize;
-
-          // We need to fetch book counts separately if not included in DTO
-          // But wait, the backend DTO *doesn't* have bookCount, it has Books list?
-          // The backend DTO has `AverageRating` but not explicit `BookCount`.
-          // Let's check the DTO. If it has Books, we can count them.
-          // The backend DTO has `AverageRating`.
-          // For now, we'll assume the backend returns what we need or we might need to fetch counts.
-          // Actually, the previous implementation fetched ALL books to count them. That's bad for pagination.
-          // We should rely on the backend to provide the count or just show what we have.
-          // The current AuthorDto has `AverageRating` but not `BookCount`.
-          // We should probably add `BookCount` to AuthorDto in the backend for efficiency.
-          // For now, let's just display the authors.
+        } else {
+          console.error('Error loading authors:', result.errors);
         }
         this.isLoading = false;
       },
@@ -123,6 +113,8 @@ export class AuthorListComponent implements OnInit {
           this.authors = [...this.authors, ...newAuthors];
           this.filteredAuthors = [...this.filteredAuthors, ...newAuthors];
           this.hasMorePages = newAuthors.length === this.pageSize;
+        } else {
+          console.error('Error loading more authors:', result.errors);
         }
         this.isLoadingMore = false;
       },
@@ -158,9 +150,14 @@ export class AuthorListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.authorService.deleteAuthor(id).subscribe(() => {
-          this.notificationService.showSuccess('Author deleted successfully');
-          this.loadAuthors();
+        this.authorService.deleteAuthor(id).subscribe(deleteResult => {
+          if (deleteResult.isSuccess) {
+            this.notificationService.showSuccess('Author deleted successfully');
+            this.loadAuthors();
+          } else {
+            console.error('Error deleting author:', deleteResult.errors);
+            this.notificationService.showError('Failed to delete author');
+          }
         });
       }
     });

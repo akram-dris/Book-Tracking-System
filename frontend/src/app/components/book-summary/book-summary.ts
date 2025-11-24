@@ -49,21 +49,31 @@ export class BookSummaryComponent implements OnInit {
   }
 
   loadBook(id: number): void {
-    this.bookService.getBook(id).subscribe(book => {
-      this.book = book;
+    this.bookService.getBook(id).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          const book = result.data;
+          this.book = book;
 
-      // Guard: If book is completed but has no rating, redirect to details
-      if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
-        console.log('Book has no rating, redirecting to details page');
-        this.router.navigate(['/books', id]);
-        return;
-      }
+          // Guard: If book is completed but has no rating, redirect to details
+          if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
+            console.log('Book has no rating, redirecting to details page');
+            this.router.navigate(['/books', id]);
+            return;
+          }
 
-      // If book has no summary, start in edit mode
-      if (!book.summary || book.summary.trim().length === 0) {
-        this.isEditMode = true;
-      } else {
-        this.summaryForm.patchValue({ summary: book.summary });
+          // If book has no summary, start in edit mode
+          if (!book.summary || book.summary.trim().length === 0) {
+            this.isEditMode = true;
+          } else {
+            this.summaryForm.patchValue({ summary: book.summary });
+          }
+        } else {
+          console.error('Error loading book:', result.errors);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading book:', err);
       }
     });
   }
@@ -87,11 +97,20 @@ export class BookSummaryComponent implements OnInit {
         startedDate,
         this.book.completedDate ? new Date(this.book.completedDate) : new Date(),
         summaryText
-      ).subscribe(() => {
-        // Update local book object
-        this.book!.summary = summaryText;
-        this.book!.status = ReadingStatus.Summarized;
-        this.isEditMode = false;
+      ).subscribe({
+        next: (result) => {
+          if (result.isSuccess) {
+            // Update local book object
+            this.book!.summary = summaryText;
+            this.book!.status = ReadingStatus.Summarized;
+            this.isEditMode = false;
+          } else {
+            console.error('Error saving summary:', result.errors);
+          }
+        },
+        error: (err) => {
+          console.error('Error saving summary:', err);
+        }
       });
     }
   }

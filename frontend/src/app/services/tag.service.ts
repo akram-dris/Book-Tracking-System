@@ -16,8 +16,8 @@ export class TagService {
 
   constructor(private http: HttpClient) { }
 
-  getTags(): Observable<GetTag[]> {
-    return this.http.get<GetTag[]>(this.apiUrl);
+  getTags(): Observable<Result<GetTag[]>> {
+    return this.http.get<Result<GetTag[]>>(this.apiUrl);
   }
 
   getTagsPaginated(params: PaginationParams): Observable<Result<PaginatedResult<GetTag>>> {
@@ -36,19 +36,19 @@ export class TagService {
     return this.http.get<Result<PaginatedResult<GetTag>>>(`${this.apiUrl}/paginated`, { params: httpParams });
   }
 
-  createTag(tag: CreateTag): Observable<GetTag> {
-    return this.http.post<GetTag>(this.apiUrl, tag);
+  createTag(tag: CreateTag): Observable<Result<GetTag>> {
+    return this.http.post<Result<GetTag>>(this.apiUrl, tag);
   }
 
-  updateTag(id: number, tag: UpdateTag): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, tag);
+  updateTag(id: number, tag: UpdateTag): Observable<Result<any>> {
+    return this.http.put<Result<any>>(`${this.apiUrl}/${id}`, tag);
   }
 
-  getTagUsageCounts(): Observable<{ [key: number]: number }> {
-    return this.http.get<{ [key: number]: number }>(`${this.apiUrl}/usage`);
+  getTagUsageCounts(): Observable<Result<{ [key: number]: number }>> {
+    return this.http.get<Result<{ [key: number]: number }>>(`${this.apiUrl}/usage`);
   }
 
-  deleteTag(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  deleteTag(id: number): Observable<Result<any>> {
+    return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`);
   }
 }

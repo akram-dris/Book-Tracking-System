@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject, switchMap, tap, startWith } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Streak } from '../models/streak.model';
+import { Result } from '../models/result';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { Streak } from '../models/streak.model';
 export class StreakService {
   private apiUrl = `${environment.apiUrl}/streak`;
   private reload$ = new ReplaySubject<void>(1);
-  private streakData$: Observable<Streak>;
+  private streakData$: Observable<Result<Streak>>;
 
   constructor(private http: HttpClient) {
     this.reload$.next(); // Initial load
@@ -19,13 +20,13 @@ export class StreakService {
       switchMap(() => {
         const d = new Date();
         const localDate = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        return this.http.get<Streak>(`${this.apiUrl}?localDate=${localDate}`);
+        return this.http.get<Result<Streak>>(`${this.apiUrl}?localDate=${localDate}`);
       }),
       tap(data => console.log("Streak data loaded: ", data))
     );
   }
 
-  getStreakData(): Observable<Streak> {
+  getStreakData(): Observable<Result<Streak>> {
     return this.streakData$;
   }
 

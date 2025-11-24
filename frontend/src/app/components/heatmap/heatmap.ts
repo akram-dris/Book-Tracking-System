@@ -119,12 +119,17 @@ export class HeatmapComponent implements OnInit {
   loadHeatmapData(): void {
     this.loading = true;
     this.heatmapService.getHeatmapData(this.currentYear).subscribe({
-      next: (data) => {
-        this.heatmapData = data;
-        this.calculateStats();
-        this.calculateStreaks();
-        this.generateCalendarGrid();
-        this.loading = false;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.heatmapData = result.data;
+          this.calculateStats();
+          this.calculateStreaks();
+          this.generateCalendarGrid();
+          this.loading = false;
+        } else {
+          console.error('Error fetching heatmap data', result.errors);
+          this.loading = false;
+        }
       },
       error: (err) => {
         console.error('Error fetching heatmap data', err);

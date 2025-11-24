@@ -26,10 +26,10 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks([FromQuery] int? tagId = null, [FromQuery] string? search = null)
+        public async Task<ActionResult<Result<IEnumerable<BookDto>>>> GetBooks([FromQuery] int? tagId = null, [FromQuery] string? search = null)
         {
-            var books = await _bookService.GetBooksAsync(tagId, search);
-            return Ok(books);
+            var result = await _bookService.GetBooksAsync(tagId, search);
+            return Ok(result);
         }
 
         [HttpGet("paginated")]
@@ -64,148 +64,71 @@ namespace BookTrackingSystem.Controllers
             return Ok(result);
         }
 
-        [HttpGet("counts-by-status")]
-        public async Task<ActionResult<Dictionary<int, int>>> GetBookCountsByStatus()
+        [HttpGet("status-counts")]
+        public async Task<ActionResult<Result<Dictionary<int, int>>>> GetBookCountsByStatus()
         {
-            var counts = await _bookService.GetBookCountsByStatusAsync();
-            return Ok(counts);
+            var result = await _bookService.GetBookCountsByStatusAsync();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDto>> GetBook(int id)
+        public async Task<ActionResult<Result<BookDto>>> GetBook(int id)
         {
-            var book = await _bookService.GetBookAsync(id);
-            if (book == null)
+            var result = await _bookService.GetBookAsync(id);
+            if (!result.IsSuccess)
             {
-                return NotFound();
+                // Optionally map specific errors to status codes if needed, but returning Ok(result) is fine for now as per plan
+                return Ok(result);
             }
-            return Ok(book);
+            return Ok(result);
         }
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<ActionResult<BookDto>> PostBook([FromForm] CreateBookDto createBookDto)
+        public async Task<ActionResult<Result<BookDto>>> PostBook([FromForm] CreateBookDto createBookDto)
         {
-            try
+            var result = await _bookService.AddBookAsync(createBookDto, createBookDto.ImageFile);
+            if (result.IsSuccess)
             {
-                var newBook = await _bookService.AddBookAsync(createBookDto, createBookDto.ImageFile);
-                return CreatedAtAction(nameof(GetBook), new { id = newBook.Id }, newBook);
+                return CreatedAtAction(nameof(GetBook), new { id = result.Data!.Id }, result);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding new book");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PutBook(int id, [FromForm] UpdateBookDto updateBookDto)
+        public async Task<ActionResult<Result<BookDto>>> PutBook(int id, [FromForm] UpdateBookDto updateBookDto)
         {
-            if (id != updateBookDto.Id)
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                var existingBook = await _bookService.GetBookAsync(id);
-                if (existingBook == null)
-                {
-                    return NotFound();
-                }
-
-                // Handle image update or removal
-                if (updateBookDto.ImageFile != null)
-                {
-                    // Delete old image if exists
-                    if (!string.IsNullOrEmpty(existingBook.ImageUrl))
-                    {
-                        var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingBook.ImageUrl.TrimStart('/'));
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(updateBookDto.ImageFile.FileName);
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await updateBookDto.ImageFile.CopyToAsync(fileStream);
-                    }
-                    existingBook.ImageUrl = "/images/books/" + uniqueFileName;
-                }
-                // If no new image is provided, keep the existing image (do nothing)
-
-                var updatedBook = await _bookService.UpdateBookAsync(id, updateBookDto, updateBookDto.ImageFile);
-                if (updatedBook == null)
-                {
-                    return NotFound();
-                }
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating book");
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _bookService.UpdateBookAsync(id, updateBookDto, updateBookDto.ImageFile);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
+        public async Task<ActionResult<Result>> DeleteBook(int id)
         {
-            var bookToDelete = await _bookService.GetBookAsync(id);
-            if (bookToDelete == null)
-            {
-                return NotFound();
-            }
-
-            // Delete image file if it exists
-            if (!string.IsNullOrEmpty(bookToDelete.ImageUrl))
-            {
-                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, bookToDelete.ImageUrl.TrimStart('/'));
-                if (System.IO.File.Exists(imagePath))
-                {
-                    System.IO.File.Delete(imagePath);
-                }
-            }
-
-            await _bookService.DeleteBookAsync(id);
-            return NoContent();
+            var result = await _bookService.DeleteBookAsync(id);
+            return Ok(result);
         }
 
-        [HttpPost("{bookId}/tags")]
-        public async Task<IActionResult> AssignTags(int bookId, [FromBody] IEnumerable<int> tagIds)
+        [HttpPost("{id}/tags")]
+        public async Task<ActionResult<Result>> AssignTags(int id, [FromBody] List<int> tagIds)
         {
-            await _bookService.AssignTagsAsync(bookId, tagIds);
-            return NoContent();
+            var result = await _bookService.AssignTagsAsync(id, tagIds);
+            return Ok(result);
         }
 
         [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateBookStatus(int id, [FromBody] UpdateBookStatusDto updateBookStatusDto)
+        public async Task<ActionResult<Result>> UpdateBookStatus(int id, [FromBody] UpdateBookStatusDto statusDto)
         {
-            _logger.LogInformation("Updating book status for id {Id}. Status: {Status}, Rating: {Rating}", id, updateBookStatusDto.Status, updateBookStatusDto.Rating);
-            await _bookService.UpdateBookStatusAsync(id, updateBookStatusDto.Status, updateBookStatusDto.StartedReadingDate, updateBookStatusDto.CompletedDate, updateBookStatusDto.Summary, updateBookStatusDto.Rating);
-            return NoContent();
+            var result = await _bookService.UpdateBookStatusAsync(id, statusDto.Status, statusDto.StartedReadingDate, statusDto.CompletedDate, statusDto.Summary, statusDto.Rating);
+            return Ok(result);
         }
 
         [HttpPut("{id}/summary")]
-        public async Task<IActionResult> UpdateBookSummary(int id, [FromBody] UpdateBookSummaryDto updateBookSummaryDto)
+        public async Task<ActionResult<Result>> UpdateBookSummary(int id, [FromBody] UpdateBookSummaryDto updateBookSummaryDto)
         {
-            var book = await _bookService.GetBookAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-            
-            await _bookService.UpdateBookSummaryAsync(id, updateBookSummaryDto.Summary);
-            return NoContent();
+            var result = await _bookService.UpdateBookSummaryAsync(id, updateBookSummaryDto.Summary);
+            return Ok(result);
         }
     }
 }

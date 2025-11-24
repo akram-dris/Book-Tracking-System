@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
-  heroBookOpen, heroFire, heroChartBar, heroPlus, 
+import {
+  heroBookOpen, heroFire, heroChartBar, heroPlus,
   heroClock, heroTrophy, heroArrowTrendingUp, heroSparkles,
   heroCalendar, heroBookmark, heroCheckCircle
 } from '@ng-icons/heroicons/outline';
@@ -34,8 +34,8 @@ interface BookWithStatus extends GetBook {
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, NgIconComponent, RouterModule, BaseChartDirective, MatButtonModule],
-  viewProviders: [provideIcons({ 
-    heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock, 
+  viewProviders: [provideIcons({
+    heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock,
     heroTrophy, heroArrowTrendingUp, heroSparkles, heroCalendar,
     heroBookmark, heroCheckCircle
   })],
@@ -67,10 +67,10 @@ export class Dashboard implements OnInit {
   recentBooks: BookWithStatus[] = [];
   loading = true;
   rootUrl: string = environment.rootUrl;
-  
+
   // Store book progress (bookId -> progress%)
   bookProgress = new Map<number, number>();
-  
+
   // Chart data
   readingProgressChart: ChartConfiguration<'doughnut'>['data'] | undefined;
   monthlyActivityChart: ChartConfiguration<'bar'>['data'] | undefined;
@@ -156,7 +156,7 @@ export class Dashboard implements OnInit {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
-          font: { 
+          font: {
             size: 12,
             weight: 500,
             family: "'Inter', sans-serif"
@@ -174,7 +174,7 @@ export class Dashboard implements OnInit {
       },
       x: {
         ticks: {
-          font: { 
+          font: {
             size: 12,
             weight: 500,
             family: "'Inter', sans-serif"
@@ -218,7 +218,7 @@ export class Dashboard implements OnInit {
     private readingStatusService: ReadingStatusService,
     private router: Router,
     private dialog: Dialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -240,9 +240,13 @@ export class Dashboard implements OnInit {
   loadStats(): Promise<void> {
     return new Promise((resolve) => {
       this.statsService.getCompleteStatistics().subscribe({
-        next: (data) => {
-          this.stats = data;
-          this.prepareCharts();
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.stats = result.data;
+            this.prepareCharts();
+          } else {
+            console.error('Error loading stats', result.errors);
+          }
           resolve();
         },
         error: (err) => {
@@ -256,8 +260,12 @@ export class Dashboard implements OnInit {
   loadStreak(): Promise<void> {
     return new Promise((resolve) => {
       this.streakService.getStreakData().subscribe({
-        next: (data) => {
-          this.streakData = data;
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.streakData = result.data;
+          } else {
+            console.error('Error loading streak', result.errors);
+          }
           resolve();
         },
         error: (err) => {
@@ -271,31 +279,44 @@ export class Dashboard implements OnInit {
   loadBooks(): Promise<void> {
     return new Promise((resolve) => {
       this.readingStatusService.getAllStatuses().subscribe({
-        next: (statuses) => {
+        next: (statusResult) => {
+          if (!statusResult.isSuccess || !statusResult.data) {
+            console.error('Error loading status info', statusResult.errors);
+            resolve();
+            return;
+          }
+
+          const statuses = statusResult.data;
           const statusMap = new Map(statuses.map(s => [s.value, s]));
-          
+
           this.bookService.getBooks().subscribe({
-            next: (books) => {
-              const booksWithStatus = books.map(book => {
-                const statusInfo = statusMap.get(book.status);
-                return {
-                  ...book,
-                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-                  statusDisplayName: statusInfo?.displayName || 'Unknown'
-                };
-              });
-              
-              this.currentlyReading = booksWithStatus
-                .filter(b => b.status === ReadingStatus.CurrentlyReading)
-                .slice(0, 3);
-              this.recentBooks = booksWithStatus
-                .sort((a, b) => b.id - a.id)
-                .slice(0, 6);
-              
-              // Load progress for currently reading books
-              if (this.currentlyReading.length > 0) {
-                this.loadBookProgress(this.currentlyReading).then(() => resolve());
+            next: (bookResult) => {
+              if (bookResult.isSuccess && bookResult.data) {
+                const books = bookResult.data;
+                const booksWithStatus = books.map(book => {
+                  const statusInfo = statusMap.get(book.status);
+                  return {
+                    ...book,
+                    statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                    statusDisplayName: statusInfo?.displayName || 'Unknown'
+                  };
+                });
+
+                this.currentlyReading = booksWithStatus
+                  .filter(b => b.status === ReadingStatus.CurrentlyReading)
+                  .slice(0, 3);
+                this.recentBooks = booksWithStatus
+                  .sort((a, b) => b.id - a.id)
+                  .slice(0, 6);
+
+                // Load progress for currently reading books
+                if (this.currentlyReading.length > 0) {
+                  this.loadBookProgress(this.currentlyReading).then(() => resolve());
+                } else {
+                  resolve();
+                }
               } else {
+                console.error('Error loading books', bookResult.errors);
                 resolve();
               }
             },
@@ -315,17 +336,23 @@ export class Dashboard implements OnInit {
 
   loadBookProgress(books: BookWithStatus[]): Promise<void> {
     return new Promise((resolve) => {
-      const sessionRequests = books.map(book => 
+      const sessionRequests = books.map(book =>
         this.readingSessionService.getReadingSessionsForBook(book.id)
       );
 
       forkJoin(sessionRequests).subscribe({
-        next: (sessionsArray) => {
+        next: (resultsArray) => {
           books.forEach((book, index) => {
-            const sessions = sessionsArray[index];
-            const currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-            const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
-            this.bookProgress.set(book.id, progress);
+            const result = resultsArray[index];
+            if (result.isSuccess && result.data) {
+              const sessions = result.data;
+              const currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+              const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
+              this.bookProgress.set(book.id, progress);
+            } else {
+              console.error(`Error loading sessions for book ${book.id}`, result.errors);
+              this.bookProgress.set(book.id, 0);
+            }
           });
           resolve();
         },
@@ -348,7 +375,7 @@ export class Dashboard implements OnInit {
 
     // Ensure we have at least some dummy data for visualization when no books
     const hasData = toReadChart > 0 || readingChart > 0 || completedChart > 0;
-    
+
     this.readingProgressChart = {
       labels: ['Planning', 'In Progress', 'Finished'],
       datasets: [{

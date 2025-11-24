@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SearchService } from '../../../services/search.service';
 import { SearchResult } from '../../../models/search-result.model';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 import { environment } from 'src/environments/environment';
@@ -59,6 +59,12 @@ export class HeaderComponent {
           return of(null);
         }
         return this.searchService.search(query).pipe(
+          map(result => {
+            if (result.isSuccess && result.data) {
+              return result.data;
+            }
+            return null;
+          }),
           catchError(() => of(null))
         );
       })

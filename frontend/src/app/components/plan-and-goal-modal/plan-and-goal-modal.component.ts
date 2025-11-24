@@ -101,7 +101,14 @@ export class PlanAndGoalModalComponent implements OnInit {
 
       // Update book status and started reading date
       this.bookService.updateBookStatus(this.bookId as number, ReadingStatus.Planning, targetStartDate).subscribe({
-        next: () => {
+        next: (statusResult) => {
+          if (!statusResult.isSuccess) {
+            this.isLoading = false;
+            console.error('Error updating book status/date', statusResult.errors);
+            this.notificationService.showError('Failed to update book status');
+            return;
+          }
+
           // Add or update reading goal
           const goalData = {
             bookId: this.bookId as number,
@@ -112,28 +119,40 @@ export class PlanAndGoalModalComponent implements OnInit {
 
           if (this.initialReadingGoal) { // Edit mode for goal
             this.readingGoalService.updateReadingGoal(this.bookId as number, goalData).subscribe({
-              next: () => {
+              next: (goalResult) => {
                 this.isLoading = false;
-                this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
-                this.saved.emit();
-                this.close.emit();
+                if (goalResult.isSuccess) {
+                  this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
+                  this.saved.emit();
+                  this.close.emit();
+                } else {
+                  console.error('Error updating reading goal', goalResult.errors);
+                  this.notificationService.showError('Failed to update reading goal');
+                }
               },
               error: (err) => {
                 this.isLoading = false;
                 console.error('Error updating reading goal', err);
+                this.notificationService.showError('Failed to update reading goal');
               }
             });
           } else { // Create mode for goal
             this.readingGoalService.addReadingGoal(goalData).subscribe({
-              next: () => {
+              next: (goalResult) => {
                 this.isLoading = false;
-                this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
-                this.saved.emit();
-                this.close.emit();
+                if (goalResult.isSuccess) {
+                  this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
+                  this.saved.emit();
+                  this.close.emit();
+                } else {
+                  console.error('Error creating reading goal', goalResult.errors);
+                  this.notificationService.showError('Failed to create reading goal');
+                }
               },
               error: (err) => {
                 this.isLoading = false;
                 console.error('Error creating reading goal', err);
+                this.notificationService.showError('Failed to create reading goal');
               }
             });
           }
@@ -141,6 +160,7 @@ export class PlanAndGoalModalComponent implements OnInit {
         error: (err) => {
           this.isLoading = false;
           console.error('Error updating book status/date', err);
+          this.notificationService.showError('Failed to update book status');
         }
       });
     }

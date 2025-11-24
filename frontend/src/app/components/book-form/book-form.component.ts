@@ -84,17 +84,22 @@ export class BookFormComponent implements OnInit {
     this.bookId = this.route.snapshot.params['id'];
     this.isEditMode = !!this.bookId;
 
-    const book$ = this.isEditMode ? this.bookService.getBook(this.bookId!) : of(null);
+    const book$ = this.isEditMode ? this.bookService.getBook(this.bookId!) : of({ isSuccess: true, data: null } as any);
 
     forkJoin({
-      authors: this.authorService.getAuthors(),
-      tags: this.tagService.getTags(),
-      book: book$
-    }).subscribe(({ authors, tags, book }) => {
-      this.authors = authors;
-      this.tags = tags;
+      authorsResult: this.authorService.getAuthors(),
+      tagsResult: this.tagService.getTags(),
+      bookResult: book$
+    }).subscribe(({ authorsResult, tagsResult, bookResult }) => {
+      if (authorsResult.isSuccess && authorsResult.data) {
+        this.authors = authorsResult.data;
+      }
+      if (tagsResult.isSuccess && tagsResult.data) {
+        this.tags = tagsResult.data;
+      }
 
-      if (this.isEditMode && book) {
+      if (this.isEditMode && bookResult.isSuccess && bookResult.data) {
+        const book = bookResult.data;
         this.bookForm.patchValue({
           title: book.title,
           authorId: book.authorId,
@@ -110,10 +115,13 @@ export class BookFormComponent implements OnInit {
           this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
         }
         if (book.tags) {
-          const tagIds = book.tags.map(t => t.id);
+          const tagIds = book.tags.map((t: GetTag) => t.id);
           this.selectedTags = book.tags;
           this.bookForm.patchValue({ tagIds: tagIds });
         }
+      } else if (this.isEditMode && !bookResult.isSuccess) {
+        console.error('Error loading book:', bookResult.errors);
+        this.notificationService.showError('Failed to load book details');
       }
     });
   }
@@ -251,25 +259,52 @@ export class BookFormComponent implements OnInit {
 
       if (this.isEditMode && this.bookId) {
         this.bookService.updateBook(this.bookId, bookData as UpdateBook).pipe(
-          switchMap(() => this.bookService.assignTags(this.bookId!, bookData.tagIds)),
+          switchMap((result) => {
+            if (!result.isSuccess) {
+              throw new Error(result.errors ? result.errors.join(', ') : 'Failed to update book');
+            }
+            return this.bookService.assignTags(this.bookId!, bookData.tagIds);
+          }),
           finalize(() => this.isLoading = false)
         ).subscribe({
-          next: () => {
-            this.notificationService.showSuccess('Book updated successfully');
-            this.location.back();
+          next: (tagResult) => {
+            if (tagResult.isSuccess) {
+              this.notificationService.showSuccess('Book updated successfully');
+              this.location.back();
+            } else {
+              console.error('Error assigning tags:', tagResult.errors);
+              this.notificationService.showError('Book updated but failed to update tags');
+            }
           },
-          error: (err) => console.error(err)
+          error: (err) => {
+            console.error(err);
+            this.notificationService.showError('Failed to update book');
+          }
         });
       } else {
         this.bookService.addBook(bookData as CreateBook).pipe(
-          switchMap((newBook) => this.bookService.assignTags(newBook.id, bookData.tagIds)),
+          switchMap((result) => {
+            if (result.isSuccess && result.data) {
+              return this.bookService.assignTags(result.data.id, bookData.tagIds);
+            }
+            throw new Error(result.errors ? result.errors.join(', ') : 'Failed to add book');
+          }),
           finalize(() => this.isLoading = false)
         ).subscribe({
-          next: () => {
-            this.notificationService.showSuccess('Book added successfully');
-            this.router.navigate(['/books']);
+          next: (tagResult) => {
+            if (tagResult.isSuccess) {
+              this.notificationService.showSuccess('Book added successfully');
+              this.router.navigate(['/books']);
+            } else {
+              console.error('Error assigning tags:', tagResult.errors);
+              this.notificationService.showError('Book added but failed to assign tags');
+              this.router.navigate(['/books']);
+            }
           },
-          error: (err) => console.error(err)
+          error: (err) => {
+            console.error(err);
+            this.notificationService.showError('Failed to add book');
+          }
         });
       }
     }

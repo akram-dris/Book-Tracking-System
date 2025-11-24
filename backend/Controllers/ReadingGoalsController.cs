@@ -1,6 +1,7 @@
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
+using BookTrackingSystem.Models.Common;
 using Microsoft.Extensions.Logging;
 
 namespace BookTrackingSystem.Controllers
@@ -19,56 +20,32 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("{bookId}")]
-        public async Task<ActionResult<ReadingGoalDto>> GetReadingGoal(int bookId)
+        public async Task<ActionResult<Result<ReadingGoalDto>>> GetReadingGoal(int bookId)
         {
-            var readingGoal = await _readingGoalService.GetReadingGoalByBookIdAsync(bookId);
-            if (readingGoal == null)
+            var result = await _readingGoalService.GetReadingGoalByBookIdAsync(bookId);
+            if (!result.IsSuccess)
             {
-                return NotFound();
+                return Ok(result);
             }
-            return Ok(readingGoal);
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ReadingGoalDto>> PostReadingGoal(CreateReadingGoalDto createReadingGoalDto)
+        public async Task<ActionResult<Result<ReadingGoalDto>>> PostReadingGoal(CreateReadingGoalDto createReadingGoalDto)
         {
-            try
+            var result = await _readingGoalService.AddReadingGoalAsync(createReadingGoalDto);
+            if (result.IsSuccess)
             {
-                var newReadingGoal = await _readingGoalService.AddReadingGoalAsync(createReadingGoalDto);
-                return CreatedAtAction(nameof(GetReadingGoal), new { bookId = newReadingGoal.BookId }, newReadingGoal);
+                return CreatedAtAction(nameof(GetReadingGoal), new { bookId = result.Data!.BookId }, result);
             }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding new reading goal");
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(result);
         }
 
         [HttpPut("{bookId}")]
-        public async Task<IActionResult> PutReadingGoal(int bookId, UpdateReadingGoalDto updateReadingGoalDto)
+        public async Task<ActionResult<Result>> PutReadingGoal(int bookId, UpdateReadingGoalDto updateReadingGoalDto)
         {
-            try
-            {
-                var updatedReadingGoal = await _readingGoalService.UpdateReadingGoalAsync(bookId, updateReadingGoalDto);
-                if (updatedReadingGoal == null)
-                {
-                    return NotFound();
-                }
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating reading goal");
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _readingGoalService.UpdateReadingGoalAsync(bookId, updateReadingGoalDto);
+            return Ok(result);
         }
     }
 }

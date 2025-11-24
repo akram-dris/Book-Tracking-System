@@ -8,11 +8,11 @@ namespace BookTrackingSystem.Services
 {
     public interface IAuthorService
     {
-        Task<IEnumerable<Author>> GetAuthorsAsync();
-        Task<Author?> GetAuthorAsync(int id);
-        Task<Author> AddAuthorAsync(Author author);
-        Task<Author> UpdateAuthorAsync(Author author);
-        Task DeleteAuthorAsync(int id);
+        Task<Result<IEnumerable<AuthorDto>>> GetAuthorsAsync();
+        Task<Result<AuthorDto>> GetAuthorAsync(int id);
+        Task<Result<AuthorDto>> AddAuthorAsync(CreateAuthorDto authorDto);
+        Task<Result<AuthorDto>> UpdateAuthorAsync(int id, UpdateAuthorDto authorDto);
+        Task<Result> DeleteAuthorAsync(int id);
         Task<Result<PaginatedResult<AuthorDto>>> GetAuthorsPaginatedAsync(PaginationParams paginationParams);
     }
 }

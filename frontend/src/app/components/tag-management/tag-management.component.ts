@@ -81,6 +81,8 @@ export class TagManagementComponent implements OnInit {
           this.tags = result.data.items;
           this.displayedTags = result.data.items;
           this.hasMorePages = result.data.items.length === this.pageSize;
+        } else {
+          console.error('Error loading tags', result.errors);
         }
         this.isLoading = false;
       },
@@ -110,6 +112,8 @@ export class TagManagementComponent implements OnInit {
           this.tags = [...this.tags, ...newTags];
           this.displayedTags = [...this.displayedTags, ...newTags];
           this.hasMorePages = newTags.length === this.pageSize;
+        } else {
+          console.error('Error loading more tags', result.errors);
         }
         this.isLoadingMore = false;
       },
@@ -131,9 +135,13 @@ export class TagManagementComponent implements OnInit {
 
   loadTagUsageCounts(): void {
     this.tagService.getTagUsageCounts().subscribe({
-      next: (counts) => {
-        this.tagUsageCounts = counts;
-        this.sortTags();
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.tagUsageCounts = result.data;
+          this.sortTags();
+        } else {
+          console.error('Error loading tag usage counts', result.errors);
+        }
       },
       error: (err) => {
         console.error('Error loading tag usage counts', err);
@@ -147,32 +155,44 @@ export class TagManagementComponent implements OnInit {
       if (this.isEditingTag && this.editingTagId !== null) {
         const updatedTag: UpdateTag = { name: this.tagForm.value.name };
         this.tagService.updateTag(this.editingTagId, updatedTag).subscribe({
-          next: () => {
-            this.tagForm.reset();
-            this.isEditingTag = false;
-            this.editingTagId = null;
-            this.loadTags();
-            this.notificationService.showSuccess('Tag updated successfully');
+          next: (result) => {
+            if (result.isSuccess) {
+              this.tagForm.reset();
+              this.isEditingTag = false;
+              this.editingTagId = null;
+              this.loadTags();
+              this.notificationService.showSuccess('Tag updated successfully');
+            } else {
+              console.error('Error updating tag', result.errors);
+              this.notificationService.showError('Failed to update tag');
+            }
             this.isLoading = false;
           },
           error: (err) => {
             console.error('Error updating tag', err);
             this.isLoading = false;
+            this.notificationService.showError('Failed to update tag');
           }
         });
       } else {
         const newTag: CreateTag = { name: this.tagForm.value.name };
         this.tagService.createTag(newTag).subscribe({
-          next: () => {
-            this.tagForm.reset();
-            this.loadTags();
-            this.loadTagUsageCounts();
-            this.notificationService.showSuccess('Tag added successfully');
+          next: (result) => {
+            if (result.isSuccess) {
+              this.tagForm.reset();
+              this.loadTags();
+              this.loadTagUsageCounts();
+              this.notificationService.showSuccess('Tag added successfully');
+            } else {
+              console.error('Error creating tag', result.errors);
+              this.notificationService.showError('Failed to create tag');
+            }
             this.isLoading = false;
           },
           error: (err) => {
             console.error('Error creating tag', err);
             this.isLoading = false;
+            this.notificationService.showError('Failed to create tag');
           }
         });
       }
@@ -204,13 +224,19 @@ export class TagManagementComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.tagService.deleteTag(id).subscribe({
-          next: () => {
-            this.loadTags();
-            this.loadTagUsageCounts();
-            this.notificationService.showSuccess('Tag deleted successfully');
+          next: (deleteResult) => {
+            if (deleteResult.isSuccess) {
+              this.loadTags();
+              this.loadTagUsageCounts();
+              this.notificationService.showSuccess('Tag deleted successfully');
+            } else {
+              console.error('Error deleting tag', deleteResult.errors);
+              this.notificationService.showError('Failed to delete tag');
+            }
           },
           error: (err) => {
             console.error('Error deleting tag', err);
+            this.notificationService.showError('Failed to delete tag');
           }
         });
       }

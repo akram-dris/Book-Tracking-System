@@ -36,8 +36,13 @@ export class RecommendationsComponent implements OnInit {
     this.error = null;
 
     this.recommendationService.getRecommendations().subscribe({
-      next: (data) => {
-        this.recommendations = data;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.recommendations = result.data;
+        } else {
+          console.error('Error loading recommendations:', result.errors);
+          this.error = 'Failed to load recommendations';
+        }
         this.loading = false;
       },
       error: (err) => {
