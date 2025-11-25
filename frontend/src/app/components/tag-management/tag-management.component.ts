@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl, FormsModule } from '@angular/forms';
-import { CommonModule, NgFor } from '@angular/common';
+import * as common from '@angular/common';
 import { TagService } from '../../services/tag.service';
 import { GetTag } from '../../models/get-tag.model';
 import { CreateTag } from '../../models/create-tag.model';
@@ -16,7 +16,7 @@ import { PaginationParams } from '../../models/result';
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgFor, FormsModule, NgIconComponent, InfiniteScrollDirective],
+  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, NgIconComponent, InfiniteScrollDirective],
   templateUrl: './tag-management.component.html',
   styleUrls: ['./tag-management.component.css'],
   viewProviders: [provideIcons({ heroStar, heroArrowsUpDown })]

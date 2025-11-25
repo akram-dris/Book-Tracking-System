@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
 import { ReadingSessionService } from '../../services/reading-session.service';
 import { ReadingStatusService } from '../../services/reading-status';
-import { NgFor } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
@@ -32,7 +31,6 @@ type ViewMode = 'grid' | 'list';
   imports: [
     CommonModule,
     FormsModule,
-    NgFor,
     RouterModule,
     BookFiltersComponent,
     BookStatsComponent,
@@ -40,7 +38,7 @@ type ViewMode = 'grid' | 'list';
     NgIconComponent,
     MatButtonModule,
     InfiniteScrollDirective
-  ],
+],
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.css'],
   viewProviders: [provideIcons({ heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus, heroStar })]

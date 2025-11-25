@@ -138,6 +138,7 @@
         </div>
         <div class="h-10 w-16 bg-base-300 rounded mt-2"></div>
       </div>
+      }
     </div>
 
     <!-- Calendar Grid Skeleton -->
@@ -156,6 +157,7 @@
           }
         </div>
       </div>
+      }
     </div>
   </div>
   }
@@ -194,7 +196,6 @@
             [attr.data-tooltip]="getTooltipText(day)">
             <span class="day-number">{{ day.dayOfMonth }}</span>
           </div>
-          }
           } @else {
           <div class="day-cell-invisible"></div>
           }
@@ -216,11 +217,11 @@
         </div>
       </div>
     </div>
+    }
   </div>
   }
 
   <!-- Enhanced Legend with Modern Design -->
-  @if (!loading) {
   <div class="relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-300/50 p-6"
     @fadeIn>
     <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
@@ -251,5 +252,4 @@
       </div>
     </div>
   </div>
-  }
 </div>

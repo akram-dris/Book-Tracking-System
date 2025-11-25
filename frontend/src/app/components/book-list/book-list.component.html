@@ -167,89 +167,91 @@
           }
         </div>
       </figure>
-      }
-
-      <!-- Infinite Scroll Sentinel -->
-      <div appInfiniteScroll (scrolled)="loadMore()" class="h-4 w-full col-span-full"></div>
-
-      <!-- Loading indicator for infinite scroll -->
-      @if (isLoadingMore) {
-      <div class="flex justify-center py-8 col-span-full">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-      }
     </div>
     }
 
-    <!-- List View -->
-    @else {
-    <div class="space-y-2">
-      @for (book of displayedBooks; track book.id) {
-      <div
-        class="card card-side bg-base-200 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:bg-primary/5 transition-all duration-300 border-2 border-base-300 hover:border-primary group">
-        <figure class="w-24 flex-shrink-0 cursor-pointer" [routerLink]="['/books', book.id]">
-          <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        </figure>
-        <div class="card-body p-4 flex-row items-center justify-between">
-          <div class="flex-1 cursor-pointer" [routerLink]="['/books', book.id]">
-            <h2 class="card-title text-base group-hover:text-primary transition-colors">{{ book.title }}</h2>
-            <p class="text-sm text-base-content/70">{{ book.author?.name }}</p>
-            <div class="flex flex-wrap gap-1 mt-2">
-              @for (tag of book.tags; track tag.id) {
-              <span class="badge badge-primary badge-sm hover:scale-105 transition-transform">{{ tag.name }}</span>
-              }
-            </div>
-            @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
-            <div class="mt-2 max-w-xs">
-              <div class="flex justify-between text-xs mb-1">
-                <span>Progress</span>
-                <span class="font-medium">{{ book.progressPercentage | number:'1.0-0' }}%</span>
-              </div>
-              <progress class="progress progress-primary w-full" [value]="book.progressPercentage" max="100"></progress>
-            </div>
+    <!-- Infinite Scroll Sentinel -->
+    <div appInfiniteScroll (scrolled)="loadMore()" class="h-4 w-full col-span-full"></div>
+
+    <!-- Loading indicator for infinite scroll -->
+    @if (isLoadingMore) {
+    <div class="flex justify-center py-8 col-span-full">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- List View -->
+  @else {
+  <div class="space-y-2">
+    @for (book of displayedBooks; track book.id) {
+    <div
+      class="card card-side bg-base-200 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:bg-primary/5 transition-all duration-300 border-2 border-base-300 hover:border-primary group">
+      <figure class="w-24 flex-shrink-0 cursor-pointer" [routerLink]="['/books', book.id]">
+        <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      </figure>
+      <div class="card-body p-4 flex-row items-center justify-between">
+        <div class="flex-1 cursor-pointer" [routerLink]="['/books', book.id]">
+          <h2 class="card-title text-base group-hover:text-primary transition-colors">{{ book.title }}</h2>
+          <p class="text-sm text-base-content/70">{{ book.author?.name }}</p>
+          <div class="flex flex-wrap gap-1 mt-2">
+            @for (tag of book.tags; track tag.id) {
+            <span class="badge badge-primary badge-sm hover:scale-105 transition-transform">{{ tag.name }}</span>
             }
           </div>
-          <div class="flex items-center gap-3" (click)="$event.stopPropagation()">
-            <span class="badge {{ getStatusClass(book) }} group-hover:scale-105 transition-transform shadow-md">{{
-              book.statusName }}</span>
-            <div class="dropdown dropdown-hover dropdown-end">
-              <button tabindex="0" class="btn btn-circle btn-sm btn-ghost hover:bg-primary hover:text-primary-content">
-                <ng-icon name="heroEllipsisVertical" size="1.25rem"></ng-icon>
-              </button>
-              <ul tabindex="0"
-                class="dropdown-content z-[100] menu p-2 shadow-2xl bg-base-100 rounded-box w-44 border border-base-300">
-                <li><a [routerLink]="['/books', book.id]"
-                    class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
-                    <ng-icon name="heroBookOpen" size="1.1rem"></ng-icon>
-                    <span class="font-medium">View Details</span>
-                  </a></li>
-                <li><a [routerLink]="['/books', book.id, 'edit']"
-                    class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
-                    <ng-icon name="heroPencil" size="1.1rem"></ng-icon>
-                    <span class="font-medium">Edit</span>
-                  </a></li>
-                <li><a class="text-error gap-2 hover:bg-error/10 transition-colors" (click)="deleteBook(book.id!)">
-                    <ng-icon name="heroTrash" size="1.1rem"></ng-icon>
-                    <span class="font-medium">Delete</span>
-                  </a></li>
-              </ul>
+          @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
+          <div class="mt-2 max-w-xs">
+            <div class="flex justify-between text-xs mb-1">
+              <span>Progress</span>
+              <span class="font-medium">{{ book.progressPercentage | number:'1.0-0' }}%</span>
             </div>
+            <progress class="progress progress-primary w-full" [value]="book.progressPercentage" max="100"></progress>
+          </div>
+          }
+        </div>
+        <div class="flex items-center gap-3" (click)="$event.stopPropagation()">
+          <span class="badge {{ getStatusClass(book) }} group-hover:scale-105 transition-transform shadow-md">{{
+            book.statusName }}</span>
+          <div class="dropdown dropdown-hover dropdown-end">
+            <button tabindex="0" class="btn btn-circle btn-sm btn-ghost hover:bg-primary hover:text-primary-content">
+              <ng-icon name="heroEllipsisVertical" size="1.25rem"></ng-icon>
+            </button>
+            <ul tabindex="0"
+              class="dropdown-content z-[100] menu p-2 shadow-2xl bg-base-100 rounded-box w-44 border border-base-300">
+              <li><a [routerLink]="['/books', book.id]"
+                  class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
+                  <ng-icon name="heroBookOpen" size="1.1rem"></ng-icon>
+                  <span class="font-medium">View Details</span>
+                </a></li>
+              <li><a [routerLink]="['/books', book.id, 'edit']"
+                  class="gap-2 hover:bg-primary/10 hover:text-primary transition-colors">
+                  <ng-icon name="heroPencil" size="1.1rem"></ng-icon>
+                  <span class="font-medium">Edit</span>
+                </a></li>
+              <li><a class="text-error gap-2 hover:bg-error/10 transition-colors" (click)="deleteBook(book.id!)">
+                  <ng-icon name="heroTrash" size="1.1rem"></ng-icon>
+                  <span class="font-medium">Delete</span>
+                </a></li>
+            </ul>
           </div>
         </div>
-        }
-
       </div>
-
-      <!-- Infinite Scroll Sentinel -->
-      <div appInfiniteScroll (scrolled)="loadMore()" class="h-4 w-full"></div>
-
-      <!-- Loading indicator for infinite scroll -->
-      @if (isLoadingMore) {
-      <div class="flex justify-center py-8">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-      }
-      }
-      }
     </div>
+    }
+
+  </div>
+
+  <!-- Infinite Scroll Sentinel -->
+  <div appInfiniteScroll (scrolled)="loadMore()" class="h-4 w-full"></div>
+
+  <!-- Loading indicator for infinite scroll -->
+  @if (isLoadingMore) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+  }
+  }
+  }
+</div>

@@ -5,7 +5,7 @@ import { BookService } from '../../services/book.service';
 import { AuthorService } from '../../services/author.service';
 import { TagService } from '../../services/tag.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgFor, CommonModule, Location } from '@angular/common';
+import * as common from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { switchMap, finalize } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -36,7 +36,7 @@ import { GetTag } from '../../models/get-tag.model';
 @Component({
   selector: 'app-book-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, RouterModule, NgFor, CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatAutocompleteModule, MatCardModule, MatDividerModule],
+  imports: [ReactiveFormsModule, FormsModule, RouterModule,  common.CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatAutocompleteModule, MatCardModule, MatDividerModule],
   providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft })],
   templateUrl: './book-form.component.html',
   styleUrls: ['./book-form.component.css']
@@ -69,7 +69,7 @@ export class BookFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notificationService: NotificationService,
-    private location: Location
+    private location: common.Location
   ) {
     this.bookForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(200)]],
