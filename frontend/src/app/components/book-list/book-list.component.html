@@ -184,7 +184,8 @@
     <!-- List View -->
     @else {
     <div class="space-y-2">
-      <div *ngFor="let book of displayedBooks"
+      @for (book of displayedBooks; track book.id) {
+      <div
         class="card card-side bg-base-200 shadow-md hover:shadow-xl hover:shadow-primary/10 hover:bg-primary/5 transition-all duration-300 border-2 border-base-300 hover:border-primary group">
         <figure class="w-24 flex-shrink-0 cursor-pointer" [routerLink]="['/books', book.id]">
           <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
