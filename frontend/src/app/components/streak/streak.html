@@ -1,9 +1,12 @@
-<div class="p-6 max-w-4xl mx-auto" *ngIf="(streakData$ | async) as streakData" @fadeIn>
+@if ((streakData$ | async); as streakData) {
+<div class="p-6 max-w-4xl mx-auto" @fadeIn>
   <!-- Celebration Banner -->
-  <div class="alert alert-success mb-6" *ngIf="showCelebration" @celebrate>
+  @if (showCelebration) {
+  <div class="alert alert-success mb-6" @celebrate>
     <ng-icon name="heroTrophy" size="24"></ng-icon>
     <span class="text-lg font-semibold">🎉 Incredible! {{ streakData.currentStreak }} days streak milestone!</span>
   </div>
+  }
 
   <!-- Main Streak Display -->
   <div class="card bg-gradient-to-br from-primary/10 to-secondary/10 p-8 mb-6">
@@ -53,25 +56,31 @@
       <h3 class="text-lg font-semibold">Last 7 Days</h3>
     </div>
     <div class="grid grid-cols-7 gap-2">
-      <div *ngFor="let day of [0,1,2,3,4,5,6]" 
-           class="aspect-square rounded-lg flex items-center justify-center text-xs font-medium"
-           [class.bg-primary]="day < streakData.currentStreak && day < 7"
-           [class.bg-base-300]="day >= streakData.currentStreak || day >= 7"
-           [class.text-primary-content]="day < streakData.currentStreak && day < 7">
+      @for (day of [0,1,2,3,4,5,6]; track day) {
+      <div class="aspect-square rounded-lg flex items-center justify-center text-xs font-medium"
+        [class.bg-primary]="day < streakData.currentStreak && day < 7"
+        [class.bg-base-300]="day >= streakData.currentStreak || day >= 7"
+        [class.text-primary-content]="day < streakData.currentStreak && day < 7">
         {{ ['S', 'M', 'T', 'W', 'T', 'F', 'S'][day] }}
       </div>
+      }
     </div>
   </div>
 
   <!-- Motivational Message -->
-  <div class="card bg-base-200 p-6 mt-6 text-center" *ngIf="streakData.currentStreak === 0">
+  @if (streakData.currentStreak === 0) {
+  <div class="card bg-base-200 p-6 mt-6 text-center">
     <p class="text-lg text-base-content/70">📚 No streak yet? Start reading today and build your momentum!</p>
     <button class="btn btn-primary mt-4">Log Your First Session</button>
   </div>
+  }
 </div>
+}
 
 <!-- Loading State -->
-<div *ngIf="!(streakData$ | async)" class="flex flex-col items-center justify-center py-20">
+@if (!(streakData$ | async)) {
+<div class="flex flex-col items-center justify-center py-20">
   <span class="loading loading-spinner loading-lg text-primary"></span>
   <p class="mt-4 text-base-content/70">Loading streak data...</p>
 </div>
+}
