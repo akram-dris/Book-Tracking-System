@@ -19,8 +19,8 @@
             <h3 class="text-sm font-semibold mb-2 text-base-content">Book Cover</h3>
             <div class="aspect-[2/3] w-full max-w-[180px] mx-auto lg:mx-0">
               <!-- Dropzone -->
-              <ngx-dropzone *ngIf="!imagePreviewUrl" (change)="onFilesAdded($event.addedFiles)" [multiple]="false"
-                [accept]="'image/*'"
+              @if (!imagePreviewUrl) {
+              <ngx-dropzone (change)="onFilesAdded($event.addedFiles)" [multiple]="false" [accept]="'image/*'"
                 class="!h-full !w-full !border-2 !border-dashed hover:!border-primary !rounded-xl hover:!bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group">
                 <ngx-dropzone-label>
                   <div class="flex flex-col items-center justify-center p-4">
@@ -33,9 +33,11 @@
                   </div>
                 </ngx-dropzone-label>
               </ngx-dropzone>
+              }
 
               <!-- Image Preview -->
-              <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
+              @if (imagePreviewUrl) {
+              <div class="relative group h-full w-full">
                 <div
                   class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg">
                   <img [src]="imagePreviewUrl" alt="Cover"
@@ -43,10 +45,11 @@
                 </div>
                 <button mat-mini-fab color="warn" type="button" (click)="onFileRemoved()"
                   class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity !shadow-lg !w-7 !h-7"
-                  aria-label="Remove image">
-                  <mat-icon class="!text-lg">close</mat-icon>
+                  aria-label="Remove cover image">
+                  <mat-icon class="!text-base">close</mat-icon>
                 </button>
               </div>
+              }
             </div>
           </div>
 
