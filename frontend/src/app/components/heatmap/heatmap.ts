@@ -288,9 +288,11 @@ export class HeatmapComponent implements OnInit {
 
   isToday(date: Date): boolean {
     const today = new Date();
-    return date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear();
+    // Normalize both dates to midnight for accurate comparison
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === today.getTime();
   }
 
   getMonthTotal(month: CalendarMonth): number {
