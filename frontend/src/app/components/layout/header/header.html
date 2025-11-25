@@ -16,27 +16,31 @@
                  transition-all duration-300 shadow-sm hover:shadow-md" />
 
         <!-- Search Dropdown -->
-        <div #dropdown *ngIf="showDropdown && searchResults"
+        @if (showDropdown && searchResults) {
+        <div #dropdown
           class="absolute top-full left-0 right-0 mt-2 bg-base-100 rounded-lg shadow-xl border border-base-300 overflow-hidden z-[1000] max-h-96 overflow-y-auto">
 
           <!-- Books Section -->
-          <div *ngIf="searchResults.books.length > 0">
+          @if (searchResults.books.length > 0) {
+          <div>
             <div
               class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between">
               <span>Books</span>
               <span class="badge badge-sm badge-primary">{{searchResults.books.length}}</span>
             </div>
             <ul>
-              <li *ngFor="let book of searchResults.books">
+              @for (book of searchResults.books; track book.id) {
+              <li>
                 <button (click)="navigateToBook(book.id!)"
                   class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
                   <div class="w-8 h-10 bg-base-300 rounded overflow-hidden flex-shrink-0">
-                    <img *ngIf="book.imageUrl" [src]="rootUrl + book.imageUrl" class="w-full h-full object-cover"
-                      alt="Cover">
-                    <div *ngIf="!book.imageUrl"
-                      class="w-full h-full flex items-center justify-center text-base-content/30">
+                    @if (book.imageUrl) {
+                    <img [src]="rootUrl + book.imageUrl" class="w-full h-full object-cover" alt="Cover">
+                    } @else {
+                    <div class="w-full h-full flex items-center justify-center text-base-content/30">
                       <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
                     </div>
+                    }
                   </div>
                   <div>
                     <div class="font-medium text-sm line-clamp-1">{{book.title}}</div>
@@ -44,43 +48,52 @@
                   </div>
                 </button>
               </li>
+              }
             </ul>
           </div>
+          }
 
           <!-- Authors Section -->
-          <div *ngIf="searchResults.authors.length > 0">
+          @if (searchResults.authors.length > 0) {
+          <div>
             <div
               class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-300">
               <span>Authors</span>
               <span class="badge badge-sm badge-secondary">{{searchResults.authors.length}}</span>
             </div>
             <ul>
-              <li *ngFor="let author of searchResults.authors">
+              @for (author of searchResults.authors; track author.id) {
+              <li>
                 <button (click)="navigateToAuthor(author.id)"
                   class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
                   <div class="w-8 h-8 rounded-full bg-base-300 overflow-hidden flex-shrink-0">
-                    <img *ngIf="author.imageUrl" [src]="rootUrl + author.imageUrl" class="w-full h-full object-cover"
-                      alt="Avatar">
-                    <div *ngIf="!author.imageUrl"
-                      class="w-full h-full flex items-center justify-center text-base-content/30">
+                    @if (author.imageUrl) {
+                    <img [src]="rootUrl + author.imageUrl" class="w-full h-full object-cover" alt="Avatar">
+                    } @else {
+                    <div class="w-full h-full flex items-center justify-center text-base-content/30">
                       <ng-icon name="heroUser" size="1rem"></ng-icon>
                     </div>
+                    }
                   </div>
                   <div class="font-medium text-sm">{{author.name}}</div>
                 </button>
               </li>
+              }
             </ul>
           </div>
+          }
 
           <!-- Tags Section -->
-          <div *ngIf="searchResults.tags.length > 0">
+          @if (searchResults.tags.length > 0) {
+          <div>
             <div
               class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-300">
               <span>Tags</span>
               <span class="badge badge-sm badge-accent">{{searchResults.tags.length}}</span>
             </div>
             <ul>
-              <li *ngFor="let tag of searchResults.tags">
+              @for (tag of searchResults.tags; track tag.id) {
+              <li>
                 <button (click)="navigateToTag(tag.id)"
                   class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
                   <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
@@ -89,9 +102,12 @@
                   <div class="font-medium text-sm">{{tag.name}}</div>
                 </button>
               </li>
+              }
             </ul>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
 
