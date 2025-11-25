@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -11,6 +11,7 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatButtonModule } from '@angular/material/button';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { BookService } from '../../services/book';
 import { StatisticService } from '../../services/statistic';
@@ -62,6 +63,7 @@ interface BookWithStatus extends GetBook {
   ]
 })
 export class Dashboard implements OnInit {
+  private destroyRef = inject(DestroyRef);
   stats: any = null;
   streakData: Streak | null = null;
   currentlyReading: BookWithStatus[] = [];
@@ -240,98 +242,106 @@ export class Dashboard implements OnInit {
 
   loadStats(): Promise<void> {
     return new Promise((resolve) => {
-      this.statsService.getCompleteStatistics().subscribe({
-        next: (result) => {
-          if (result.isSuccess && result.data) {
-            this.stats = result.data;
-            this.prepareCharts();
-          } else {
-            console.error('Error loading stats', result.errors);
+      this.statsService.getCompleteStatistics()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (result) => {
+            if (result.isSuccess && result.data) {
+              this.stats = result.data;
+              this.prepareCharts();
+            } else {
+              console.error('Error loading stats', result.errors);
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading stats', err);
+            resolve();
           }
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error loading stats', err);
-          resolve();
-        }
-      });
+        });
     });
   }
 
   loadStreak(): Promise<void> {
     return new Promise((resolve) => {
-      this.streakService.getStreakData().subscribe({
-        next: (result) => {
-          if (result.isSuccess && result.data) {
-            this.streakData = result.data;
-          } else {
-            console.error('Error loading streak', result.errors);
+      this.streakService.getStreakData()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (result) => {
+            if (result.isSuccess && result.data) {
+              this.streakData = result.data;
+            } else {
+              console.error('Error loading streak', result.errors);
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading streak', err);
+            resolve();
           }
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error loading streak', err);
-          resolve();
-        }
-      });
+        });
     });
   }
 
   loadBooks(): Promise<void> {
     return new Promise((resolve) => {
-      this.readingStatusService.getAllStatuses().subscribe({
-        next: (statusResult) => {
-          if (!statusResult.isSuccess || !statusResult.data) {
-            console.error('Error loading status info', statusResult.errors);
-            resolve();
-            return;
-          }
+      this.readingStatusService.getAllStatuses()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (statusResult) => {
+            if (!statusResult.isSuccess || !statusResult.data) {
+              console.error('Error loading status info', statusResult.errors);
+              resolve();
+              return;
+            }
 
-          const statuses = statusResult.data;
-          const statusMap = new Map(statuses.map(s => [s.value, s]));
+            const statuses = statusResult.data;
+            const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-          this.bookService.getBooks().subscribe({
-            next: (bookResult) => {
-              if (bookResult.isSuccess && bookResult.data) {
-                const books = bookResult.data;
-                const booksWithStatus = books.map(book => {
-                  const statusInfo = statusMap.get(book.status);
-                  return {
-                    ...book,
-                    statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-                    statusDisplayName: statusInfo?.displayName || 'Unknown'
-                  };
-                });
+            this.bookService.getBooks()
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: (bookResult) => {
+                  if (bookResult.isSuccess && bookResult.data) {
+                    const books = bookResult.data;
+                    const booksWithStatus = books.map(book => {
+                      const statusInfo = statusMap.get(book.status);
+                      return {
+                        ...book,
+                        statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                        statusDisplayName: statusInfo?.displayName || 'Unknown'
+                      };
+                    });
 
-                this.currentlyReading = booksWithStatus
-                  .filter(b => b.status === ReadingStatus.CurrentlyReading)
-                  .slice(0, 3);
-                this.recentBooks = booksWithStatus
-                  .sort((a, b) => b.id - a.id)
-                  .slice(0, 6);
+                    this.currentlyReading = booksWithStatus
+                      .filter(b => b.status === ReadingStatus.CurrentlyReading)
+                      .slice(0, 3);
+                    this.recentBooks = booksWithStatus
+                      .sort((a, b) => b.id - a.id)
+                      .slice(0, 6);
 
-                // Load progress for currently reading books
-                if (this.currentlyReading.length > 0) {
-                  this.loadBookProgress(this.currentlyReading).then(() => resolve());
-                } else {
+                    // Load progress for currently reading books
+                    if (this.currentlyReading.length > 0) {
+                      this.loadBookProgress(this.currentlyReading).then(() => resolve());
+                    } else {
+                      resolve();
+                    }
+                  } else {
+                    console.error('Error loading books', bookResult.errors);
+                    resolve();
+                  }
+                },
+                error: (err) => {
+                  console.error('Error loading books', err);
                   resolve();
                 }
-              } else {
-                console.error('Error loading books', bookResult.errors);
-                resolve();
-              }
-            },
-            error: (err) => {
-              console.error('Error loading books', err);
-              resolve();
-            }
-          });
-        },
-        error: (err) => {
-          console.error('Error loading status info', err);
-          resolve();
-        }
-      });
+              });
+          },
+          error: (err) => {
+            console.error('Error loading status info', err);
+            resolve();
+          }
+        });
     });
   }
 
@@ -341,27 +351,29 @@ export class Dashboard implements OnInit {
         this.readingSessionService.getReadingSessionsForBook(book.id)
       );
 
-      forkJoin(sessionRequests).subscribe({
-        next: (resultsArray) => {
-          books.forEach((book, index) => {
-            const result = resultsArray[index];
-            if (result.isSuccess && result.data) {
-              const sessions = result.data;
-              const currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-              const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
-              this.bookProgress.set(book.id, progress);
-            } else {
-              console.error(`Error loading sessions for book ${book.id}`, result.errors);
-              this.bookProgress.set(book.id, 0);
-            }
-          });
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error loading book progress', err);
-          resolve();
-        }
-      });
+      forkJoin(sessionRequests)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (resultsArray) => {
+            books.forEach((book, index) => {
+              const result = resultsArray[index];
+              if (result.isSuccess && result.data) {
+                const sessions = result.data;
+                const currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+                const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
+                this.bookProgress.set(book.id, progress);
+              } else {
+                console.error(`Error loading sessions for book ${book.id}`, result.errors);
+                this.bookProgress.set(book.id, 0);
+              }
+            });
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading book progress', err);
+            resolve();
+          }
+        });
     });
   }
 
@@ -463,11 +475,13 @@ export class Dashboard implements OnInit {
       backdropClass: 'cdk-overlay-dark-backdrop'
     });
 
-    dialogRef.closed.subscribe((result: any) => {
-      if (result) {
-        this.loadDashboardData();
-      }
-    });
+    dialogRef.closed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: any) => {
+        if (result) {
+          this.loadDashboardData();
+        }
+      });
   }
 
   navigateToBooks(): void {

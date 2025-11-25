@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from '../../services/book';
 import { ReadingSessionService } from '../../services/reading-session';
@@ -22,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 // import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NotificationService } from '../../services/notification';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   heroArrowLeft,
   heroPencil,
@@ -77,6 +78,7 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
   ]
 })
 export class BookDetailsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   book: GetBook | undefined;
   readingSessions: GetReadingSession[] = [];
   readingGoal: GetReadingGoal | null = null;
@@ -150,7 +152,8 @@ export class BookDetailsComponent implements OnInit {
     console.log('BookDetailsComponent refreshBookData - Route ID:', id);
     if (id) {
       this.isLoading = true;
-      this.bookService.getBook(+id).subscribe({
+      this.bookService.getBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (result) => {
           if (result.isSuccess && result.data) {
             this.book = result.data;
@@ -166,7 +169,8 @@ export class BookDetailsComponent implements OnInit {
             }
 
             // Load other data in parallel-ish (nested subscriptions for now)
-            this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
+            this.readingSessionService.getReadingSessionsForBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
               next: sessionResult => {
                 if (sessionResult.isSuccess && sessionResult.data) {
                   this.readingSessions = sessionResult.data;
@@ -192,7 +196,8 @@ export class BookDetailsComponent implements OnInit {
               }
             });
 
-            this.readingGoalService.getReadingGoalForBook(+id).subscribe({
+            this.readingGoalService.getReadingGoalForBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
               next: goalResult => {
                 if (goalResult.isSuccess && goalResult.data) {
                   this.readingGoal = goalResult.data;
@@ -270,7 +275,8 @@ export class BookDetailsComponent implements OnInit {
       this.book.summary = summaryText;
       this.isEditingSummary = false;
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(result => {
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
         if (result.isSuccess) {
           console.log('BookDetailsComponent saveSummary - Book summary updated');
           this.notificationService.showSuccess(`Book '${this.book!.title}' is now Summarized`);
@@ -294,7 +300,8 @@ export class BookDetailsComponent implements OnInit {
       this.book.status = ReadingStatus.CurrentlyReading;
       this.book.startedReadingDate = new Date();
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(result => {
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
         if (result.isSuccess) {
           console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
           this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
@@ -347,7 +354,8 @@ export class BookDetailsComponent implements OnInit {
       this.book.status = ReadingStatus.CurrentlyReading;
       this.book.startedReadingDate = startDate;
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(result => {
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
         if (result.isSuccess) {
           console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
           this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
@@ -402,7 +410,8 @@ export class BookDetailsComponent implements OnInit {
         this.book.completedDate,
         undefined,
         rating
-      ).subscribe(result => {
+      ).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
         if (result.isSuccess) {
           console.log('BookDetailsComponent saveRating - Book status updated to Completed with rating');
           this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed with ${rating} stars!`);
@@ -499,7 +508,8 @@ export class BookDetailsComponent implements OnInit {
   deleteBook(): void {
     if (this.book) {
       // Directly delete without confirmation dialog
-      this.bookService.deleteBook(this.book.id).subscribe(result => {
+      this.bookService.deleteBook(this.book.id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
         if (result.isSuccess) {
           this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
           this.router.navigate(['/books']);
@@ -554,7 +564,8 @@ export class BookDetailsComponent implements OnInit {
       const summaryText = this.notesForm.get('summary')?.value;
 
       // Update book summary
-      this.bookService.updateBookSummary(this.book.id, summaryText).subscribe(result => {
+      this.bookService.updateBookSummary(this.book.id, summaryText).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
         if (result.isSuccess) {
           this.book!.summary = summaryText;
           this.isEditingNotes = false;
