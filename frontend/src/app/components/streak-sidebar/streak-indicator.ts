@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate, keyframes } from '@angular/animations';
 import { StreakService } from '../../services/streak';
@@ -13,6 +13,7 @@ import { heroFire } from '@ng-icons/heroicons/outline';
   viewProviders: [provideIcons({ heroFire })],
   templateUrl: './streak-indicator.html',
   styleUrl: './streak-indicator.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('flameAnimation', [
       transition('* => *', [
@@ -31,7 +32,10 @@ export class StreakIndicatorComponent implements OnInit {
   isStreakActive: boolean = false;
   animationTrigger: number = 0;
 
-  constructor(private streakService: StreakService) { }
+  constructor(
+    private streakService: StreakService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadStreakData();
@@ -51,10 +55,12 @@ export class StreakIndicatorComponent implements OnInit {
           console.error('Error fetching streak data', result.errors);
         }
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching streak data', err);
         this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }
