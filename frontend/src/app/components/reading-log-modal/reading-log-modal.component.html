@@ -10,8 +10,7 @@
             <p class="text-sm text-base-content/60">{{ readingSessions.length }} session(s) logged</p>
           </div>
         </div>
-        <button mat-icon-button type="button" 
-                (click)="onClose()">
+        <button mat-icon-button type="button" (click)="onClose()">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -20,27 +19,32 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading" class="flex-1 flex justify-center items-center py-20">
+    @if (isLoading) {
+    <div class="flex-1 flex justify-center items-center py-20">
       <div class="text-center">
         <span class="loading loading-spinner loading-lg text-primary"></span>
         <p class="mt-4 text-base-content/60">Loading sessions...</p>
       </div>
     </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && readingSessions.length === 0" class="flex-1 flex justify-center items-center py-20">
+    @if (!isLoading && readingSessions.length === 0) {
+    <div class="flex-1 flex justify-center items-center py-20">
       <div class="text-center">
         <span class="text-6xl mb-4 block">📚</span>
         <h4 class="text-xl font-bold mb-2">No Reading Sessions Yet</h4>
         <p class="text-base-content/60">Start logging your reading sessions to track your progress!</p>
       </div>
     </div>
+    }
 
     <!-- Sessions List -->
-    <div *ngIf="!isLoading && readingSessions.length > 0" class="flex-1 overflow-y-auto px-6 py-4">
+    @if (!isLoading && readingSessions.length > 0) {
+    <div class="flex-1 overflow-y-auto px-6 py-4">
       <div class="space-y-3">
-        <div *ngFor="let session of readingSessions" 
-             class="card bg-base-200 hover:bg-base-300 transition-all duration-200 border border-base-300">
+        @for (session of readingSessions; track session.id) {
+        <div class="card bg-base-200 hover:bg-base-300 transition-all duration-200 border border-base-300">
           <div class="card-body p-4">
             <div class="flex items-start justify-between gap-4">
               <!-- Left: Date & Goal Status -->
@@ -63,14 +67,14 @@
 
                     <!-- Goal Status Badge -->
                     <div class="badge badge-lg gap-2 font-semibold"
-                         [class.badge-success]="getGoalStatus(session.pagesRead) === 'Low'"
-                         [class.badge-info]="getGoalStatus(session.pagesRead) === 'Medium'"
-                         [class.badge-error]="getGoalStatus(session.pagesRead) === 'High'"
-                         [class.badge-ghost]="getGoalStatus(session.pagesRead) === 'Below Goal' || getGoalStatus(session.pagesRead) === 'N/A'">
+                      [class.badge-success]="getGoalStatus(session.pagesRead) === 'Low'"
+                      [class.badge-info]="getGoalStatus(session.pagesRead) === 'Medium'"
+                      [class.badge-error]="getGoalStatus(session.pagesRead) === 'High'"
+                      [class.badge-ghost]="getGoalStatus(session.pagesRead) === 'Below Goal' || getGoalStatus(session.pagesRead) === 'N/A'">
                       <span class="text-sm">
-                        {{ getGoalStatus(session.pagesRead) === 'Low' ? '🌱' : 
-                           getGoalStatus(session.pagesRead) === 'Medium' ? '🔥' : 
-                           getGoalStatus(session.pagesRead) === 'High' ? '🚀' : '📊' }}
+                        {{ getGoalStatus(session.pagesRead) === 'Low' ? '🌱' :
+                        getGoalStatus(session.pagesRead) === 'Medium' ? '🔥' :
+                        getGoalStatus(session.pagesRead) === 'High' ? '🚀' : '📊' }}
                       </span>
                       {{ getGoalStatus(session.pagesRead) }}
                     </div>
@@ -83,44 +87,54 @@
                   </div>
 
                   <!-- Note Preview -->
-                  <div *ngIf="session.summary" class="flex items-start gap-2 mt-2">
+                  @if (session.summary) {
+                  <div class="flex items-start gap-2 mt-2">
                     <span class="text-base-content/40">💬</span>
                     <p class="text-sm text-base-content/70 line-clamp-2">{{ session.summary }}</p>
                   </div>
+                  }
                 </div>
               </div>
 
               <!-- Right: Actions -->
               <div class="flex gap-2">
                 <!-- View/Edit Note Button -->
-                <button mat-button (click)="viewEditNote(session)" 
-                        class="gap-2"
-                        [color]="session.summary ? 'primary' : ''"
-                        [title]="session.summary ? 'Edit Note' : 'Add Note'">
-                  <svg *ngIf="session.summary" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+                <button mat-button (click)="viewEditNote(session)" class="gap-2"
+                  [color]="session.summary ? 'primary' : ''" [title]="session.summary ? 'Edit Note' : 'Add Note'">
+                  @if (session.summary) {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
                   </svg>
-                  <svg *ngIf="!session.summary" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
+                  }
                   {{ session.summary ? 'Note' : 'Add Note' }}
                 </button>
 
                 <!-- Delete Button (only if not completed) -->
-                <button mat-icon-button *ngIf="bookStatus !== ReadingStatus.Completed"
-                        (click)="deleteSession(session.id)" 
-                        class="text-error hover:bg-error/10"
-                        title="Delete Session">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                @if (bookStatus !== ReadingStatus.Completed) {
+                <button mat-icon-button (click)="deleteSession(session.id)" class="text-error hover:bg-error/10"
+                  title="Delete Session">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
+                }
               </div>
             </div>
           </div>
         </div>
+        }
       </div>
     </div>
+    }
 
     <!-- Footer -->
     <div class="border-t border-base-300 px-6 py-4">
@@ -131,9 +145,8 @@
   </div>
 </div>
 
-<app-note-modal *ngIf="isNoteModalOpen && selectedSessionForNote"
-                [session]="selectedSessionForNote"
-                [bookStatus]="bookStatus"
-                (noteSaved)="handleNoteSaved($event)"
-                (close)="closeNoteModal()">
+@if (isNoteModalOpen && selectedSessionForNote) {
+<app-note-modal [session]="selectedSessionForNote" [bookStatus]="bookStatus" (noteSaved)="handleNoteSaved($event)"
+  (close)="closeNoteModal()">
 </app-note-modal>
+}

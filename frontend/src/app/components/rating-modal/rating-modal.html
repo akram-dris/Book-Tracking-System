@@ -1,4 +1,5 @@
-<div *ngIf="isOpen" class="modal-backdrop" [class.active]="isAnimatingIn" (click)="onBackdropClick($event)">
+@if (isOpen) {
+<div class="modal-backdrop" [class.active]="isAnimatingIn" (click)="onBackdropClick($event)">
     <div class="modal-container" [class.active]="isAnimatingIn">
         <!-- Close button -->
         <button class="close-button" (click)="onCancel()" type="button" aria-label="Close">
@@ -7,10 +8,13 @@
 
         <!-- Book cover -->
         <div class="book-cover-wrapper">
-            <img *ngIf="bookCover" [src]="rootUrl + bookCover" [alt]="bookTitle" class="book-cover">
-            <div *ngIf="!bookCover" class="book-cover-placeholder">
+            @if (bookCover) {
+            <img [src]="rootUrl + bookCover" [alt]="bookTitle" class="book-cover">
+            } @else {
+            <div class="book-cover-placeholder">
                 <ng-icon name="heroStar" size="48"></ng-icon>
             </div>
+            }
         </div>
 
         <!-- Book title -->
@@ -43,3 +47,4 @@
         </div>
     </div>
 </div>
+}
