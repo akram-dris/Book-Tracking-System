@@ -164,5 +164,26 @@ namespace BookTrackingSystem.Repository
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<Book>> SearchBooksAsync(string query, int limit = 5)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Enumerable.Empty<Book>();
+            }
+
+            var searchLower = query.ToLower();
+            return await _context.Books
+                .AsNoTracking()
+                .Include(b => b.Author)
+                .Include(b => b.BookTagAssignments!)
+                    .ThenInclude(bta => bta.BookTag)
+                .Where(b =>
+                    b.Title.ToLower().Contains(searchLower) ||
+                    (b.Author != null && b.Author.Name.ToLower().Contains(searchLower)))
+                .OrderBy(b => b.Title)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }

@@ -12,5 +12,6 @@ namespace BookTrackingSystem.Repository
         Task<Author> UpdateAuthorAsync(Author author);
         Task DeleteAuthorAsync(int id);
         Task<PaginatedResult<Author>> GetAuthorsPaginatedAsync(PaginationParams paginationParams);
+        Task<IEnumerable<Author>> SearchAuthorsAsync(string query, int limit = 5);
     }
 }

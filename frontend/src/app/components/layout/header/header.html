@@ -9,11 +9,19 @@
             class="text-base-content/40 group-focus-within:text-primary transition-all duration-300 group-focus-within:scale-110"></ng-icon>
         </div>
         <input #searchInput type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchInput($event)"
-          (focus)="onSearchFocus()" (click)="onSearchFocus()" placeholder="Search books, authors, tags..." class="w-full pl-11 pr-4 py-2.5 bg-base-200/50 border border-transparent rounded-full
+          (focus)="onSearchFocus()" (click)="onSearchFocus()" (keydown)="onSearchKeydown($event)"
+          (keydown.enter)="onSearchSubmit()" placeholder="Search books, authors, tags..." class="w-full pl-11 pr-4 py-2.5 bg-base-200/50 border border-transparent rounded-full
                  text-sm font-medium text-base-content placeholder:text-base-content/40
                  focus:bg-base-100 focus:border-primary/30 focus:ring-4 focus:ring-primary/10 focus:outline-none
                  hover:bg-base-200 hover:border-base-300
                  transition-all duration-300 shadow-sm hover:shadow-md" />
+
+        <!-- Loading Indicator -->
+        @if (isSearching) {
+        <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+          <span class="loading loading-spinner loading-sm text-primary"></span>
+        </div>
+        }
 
         <!-- Search Dropdown -->
         @if (showDropdown && searchResults) {
@@ -29,10 +37,10 @@
               <span class="badge badge-sm badge-primary">{{searchResults.books.length}}</span>
             </div>
             <ul>
-              @for (book of searchResults.books; track book.id) {
+              @for (book of searchResults.books; track book.id; let i = $index) {
               <li>
                 <button (click)="navigateToBook(book.id!)"
-                  class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
+                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('book', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200')">
                   <div class="w-8 h-10 bg-base-300 rounded overflow-hidden flex-shrink-0">
                     @if (book.imageUrl) {
                     <img [src]="rootUrl + book.imageUrl" class="w-full h-full object-cover" alt="Cover">
@@ -62,10 +70,10 @@
               <span class="badge badge-sm badge-secondary">{{searchResults.authors.length}}</span>
             </div>
             <ul>
-              @for (author of searchResults.authors; track author.id) {
+              @for (author of searchResults.authors; track author.id; let i = $index) {
               <li>
                 <button (click)="navigateToAuthor(author.id)"
-                  class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
+                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('author', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200')">
                   <div class="w-8 h-8 rounded-full bg-base-300 overflow-hidden flex-shrink-0">
                     @if (author.imageUrl) {
                     <img [src]="rootUrl + author.imageUrl" class="w-full h-full object-cover" alt="Avatar">
@@ -92,10 +100,10 @@
               <span class="badge badge-sm badge-accent">{{searchResults.tags.length}}</span>
             </div>
             <ul>
-              @for (tag of searchResults.tags; track tag.id) {
+              @for (tag of searchResults.tags; track tag.id; let i = $index) {
               <li>
                 <button (click)="navigateToTag(tag.id)"
-                  class="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors flex items-center gap-3">
+                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('tag', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200')">
                   <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
                     <ng-icon name="heroTag" size="1rem"></ng-icon>
                   </div>
@@ -104,6 +112,18 @@
               </li>
               }
             </ul>
+          </div>
+          }
+
+          <!-- No Results Message -->
+          @if (searchResults.books.length === 0 && searchResults.authors.length === 0 && searchResults.tags.length ===
+          0) {
+          <div class="px-4 py-8 text-center">
+            <div class="text-base-content/40 mb-2">
+              <ng-icon name="heroMagnifyingGlass" size="2rem"></ng-icon>
+            </div>
+            <div class="text-sm font-medium text-base-content/60">No results found</div>
+            <div class="text-xs text-base-content/40 mt-1">Try a different search term</div>
           </div>
           }
         </div>

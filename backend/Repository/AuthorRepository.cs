@@ -75,5 +75,21 @@ namespace BookTrackingSystem.Repository
                 PageSize = paginationParams.PageSize
             };
         }
+
+        public async Task<IEnumerable<Author>> SearchAuthorsAsync(string query, int limit = 5)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Enumerable.Empty<Author>();
+            }
+
+            var searchLower = query.ToLower();
+            return await _context.Authors
+                .AsNoTracking()
+                .Where(a => a.Name.ToLower().Contains(searchLower))
+                .OrderBy(a => a.Name)
+                .Take(limit)
+                .ToListAsync();
+        }
     }
 }

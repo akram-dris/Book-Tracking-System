@@ -13,5 +13,6 @@ namespace BookTrackingSystem.Repository
         Task<Book> AddBookAsync(Book book);
         Task<Book> UpdateBookAsync(Book book);
         Task DeleteBookAsync(int id);
+        Task<IEnumerable<Book>> SearchBooksAsync(string query, int limit = 5);
     }
 }
