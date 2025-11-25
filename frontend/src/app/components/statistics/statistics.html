@@ -46,7 +46,8 @@
     </div>
 
     <!-- Custom Date Inputs (Inline/Expandable) -->
-    <div *ngIf="showCustomDateInputs"
+    @if (showCustomDateInputs) {
+    <div
       class="mt-4 p-4 bg-base-200/50 backdrop-blur-sm rounded-2xl border border-base-300/50 shadow-sm animate-in slide-in-from-top-2 duration-200">
       <div class="flex flex-col sm:flex-row items-center gap-4">
         <mat-form-field appearance="outline" class="w-full sm:w-auto flex-grow">
@@ -72,6 +73,7 @@
         </div>
       </div>
     </div>
+    }
   </div>
 
   <!-- Statistics Category Tabs -->
@@ -138,18 +140,50 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+  <!-- Skeleton Loading State -->
+  @if (loading) {
+  <div class="animate-pulse">
+    <!-- Overview Stats Skeleton -->
+    <h2 class="h-8 w-48 bg-base-300 rounded mb-4"></h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      @for (i of [1,2,3,4]; track i) {
+      <div class="bg-base-200 rounded-lg shadow p-4 h-32">
+        <div class="flex justify-between items-start">
+          <div class="h-4 w-24 bg-base-300 rounded mb-2"></div>
+          <div class="h-8 w-8 bg-base-300 rounded"></div>
+        </div>
+        <div class="h-8 w-16 bg-base-300 rounded mb-2"></div>
+        <div class="h-3 w-32 bg-base-300 rounded"></div>
+      </div>
+      }
+    </div>
+
+    <!-- Secondary Stats Skeleton -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      @for (i of [1,2]; track i) {
+      <div class="bg-base-200 rounded-lg shadow p-4 h-24">
+        <div class="h-4 w-32 bg-base-300 rounded mb-2"></div>
+        <div class="h-8 w-16 bg-base-300 rounded mb-1"></div>
+        <div class="h-3 w-24 bg-base-300 rounded"></div>
+      </div>
+      }
+    </div>
+  </div>
+  }
 
   <!-- Error State -->
-  <div *ngIf="error && !loading" class="alert alert-error">
+  @if (error && !loading) {
+  <div class="alert alert-error">
     <span>{{ error }}</span>
   </div>
+  }
 
   <!-- Statistics Content -->
-  <div *ngIf="statistics && !loading">
+  @if (statistics && !loading) {
+  <div>
     <!-- Overview Tab -->
-    <div *ngIf="activeTab === 'overview'">
+    @if (activeTab === 'overview') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">Reading Overview</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -203,9 +237,11 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Authors Tab -->
-    <div *ngIf="activeTab === 'authors'">
+    @if (activeTab === 'authors') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">Author Statistics</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -227,7 +263,8 @@
         </div>
       </div>
 
-      <div class="card bg-base-200 shadow-xl mb-4" *ngIf="authorBooksChart">
+      @if (authorBooksChart) {
+      <div class="card bg-base-200 shadow-xl mb-4">
         <div class="card-body">
           <h3 class="card-title">Top Authors by Books</h3>
           <div style="height: 300px;">
@@ -236,6 +273,7 @@
           </div>
         </div>
       </div>
+      }
 
       <div class="overflow-x-auto">
         <table class="table table-zebra">
@@ -248,24 +286,32 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let author of statistics.authors.topAuthorsByBooks">
+            @for (author of statistics.authors.topAuthorsByBooks; track author.authorId) {
+            <tr>
               <td>{{ author.authorName }}</td>
               <td>{{ author.bookCount }}</td>
               <td>{{ getAuthorPages(author.authorId) }}</td>
               <td>
-                <span *ngIf="author.averageRating" class="badge badge-warning">
+                @if (author.averageRating) {
+                <span class="badge badge-warning">
                   {{ author.averageRating | number:'1.1-1' }} ⭐
                 </span>
-                <span *ngIf="!author.averageRating" class="text-base-content/40">N/A</span>
+                }
+                @if (!author.averageRating) {
+                <span class="text-base-content/40">N/A</span>
+                }
               </td>
             </tr>
+            }
           </tbody>
         </table>
       </div>
     </div>
+    }
 
     <!-- Tags Tab -->
-    <div *ngIf="activeTab === 'tags'">
+    @if (activeTab === 'tags') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">Tag Statistics</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -287,7 +333,8 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="card bg-base-200 shadow-xl" *ngIf="tagBooksChart">
+        @if (tagBooksChart) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">📊 Books by Tag</h3>
             <div style="height: 300px;">
@@ -296,6 +343,7 @@
             </div>
           </div>
         </div>
+        }
 
         <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
@@ -311,17 +359,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let tag of statistics.tags.topTagsByBooks">
+                  @for (tag of statistics.tags.topTagsByBooks; track tag.tagId) {
+                  <tr>
                     <td>{{ tag.tagName }}</td>
                     <td>{{ tag.bookCount }}</td>
                     <td>{{ getTagPages(tag.tagId) }}</td>
                     <td>
-                      <span *ngIf="tag.averageRating" class="badge badge-warning badge-sm">
+                      @if (tag.averageRating) {
+                      <span class="badge badge-warning badge-sm">
                         {{ tag.averageRating | number:'1.1-1' }} ⭐
                       </span>
-                      <span *ngIf="!tag.averageRating" class="text-base-content/40 text-xs">N/A</span>
+                      }
+                      @if (!tag.averageRating) {
+                      <span class="text-base-content/40 text-xs">N/A</span>
+                      }
                     </td>
                   </tr>
+                  }
                 </tbody>
               </table>
             </div>
@@ -329,9 +383,11 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Time Analysis Tab -->
-    <div *ngIf="activeTab === 'time'">
+    @if (activeTab === 'time') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">Time-Based Analysis</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -348,7 +404,8 @@
         </div>
       </div>
 
-      <div class="card bg-base-200 shadow-xl mb-4" *ngIf="monthlyTrendChart">
+      @if (monthlyTrendChart) {
+      <div class="card bg-base-200 shadow-xl mb-4">
         <div class="card-body">
           <h3 class="card-title">Monthly Reading Trend</h3>
           <div style="height: 300px;">
@@ -357,8 +414,10 @@
           </div>
         </div>
       </div>
+      }
 
-      <div class="card bg-base-200 shadow-xl" *ngIf="weeklyPatternChart">
+      @if (weeklyPatternChart) {
+      <div class="card bg-base-200 shadow-xl">
         <div class="card-body">
           <h3 class="card-title">Weekly Reading Pattern</h3>
           <div style="height: 300px;">
@@ -367,10 +426,13 @@
           </div>
         </div>
       </div>
+      }
     </div>
+    }
 
     <!-- Goals Tab -->
-    <div *ngIf="activeTab === 'goals'">
+    @if (activeTab === 'goals') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">Goal Performance</h2>
 
       <!-- Overall Goal Achievement Stats -->
@@ -402,7 +464,8 @@
 
       <!-- Goal Achievement Visualization -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div class="card bg-base-200 shadow-xl" *ngIf="goalAchievementChart">
+        @if (goalAchievementChart) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">Goal Achievement Overview</h3>
             <div style="height: 300px;">
@@ -411,8 +474,10 @@
             </div>
           </div>
         </div>
+        }
 
-        <div class="card bg-base-200 shadow-xl" *ngIf="goalCompletionChart">
+        @if (goalCompletionChart) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">Completion Distribution</h3>
             <div style="height: 300px;">
@@ -421,10 +486,12 @@
             </div>
           </div>
         </div>
+        }
       </div>
 
       <!-- Current Goals Progress with Filter -->
-      <div class="card bg-base-200 shadow-xl" *ngIf="statistics.goals.currentGoalsProgress.length > 0">
+      @if (statistics.goals.currentGoalsProgress.length > 0) {
+      <div class="card bg-base-200 shadow-xl">
         <div class="card-body">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
             <h3 class="card-title">Current Reading Goals</h3>
@@ -442,14 +509,17 @@
               <select class="select select-bordered select-sm flex-1 md:w-64" [(ngModel)]="selectedBookFilter"
                 (change)="filterGoals()">
                 <option value="all">All Books ({{ getFilteredCount() }})</option>
-                <option *ngFor="let goal of getAvailableBooks()" [value]="goal.bookId">
+                @for (goal of getAvailableBooks(); track goal.bookId) {
+                <option [value]="goal.bookId">
                   {{ goal.bookTitle }}
                 </option>
+                }
               </select>
             </div>
           </div>
 
-          <div *ngFor="let goal of filteredGoals" class="mb-6 p-4 bg-base-100 rounded-lg">
+          @for (goal of filteredGoals; track goal.bookId) {
+          <div class="mb-6 p-4 bg-base-100 rounded-lg">
             <div class="flex justify-between items-start mb-3">
               <div>
                 <h4 class="font-bold text-lg">{{ goal.bookTitle }}</h4>
@@ -534,16 +604,22 @@
               </div>
             </div>
           </div>
+          }
 
-          <div *ngIf="filteredGoals.length === 0" class="text-center py-8 text-base-content/60">
+          @if (filteredGoals.length === 0) {
+          <div class="text-center py-8 text-base-content/60">
             <p>No goals found for the selected filter</p>
           </div>
+          }
         </div>
       </div>
+      }
     </div>
+    }
 
     <!-- Books Tab -->
-    <div *ngIf="activeTab === 'books'">
+    @if (activeTab === 'books') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">Book Statistics</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -575,7 +651,8 @@
       </div>
 
       <!-- Rating Distribution Chart -->
-      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="ratingDistributionChart">
+      @if (ratingDistributionChart) {
+      <div class="card bg-base-200 shadow-xl mb-8">
         <div class="card-body">
           <h3 class="card-title">📊 Rating Distribution</h3>
           <div style="height: 300px;">
@@ -584,10 +661,12 @@
           </div>
         </div>
       </div>
+      }
 
       <!-- Highest & Lowest Rated Books -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.highestRatedBook">
+        @if (statistics.books.highestRatedBook) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title text-warning">⭐ Highest Rated</h3>
             <p class="text-lg font-bold">{{ statistics.books.highestRatedBook.title }}</p>
@@ -600,8 +679,10 @@
             </div>
           </div>
         </div>
+        }
 
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.lowestRatedBook">
+        @if (statistics.books.lowestRatedBook) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title text-base-content/70">Lowest Rated</h3>
             <p class="text-lg font-bold">{{ statistics.books.lowestRatedBook.title }}</p>
@@ -614,10 +695,12 @@
             </div>
           </div>
         </div>
+        }
       </div>
 
       <!-- Rating Trend Chart -->
-      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="ratingTrendChart">
+      @if (ratingTrendChart) {
+      <div class="card bg-base-200 shadow-xl mb-8">
         <div class="card-body">
           <h3 class="card-title">📈 Rating Trend Over Time</h3>
           <p class="text-sm text-base-content/60 mb-4">See how your reading taste evolves</p>
@@ -627,9 +710,11 @@
           </div>
         </div>
       </div>
+      }
 
       <!-- Status Over Time Chart (NEW) -->
-      <div class="card bg-base-200 shadow-xl mb-8" *ngIf="statusTimelineChart">
+      @if (statusTimelineChart) {
+      <div class="card bg-base-200 shadow-xl mb-8">
         <div class="card-body">
           <h3 class="card-title">Book Status Timeline ({{ getFilterDisplayName() }})</h3>
           <p class="text-sm text-base-content/60 mb-4">Track how your reading journey evolved over the selected period
@@ -640,9 +725,11 @@
           </div>
         </div>
       </div>
+      }
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.shortestBook">
+        @if (statistics.books.shortestBook) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">Shortest Book</h3>
             <p class="text-lg font-bold">{{ statistics.books.shortestBook.title }}</p>
@@ -650,8 +737,10 @@
             <p class="text-primary">{{ statistics.books.shortestBook.totalPages }} pages</p>
           </div>
         </div>
+        }
 
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.books.longestBook">
+        @if (statistics.books.longestBook) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">Longest Book</h3>
             <p class="text-lg font-bold">{{ statistics.books.longestBook.title }}</p>
@@ -659,9 +748,11 @@
             <p class="text-primary">{{ statistics.books.longestBook.totalPages }} pages</p>
           </div>
         </div>
+        }
       </div>
 
-      <div class="card bg-base-200 shadow-xl" *ngIf="statusChart">
+      @if (statusChart) {
+      <div class="card bg-base-200 shadow-xl">
         <div class="card-body">
           <h3 class="card-title">Books by Status Distribution</h3>
           <div style="height: 350px;">
@@ -670,36 +761,45 @@
           </div>
         </div>
       </div>
+      }
     </div>
+    }
 
     <!-- Records Tab -->
-    <div *ngIf="activeTab === 'records'">
+    @if (activeTab === 'records') {
+    <div>
       <h2 class="text-2xl font-bold mb-4">🏆 Personal Records</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.mostPagesInDay">
+        @if (statistics.records.mostPagesInDay) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">📅 Most Pages in a Day</h3>
             <p class="text-3xl font-bold text-primary">{{ statistics.records.mostPagesInDay.pages }}</p>
             <p>{{ statistics.records.mostPagesInDay.date | date:'mediumDate' }}</p>
           </div>
         </div>
+        }
 
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.mostPagesInMonth">
+        @if (statistics.records.mostPagesInMonth) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">📆 Most Pages in a Month</h3>
             <p class="text-3xl font-bold text-secondary">{{ statistics.records.mostPagesInMonth.pages }}</p>
             <p>{{ statistics.records.mostPagesInMonth.date | date:'MMMM yyyy' }}</p>
           </div>
         </div>
+        }
 
-        <div class="card bg-base-200 shadow-xl" *ngIf="statistics.records.fastestBookCompletion">
+        @if (statistics.records.fastestBookCompletion) {
+        <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
             <h3 class="card-title">⚡ Fastest Completion</h3>
             <p class="text-lg font-bold">{{ statistics.records.fastestBookCompletion.bookTitle }}</p>
             <p class="text-2xl font-bold text-accent">{{ statistics.records.fastestBookCompletion.days }} days</p>
           </div>
         </div>
+        }
 
         <div class="card bg-base-200 shadow-xl">
           <div class="card-body">
@@ -710,5 +810,7 @@
         </div>
       </div>
     </div>
+    }
   </div>
+  }
 </div>

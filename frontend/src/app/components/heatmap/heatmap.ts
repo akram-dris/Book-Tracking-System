@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
-import { HeatmapService } from '../../services/heatmap.service';
+import { HeatmapService } from '../../services/heatmap';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroChevronLeft,
@@ -15,6 +15,7 @@ import {
   heroTrophy,
   heroSparkles
 } from '@ng-icons/heroicons/outline';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 interface CalendarDay {
   date: Date;
@@ -41,7 +42,7 @@ interface LegendItem {
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, NgxSkeletonLoaderModule],
   viewProviders: [provideIcons({
     heroChevronLeft,
     heroChevronRight,
@@ -118,12 +119,17 @@ export class HeatmapComponent implements OnInit {
   loadHeatmapData(): void {
     this.loading = true;
     this.heatmapService.getHeatmapData(this.currentYear).subscribe({
-      next: (data) => {
-        this.heatmapData = data;
-        this.calculateStats();
-        this.calculateStreaks();
-        this.generateCalendarGrid();
-        this.loading = false;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.heatmapData = result.data;
+          this.calculateStats();
+          this.calculateStreaks();
+          this.generateCalendarGrid();
+          this.loading = false;
+        } else {
+          console.error('Error fetching heatmap data', result.errors);
+          this.loading = false;
+        }
       },
       error: (err) => {
         console.error('Error fetching heatmap data', err);
@@ -282,9 +288,11 @@ export class HeatmapComponent implements OnInit {
 
   isToday(date: Date): boolean {
     const today = new Date();
-    return date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear();
+    // Normalize both dates to midnight for accurate comparison
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate.getTime() === today.getTime();
   }
 
   getMonthTotal(month: CalendarMonth): number {

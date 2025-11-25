@@ -1,11 +1,11 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { StatisticService } from '../../services/statistic.service';
+import { StatisticService } from '../../services/statistic';
 import { Statistics, StatisticsFilter } from '../../models/statistics.model';
-import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner';
+
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
@@ -18,6 +18,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -28,15 +29,17 @@ Chart.register(...registerables);
     CommonModule,
     FormsModule,
     BaseChartDirective,
-    LoadingSpinnerComponent,
     NgIconComponent,
     MatDatepickerModule,
     MatFormFieldModule,
     MatNativeDateModule,
-    MatInputModule
+    MatNativeDateModule,
+    MatInputModule,
+    NgxSkeletonLoaderModule
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [provideIcons({
     heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
     heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
@@ -229,7 +232,10 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private statisticService: StatisticService) { }
+  constructor(
+    private statisticService: StatisticService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     // Set default date range to last year
@@ -264,15 +270,24 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
     const filter = this.buildFilter();
     this.statisticService.getCompleteStatistics(filter).subscribe({
-      next: (data) => {
-        this.statistics = data;
-        this.prepareCharts();
-        this.loading = false;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.statistics = result.data;
+          this.prepareCharts();
+          this.loading = false;
+          this.cdr.markForCheck(); // Trigger change detection with OnPush
+        } else {
+          console.error('Error loading statistics:', result.errors);
+          this.error = 'Failed to load statistics. Please try again later.';
+          this.loading = false;
+          this.cdr.markForCheck();
+        }
       },
       error: (err) => {
         console.error('Error loading statistics:', err);
         this.error = 'Failed to load statistics. Please try again later.';
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }

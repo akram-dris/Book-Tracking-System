@@ -15,6 +15,14 @@
   border: 1px solid transparent;
 }
 
+.day-cell-invisible {
+  aspect-ratio: 1;
+  min-width: 28px;
+  min-height: 28px;
+  visibility: hidden;
+}
+
+
 .day-cell.current-month {
   border-color: hsl(var(--b3) / 0.1);
 }

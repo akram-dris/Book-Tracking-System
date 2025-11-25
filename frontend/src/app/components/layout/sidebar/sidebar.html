@@ -26,11 +26,11 @@
       @for (item of navItems; track item.path) {
       <li>
         <a [routerLink]="item.path"
-          routerLinkActive="active-item bg-gradient-to-r from-primary to-primary/90 text-primary-content shadow-lg shadow-primary/30 scale-[1.02] hover:translate-x-0 hover:bg-gradient-to-r hover:from-primary hover:to-primary/90"
+          routerLinkActive="!bg-gradient-to-r !from-primary !to-primary/90 !text-primary-content !shadow-lg !shadow-primary/30 !font-semibold"
           [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
           [attr.data-tip]="isCollapsed() ? item.tooltip : null" [class.tooltip]="isCollapsed()"
           [class.tooltip-right]="isCollapsed()"
-          class="flex items-center rounded-xl transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-base-content hover:text-base-100 hover:shadow-md hover:translate-x-1"
+          class="flex items-center rounded-xl transition-all duration-100 ease-out hover:bg-base-300 hover:shadow-md"
           [class.gap-3]="!isCollapsed()">
           <ng-icon [name]="item.icon" size="1.25rem"></ng-icon>
           @if (!isCollapsed()) {

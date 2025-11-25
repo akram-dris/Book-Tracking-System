@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, input, output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
@@ -20,28 +20,28 @@ import { heroStar, heroXMark } from '@ng-icons/heroicons/outline';
   ]
 })
 export class RatingModalComponent implements OnInit {
-  @Input() isOpen: boolean = false;
-  @Input() bookTitle: string = '';
-  @Input() bookCover: string | undefined = '';
-  @Input() currentRating: number | null = null;
+  isOpen = input(false);
+  bookTitle = input('');
+  bookCover = input<string | undefined>('');
+  currentRating = input<number | null>(null);
 
-  @Output() save = new EventEmitter<number>();
-  @Output() cancel = new EventEmitter<void>();
+  save = output<number>();
+  cancel = output<void>();
 
   selectedRating: number | null = null;
   rootUrl = environment.rootUrl;
   isAnimatingIn: boolean = false;
 
   ngOnInit(): void {
-    this.selectedRating = this.currentRating;
-    if (this.isOpen) {
+    this.selectedRating = this.currentRating();
+    if (this.isOpen()) {
       setTimeout(() => this.isAnimatingIn = true, 10);
     }
   }
 
   ngOnChanges(): void {
-    if (this.isOpen) {
-      this.selectedRating = this.currentRating;
+    if (this.isOpen()) {
+      this.selectedRating = this.currentRating();
       setTimeout(() => this.isAnimatingIn = true, 10);
     } else {
       this.isAnimatingIn = false;

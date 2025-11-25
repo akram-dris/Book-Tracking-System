@@ -1,9 +1,9 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BookService } from '../../services/book.service';
-import { ReadingSessionService } from '../../services/reading-session.service';
-import { ReadingGoalService } from '../../services/reading-goal.service';
+import { BookService } from '../../services/book';
+import { ReadingSessionService } from '../../services/reading-session';
+import { ReadingGoalService } from '../../services/reading-goal';
 import { GetBook } from '../../models/get-book.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
@@ -12,16 +12,17 @@ import { environment } from '../../../environments/environment';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component';
-import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal';
+import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal';
 import { RatingModalComponent } from '../rating-modal/rating-modal';
 import { RatingModule } from 'primeng/rating';
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-// import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { NotificationService } from '../../services/notification.service';
+// import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
+import { NotificationService } from '../../services/notification';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   heroArrowLeft,
   heroPencil,
@@ -77,6 +78,7 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
   ]
 })
 export class BookDetailsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   book: GetBook | undefined;
   readingSessions: GetReadingSession[] = [];
   readingGoal: GetReadingGoal | null = null;
@@ -120,6 +122,8 @@ export class BookDetailsComponent implements OnInit {
   tempRating: number | null = null;
   tempCoverRating: number | null = null; // Temporary rating for cover overlay
 
+  isLoading: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -147,48 +151,82 @@ export class BookDetailsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     console.log('BookDetailsComponent refreshBookData - Route ID:', id);
     if (id) {
-      this.bookService.getBook(+id).subscribe(book => {
-        this.book = book;
-        this.currentBookId = book.id; // Assign book.id to currentBookId
-        if (this.book.summary) {
-          this.summaryForm.patchValue({ summary: this.book.summary });
-        }
-        console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
+      this.isLoading = true;
+      this.bookService.getBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.book = result.data;
+            this.currentBookId = this.book.id; // Assign book.id to currentBookId
+            if (this.book.summary) {
+              this.summaryForm.patchValue({ summary: this.book.summary });
+            }
+            console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
 
-        // Initialize temporary rating if book has no rating
-        if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
-          this.tempCoverRating = null;
+            // Initialize temporary rating if book has no rating
+            if ((this.book.status === ReadingStatus.Completed || this.book.status === ReadingStatus.Summarized) && !this.book.rating) {
+              this.tempCoverRating = null;
+            }
+
+            // Load other data in parallel-ish (nested subscriptions for now)
+            this.readingSessionService.getReadingSessionsForBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+              next: sessionResult => {
+                if (sessionResult.isSuccess && sessionResult.data) {
+                  this.readingSessions = sessionResult.data;
+                  this.calculateProgress(); // Calculate progress after sessions are loaded
+                  console.log('BookDetailsComponent refreshBookData - readingSessions loaded:', this.readingSessions);
+                } else {
+                  // Handle specific error cases if needed, or just log
+                  if (sessionResult.errors && sessionResult.errors.some(e => e.includes('404'))) {
+                    console.log('BookDetailsComponent refreshBookData - No reading sessions found for bookId:', id);
+                    this.readingSessions = [];
+                    this.calculateProgress();
+                  } else {
+                    console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', sessionResult.errors);
+                    this.readingSessions = [];
+                    this.calculateProgress();
+                  }
+                }
+              },
+              error: err => {
+                console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', err);
+                this.readingSessions = [];
+                this.calculateProgress();
+              }
+            });
+
+            this.readingGoalService.getReadingGoalForBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+              next: goalResult => {
+                if (goalResult.isSuccess && goalResult.data) {
+                  this.readingGoal = goalResult.data;
+                  console.log('BookDetailsComponent refreshBookData - readingGoal loaded:', this.readingGoal);
+                } else {
+                  if (goalResult.errors && goalResult.errors.some(e => e.includes('404'))) {
+                    console.log('BookDetailsComponent refreshBookData - No reading goal found for bookId:', id);
+                    this.readingGoal = null;
+                  } else {
+                    console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', goalResult.errors);
+                    this.readingGoal = null;
+                  }
+                }
+              },
+              error: err => {
+                console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', err);
+                this.readingGoal = null;
+              }
+            });
+          } else {
+            console.error('Error loading book:', result.errors);
+            this.notificationService.showError('Failed to load book details');
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading book:', err);
+          this.isLoading = false;
         }
-        this.readingSessionService.getReadingSessionsForBook(+id).subscribe({
-          next: sessions => {
-            this.readingSessions = sessions;
-            this.calculateProgress(); // Calculate progress after sessions are loaded
-            console.log('BookDetailsComponent refreshBookData - readingSessions loaded:', this.readingSessions);
-          },
-          error: err => {
-            if (err.status === 404) {
-              console.log('BookDetailsComponent refreshBookData - No reading sessions found for bookId:', id);
-              this.readingSessions = []; // Ensure it's an empty array
-              this.calculateProgress(); // Calculate progress even if no sessions
-            } else {
-              console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', err);
-            }
-          }
-        });
-        this.readingGoalService.getReadingGoalForBook(+id).subscribe({
-          next: goal => {
-            this.readingGoal = goal;
-            console.log('BookDetailsComponent refreshBookData - readingGoal loaded:', this.readingGoal);
-          },
-          error: err => {
-            if (err.status === 404) {
-              console.log('BookDetailsComponent refreshBookData - No reading goal found for bookId:', id);
-              this.readingGoal = null; // Ensure it's null
-            } else {
-              console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', err);
-            }
-          }
-        });
       });
     }
   }
@@ -237,9 +275,15 @@ export class BookDetailsComponent implements OnInit {
       this.book.summary = summaryText;
       this.isEditingSummary = false;
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).subscribe(() => {
-        console.log('BookDetailsComponent saveSummary - Book summary updated');
-        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Summarized`);
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result.isSuccess) {
+          console.log('BookDetailsComponent saveSummary - Book summary updated');
+          this.notificationService.showSuccess(`Book '${this.book!.title}' is now Summarized`);
+        } else {
+          console.error('Error updating book summary:', result.errors);
+          this.notificationService.showError('Failed to update book summary');
+        }
       });
     }
   }
@@ -256,10 +300,16 @@ export class BookDetailsComponent implements OnInit {
       this.book.status = ReadingStatus.CurrentlyReading;
       this.book.startedReadingDate = new Date();
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).subscribe(() => {
-        console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
-        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
-        this.router.navigate(['/books', this.book!.id, 'set-goal']);
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result.isSuccess) {
+          console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
+          this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
+          this.router.navigate(['/books', this.book!.id, 'set-goal']);
+        } else {
+          console.error('Error updating book status:', result.errors);
+          this.notificationService.showError('Failed to start reading');
+        }
       });
     }
   }
@@ -304,10 +354,16 @@ export class BookDetailsComponent implements OnInit {
       this.book.status = ReadingStatus.CurrentlyReading;
       this.book.startedReadingDate = startDate;
 
-      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).subscribe(() => {
-        console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
-        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
-        // No navigation needed, stay on the same page
+      this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result.isSuccess) {
+          console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
+          this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
+          // No navigation needed, stay on the same page
+        } else {
+          console.error('Error updating book status:', result.errors);
+          this.notificationService.showError('Failed to start reading');
+        }
       });
     }
   }
@@ -354,9 +410,15 @@ export class BookDetailsComponent implements OnInit {
         this.book.completedDate,
         undefined,
         rating
-      ).subscribe(() => {
-        console.log('BookDetailsComponent saveRating - Book status updated to Completed with rating');
-        this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed with ${rating} stars!`);
+      ).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result.isSuccess) {
+          console.log('BookDetailsComponent saveRating - Book status updated to Completed with rating');
+          this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed with ${rating} stars!`);
+        } else {
+          console.error('Error updating book status:', result.errors);
+          this.notificationService.showError('Failed to save rating');
+        }
       });
     }
   }
@@ -446,9 +508,15 @@ export class BookDetailsComponent implements OnInit {
   deleteBook(): void {
     if (this.book) {
       // Directly delete without confirmation dialog
-      this.bookService.deleteBook(this.book.id).subscribe(() => {
-        this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
-        this.router.navigate(['/books']);
+      this.bookService.deleteBook(this.book.id).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result.isSuccess) {
+          this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
+          this.router.navigate(['/books']);
+        } else {
+          console.error('Error deleting book:', result.errors);
+          this.notificationService.showError('Failed to delete book');
+        }
       });
     }
   }
@@ -496,10 +564,17 @@ export class BookDetailsComponent implements OnInit {
       const summaryText = this.notesForm.get('summary')?.value;
 
       // Update book summary
-      this.bookService.updateBookSummary(this.book.id, summaryText).subscribe(() => {
-        this.book!.summary = summaryText;
-        this.isEditingNotes = false;
-        console.log('Book notes updated successfully');
+      this.bookService.updateBookSummary(this.book.id, summaryText).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (result.isSuccess) {
+          this.book!.summary = summaryText;
+          this.isEditingNotes = false;
+          console.log('Book notes updated successfully');
+          this.notificationService.showSuccess('Notes saved successfully');
+        } else {
+          console.error('Error updating book notes:', result.errors);
+          this.notificationService.showError('Failed to save notes');
+        }
       });
     }
   }

@@ -1,4 +1,5 @@
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Models.Enums;
 using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,29 +18,23 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ReadingStatusDto>> GetAllStatuses()
+        public ActionResult<Result<IEnumerable<ReadingStatusDto>>> GetAllStatuses()
         {
-            var statuses = _readingStatusService.GetAllStatuses();
-            return Ok(statuses);
+            var result = _readingStatusService.GetAllStatuses();
+            return Ok(result);
         }
 
         [HttpGet("{value}")]
-        public ActionResult<ReadingStatusDto> GetStatusInfo(int value)
+        public ActionResult<Result<ReadingStatusDto>> GetStatusInfo(int value)
         {
             if (!Enum.IsDefined(typeof(ReadingStatus), value))
             {
-                return BadRequest("Invalid status value");
+                return Ok(Result<ReadingStatusDto>.Failure("Invalid status value"));
             }
 
             var status = (ReadingStatus)value;
-            var statusInfo = _readingStatusService.GetStatusInfo(status);
-
-            if (statusInfo == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(statusInfo);
+            var result = _readingStatusService.GetStatusInfo(status);
+            return Ok(result);
         }
     }
 }

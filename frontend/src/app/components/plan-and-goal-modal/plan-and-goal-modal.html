@@ -1,0 +1,61 @@
+<div class="modal modal-open">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Plan Reading & Set Goals</h3>
+
+    <form [formGroup]="planAndGoalForm" (ngSubmit)="onSubmit()" class="py-4">
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Target Start Date</span>
+        </label>
+        <input type="date" formControlName="targetStartDate" class="input input-bordered w-full">
+        @if (planAndGoalForm.controls['targetStartDate'].invalid && planAndGoalForm.controls['targetStartDate'].touched)
+        {
+        <label class="label">
+          <span class="label-text-alt text-error">Target start date is required.</span>
+        </label>
+        }
+      </div>
+
+      <div class="form-control mb-4">
+        <!-- Low Goal -->
+        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Low Goal</mat-label>
+          <input matInput type="number" formControlName="lowGoal" min="1" required>
+          @if (planAndGoalForm.get('lowGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
+          @if (planAndGoalForm.get('lowGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
+          @if (planAndGoalForm.hasError('lowNotLessThanMedium')) { <mat-error>Must be &lt; Medium</mat-error> }
+        </mat-form-field>
+      </div>
+
+      <div class="form-control mb-4">
+        <!-- Medium Goal -->
+        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Medium Goal</mat-label>
+          <input matInput type="number" formControlName="mediumGoal" min="1" required>
+          @if (planAndGoalForm.get('mediumGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
+          @if (planAndGoalForm.get('mediumGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
+          @if (planAndGoalForm.hasError('mediumNotLessThanHigh')) { <mat-error>Must be &lt; High</mat-error> }
+        </mat-form-field>
+      </div>
+
+      <div class="form-control mb-4">
+        <!-- High Goal -->
+        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
+          <mat-label>High Goal</mat-label>
+          <input matInput type="number" formControlName="highGoal" min="1" required>
+          @if (planAndGoalForm.get('highGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
+          @if (planAndGoalForm.get('highGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
+          @if (planAndGoalForm.get('highGoal')?.hasError('max')) { <mat-error>Max {{ totalPages() }}</mat-error> }
+        </mat-form-field>
+      </div>
+
+      <div class="modal-action">
+        <button mat-raised-button color="primary" type="submit" [disabled]="planAndGoalForm.invalid || isLoading">
+          @if (isLoading) { <span class="loading loading-spinner"></span> }
+          Confirm Plan & Goals
+        </button>
+        <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -3,8 +3,8 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFunnel, heroXMark } from '@ng-icons/heroicons/outline';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthorService } from '../../../services/author.service';
-import { TagService } from '../../../services/tag.service';
+import { AuthorService } from '../../../services/author';
+import { TagService } from '../../../services/tag';
 import { ReadingStatus } from '../../../models/enums/reading-status.enum';
 
 export interface BookFilters {
@@ -58,14 +58,26 @@ export class BookFiltersComponent implements OnInit {
 
   loadAuthors(): void {
     this.authorService.getAuthors().subscribe({
-      next: (authors) => this.authors = authors,
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.authors = result.data;
+        } else {
+          console.error('Error loading authors:', result.errors);
+        }
+      },
       error: (err) => console.error('Error loading authors:', err)
     });
   }
 
   loadTags(): void {
     this.tagService.getTags().subscribe({
-      next: (tags) => this.tags = tags,
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.tags = result.data;
+        } else {
+          console.error('Error loading tags:', result.errors);
+        }
+      },
       error: (err) => console.error('Error loading tags:', err)
     });
   }

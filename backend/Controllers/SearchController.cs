@@ -1,4 +1,5 @@
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<SearchDto>> Search([FromQuery] string query)
+        public async Task<ActionResult<Result<SearchDto>>> Search([FromQuery] string query)
         {
             var result = await _searchService.SearchAsync(query);
             return Ok(result);

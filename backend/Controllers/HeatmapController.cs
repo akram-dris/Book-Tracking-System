@@ -1,4 +1,5 @@
 using BookTrackingSystem.Services;
+using BookTrackingSystem.Models.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -20,18 +21,10 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet("{year}")]
-        public async Task<ActionResult<Dictionary<string, int>>> GetHeatmapData(int year)
+        public async Task<ActionResult<Result<Dictionary<string, int>>>> GetHeatmapData(int year)
         {
-            try
-            {
-                var heatmapData = await _heatmapService.GetHeatmapDataAsync(year);
-                return Ok(heatmapData);
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError(ex, "Error getting heatmap data for year {Year}", year);
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _heatmapService.GetHeatmapDataAsync(year);
+            return Ok(result);
         }
     }
 }

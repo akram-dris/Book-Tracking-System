@@ -1,5 +1,6 @@
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Models.Enums;
+using BookTrackingSystem.Models.Common;
 
 namespace BookTrackingSystem.Services
 {
@@ -49,14 +50,19 @@ namespace BookTrackingSystem.Services
             };
         }
 
-        public IEnumerable<ReadingStatusDto> GetAllStatuses()
+        public Result<IEnumerable<ReadingStatusDto>> GetAllStatuses()
         {
-            return _statuses;
+            return Result<IEnumerable<ReadingStatusDto>>.Success(_statuses);
         }
 
-        public ReadingStatusDto? GetStatusInfo(ReadingStatus status)
+        public Result<ReadingStatusDto> GetStatusInfo(ReadingStatus status)
         {
-            return _statuses.FirstOrDefault(s => s.Value == (int)status);
+            var statusDto = _statuses.FirstOrDefault(s => s.Value == (int)status);
+            if (statusDto == null)
+            {
+                return Result<ReadingStatusDto>.Failure($"Status {status} not found");
+            }
+            return Result<ReadingStatusDto>.Success(statusDto);
         }
     }
 }

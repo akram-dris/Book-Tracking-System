@@ -2,6 +2,7 @@ using AutoMapper;
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Models;
 using BookTrackingSystem.Repository;
+using BookTrackingSystem.Models.Common;
 
 namespace BookTrackingSystem.Services
 {
@@ -18,40 +19,73 @@ namespace BookTrackingSystem.Services
             _mapper = mapper;
         }
 
-        public async Task<ReadingGoalDto?> GetReadingGoalByBookIdAsync(int bookId)
+        public async Task<Result<ReadingGoalDto>> GetReadingGoalByBookIdAsync(int bookId)
         {
-            var readingGoal = await _readingGoalRepository.GetReadingGoalByBookIdAsync(bookId);
-            return _mapper.Map<ReadingGoalDto>(readingGoal);
-        }
-
-        public async Task<ReadingGoalDto> AddReadingGoalAsync(CreateReadingGoalDto readingGoalDto)
-        {
-            var existingGoal = await _readingGoalRepository.GetReadingGoalByBookIdAsync(readingGoalDto.BookId);
-            if (existingGoal != null)
+            try
             {
-                throw new InvalidOperationException("A reading goal for this book already exists.");
+                var readingGoal = await _readingGoalRepository.GetReadingGoalByBookIdAsync(bookId);
+                if (readingGoal == null)
+                {
+                    return Result<ReadingGoalDto>.Failure("Reading goal not found");
+                }
+                return Result<ReadingGoalDto>.Success(_mapper.Map<ReadingGoalDto>(readingGoal));
             }
-
-            await ValidateGoalAgainstBookPages(readingGoalDto.BookId, readingGoalDto.HighGoal);
-
-            var readingGoal = _mapper.Map<ReadingGoal>(readingGoalDto);
-            var newReadingGoal = await _readingGoalRepository.AddReadingGoalAsync(readingGoal);
-            return _mapper.Map<ReadingGoalDto>(newReadingGoal);
+            catch (Exception ex)
+            {
+                return Result<ReadingGoalDto>.Failure($"An error occurred while retrieving the reading goal: {ex.Message}");
+            }
         }
 
-        public async Task<ReadingGoalDto> UpdateReadingGoalAsync(int bookId, UpdateReadingGoalDto readingGoalDto)
+        public async Task<Result<ReadingGoalDto>> AddReadingGoalAsync(CreateReadingGoalDto readingGoalDto)
+        {
+            try
+            {
+                var existingGoal = await _readingGoalRepository.GetReadingGoalByBookIdAsync(readingGoalDto.BookId);
+                if (existingGoal != null)
+                {
+                    return Result<ReadingGoalDto>.Failure("A reading goal for this book already exists.");
+                }
+
+                await ValidateGoalAgainstBookPages(readingGoalDto.BookId, readingGoalDto.HighGoal);
+
+                var readingGoal = _mapper.Map<ReadingGoal>(readingGoalDto);
+                var newReadingGoal = await _readingGoalRepository.AddReadingGoalAsync(readingGoal);
+                return Result<ReadingGoalDto>.Success(_mapper.Map<ReadingGoalDto>(newReadingGoal));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Result<ReadingGoalDto>.Failure(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Result<ReadingGoalDto>.Failure($"An error occurred while adding the reading goal: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<ReadingGoalDto>> UpdateReadingGoalAsync(int bookId, UpdateReadingGoalDto readingGoalDto)
         { 
-            var existingGoal = await _readingGoalRepository.GetReadingGoalByBookIdAsync(bookId);
-            if (existingGoal == null)
+            try
             {
-                throw new KeyNotFoundException($"Reading goal for book with ID {bookId} not found.");
+                var existingGoal = await _readingGoalRepository.GetReadingGoalByBookIdAsync(bookId);
+                if (existingGoal == null)
+                {
+                    return Result<ReadingGoalDto>.Failure($"Reading goal for book with ID {bookId} not found.");
+                }
+
+                await ValidateGoalAgainstBookPages(bookId, readingGoalDto.HighGoal);
+
+                _mapper.Map(readingGoalDto, existingGoal);
+                var updatedReadingGoal = await _readingGoalRepository.UpdateReadingGoalAsync(existingGoal);
+                return Result<ReadingGoalDto>.Success(_mapper.Map<ReadingGoalDto>(updatedReadingGoal));
             }
-
-            await ValidateGoalAgainstBookPages(bookId, readingGoalDto.HighGoal);
-
-            _mapper.Map(readingGoalDto, existingGoal);
-            var updatedReadingGoal = await _readingGoalRepository.UpdateReadingGoalAsync(existingGoal);
-            return _mapper.Map<ReadingGoalDto>(updatedReadingGoal);
+            catch (InvalidOperationException ex)
+            {
+                return Result<ReadingGoalDto>.Failure(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Result<ReadingGoalDto>.Failure($"An error occurred while updating the reading goal: {ex.Message}");
+            }
         }
 
         private async Task ValidateGoalAgainstBookPages(int bookId, int highGoal)

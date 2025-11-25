@@ -2,6 +2,7 @@ using AutoMapper;
 using BookTrackingSystem.DTOs;
 using BookTrackingSystem.Models;
 using BookTrackingSystem.Repository;
+using BookTrackingSystem.Models.Common;
 
 namespace BookTrackingSystem.Services
 {
@@ -22,110 +23,158 @@ namespace BookTrackingSystem.Services
             _cacheService = cacheService;
         }
 
-        public async Task<IEnumerable<ReadingSessionDto>> GetReadingSessionsForBookAsync(int bookId)
+        public async Task<Result<IEnumerable<ReadingSessionDto>>> GetReadingSessionsForBookAsync(int bookId)
         {
-            var readingSessions = await _readingSessionRepository.GetReadingSessionsForBookAsync(bookId);
-            return _mapper.Map<IEnumerable<ReadingSessionDto>>(readingSessions);
-        }
-
-        public async Task<ReadingSessionDto?> GetReadingSessionAsync(int id)
-        {
-            var readingSession = await _readingSessionRepository.GetReadingSessionAsync(id);
-            return _mapper.Map<ReadingSessionDto>(readingSession);
-        }
-
-        public async Task<ReadingSessionDto> AddReadingSessionAsync(CreateReadingSessionDto readingSessionDto)
-        {
-            var existingSession = await _readingSessionRepository.GetReadingSessionByBookAndDateAsync(readingSessionDto.BookId, readingSessionDto.Date);
-
-            ReadingSession resultSession;
-
-            if (existingSession != null)
+            try
             {
-                // Validate before aggregating
-                await ValidateTotalPagesLimit(readingSessionDto.BookId, existingSession.PagesRead + readingSessionDto.PagesRead, existingSession.Id);
+                var readingSessions = await _readingSessionRepository.GetReadingSessionsForBookAsync(bookId);
+                return Result<IEnumerable<ReadingSessionDto>>.Success(_mapper.Map<IEnumerable<ReadingSessionDto>>(readingSessions));
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<ReadingSessionDto>>.Failure($"An error occurred while retrieving reading sessions: {ex.Message}");
+            }
+        }
 
-                // Aggregate pages if a session for this book and date already exists
-                existingSession.PagesRead += readingSessionDto.PagesRead;
-                if (!string.IsNullOrWhiteSpace(readingSessionDto.Summary))
+        public async Task<Result<ReadingSessionDto>> GetReadingSessionAsync(int id)
+        {
+            try
+            {
+                var readingSession = await _readingSessionRepository.GetReadingSessionAsync(id);
+                if (readingSession == null)
                 {
-                    if (!string.IsNullOrWhiteSpace(existingSession.Summary))
+                    return Result<ReadingSessionDto>.Failure("Reading session not found");
+                }
+                return Result<ReadingSessionDto>.Success(_mapper.Map<ReadingSessionDto>(readingSession));
+            }
+            catch (Exception ex)
+            {
+                return Result<ReadingSessionDto>.Failure($"An error occurred while retrieving the reading session: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<ReadingSessionDto>> AddReadingSessionAsync(CreateReadingSessionDto readingSessionDto)
+        {
+            try
+            {
+                var existingSession = await _readingSessionRepository.GetReadingSessionByBookAndDateAsync(readingSessionDto.BookId, readingSessionDto.Date);
+
+                ReadingSession resultSession;
+
+                if (existingSession != null)
+                {
+                    // Validate before aggregating
+                    await ValidateTotalPagesLimit(readingSessionDto.BookId, existingSession.PagesRead + readingSessionDto.PagesRead, existingSession.Id);
+
+                    // Aggregate pages if a session for this book and date already exists
+                    existingSession.PagesRead += readingSessionDto.PagesRead;
+                    if (!string.IsNullOrWhiteSpace(readingSessionDto.Summary))
                     {
-                        existingSession.Summary += $"\n{readingSessionDto.Summary}";
+                        if (!string.IsNullOrWhiteSpace(existingSession.Summary))
+                        {
+                            existingSession.Summary += $"\n{readingSessionDto.Summary}";
+                        }
+                        else
+                        {
+                            existingSession.Summary = readingSessionDto.Summary;
+                        }
                     }
-                    else
+                    resultSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
+                }
+                else
+                {
+                    // Validate before creating
+                    await ValidateTotalPagesLimit(readingSessionDto.BookId, readingSessionDto.PagesRead);
+
+                    // Create a new session if none exists for this book and date
+                    var readingSession = _mapper.Map<ReadingSession>(readingSessionDto);
+                    var newReadingSession = await _readingSessionRepository.AddReadingSessionAsync(readingSession);
+                    resultSession = newReadingSession;
+                }
+
+                await CheckBookCompletion(readingSessionDto.BookId);
+                
+                // Invalidate caches
+                _cacheService.InvalidateHeatmap(readingSessionDto.Date.Year);
+                _cacheService.InvalidateStreak();
+                
+                return Result<ReadingSessionDto>.Success(_mapper.Map<ReadingSessionDto>(resultSession));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Result<ReadingSessionDto>.Failure(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Result<ReadingSessionDto>.Failure($"An error occurred while adding the reading session: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<ReadingSessionDto>> UpdateReadingSessionAsync(int id, UpdateReadingSessionDto readingSessionDto)
+        {
+            try
+            {
+                var existingSession = await _readingSessionRepository.GetReadingSessionAsync(id);
+                if (existingSession == null)
+                {
+                    return Result<ReadingSessionDto>.Failure($"Reading session with ID {id} not found.");
+                }
+
+                // Check for "one session per book per day" constraint if date or bookId is changed
+                if (existingSession.BookId != readingSessionDto.BookId || existingSession.Date.Date != readingSessionDto.Date.Date)
+                {
+                    var sessionWithSameBookAndDate = await _readingSessionRepository.GetReadingSessionByBookAndDateAsync(readingSessionDto.BookId, readingSessionDto.Date);
+                    if (sessionWithSameBookAndDate != null && sessionWithSameBookAndDate.Id != id)
                     {
-                        existingSession.Summary = readingSessionDto.Summary;
+                        return Result<ReadingSessionDto>.Failure("Another reading session for this book on this date already exists.");
                     }
                 }
-                resultSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
+
+                // Validate total pages
+                await ValidateTotalPagesLimit(readingSessionDto.BookId, readingSessionDto.PagesRead, id);
+
+                _mapper.Map(readingSessionDto, existingSession);
+                var updatedReadingSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
+                await CheckBookCompletion(updatedReadingSession.BookId);
+                
+                // Invalidate caches
+                _cacheService.InvalidateHeatmap(readingSessionDto.Date.Year);
+                _cacheService.InvalidateStreak();
+                
+                return Result<ReadingSessionDto>.Success(_mapper.Map<ReadingSessionDto>(updatedReadingSession));
             }
-            else
+            catch (InvalidOperationException ex)
             {
-                // Validate before creating
-                await ValidateTotalPagesLimit(readingSessionDto.BookId, readingSessionDto.PagesRead);
-
-                // Create a new session if none exists for this book and date
-                var readingSession = _mapper.Map<ReadingSession>(readingSessionDto);
-                var newReadingSession = await _readingSessionRepository.AddReadingSessionAsync(readingSession);
-                resultSession = newReadingSession;
+                return Result<ReadingSessionDto>.Failure(ex.Message);
             }
-
-            await CheckBookCompletion(readingSessionDto.BookId);
-            
-            // Invalidate caches
-            _cacheService.InvalidateHeatmap(readingSessionDto.Date.Year);
-            _cacheService.InvalidateStreak();
-            
-            return _mapper.Map<ReadingSessionDto>(resultSession);
+            catch (Exception ex)
+            {
+                return Result<ReadingSessionDto>.Failure($"An error occurred while updating the reading session: {ex.Message}");
+            }
         }
 
-        public async Task<ReadingSessionDto> UpdateReadingSessionAsync(int id, UpdateReadingSessionDto readingSessionDto)
+        public async Task<Result> DeleteReadingSessionAsync(int id)
         {
-            var existingSession = await _readingSessionRepository.GetReadingSessionAsync(id);
-            if (existingSession == null)
+            try
             {
-                throw new KeyNotFoundException($"Reading session with ID {id} not found.");
-            }
-
-            // Check for "one session per book per day" constraint if date or bookId is changed
-            if (existingSession.BookId != readingSessionDto.BookId || existingSession.Date.Date != readingSessionDto.Date.Date)
-            {
-                var sessionWithSameBookAndDate = await _readingSessionRepository.GetReadingSessionByBookAndDateAsync(readingSessionDto.BookId, readingSessionDto.Date);
-                if (sessionWithSameBookAndDate != null && sessionWithSameBookAndDate.Id != id)
+                var sessionToDelete = await _readingSessionRepository.GetReadingSessionAsync(id);
+                if (sessionToDelete == null)
                 {
-                    throw new InvalidOperationException("Another reading session for this book on this date already exists.");
+                    return Result.Failure($"Reading session with ID {id} not found.");
                 }
+
+                await _readingSessionRepository.DeleteReadingSessionAsync(id);
+                await CheckBookCompletion(sessionToDelete.BookId);
+                
+                // Invalidate caches
+                _cacheService.InvalidateHeatmap(sessionToDelete.Date.Year);
+                _cacheService.InvalidateStreak();
+                return Result.Success();
             }
-
-            // Validate total pages
-            await ValidateTotalPagesLimit(readingSessionDto.BookId, readingSessionDto.PagesRead, id);
-
-            _mapper.Map(readingSessionDto, existingSession);
-            var updatedReadingSession = await _readingSessionRepository.UpdateReadingSessionAsync(existingSession);
-            await CheckBookCompletion(updatedReadingSession.BookId);
-            
-            // Invalidate caches
-            _cacheService.InvalidateHeatmap(readingSessionDto.Date.Year);
-            _cacheService.InvalidateStreak();
-            
-            return _mapper.Map<ReadingSessionDto>(updatedReadingSession);
-        }
-
-        public async Task DeleteReadingSessionAsync(int id)
-        {
-            var sessionToDelete = await _readingSessionRepository.GetReadingSessionAsync(id);
-            if (sessionToDelete == null)
+            catch (Exception ex)
             {
-                throw new KeyNotFoundException($"Reading session with ID {id} not found.");
+                return Result.Failure($"An error occurred while deleting the reading session: {ex.Message}");
             }
-
-            await _readingSessionRepository.DeleteReadingSessionAsync(id);
-            await CheckBookCompletion(sessionToDelete.BookId);
-            
-            // Invalidate caches
-            _cacheService.InvalidateHeatmap(sessionToDelete.Date.Year);
-            _cacheService.InvalidateStreak();
         }
 
         private async Task CheckBookCompletion(int bookId)

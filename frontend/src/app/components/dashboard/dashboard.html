@@ -1,26 +1,114 @@
 <div class="min-h-screen">
   <div class="space-y-6">
-    
 
 
-    <!-- Loading State -->
-    <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div *ngFor="let i of [1,2,3,4]" class="card bg-base-100 shadow-xl">
-        <div class="card-body">
-          <div class="animate-pulse">
-            <div class="h-4 bg-base-300 rounded w-3/4 mb-4"></div>
-            <div class="h-8 bg-base-300 rounded w-1/2"></div>
+
+    <!-- Loading State (Skeleton) -->
+    @if (loading) {
+    <div class="space-y-6">
+      <!-- Stats Cards Skeleton -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (i of [1,2,3,4]; track i) {
+        <div class="card bg-base-100 shadow-xl border-2 border-base-200">
+          <div class="card-body p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1">
+                <div class="h-3 bg-base-300 rounded w-24 mb-3 animate-pulse"></div>
+                <div class="h-8 bg-base-300 rounded w-16 animate-pulse"></div>
+              </div>
+              <div class="w-12 h-12 bg-base-300 rounded-xl animate-pulse"></div>
+            </div>
+            <div class="h-1 bg-base-300 rounded-full mt-2 animate-pulse"></div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Main Content Grid Skeleton -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column Skeleton -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Charts Skeleton -->
+          <div class="card bg-base-100 shadow-xl border border-base-200">
+            <div class="card-body">
+              <div class="h-6 bg-base-300 rounded w-48 mb-6 animate-pulse"></div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="flex flex-col items-center">
+                  <div class="w-56 h-56 rounded-full border-8 border-base-300 animate-pulse"></div>
+                  <div class="mt-6 space-y-2 w-full">
+                    @for (i of [1,2,3]; track i) {
+                    <div class="h-10 bg-base-300 rounded-lg animate-pulse"></div>
+                    }
+                  </div>
+                </div>
+                <div class="h-80 bg-base-300 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Currently Reading Skeleton -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="h-6 bg-base-300 rounded w-40 mb-4 animate-pulse"></div>
+              <div class="space-y-4">
+                @for (i of [1,2]; track i) {
+                <div class="flex gap-4 p-4 bg-base-200 rounded-lg">
+                  <div class="w-16 h-24 bg-base-300 rounded-lg animate-pulse"></div>
+                  <div class="flex-1 space-y-2">
+                    <div class="h-5 bg-base-300 rounded w-3/4 animate-pulse"></div>
+                    <div class="h-4 bg-base-300 rounded w-1/2 animate-pulse"></div>
+                    <div class="h-2 bg-base-300 rounded-full mt-4 animate-pulse"></div>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column Skeleton -->
+        <div class="space-y-6">
+          <!-- Streak Skeleton -->
+          <div class="card bg-base-100 shadow-xl border border-base-200">
+            <div class="card-body text-center">
+              <div class="w-16 h-16 bg-base-300 rounded-full mx-auto mb-2 animate-pulse"></div>
+              <div class="h-8 bg-base-300 rounded w-3/4 mx-auto mb-2 animate-pulse"></div>
+              <div class="h-4 bg-base-300 rounded w-1/2 mx-auto animate-pulse"></div>
+              <div class="divider"></div>
+              <div class="h-10 bg-base-300 rounded w-full animate-pulse"></div>
+            </div>
+          </div>
+
+          <!-- Recent Books Skeleton -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="h-6 bg-base-300 rounded w-32 mb-4 animate-pulse"></div>
+              <div class="space-y-2">
+                @for (i of [1,2,3,4]; track i) {
+                <div class="flex items-center gap-3 p-2">
+                  <div class="w-10 h-14 bg-base-300 rounded animate-pulse"></div>
+                  <div class="flex-1 space-y-2">
+                    <div class="h-4 bg-base-300 rounded w-3/4 animate-pulse"></div>
+                    <div class="h-3 bg-base-300 rounded w-1/2 animate-pulse"></div>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    }
 
     <!-- Stats Cards -->
-    <div *ngIf="!loading && stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
-      
+    @if (!loading && stats) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
+
       <!-- Total Books -->
-      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-primary hover:-translate-y-1"
-           (click)="navigateToBooks()">
+      <div
+        class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-primary hover:-translate-y-1"
+        (click)="navigateToBooks()">
         <div class="card-body p-5">
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
@@ -28,9 +116,11 @@
                 <span class="w-2 h-2 rounded-full bg-primary shadow-sm shadow-primary/50"></span>
                 <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Total Books</p>
               </div>
-              <h3 class="text-4xl font-bold text-primary group-hover:scale-105 transition-transform">{{ getTotalBooks() }}</h3>
+              <h3 class="text-4xl font-bold text-primary group-hover:scale-105 transition-transform">{{ getTotalBooks()
+                }}</h3>
             </div>
-            <div class="bg-primary/10 group-hover:bg-primary/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-primary/30">
+            <div
+              class="bg-primary/10 group-hover:bg-primary/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-primary/30">
               <ng-icon name="heroBookOpen" class="text-2xl text-primary"></ng-icon>
             </div>
           </div>
@@ -39,7 +129,8 @@
       </div>
 
       <!-- Pages Read -->
-      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-success/20 transition-all duration-300 border-2 border-base-300 hover:border-success hover:-translate-y-1">
+      <div
+        class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-success/20 transition-all duration-300 border-2 border-base-300 hover:border-success hover:-translate-y-1">
         <div class="card-body p-5">
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
@@ -47,9 +138,11 @@
                 <span class="w-2 h-2 rounded-full bg-success shadow-sm shadow-success/50"></span>
                 <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Pages Read</p>
               </div>
-              <h3 class="text-4xl font-bold text-success group-hover:scale-105 transition-transform">{{ stats.overview?.totalPagesRead || 0 }}</h3>
+              <h3 class="text-4xl font-bold text-success group-hover:scale-105 transition-transform">{{
+                stats.overview?.totalPagesRead || 0 }}</h3>
             </div>
-            <div class="bg-success/10 group-hover:bg-success/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-success/30">
+            <div
+              class="bg-success/10 group-hover:bg-success/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-success/30">
               <ng-icon name="heroCheckCircle" class="text-2xl text-success"></ng-icon>
             </div>
           </div>
@@ -58,8 +151,9 @@
       </div>
 
       <!-- Reading Streak -->
-      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-warning/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-warning hover:-translate-y-1"
-           (click)="navigateToHeatmap()">
+      <div
+        class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-warning/20 transition-all duration-300 cursor-pointer border-2 border-base-300 hover:border-warning hover:-translate-y-1"
+        (click)="navigateToHeatmap()">
         <div class="card-body p-5">
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
@@ -67,9 +161,11 @@
                 <span class="w-2 h-2 rounded-full bg-warning shadow-sm shadow-warning/50"></span>
                 <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">Current Streak</p>
               </div>
-              <h3 class="text-4xl font-bold text-warning group-hover:scale-105 transition-transform">{{ streakData?.currentStreak || 0 }}</h3>
+              <h3 class="text-4xl font-bold text-warning group-hover:scale-105 transition-transform">{{
+                streakData?.currentStreak || 0 }}</h3>
             </div>
-            <div class="bg-warning/10 group-hover:bg-warning/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-warning/30">
+            <div
+              class="bg-warning/10 group-hover:bg-warning/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-warning/30">
               <ng-icon name="heroFire" class="text-2xl text-warning"></ng-icon>
             </div>
           </div>
@@ -78,7 +174,8 @@
       </div>
 
       <!-- Currently Reading -->
-      <div class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-info/20 transition-all duration-300 border-2 border-base-300 hover:border-info hover:-translate-y-1">
+      <div
+        class="group card bg-base-100 shadow-lg hover:shadow-2xl hover:shadow-info/20 transition-all duration-300 border-2 border-base-300 hover:border-info hover:-translate-y-1">
         <div class="card-body p-5">
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
@@ -86,9 +183,11 @@
                 <span class="w-2 h-2 rounded-full bg-info shadow-sm shadow-info/50"></span>
                 <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wide">In Progress</p>
               </div>
-              <h3 class="text-4xl font-bold text-info group-hover:scale-105 transition-transform">{{ stats.overview?.booksCurrentlyReading || 0 }}</h3>
+              <h3 class="text-4xl font-bold text-info group-hover:scale-105 transition-transform">{{
+                stats.overview?.booksCurrentlyReading || 0 }}</h3>
             </div>
-            <div class="bg-info/10 group-hover:bg-info/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-info/30">
+            <div
+              class="bg-info/10 group-hover:bg-info/20 p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shadow-md group-hover:shadow-lg group-hover:shadow-info/30">
               <ng-icon name="heroBookmark" class="text-2xl text-info"></ng-icon>
             </div>
           </div>
@@ -96,30 +195,31 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
+
       <!-- Left Column: Charts and Stats -->
       <div class="lg:col-span-2 space-y-6">
-        
+
         <!-- Reading Progress Charts -->
-        <div *ngIf="!loading && readingProgressChart" class="card bg-base-100 shadow-xl border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10" @fadeInUp>
+        @if (!loading && readingProgressChart) {
+        <div
+          class="card bg-base-100 shadow-xl border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10"
+          @fadeInUp>
           <div class="card-body">
             <h2 class="card-title text-xl mb-4 flex items-center gap-2">
               <ng-icon name="heroChartBar" class="text-primary"></ng-icon>
               Reading Progress Overview
             </h2>
-            
+
             <!-- Charts Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <!-- Doughnut Chart -->
               <div class="flex flex-col items-center">
                 <div class="relative" style="height: 220px; width: 220px; margin: 0 auto;">
-                  <canvas baseChart
-                    [data]="readingProgressChart"
-                    [options]="doughnutOptions"
-                    type="doughnut">
+                  <canvas baseChart [data]="readingProgressChart" [options]="doughnutOptions" type="doughnut">
                   </canvas>
                   <!-- Center Label -->
                   <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -129,23 +229,29 @@
                 </div>
                 <!-- Legend with Indicators -->
                 <div class="mt-6 space-y-2 w-full">
-                  <div class="flex items-center justify-between px-4 py-2 bg-info/5 rounded-lg border border-info/20 hover:bg-info/10 hover:border-info/30 transition-all cursor-pointer group">
+                  <div
+                    class="flex items-center justify-between px-4 py-2 bg-info/5 rounded-lg border border-info/20 hover:bg-info/10 hover:border-info/30 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2">
-                      <span class="w-3 h-3 rounded-full bg-info shadow-sm shadow-info/50 group-hover:scale-110 transition-transform"></span>
+                      <span
+                        class="w-3 h-3 rounded-full bg-info shadow-sm shadow-info/50 group-hover:scale-110 transition-transform"></span>
                       <span class="text-sm font-medium text-base-content/80">Planning</span>
                     </div>
                     <span class="text-sm font-bold text-info">{{ stats.overview?.booksPending || 0 }}</span>
                   </div>
-                  <div class="flex items-center justify-between px-4 py-2 bg-warning/5 rounded-lg border border-warning/20 hover:bg-warning/10 hover:border-warning/30 transition-all cursor-pointer group">
+                  <div
+                    class="flex items-center justify-between px-4 py-2 bg-warning/5 rounded-lg border border-warning/20 hover:bg-warning/10 hover:border-warning/30 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2">
-                      <span class="w-3 h-3 rounded-full bg-warning shadow-sm shadow-warning/50 group-hover:scale-110 transition-transform"></span>
+                      <span
+                        class="w-3 h-3 rounded-full bg-warning shadow-sm shadow-warning/50 group-hover:scale-110 transition-transform"></span>
                       <span class="text-sm font-medium text-base-content/80">In Progress</span>
                     </div>
                     <span class="text-sm font-bold text-warning">{{ stats.overview?.booksCurrentlyReading || 0 }}</span>
                   </div>
-                  <div class="flex items-center justify-between px-4 py-2 bg-success/5 rounded-lg border border-success/20 hover:bg-success/10 hover:border-success/30 transition-all cursor-pointer group">
+                  <div
+                    class="flex items-center justify-between px-4 py-2 bg-success/5 rounded-lg border border-success/20 hover:bg-success/10 hover:border-success/30 transition-all cursor-pointer group">
                     <div class="flex items-center gap-2">
-                      <span class="w-3 h-3 rounded-full bg-success shadow-sm shadow-success/50 group-hover:scale-110 transition-transform"></span>
+                      <span
+                        class="w-3 h-3 rounded-full bg-success shadow-sm shadow-success/50 group-hover:scale-110 transition-transform"></span>
                       <span class="text-sm font-medium text-base-content/80">Finished</span>
                     </div>
                     <span class="text-sm font-bold text-success">{{ stats.overview?.totalBooksRead || 0 }}</span>
@@ -156,10 +262,7 @@
               <!-- Bar Chart -->
               <div class="flex flex-col h-full">
                 <div class="flex-1" style="min-height: 340px;">
-                  <canvas baseChart
-                    [data]="monthlyActivityChart"
-                    [options]="barOptions"
-                    type="bar">
+                  <canvas baseChart [data]="monthlyActivityChart" [options]="barOptions" type="bar">
                   </canvas>
                 </div>
               </div>
@@ -168,23 +271,26 @@
 
           </div>
         </div>
+        }
 
         <!-- Currently Reading Books -->
-        <div *ngIf="!loading && currentlyReading.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+        @if (!loading && currentlyReading.length > 0) {
+        <div class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body">
             <h2 class="card-title text-xl mb-4 flex items-center gap-2">
               <ng-icon name="heroSparkles" class="text-warning"></ng-icon>
               Continue Reading
             </h2>
             <div class="space-y-4">
-              <div *ngFor="let book of currentlyReading" 
-                   class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-primary/10 transition-all cursor-pointer group"
-                   (click)="navigateToBookDetails(book.id)">
-                <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
-                     [alt]="book.title"
-                     class="w-16 h-24 object-cover rounded-lg shadow-md group-hover:scale-105 transition-transform">
+              @for (book of currentlyReading; track book.id) {
+              <div class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-primary/10 transition-all cursor-pointer group"
+                (click)="navigateToBookDetails(book.id)">
+                <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
+                  [alt]="book.title"
+                  class="w-16 h-24 object-cover rounded-lg shadow-md group-hover:scale-105 transition-transform">
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-lg truncate group-hover:text-primary transition-colors">{{ book.title }}</h3>
+                  <h3 class="font-semibold text-lg truncate group-hover:text-primary transition-colors">{{ book.title }}
+                  </h3>
                   <p class="text-sm text-base-content/70">by {{ book.author?.name || 'Unknown Author' }}</p>
                   <div class="mt-2">
                     <div class="flex items-center justify-between text-sm mb-1">
@@ -192,8 +298,9 @@
                       <span class="font-medium text-primary">{{ getReadingProgress(book) }}%</span>
                     </div>
                     <div class="w-full bg-base-300 rounded-full h-2">
-                      <div class="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500"
-                           [style.width.%]="getReadingProgress(book)"></div>
+                      <div
+                        class="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500"
+                        [style.width.%]="getReadingProgress(book)"></div>
                     </div>
                     <p class="text-xs text-base-content/60 mt-1">
                       {{ book.totalPages }} pages
@@ -201,15 +308,18 @@
                   </div>
                 </div>
               </div>
+              }
             </div>
             <button mat-stroked-button (click)="navigateToBooks()" class="btn-sm mt-4 w-full">
               View All Books
             </button>
           </div>
         </div>
+        }
 
         <!-- Empty State for Currently Reading -->
-        <div *ngIf="!loading && currentlyReading.length === 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+        @if (!loading && currentlyReading.length === 0) {
+        <div class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body text-center py-12">
             <ng-icon name="heroBookOpen" class="text-6xl text-base-content/30 mx-auto"></ng-icon>
             <h3 class="text-xl font-semibold mt-4">No books in progress</h3>
@@ -219,13 +329,15 @@
             </button>
           </div>
         </div>
+        }
       </div>
 
       <!-- Right Column: Recent Activity & Streak -->
       <div class="space-y-6">
-        
+
         <!-- Streak Card -->
-        <div *ngIf="!loading && streakData" class="card bg-gradient-to-br from-warning/20 to-warning/5 shadow-xl border border-warning/30" @fadeInUp>
+        @if (!loading && streakData) {
+        <div class="card bg-gradient-to-br from-warning/20 to-warning/5 shadow-xl border border-warning/30" @fadeInUp>
           <div class="card-body text-center">
             <div class="text-6xl mb-2">🔥</div>
             <h2 class="card-title text-2xl justify-center text-warning">{{ streakData.currentStreak }} Day Streak!</h2>
@@ -235,26 +347,28 @@
               <p class="text-sm text-base-content/70">Longest Streak</p>
               <p class="text-2xl font-bold text-warning">{{ streakData.longestStreak }} days</p>
             </div>
-            <button mat-raised-button (click)="navigateToHeatmap()" class="btn-sm mt-4" style="background-color: hsl(var(--wa)); color: white;">
+            <button mat-raised-button (click)="navigateToHeatmap()" class="btn-sm mt-4"
+              style="background-color: hsl(var(--wa)); color: white;">
               View Activity
             </button>
           </div>
         </div>
+        }
 
         <!-- Recent Books -->
-        <div *ngIf="!loading && recentBooks.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+        @if (!loading && recentBooks.length > 0) {
+        <div class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body">
             <h2 class="card-title text-lg mb-4 flex items-center gap-2">
               <ng-icon name="heroCalendar" class="text-secondary"></ng-icon>
               Recent Books
             </h2>
             <div class="space-y-2">
-              <div *ngFor="let book of recentBooks.slice(0, 4)" 
-                   class="flex items-center gap-3 p-2 hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
-                   (click)="navigateToBookDetails(book.id)">
-                <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" 
-                     [alt]="book.title"
-                     class="w-10 h-14 object-cover rounded shadow-sm">
+              @for (book of recentBooks.slice(0, 4); track book.id) {
+              <div class="flex items-center gap-3 p-2 hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
+                (click)="navigateToBookDetails(book.id)">
+                <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
+                  [alt]="book.title" class="w-10 h-14 object-cover rounded shadow-sm">
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium truncate">{{ book.title }}</p>
                   <p class="text-xs text-base-content/60 truncate">{{ book.author?.name || 'Unknown' }}</p>
@@ -263,9 +377,11 @@
                   {{ getStatusLabel(book) }}
                 </span>
               </div>
+              }
             </div>
           </div>
         </div>
+        }
       </div>
     </div>
   </div>

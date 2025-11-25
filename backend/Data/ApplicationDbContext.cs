@@ -96,6 +96,53 @@ namespace BookTrackingSystem.Data
                 .HasOne(b => b.ReadingGoal) // Assuming ReadingGoal is a navigation property in Book
                 .WithOne(rg => rg.Book)
                 .HasForeignKey<ReadingGoal>(rg => rg.BookId);
+
+            // ===== DATABASE INDEXES FOR PERFORMANCE OPTIMIZATION =====
+
+            // Books table indexes
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => new { b.Status, b.AuthorId })
+                .HasDatabaseName("IX_Books_Status_AuthorId");
+
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.Rating)
+                .HasDatabaseName("IX_Books_Rating");
+
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.CreatedAt)
+                .HasDatabaseName("IX_Books_CreatedAt");
+
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.CompletedDate)
+                .HasDatabaseName("IX_Books_CompletedDate");
+
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.StartedReadingDate)
+                .HasDatabaseName("IX_Books_StartedReadingDate");
+
+            // BookTagAssignments table indexes
+            modelBuilder.Entity<BookTagAssignment>()
+                .HasIndex(bta => new { bta.TagId, bta.BookId })
+                .HasDatabaseName("IX_BookTagAssignments_TagId_BookId");
+
+            // ReadingSessions table indexes
+            modelBuilder.Entity<ReadingSession>()
+                .HasIndex(rs => new { rs.BookId, rs.Date })
+                .HasDatabaseName("IX_ReadingSessions_BookId_Date");
+
+            modelBuilder.Entity<ReadingSession>()
+                .HasIndex(rs => rs.Date)
+                .HasDatabaseName("IX_ReadingSessions_Date");
+
+            // Authors table indexes
+            modelBuilder.Entity<Author>()
+                .HasIndex(a => a.Name)
+                .HasDatabaseName("IX_Authors_Name");
+
+            // BookTags table indexes
+            modelBuilder.Entity<BookTag>()
+                .HasIndex(t => t.Name)
+                .HasDatabaseName("IX_Tags_Name");
         }
     }
 }

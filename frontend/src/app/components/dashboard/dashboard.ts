@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
-  heroBookOpen, heroFire, heroChartBar, heroPlus, 
+import {
+  heroBookOpen, heroFire, heroChartBar, heroPlus,
   heroClock, heroTrophy, heroArrowTrendingUp, heroSparkles,
   heroCalendar, heroBookmark, heroCheckCircle
 } from '@ng-icons/heroicons/outline';
@@ -11,17 +11,18 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatButtonModule } from '@angular/material/button';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { BookService } from '../../services/book.service';
-import { StatisticService } from '../../services/statistic.service';
-import { StreakService } from '../../services/streak.service';
-import { ReadingSessionService } from '../../services/reading-session.service';
+import { BookService } from '../../services/book';
+import { StatisticService } from '../../services/statistic';
+import { StreakService } from '../../services/streak';
+import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatusService } from '../../services/reading-status';
 import { GetBook } from '../../models/get-book.model';
 import { Streak } from '../../models/streak.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { Dialog } from '@angular/cdk/dialog';
-import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -34,13 +35,14 @@ interface BookWithStatus extends GetBook {
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, NgIconComponent, RouterModule, BaseChartDirective, MatButtonModule],
-  viewProviders: [provideIcons({ 
-    heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock, 
+  viewProviders: [provideIcons({
+    heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock,
     heroTrophy, heroArrowTrendingUp, heroSparkles, heroCalendar,
     heroBookmark, heroCheckCircle
   })],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('fadeInUp', [
       transition(':enter', [
@@ -61,16 +63,18 @@ interface BookWithStatus extends GetBook {
   ]
 })
 export class Dashboard implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   stats: any = null;
   streakData: Streak | null = null;
   currentlyReading: BookWithStatus[] = [];
   recentBooks: BookWithStatus[] = [];
   loading = true;
   rootUrl: string = environment.rootUrl;
-  
+
   // Store book progress (bookId -> progress%)
   bookProgress = new Map<number, number>();
-  
+
   // Chart data
   readingProgressChart: ChartConfiguration<'doughnut'>['data'] | undefined;
   monthlyActivityChart: ChartConfiguration<'bar'>['data'] | undefined;
@@ -156,7 +160,7 @@ export class Dashboard implements OnInit {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
-          font: { 
+          font: {
             size: 12,
             weight: 500,
             family: "'Inter', sans-serif"
@@ -174,7 +178,7 @@ export class Dashboard implements OnInit {
       },
       x: {
         ticks: {
-          font: { 
+          font: {
             size: 12,
             weight: 500,
             family: "'Inter', sans-serif"
@@ -218,7 +222,7 @@ export class Dashboard implements OnInit {
     private readingStatusService: ReadingStatusService,
     private router: Router,
     private dialog: Dialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -234,106 +238,159 @@ export class Dashboard implements OnInit {
       this.loadBooks()
     ]).finally(() => {
       this.loading = false;
+      this.cdr.markForCheck();
     });
   }
 
   loadStats(): Promise<void> {
     return new Promise((resolve) => {
-      this.statsService.getCompleteStatistics().subscribe({
-        next: (data) => {
-          this.stats = data;
-          this.prepareCharts();
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error loading stats', err);
-          resolve();
-        }
-      });
+      this.statsService.getCompleteStatistics()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (result) => {
+            if (result.isSuccess && result.data) {
+              this.stats = result.data;
+              this.prepareCharts();
+            } else {
+              console.error('Error loading stats', result.errors);
+            }
+            resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            console.error('Error loading stats', err);
+            resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
+          }
+        });
     });
   }
 
   loadStreak(): Promise<void> {
     return new Promise((resolve) => {
-      this.streakService.getStreakData().subscribe({
-        next: (data) => {
-          this.streakData = data;
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error loading streak', err);
-          resolve();
-        }
-      });
+      this.streakService.getStreakData()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (result) => {
+            if (result.isSuccess && result.data) {
+              this.streakData = result.data;
+            } else {
+              console.error('Error loading streak', result.errors);
+            }
+            resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            console.error('Error loading streak', err);
+            resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
+          }
+        });
     });
   }
 
   loadBooks(): Promise<void> {
     return new Promise((resolve) => {
-      this.readingStatusService.getAllStatuses().subscribe({
-        next: (statuses) => {
-          const statusMap = new Map(statuses.map(s => [s.value, s]));
-          
-          this.bookService.getBooks().subscribe({
-            next: (books) => {
-              const booksWithStatus = books.map(book => {
-                const statusInfo = statusMap.get(book.status);
-                return {
-                  ...book,
-                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-                  statusDisplayName: statusInfo?.displayName || 'Unknown'
-                };
-              });
-              
-              this.currentlyReading = booksWithStatus
-                .filter(b => b.status === ReadingStatus.CurrentlyReading)
-                .slice(0, 3);
-              this.recentBooks = booksWithStatus
-                .sort((a, b) => b.id - a.id)
-                .slice(0, 6);
-              
-              // Load progress for currently reading books
-              if (this.currentlyReading.length > 0) {
-                this.loadBookProgress(this.currentlyReading).then(() => resolve());
-              } else {
-                resolve();
-              }
-            },
-            error: (err) => {
-              console.error('Error loading books', err);
+      this.readingStatusService.getAllStatuses()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (statusResult) => {
+            if (!statusResult.isSuccess || !statusResult.data) {
+              console.error('Error loading status info', statusResult.errors);
               resolve();
+            this.cdr.markForCheck();
+              return;
             }
-          });
-        },
-        error: (err) => {
-          console.error('Error loading status info', err);
-          resolve();
-        }
-      });
+
+            const statuses = statusResult.data;
+            const statusMap = new Map(statuses.map(s => [s.value, s]));
+
+            this.bookService.getBooks()
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: (bookResult) => {
+                  if (bookResult.isSuccess && bookResult.data) {
+                    const books = bookResult.data;
+                    const booksWithStatus = books.map(book => {
+                      const statusInfo = statusMap.get(book.status);
+                      return {
+                        ...book,
+                        statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                        statusDisplayName: statusInfo?.displayName || 'Unknown'
+                      };
+                    });
+
+                    this.currentlyReading = booksWithStatus
+                      .filter(b => b.status === ReadingStatus.CurrentlyReading)
+                      .slice(0, 3);
+                    this.recentBooks = booksWithStatus
+                      .sort((a, b) => b.id - a.id)
+                      .slice(0, 6);
+
+                    // Load progress for currently reading books
+                    if (this.currentlyReading.length > 0) {
+                      this.loadBookProgress(this.currentlyReading).then(() => resolve());
+                    } else {
+                      resolve();
+            this.cdr.markForCheck();
+                    }
+                  } else {
+                    console.error('Error loading books', bookResult.errors);
+                    resolve();
+            this.cdr.markForCheck();
+                  }
+                },
+                error: (err) => {
+                  console.error('Error loading books', err);
+                  resolve();
+            this.cdr.markForCheck();
+                }
+              });
+          },
+          error: (err) => {
+            console.error('Error loading status info', err);
+            resolve();
+            this.cdr.markForCheck();
+          }
+        });
     });
   }
 
   loadBookProgress(books: BookWithStatus[]): Promise<void> {
     return new Promise((resolve) => {
-      const sessionRequests = books.map(book => 
+      const sessionRequests = books.map(book =>
         this.readingSessionService.getReadingSessionsForBook(book.id)
       );
 
-      forkJoin(sessionRequests).subscribe({
-        next: (sessionsArray) => {
-          books.forEach((book, index) => {
-            const sessions = sessionsArray[index];
-            const currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
-            const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
-            this.bookProgress.set(book.id, progress);
-          });
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error loading book progress', err);
-          resolve();
-        }
-      });
+      forkJoin(sessionRequests)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (resultsArray) => {
+            books.forEach((book, index) => {
+              const result = resultsArray[index];
+              if (result.isSuccess && result.data) {
+                const sessions = result.data;
+                const currentPage = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+                const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
+                this.bookProgress.set(book.id, progress);
+              } else {
+                console.error(`Error loading sessions for book ${book.id}`, result.errors);
+                this.bookProgress.set(book.id, 0);
+              }
+            });
+            resolve();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            console.error('Error loading book progress', err);
+            resolve();
+            this.cdr.markForCheck();
+          }
+        });
     });
   }
 
@@ -348,7 +405,7 @@ export class Dashboard implements OnInit {
 
     // Ensure we have at least some dummy data for visualization when no books
     const hasData = toReadChart > 0 || readingChart > 0 || completedChart > 0;
-    
+
     this.readingProgressChart = {
       labels: ['Planning', 'In Progress', 'Finished'],
       datasets: [{
@@ -435,11 +492,13 @@ export class Dashboard implements OnInit {
       backdropClass: 'cdk-overlay-dark-backdrop'
     });
 
-    dialogRef.closed.subscribe((result: any) => {
-      if (result) {
-        this.loadDashboardData();
-      }
-    });
+    dialogRef.closed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: any) => {
+        if (result) {
+          this.loadDashboardData();
+        }
+      });
   }
 
   navigateToBooks(): void {

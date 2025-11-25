@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate, keyframes } from '@angular/animations';
-import { StreakService } from '../../services/streak.service';
+import { StreakService } from '../../services/streak';
 import { Streak } from '../../models/streak.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFire } from '@ng-icons/heroicons/outline';
@@ -13,6 +13,7 @@ import { heroFire } from '@ng-icons/heroicons/outline';
   viewProviders: [provideIcons({ heroFire })],
   templateUrl: './streak-indicator.html',
   styleUrl: './streak-indicator.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('flameAnimation', [
       transition('* => *', [
@@ -31,7 +32,10 @@ export class StreakIndicatorComponent implements OnInit {
   isStreakActive: boolean = false;
   animationTrigger: number = 0;
 
-  constructor(private streakService: StreakService) { }
+  constructor(
+    private streakService: StreakService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadStreakData();
@@ -40,17 +44,23 @@ export class StreakIndicatorComponent implements OnInit {
   loadStreakData(): void {
     this.loading = true;
     this.streakService.getStreakData().subscribe({
-      next: (data) => {
-        this.streakData = data;
-        this.isStreakActive = data.currentStreak > 0 && data.hasReadToday;
-        this.loading = false;
-        if (this.isStreakActive) {
-          this.animationTrigger++;
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.streakData = result.data;
+          this.isStreakActive = result.data.currentStreak > 0 && result.data.hasReadToday;
+          if (this.isStreakActive) {
+            this.animationTrigger++;
+          }
+        } else {
+          console.error('Error fetching streak data', result.errors);
         }
+        this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching streak data', err);
         this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }

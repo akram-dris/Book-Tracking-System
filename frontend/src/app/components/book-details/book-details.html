@@ -1,4 +1,58 @@
-<div *ngIf="book" class="min-h-screen bg-base-100">
+<!-- Skeleton Loading State -->
+@if (isLoading) {
+<div class="min-h-screen bg-base-100 p-6">
+  <!-- Back Button Skeleton -->
+  <div class="mb-6">
+    <div class="h-10 w-24 bg-base-200 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Header Section Skeleton -->
+  <div class="bg-base-200 rounded-2xl border-2 border-base-300 overflow-hidden mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+      <!-- Left Side - Book Cover Skeleton -->
+      <div class="lg:col-span-3 relative">
+        <div class="aspect-[2/3] lg:h-full bg-base-300 animate-pulse"></div>
+      </div>
+
+      <!-- Right Side - Book Info Skeleton -->
+      <div class="lg:col-span-9 p-8 space-y-6">
+        <!-- Title & Author -->
+        <div>
+          <div class="h-10 bg-base-300 rounded w-3/4 mb-4 animate-pulse"></div>
+          <div class="h-6 bg-base-300 rounded w-1/2 animate-pulse"></div>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="flex gap-2">
+          <div class="h-8 w-24 bg-base-300 rounded-full animate-pulse"></div>
+          <div class="h-8 w-20 bg-base-300 rounded-full animate-pulse"></div>
+          <div class="h-8 w-20 bg-base-300 rounded-full animate-pulse"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <div class="h-10 w-24 bg-base-300 rounded-lg animate-pulse"></div>
+          <div class="h-10 w-24 bg-base-300 rounded-lg animate-pulse"></div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          @for (i of [1,2,3,4]; track i) {
+          <div class="bg-base-100 rounded-xl p-4 border-2 border-base-300 h-24 animate-pulse"></div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Skeleton -->
+  <div class="h-12 bg-base-200 rounded-2xl mb-6 animate-pulse"></div>
+  <div class="h-64 bg-base-200 rounded-2xl animate-pulse"></div>
+</div>
+}
+
+@if (!isLoading && book) {
+<div class="min-h-screen bg-base-100">
   <!-- Back Button -->
   <div class="mb-6">
     <button mat-button (click)="goBack()"
@@ -30,8 +84,9 @@
               </div>
 
               <!-- Rating Button Overlay (for completed books without rating) -->
+              @if (!book.rating && (book.status === ReadingStatus.Completed || book.status ===
+              ReadingStatus.Summarized)) {
               <div
-                *ngIf="!book.rating && (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized)"
                 class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-md gap-4 p-4 z-20">
                 <!-- Title -->
                 <h3 class="text-white font-bold text-xl drop-shadow-lg">Rate This Book</h3>
@@ -43,17 +98,22 @@
                 </div>
 
                 <!-- Selected Rating Display -->
-                <div *ngIf="tempCoverRating" class="text-white text-2xl font-bold drop-shadow-lg">
+                @if (tempCoverRating) {
+                <div class="text-white text-2xl font-bold drop-shadow-lg">
                   {{ tempCoverRating | number:'1.0-0' }} / 5
                 </div>
+                }
 
                 <!-- Save Button -->
-                <button *ngIf="tempCoverRating" (click)="saveCoverRating()" mat-raised-button color="primary"
+                @if (tempCoverRating) {
+                <button (click)="saveCoverRating()" mat-raised-button color="primary"
                   class="!font-semibold !px-6 !py-2 !rounded-lg !shadow-xl hover:!scale-105 transition-all gap-2">
                   <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
                   Save Rating
                 </button>
+                }
               </div>
+              }
 
               <!-- Status Badge -->
               <div class="absolute top-4 right-4 z-30">
@@ -69,35 +129,40 @@
               <!-- Quick Actions (Floating) -->
               <div
                 class="absolute bottom-4 left-4 right-4 z-10 space-y-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <button *ngIf="book.status === ReadingStatus.NotReading" (click)="openPlanAndGoalModal()"
-                  mat-raised-button color="primary" class="btn-sm w-full gap-2">
+                @if (book.status === ReadingStatus.NotReading) {
+                <button (click)="openPlanAndGoalModal()" mat-raised-button color="primary" class="btn-sm w-full gap-2">
                   <ng-icon name="heroPlus" size="1rem"></ng-icon>
                   Plan to Read
                 </button>
-                <button *ngIf="book.status === ReadingStatus.CurrentlyReading" (click)="openAddSessionModal()"
-                  mat-raised-button color="primary" class="btn-sm w-full gap-2">
+                }
+                @if (book.status === ReadingStatus.CurrentlyReading) {
+                <button (click)="openAddSessionModal()" mat-raised-button color="primary" class="btn-sm w-full gap-2">
                   <ng-icon name="heroPlus" size="1rem"></ng-icon>
                   Log Session
                 </button>
-                <button *ngIf="book.status === ReadingStatus.Planning" (click)="startReadingFromPlanning()"
-                  mat-raised-button color="primary" class="btn-sm w-full gap-2">
+                }
+                @if (book.status === ReadingStatus.Planning) {
+                <button (click)="startReadingFromPlanning()" mat-raised-button color="primary"
+                  class="btn-sm w-full gap-2">
                   <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
                   Start Reading
                 </button>
-                <button
-                  *ngIf="book.status === ReadingStatus.Completed && (!book.summary || book.summary.trim().length === 0)"
-                  [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
+                }
+                @if (book.status === ReadingStatus.Completed && (!book.summary || book.summary.trim().length === 0)) {
+                <button [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
                   class="btn-sm w-full gap-2">
                   <ng-icon name="heroPencil" size="1rem"></ng-icon>
                   Summarize
                 </button>
-                <button
-                  *ngIf="book.status === ReadingStatus.Summarized || (book.status === ReadingStatus.Completed && book.summary && book.summary.trim().length > 0)"
-                  [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
+                }
+                @if (book.status === ReadingStatus.Summarized || (book.status === ReadingStatus.Completed &&
+                book.summary && book.summary.trim().length > 0)) {
+                <button [routerLink]="['/books', book.id, 'summary']" mat-raised-button color="primary"
                   class="btn-sm w-full gap-2">
                   <ng-icon name="heroDocumentText" size="1rem"></ng-icon>
                   View Summary
                 </button>
+                }
               </div>
             </div>
           </div>
@@ -117,15 +182,17 @@
                 <ng-icon name="heroBookOpen" size="1rem" class="text-primary"></ng-icon>
                 {{ book.totalPages }} pages
               </div>
-              <span *ngFor="let tag of book.tags"
+              @for (tag of book.tags; track tag.id) {
+              <span
                 class="badge badge-lg badge-primary hover:scale-105 hover:brightness-110 transition-all duration-200 shadow-md cursor-pointer">
                 {{ tag.name }}
               </span>
+              }
             </div>
 
             <!-- Warning for Planning Status -->
-            <div *ngIf="book.status === ReadingStatus.Planning"
-              class="alert alert-warning shadow-lg mb-6 border-2 border-warning/30">
+            @if (book.status === ReadingStatus.Planning) {
+            <div class="alert alert-warning shadow-lg mb-6 border-2 border-warning/30">
               <div class="flex items-start gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
                   viewBox="0 0 24 24">
@@ -141,9 +208,11 @@
                 </div>
               </div>
             </div>
+            }
 
             <!-- Progress Bar for Currently Reading -->
-            <div *ngIf="book.status === ReadingStatus.CurrentlyReading" class="mb-6 max-w-xl">
+            @if (book.status === ReadingStatus.CurrentlyReading) {
+            <div class="mb-6 max-w-xl">
               <div class="flex justify-between text-sm mb-2">
                 <span class="font-medium text-base-content/70">Reading Progress</span>
                 <span class="font-bold text-primary">{{ progress | number:'1.0-2' }}%</span>
@@ -159,6 +228,7 @@
                 <span>{{ book.totalPages! - currentPage }} remaining</span>
               </div>
             </div>
+            }
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-2 mb-6">
@@ -236,7 +306,8 @@
     <div
       class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/30 p-6 shadow-xl transition-all duration-300">
       <!-- Overview Tab -->
-      <div *ngIf="activeTab === 'overview'">
+      @if (activeTab === 'overview') {
+      <div>
         <h3 class="text-2xl font-bold mb-6 text-base-content">Book Information</h3>
 
         <div class="grid md:grid-cols-2 gap-6">
@@ -253,22 +324,26 @@
                 <span class="text-base-content/70">Total Pages</span>
                 <span class="font-bold text-primary">{{ book.totalPages }}</span>
               </div>
-              <div *ngIf="book.startedReadingDate"
+              @if (book.startedReadingDate) {
+              <div
                 class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-primary/5 transition-colors duration-200">
                 <span class="text-base-content/70">Started</span>
                 <span class="font-medium text-base-content">{{ book.startedReadingDate | date:'dd/MM/yyyy' }}</span>
               </div>
-              <div *ngIf="book.completedDate"
+              }
+              @if (book.completedDate) {
+              <div
                 class="flex items-center justify-between p-3 bg-base-200 rounded-lg hover:bg-primary/5 transition-colors duration-200">
                 <span class="text-base-content/70">Completed</span>
                 <span class="font-medium text-base-content">{{ book.completedDate | date:'dd/MM/yyyy' }}</span>
               </div>
+              }
             </div>
           </div>
 
           <!-- Rate this book Card (for Completed/Summarized books WITHOUT rating) -->
+          @if (!book.rating && (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized)) {
           <div
-            *ngIf="!book.rating && (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized)"
             class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl p-6 border-2 border-amber-400 hover:border-amber-500 hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-300 animate-pulse-slow">
             <div class="flex flex-col items-center gap-4 text-center">
               <div class="w-16 h-16 rounded-full bg-amber-400/20 flex items-center justify-center">
@@ -281,10 +356,11 @@
 
             </div>
           </div>
+          }
 
           <!-- Rating Card (for Completed/Summarized books WITH rating) - Modern Redesign -->
+          @if (book.rating && (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized)) {
           <div
-            *ngIf="book.rating && (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized)"
             class="group relative bg-white/60 dark:bg-base-200/60 backdrop-blur-sm rounded-2xl p-6 border border-amber-200/40 dark:border-amber-700/30 hover:border-amber-300/60 dark:hover:border-amber-600/40 hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-500">
 
             <!-- Subtle Accent Line -->
@@ -308,14 +384,17 @@
               <!-- Action Buttons (Edit or Save/Cancel) -->
               <div class="flex items-center gap-2">
                 <!-- Edit Button (when not editing) -->
-                <button *ngIf="!isEditingRating" (click)="editRating()" mat-mini-fab color="primary"
+                @if (!isEditingRating) {
+                <button (click)="editRating()" mat-mini-fab color="primary"
                   class="!w-9 !h-9 !shadow-md hover:!shadow-lg hover:!scale-105 transition-all"
                   matTooltip="Edit your rating">
                   <ng-icon name="heroPencil" size="1.125rem" class="text-white"></ng-icon>
                 </button>
+                }
 
                 <!-- Save/Cancel Buttons (when editing) -->
-                <ng-container *ngIf="isEditingRating">
+                @if (isEditingRating) {
+                <ng-container>
                   <button (click)="saveRatingInline()" mat-mini-fab color="primary"
                     class="!w-9 !h-9 !shadow-md hover:!shadow-lg hover:!scale-105 transition-all"
                     matTooltip="Save rating">
@@ -326,6 +405,7 @@
                     <ng-icon name="heroXMark" size="1.125rem" class="text-white"></ng-icon>
                   </button>
                 </ng-container>
+                }
               </div>
             </div>
 
@@ -351,22 +431,26 @@
             </div>
 
             <!-- Optional: Rating Description (only when not editing) -->
-            <div *ngIf="!isEditingRating" class="mt-4 pt-4 border-t border-base-300/50">
+            @if (!isEditingRating) {
+            <div class="mt-4 pt-4 border-t border-base-300/50">
               <p class="text-sm text-base-content/60 italic">
-                <span *ngIf="book.rating === 5">★ Absolutely loved it!</span>
-                <span *ngIf="book.rating === 4">★ Really enjoyed this one</span>
-                <span *ngIf="book.rating === 3">★ It was okay</span>
-                <span *ngIf="book.rating === 2">★ Not my favorite</span>
-                <span *ngIf="book.rating === 1">★ Didn't enjoy it</span>
+                @if (book.rating === 5) { <span>★ Absolutely loved it!</span> }
+                @if (book.rating === 4) { <span>★ Really enjoyed this one</span> }
+                @if (book.rating === 3) { <span>★ It was okay</span> }
+                @if (book.rating === 2) { <span>★ Not my favorite</span> }
+                @if (book.rating === 1) { <span>★ Didn't enjoy it</span> }
               </p>
             </div>
+            }
           </div>
+          }
 
 
 
 
           <!-- Reading Goals Card -->
-          <div *ngIf="readingGoal"
+          @if (readingGoal) {
+          <div
             class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
             <div class="flex items-center gap-2 mb-4">
               <ng-icon name="heroCheckCircle" size="1.5rem" class="text-primary"></ng-icon>
@@ -393,38 +477,47 @@
               </div>
             </div>
           </div>
+          }
 
           <!-- Tags Card -->
-          <div *ngIf="book.tags && book.tags.length > 0"
+          @if (book.tags && book.tags.length > 0) {
+          <div
             class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 md:col-span-2">
             <div class="flex items-center gap-2 mb-4">
               <ng-icon name="heroTag" size="1.5rem" class="text-primary"></ng-icon>
               <h4 class="font-semibold text-lg text-base-content">Tags</h4>
             </div>
             <div class="flex flex-wrap gap-2">
-              <span *ngFor="let tag of book.tags"
+              @for (tag of book.tags; track tag.id) {
+              <span
                 class="badge badge-primary badge-lg hover:scale-105 hover:brightness-110 transition-all duration-200 shadow-md cursor-pointer">
                 {{ tag.name }}
               </span>
+              }
             </div>
           </div>
+          }
         </div>
       </div>
+      }
 
       <!-- Sessions Tab -->
-      <div *ngIf="activeTab === 'sessions'">
+      @if (activeTab === 'sessions') {
+      <div>
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold text-base-content">Reading Sessions</h3>
-          <button *ngIf="book.status === ReadingStatus.CurrentlyReading" (click)="openAddSessionModal()"
-            mat-raised-button color="primary" class="btn-sm gap-2">
+          @if (book.status === ReadingStatus.CurrentlyReading) {
+          <button (click)="openAddSessionModal()" mat-raised-button color="primary" class="btn-sm gap-2">
             <ng-icon name="heroPlus" size="1rem"></ng-icon>
             Add Session
           </button>
+          }
         </div>
 
-        <div *ngIf="readingSessions.length > 0; else noSessions"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div *ngFor="let session of readingSessions"
+        @if (readingSessions.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (session of readingSessions; track session.id) {
+          <div
             class="group relative bg-base-100 rounded-xl overflow-hidden border-2 border-base-300 hover:border-primary hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer">
             <!-- Card Content -->
             <div class="p-4">
@@ -449,28 +542,32 @@
               </div>
             </div>
           </div>
+          }
         </div>
-        <ng-template #noSessions>
-          <div class="text-center py-16">
-            <div
-              class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-              <ng-icon name="heroClipboardDocumentList" size="3rem" class="text-primary"></ng-icon>
-            </div>
-            <p class="text-base-content/70 text-lg font-medium">No reading sessions recorded yet.</p>
-            <p class="text-base-content/40 text-sm mt-2">Start logging your reading progress!</p>
+        } @else {
+        <div class="text-center py-16">
+          <div
+            class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+            <ng-icon name="heroClipboardDocumentList" size="3rem" class="text-primary"></ng-icon>
           </div>
-        </ng-template>
+          <p class="text-base-content/70 text-lg font-medium">No reading sessions recorded yet.</p>
+          <p class="text-base-content/40 text-sm mt-2">Start logging your reading progress!</p>
+        </div>
+        }
       </div>
+      }
 
       <!-- Notes Tab -->
-      <div *ngIf="activeTab === 'notes'">
+      @if (activeTab === 'notes') {
+      <div>
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-2xl font-bold text-base-content">Session Notes</h3>
         </div>
 
-        <div *ngIf="getSessionsWithNotes().length > 0; else noSessionNotes"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div *ngFor="let session of getSessionsWithNotes()" (click)="openNoteDetailModal(session)"
+        @if (getSessionsWithNotes().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (session of getSessionsWithNotes(); track session.id) {
+          <div (click)="openNoteDetailModal(session)"
             class="group relative bg-base-100 rounded-xl overflow-hidden border-2 border-base-300 hover:border-primary hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer">
 
             <!-- Card Content -->
@@ -495,22 +592,24 @@
               </div>
             </div>
           </div>
+          }
         </div>
-
-        <ng-template #noSessionNotes>
-          <div class="text-center py-16">
-            <div
-              class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-              <ng-icon name="heroDocumentText" size="3rem" class="text-primary"></ng-icon>
-            </div>
-            <p class="text-base-content/70 text-lg font-medium">No session notes available yet.</p>
-            <p class="text-base-content/40 text-sm mt-2">Add notes when logging reading sessions!</p>
+        } @else {
+        <div class="text-center py-16">
+          <div
+            class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+            <ng-icon name="heroDocumentText" size="3rem" class="text-primary"></ng-icon>
           </div>
-        </ng-template>
+          <p class="text-base-content/70 text-lg font-medium">No session notes available yet.</p>
+          <p class="text-base-content/40 text-sm mt-2">Add notes when logging reading sessions!</p>
+        </div>
+        }
       </div>
+      }
 
       <!-- Statistics Tab -->
-      <div *ngIf="activeTab === 'statistics'">
+      @if (activeTab === 'statistics') {
+      <div>
         <h3 class="text-2xl font-bold mb-6 text-base-content">Reading Statistics</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div
@@ -553,22 +652,27 @@
           </div>
         </div>
       </div>
+      }
     </div>
   </div>
 </div>
+}
 
 <!-- Modals (keep existing ones) -->
-<app-plan-and-goal-modal *ngIf="isPlanAndGoalModalOpen" [bookId]="book?.id || null" [bookTitle]="book?.title || ''"
+@if (isPlanAndGoalModalOpen) {
+<app-plan-and-goal-modal [bookId]="book?.id || null" [bookTitle]="book?.title || ''"
   [initialStartedReadingDate]="book?.startedReadingDate" [initialReadingGoal]="readingGoal"
   [totalPages]="book?.totalPages || null" (saved)="handlePlanAndGoalSaved()" (close)="closePlanAndGoalModal()">
 </app-plan-and-goal-modal>
+}
 
-<app-reading-log-modal *ngIf="isReadingLogModalOpen" [bookId]="currentBookId!"
-  (close)="closeReadingLogModal()"></app-reading-log-modal>
+@if (isReadingLogModalOpen) {
+<app-reading-log-modal [bookId]="currentBookId!" (close)="closeReadingLogModal()"></app-reading-log-modal>
+}
 
 <!-- Note Detail Modal -->
-<div *ngIf="isNoteDetailModalOpen && selectedSession"
-  class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+@if (isNoteDetailModalOpen && selectedSession) {
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
   (click)="closeNoteDetailModal()">
   <div class="bg-base-200 rounded-2xl border-2 border-base-300 shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
     (click)="$event.stopPropagation()">
@@ -610,6 +714,7 @@
     </div>
   </div>
 </div>
+}
 
 <!-- Rating Modal -->
 <app-rating-modal [isOpen]="isRatingModalOpen" [bookTitle]="book?.title || ''" [bookCover]="book?.imageUrl"

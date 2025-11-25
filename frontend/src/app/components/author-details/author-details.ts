@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthorService } from '../../services/author.service';
-import { BookService } from '../../services/book.service';
+import { AuthorService } from '../../services/author';
+import { BookService } from '../../services/book';
 import { ReadingStatusService } from '../../services/reading-status';
 import { GetAuthor } from '../../models/get-author.model';
 import { GetBook } from '../../models/get-book.model';
@@ -15,8 +15,8 @@ import { FormsModule } from '@angular/forms';
 import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { NotificationService } from '../../services/notification.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
@@ -46,6 +46,7 @@ export class AuthorDetailsComponent implements OnInit {
   // UI state
   bioExpanded = false;
   sortBy: string = 'title-asc';
+  isLoading = true;
 
   sortOptions = [
     { value: 'title-asc', label: 'Title (A-Z)' },
@@ -74,30 +75,61 @@ export class AuthorDetailsComponent implements OnInit {
   }
 
   loadAuthorData(id: number): void {
-    this.authorService.getAuthor(id).subscribe(author => {
-      this.author = author;
-      this.loadAuthorBooks(id);
+    this.isLoading = true;
+    this.authorService.getAuthor(id).subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          this.author = result.data;
+          this.loadAuthorBooks(id);
+        } else {
+          console.error('Error loading author:', result.errors);
+          this.isLoading = false;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading author:', err);
+        this.isLoading = false;
+      }
     });
   }
 
   loadAuthorBooks(authorId: number): void {
-    this.readingStatusService.getAllStatuses().subscribe(statuses => {
+    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
+      if (!statusResult.isSuccess || !statusResult.data) {
+        console.error('Error loading statuses:', statusResult.errors);
+        this.isLoading = false;
+        return;
+      }
+
+      const statuses = statusResult.data;
       const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-      this.bookService.getBooks().subscribe(books => {
-        this.authorBooks = books
-          .filter(book => book.authorId === authorId)
-          .map(book => {
-            const statusInfo = statusMap.get(book.status);
-            return {
-              ...book,
-              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-              statusDisplayName: statusInfo?.displayName || 'Unknown'
-            };
-          });
+      this.bookService.getBooks().subscribe({
+        next: (bookResult) => {
+          if (bookResult.isSuccess && bookResult.data) {
+            const books = bookResult.data;
+            this.authorBooks = books
+              .filter(book => book.authorId === authorId)
+              .map(book => {
+                const statusInfo = statusMap.get(book.status);
+                return {
+                  ...book,
+                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
+                  statusDisplayName: statusInfo?.displayName || 'Unknown'
+                };
+              });
 
-        this.sortBooks();
-        this.calculateStatistics();
+            this.sortBooks();
+            this.calculateStatistics();
+          } else {
+            console.error('Error loading author books:', bookResult.errors);
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading author books:', err);
+          this.isLoading = false;
+        }
       });
     });
   }
@@ -168,9 +200,14 @@ export class AuthorDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && this.author) {
-        this.authorService.deleteAuthor(this.author.id).subscribe(() => {
-          this.notificationService.showSuccess('Author deleted successfully');
-          this.router.navigate(['/authors']);
+        this.authorService.deleteAuthor(this.author.id).subscribe(deleteResult => {
+          if (deleteResult.isSuccess) {
+            this.notificationService.showSuccess('Author deleted successfully');
+            this.router.navigate(['/authors']);
+          } else {
+            console.error('Error deleting author:', deleteResult.errors);
+            this.notificationService.showError('Failed to delete author');
+          }
         });
       }
     });

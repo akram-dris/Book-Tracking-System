@@ -8,40 +8,72 @@
         <p class="text-base-content/70">Books from your top-rated authors and tags</p>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="loading" class="flex justify-center items-center py-20">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
+    <!-- Skeleton Loading State -->
+    @if (loading) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
+        @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="card bg-base-200 shadow-xl h-[400px]">
+            <div class="px-4 pt-4 h-64 w-full">
+                <div class="rounded-lg h-full w-full bg-base-300"></div>
+            </div>
+            <div class="card-body px-4 py-4">
+                <div class="h-6 w-3/4 bg-base-300 rounded mb-2"></div>
+                <div class="h-4 w-1/2 bg-base-300 rounded mb-4"></div>
+                <div class="h-6 w-24 bg-base-300 rounded-full mb-2"></div>
+                <div class="flex gap-1 mb-2">
+                    <div class="h-4 w-16 bg-base-300 rounded-full"></div>
+                    <div class="h-4 w-16 bg-base-300 rounded-full"></div>
+                </div>
+                <div class="flex justify-between items-center mt-auto">
+                    <div class="h-4 w-16 bg-base-300 rounded"></div>
+                    <div class="flex gap-1">
+                        <div class="h-4 w-12 bg-base-300 rounded"></div>
+                        <div class="h-4 w-12 bg-base-300 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
     </div>
+    }
 
     <!-- Error State -->
-    <div *ngIf="error" class="alert alert-error">
+    @if (error) {
+    <div class="alert alert-error">
         <span>{{ error }}</span>
     </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!loading && !error && recommendations.length === 0" class="text-center py-20">
+    @if (!loading && !error && recommendations.length === 0) {
+    <div class="text-center py-20">
         <ng-icon name="heroBookOpen" size="4rem" class="text-base-content/30"></ng-icon>
         <p class="text-xl text-base-content/50 mt-4">No recommendations yet</p>
         <p class="text-sm text-base-content/40">Rate some books to get personalized recommendations!</p>
     </div>
+    }
 
     <!-- Recommendations Grid -->
-    <div *ngIf="!loading && recommendations.length > 0"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div *ngFor="let rec of recommendations"
-            class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1"
+    @if (!loading && recommendations.length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (rec of recommendations; track rec.bookId) {
+        <div class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1"
             (click)="navigateToBook(rec.bookId)">
 
             <!-- Book Cover -->
             <figure class="px-4 pt-4 h-64 w-full">
-                <img *ngIf="rec.imageUrl" [src]="rootUrl + rec.imageUrl" [alt]="rec.bookTitle"
+                @if (rec.imageUrl) {
+                <img [src]="rootUrl + rec.imageUrl" [alt]="rec.bookTitle"
                     class="rounded-lg h-full w-full object-cover shadow-sm" (error)="rec.imageUrl = null" />
+                }
 
-                <div *ngIf="!rec.imageUrl"
+                @if (!rec.imageUrl) {
+                <div
                     class="rounded-lg h-full w-full bg-base-300/50 flex flex-col items-center justify-center text-base-content/20 p-4 text-center border-2 border-dashed border-base-300">
                     <ng-icon name="heroBookOpen" size="3rem" class="mb-2"></ng-icon>
                     <span class="text-xs font-medium uppercase tracking-wider">No Cover</span>
                 </div>
+                }
             </figure>
 
             <!-- Card Body -->
@@ -59,17 +91,22 @@
                 </div>
 
                 <!-- Tags -->
-                <div class="flex flex-wrap gap-1 mb-2" *ngIf="rec.tags.length > 0">
-                    <span *ngFor="let tag of rec.tags.slice(0, 3)" class="badge badge-ghost badge-xs">
+                @if (rec.tags.length > 0) {
+                <div class="flex flex-wrap gap-1 mb-2">
+                    @for (tag of rec.tags.slice(0, 3); track tag) {
+                    <span class="badge badge-ghost badge-xs">
                         {{ tag }}
                     </span>
+                    }
                 </div>
+                }
 
                 <!-- Stats -->
                 <div class="flex justify-between items-center mt-auto">
                     <span class="text-xs text-base-content/60">{{ rec.totalPages }} pages</span>
                     <div class="flex gap-1">
-                        <span *ngIf="rec.authorAverageRating" class="badge badge-xs" [ngClass]="{
+                        @if (rec.authorAverageRating) {
+                        <span class="badge badge-xs" [ngClass]="{
                                 'badge-warning': rec.authorAverageRating >= 4.5,
                                 'badge-success': rec.authorAverageRating >= 4.0 && rec.authorAverageRating < 4.5,
                                 'badge-info': rec.authorAverageRating >= 3.0 && rec.authorAverageRating < 4.0,
@@ -78,7 +115,9 @@
                             }">
                             {{ rec.authorAverageRating | number:'1.1-1' }}⭐
                         </span>
-                        <span *ngIf="rec.tagAverageRating" class="badge badge-xs" [ngClass]="{
+                        }
+                        @if (rec.tagAverageRating) {
+                        <span class="badge badge-xs" [ngClass]="{
                                 'badge-warning': rec.tagAverageRating >= 4.5,
                                 'badge-success': rec.tagAverageRating >= 4.0 && rec.tagAverageRating < 4.5,
                                 'badge-info': rec.tagAverageRating >= 3.0 && rec.tagAverageRating < 4.0,
@@ -87,9 +126,12 @@
                             }">
                             {{ rec.tagAverageRating | number:'1.1-1' }}⭐
                         </span>
+                        }
                     </div>
                 </div>
             </div>
         </div>
+        }
     </div>
+    }
 </div>

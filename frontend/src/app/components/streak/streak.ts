@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate, keyframes } from '@angular/animations';
-import { StreakService } from '../../services/streak.service';
+import { StreakService } from '../../services/streak';
 import { Streak } from '../../models/streak.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFire, heroTrophy, heroCalendar } from '@ng-icons/heroicons/outline';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-streak',
@@ -38,7 +39,15 @@ export class StreakComponent implements OnInit {
   showCelebration: boolean = false;
 
   constructor(private streakService: StreakService) {
-    this.streakData$ = this.streakService.getStreakData();
+    this.streakData$ = this.streakService.getStreakData().pipe(
+      map(result => {
+        if (result.isSuccess && result.data) {
+          return result.data;
+        }
+        console.error('Error loading streak data:', result.errors);
+        return null;
+      })
+    );
   }
 
   ngOnInit(): void {

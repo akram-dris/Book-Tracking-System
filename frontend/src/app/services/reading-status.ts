@@ -5,22 +5,25 @@ import { map, shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ReadingStatusInfo } from '../models/reading-status-info.model';
 import { ReadingStatus } from '../models/enums/reading-status.enum';
+import { Result } from '../models/result';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReadingStatusService {
   private apiUrl = `${environment.apiUrl}/readingstatus`;
-  private statusCache$: Observable<ReadingStatusInfo[]> | null = null;
+  private statusCache$: Observable<Result<ReadingStatusInfo[]>> | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getAllStatuses(): Observable<ReadingStatusInfo[]> {
+  getAllStatuses(): Observable<Result<ReadingStatusInfo[]>> {
     if (!this.statusCache$) {
-      this.statusCache$ = this.http.get<ReadingStatusInfo[]>(this.apiUrl).pipe(
-        map(statuses => {
-          console.log('🎨 STATUS COLORS FROM BACKEND:', statuses);
-          return statuses;
+      this.statusCache$ = this.http.get<Result<ReadingStatusInfo[]>>(this.apiUrl).pipe(
+        map(result => {
+          if (result.isSuccess && result.data) {
+            console.log('🎨 STATUS COLORS FROM BACKEND:', result.data);
+          }
+          return result;
         }),
         shareReplay(1)
       );
@@ -30,7 +33,12 @@ export class ReadingStatusService {
 
   getStatusInfo(status: ReadingStatus): Observable<ReadingStatusInfo | undefined> {
     return this.getAllStatuses().pipe(
-      map(statuses => statuses.find(s => s.value === status))
+      map(result => {
+        if (result.isSuccess && result.data) {
+          return result.data.find(s => s.value === status);
+        }
+        return undefined;
+      })
     );
   }
 

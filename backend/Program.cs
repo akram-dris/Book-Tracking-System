@@ -1,8 +1,8 @@
 
-using Microsoft.OpenApi.Models;
 using DotNetEnv;
 using BookTrackingSystem.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 
 // Load .env file
 Env.Load();

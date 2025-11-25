@@ -7,21 +7,43 @@ import { filter } from 'rxjs/operators';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroPlus } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
+import { trigger, transition, style, animate, query } from '@angular/animations';
 
 @Component({
   selector: 'app-root',
   imports: [
-    RouterOutlet, 
-    RouterModule, 
+    RouterOutlet,
+    RouterModule,
     SidebarComponent,
     HeaderComponent,
     BreadcrumbComponent,
-    NgIconComponent, // Add NgIconComponent here
-    MatButtonModule // Add MatButtonModule here for mat-fab
+    NgIconComponent,
+    MatButtonModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  viewProviders: [provideIcons({ heroPlus })] // Provide the heroPlus icon
+  viewProviders: [provideIcons({ heroPlus })],
+  animations: [
+    trigger('routeAnimations', [
+      transition('* <=> *', [
+        query(':enter', [
+          style({
+            opacity: 0
+          })
+        ], { optional: true }),
+        query(':leave', [
+          animate('40ms ease-out', style({
+            opacity: 0
+          }))
+        ], { optional: true }),
+        query(':enter', [
+          animate('80ms ease-out', style({
+            opacity: 1
+          }))
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class App {
   protected readonly title = signal('frontend');
@@ -52,8 +74,12 @@ export class App {
   }
 
   onAddBook() {
-    // This method is no longer directly used for navigation as the button uses routerLink
     console.log('Add button clicked, navigation handled by routerLink');
+  }
+
+  // Method for route animation trigger
+  prepareRoute(outlet: RouterOutlet) {
+    return outlet?.activatedRouteData?.['animation'];
   }
 }
 

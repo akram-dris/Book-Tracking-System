@@ -1,6 +1,7 @@
 
 using BookTrackingSystem.Data;
 using BookTrackingSystem.Models;
+using BookTrackingSystem.Models.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace BookTrackingSystem.Repository
         public async Task<IEnumerable<BookTag>> GetAllAsync()
         {
             return await _context.BookTags
-                .Include(t => t.BookTagAssignments)
+                .Include(t => t.BookTagAssignments!)
                 .ThenInclude(bta => bta.Book)
                 .AsNoTracking()
                 .ToListAsync();
@@ -28,7 +29,7 @@ namespace BookTrackingSystem.Repository
         public async Task<BookTag?> GetByIdAsync(int id)
         {
             return await _context.BookTags
-                .Include(t => t.BookTagAssignments)
+                .Include(t => t.BookTagAssignments!)
                 .ThenInclude(bta => bta.Book)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
@@ -63,6 +64,49 @@ namespace BookTrackingSystem.Repository
                 .GroupBy(bta => bta.TagId)
                 .Select(g => new { TagId = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.TagId, x => x.Count);
+        }
+
+        public async Task<PaginatedResult<BookTag>> GetTagsPaginatedAsync(PaginationParams paginationParams)
+        {
+            var query = _context.BookTags.Include(t => t.BookTagAssignments).ThenInclude(bta => bta.Book).AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(paginationParams.Search))
+            {
+                var search = paginationParams.Search.ToLower();
+                query = query.Where(t => t.Name.ToLower().Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(t => t.Name)
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<BookTag>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = paginationParams.PageNumber,
+                PageSize = paginationParams.PageSize
+            };
+        }
+
+        public async Task<IEnumerable<BookTag>> SearchTagsAsync(string query, int limit = 5)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Enumerable.Empty<BookTag>();
+            }
+
+            var searchLower = query.ToLower();
+            return await _context.BookTags
+                .AsNoTracking()
+                .Where(t => t.Name.ToLower().Contains(searchLower))
+                .OrderBy(t => t.Name)
+                .Take(limit)
+                .ToListAsync();
         }
     }
 }

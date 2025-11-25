@@ -1,11 +1,12 @@
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 
 namespace BookTrackingSystem.Services
 {
     public interface IReadingGoalService
     {
-        Task<ReadingGoalDto?> GetReadingGoalByBookIdAsync(int bookId);
-        Task<ReadingGoalDto> AddReadingGoalAsync(CreateReadingGoalDto readingGoalDto);
-        Task<ReadingGoalDto> UpdateReadingGoalAsync(int bookId, UpdateReadingGoalDto readingGoalDto);
+        Task<Result<ReadingGoalDto>> GetReadingGoalByBookIdAsync(int bookId);
+        Task<Result<ReadingGoalDto>> AddReadingGoalAsync(CreateReadingGoalDto readingGoalDto);
+        Task<Result<ReadingGoalDto>> UpdateReadingGoalAsync(int bookId, UpdateReadingGoalDto readingGoalDto);
     }
 }

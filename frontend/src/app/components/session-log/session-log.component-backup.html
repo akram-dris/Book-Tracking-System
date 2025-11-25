@@ -12,26 +12,36 @@
       <div class="mb-4">
         <label for="date" class="block text-sm font-medium text-base-content">Date</label>
         <input type="date" id="date" formControlName="date" class="input input-bordered w-full mt-1" />
-        <div *ngIf="sessionForm.get('date')?.invalid && sessionForm.get('date')?.touched" class="text-error text-sm mt-1">
+        @if (sessionForm.get('date')?.invalid && sessionForm.get('date')?.touched) {
+        <div class="text-error text-sm mt-1">
           Date is required.
         </div>
+        }
       </div>
 
       <div class="mb-4">
         <label for="pagesRead" class="block text-sm font-medium text-base-content">Pages Read</label>
         <input type="number" id="pagesRead" formControlName="pagesRead" class="input input-bordered w-full mt-1" />
-        <div *ngIf="sessionForm.get('pagesRead')?.invalid && sessionForm.get('pagesRead')?.touched" class="text-error text-sm mt-1">
-          <span *ngIf="sessionForm.get('pagesRead')?.errors?.['required']">Pages read is required.</span>
-          <span *ngIf="sessionForm.get('pagesRead')?.errors?.['min']">Pages read must be at least 1.</span>
+        @if (sessionForm.get('pagesRead')?.invalid && sessionForm.get('pagesRead')?.touched) {
+        <div class="text-error text-sm mt-1">
+          @if (sessionForm.get('pagesRead')?.errors?.['required']) {
+          <span>Pages read is required.</span>
+          }
+          @if (sessionForm.get('pagesRead')?.errors?.['min']) {
+          <span>Pages read must be at least 1.</span>
+          }
         </div>
+        }
       </div>
 
       <div class="mb-4">
         <label for="summary" class="block text-sm font-medium text-base-content">Notes / Summary</label>
-        <textarea id="summary" formControlName="summary" class="textarea textarea-bordered w-full mt-1" placeholder="Optional notes about this session..."></textarea>
+        <textarea id="summary" formControlName="summary" class="textarea textarea-bordered w-full mt-1"
+          placeholder="Optional notes about this session..."></textarea>
       </div>
 
-      <div *ngIf="readingGoal" class="mb-4">
+      @if (readingGoal) {
+      <div class="mb-4">
         <h4 class="text-md font-semibold mb-2">Goals:</h4>
         <p [ngClass]="getGoalLevelClass('low')">
           <span>Low:</span> {{ readingGoal.lowGoal }} pages
@@ -43,10 +53,13 @@
           <span>High:</span> {{ readingGoal.highGoal }} pages
         </p>
       </div>
+      }
 
       <div class="modal-action">
         <button type="submit" class="btn btn-primary" [disabled]="sessionForm.invalid || isLoading">
-          <span *ngIf="isLoading" class="loading loading-spinner"></span>
+          @if (isLoading) {
+          <span class="loading loading-spinner"></span>
+          }
           {{ existingSession ? 'Update Session' : 'Log Session' }}
         </button>
         <button type="button" class="btn" (click)="onCancel()">Cancel</button>

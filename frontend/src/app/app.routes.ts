@@ -1,32 +1,64 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './components/dashboard/dashboard';
-import { BookListComponent } from './components/book-list/book-list.component';
-import { BookFormComponent } from './components/book-form/book-form.component';
-import { AuthorListComponent } from './components/author-list/author-list.component';
-import { AuthorFormComponent } from './components/author-form/author-form.component';
 
-import { AuthorDetailsComponent } from './components/author-details/author-details';
-import { BookDetailsComponent } from './components/book-details/book-details';
-import { BookSummaryComponent } from './components/book-summary/book-summary';
-import { TagManagementComponent } from './components/tag-management/tag-management.component';
-import { SessionLogComponent } from './components/session-log/session-log.component';
-import { HeatmapComponent } from './components/heatmap/heatmap';
-import { StatisticsComponent } from './components/statistics/statistics';
-import { RecommendationsComponent } from './components/recommendations/recommendations';
 export const routes: Routes = [
-    { path: '', component: Dashboard },
-    { path: 'books', component: BookListComponent },
-    { path: 'books/new', component: BookFormComponent },
-    { path: 'books/:id/edit', component: BookFormComponent },
-    { path: 'books/:id/summary', component: BookSummaryComponent },
-    { path: 'books/:id', component: BookDetailsComponent },
-    { path: 'authors', component: AuthorListComponent },
-    { path: 'authors/new', component: AuthorFormComponent },
-    { path: 'authors/:id/edit', component: AuthorFormComponent },
-    { path: 'authors/:id', component: AuthorDetailsComponent },
-    { path: 'tags', component: TagManagementComponent },
-    { path: 'books/:bookId/session/log', component: SessionLogComponent },
-    { path: 'heatmap', component: HeatmapComponent },
-    { path: 'statistics', component: StatisticsComponent },
-    { path: 'recommendations', component: RecommendationsComponent }
+    {
+        path: '',
+        loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard)
+    },
+    {
+        path: 'books',
+        loadComponent: () => import('./components/book-list/book-list').then(m => m.BookListComponent)
+    },
+    {
+        path: 'books/new',
+        loadComponent: () => import('./components/book-form/book-form').then(m => m.BookFormComponent)
+    },
+    {
+        path: 'books/:id/edit',
+        loadComponent: () => import('./components/book-form/book-form').then(m => m.BookFormComponent)
+    },
+    {
+        path: 'books/:id/summary',
+        loadComponent: () => import('./components/book-summary/book-summary').then(m => m.BookSummaryComponent)
+    },
+    {
+        path: 'books/:id',
+        loadComponent: () => import('./components/book-details/book-details').then(m => m.BookDetailsComponent)
+    },
+    {
+        path: 'authors',
+        loadComponent: () => import('./components/author-list/author-list').then(m => m.AuthorListComponent)
+    },
+    {
+        path: 'authors/new',
+        loadComponent: () => import('./components/author-form/author-form').then(m => m.AuthorFormComponent)
+    },
+    {
+        path: 'authors/:id/edit',
+        loadComponent: () => import('./components/author-form/author-form').then(m => m.AuthorFormComponent)
+    },
+    {
+        path: 'authors/:id',
+        loadComponent: () => import('./components/author-details/author-details').then(m => m.AuthorDetailsComponent)
+    },
+    {
+        path: 'tags',
+        loadComponent: () => import('./components/tag-management/tag-management').then(m => m.TagManagementComponent)
+    },
+    {
+        path: 'books/:bookId/session/log',
+        loadComponent: () => import('./components/session-log/session-log').then(m => m.SessionLogComponent)
+    },
+    {
+        path: 'heatmap',
+        loadComponent: () => import('./components/heatmap/heatmap').then(m => m.HeatmapComponent)
+    },
+    {
+        path: 'statistics',
+        loadComponent: () => import('./components/statistics/statistics').then(m => m.StatisticsComponent)
+    },
+    {
+        path: 'recommendations',
+        loadComponent: () => import('./components/recommendations/recommendations').then(m => m.RecommendationsComponent)
+    }
 ];

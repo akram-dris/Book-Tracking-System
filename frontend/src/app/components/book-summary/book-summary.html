@@ -1,4 +1,5 @@
-<div *ngIf="book" class="min-h-screen bg-base-100">
+@if (book) {
+<div class="min-h-screen bg-base-100">
     <!-- Back Button -->
     <div class="mb-6">
         <button mat-button (click)="goBack()"
@@ -25,12 +26,14 @@
                     <h2 class="text-xl text-base-content/70">by {{ book.author?.name }}</h2>
 
                     <!-- Rating Display -->
-                    <div *ngIf="book.rating" class="flex items-center gap-2 mt-3">
+                    @if (book.rating) {
+                    <div class="flex items-center gap-2 mt-3">
                         <p-rating [ngModel]="book.rating" [readonly]="true" [stars]="5">
                         </p-rating>
                         <span class="text-sm font-semibold text-base-content/70">{{ book.rating | number:'1.0-1' }} /
                             5</span>
                     </div>
+                    }
                 </div>
             </div>
 
@@ -39,47 +42,60 @@
                 <!-- Header -->
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold text-base-content">Summarize</h3>
-                    <button *ngIf="!isEditMode && book.summary" (click)="toggleEditMode()"
+                    @if (!isEditMode && book.summary) {
+                    <button (click)="toggleEditMode()"
                         class="px-4 py-2 bg-primary text-primary-content rounded-xl hover:brightness-110 transition-all duration-200">
                         Edit
                     </button>
+                    }
                 </div>
 
                 <!-- Last Update Date (View Mode) -->
-                <div *ngIf="!isEditMode && book.summary && getLastUpdateDate()" class="mb-4">
+                @if (!isEditMode && book.summary && getLastUpdateDate()) {
+                <div class="mb-4">
                     <p class="text-sm text-base-content/60">
                         Last updated: {{ getLastUpdateDate() | date:'MMMM d, y \'at\' h:mm a' }}
                     </p>
                 </div>
+                }
 
                 <!-- View Mode -->
-                <div *ngIf="!isEditMode && book.summary"
-                    class="bg-base-100 rounded-xl p-6 border-2 border-base-300 whitespace-pre-wrap min-h-[400px]">
+                @if (!isEditMode && book.summary) {
+                <div class="bg-base-100 rounded-xl p-6 border-2 border-base-300 whitespace-pre-wrap min-h-[400px]">
                     {{ book.summary }}
                 </div>
+                }
 
                 <!-- Edit Mode -->
-                <div *ngIf="isEditMode">
+                @if (isEditMode) {
+                <div>
                     <form [formGroup]="summaryForm" (ngSubmit)="saveSummary()">
                         <div class="mb-6">
                             <textarea formControlName="summary"
                                 class="w-full min-h-[500px] p-6 bg-base-100 rounded-xl border-2 border-base-300 focus:border-primary focus:outline-none transition-all duration-200 resize-y"
                                 placeholder="Write your thoughts about this book... What did you learn? What were the key takeaways? Any memorable quotes or moments?"></textarea>
-                            <p *ngIf="summaryForm.get('summary')?.invalid && summaryForm.get('summary')?.touched"
-                                class="text-error text-sm mt-2">
-                                <span *ngIf="summaryForm.get('summary')?.hasError('required')">Please write a summary
+                            @if (summaryForm.get('summary')?.invalid && summaryForm.get('summary')?.touched) {
+                            <p class="text-error text-sm mt-2">
+                                @if (summaryForm.get('summary')?.hasError('required')) {
+                                <span>Please write a summary
                                     before saving</span>
-                                <span *ngIf="summaryForm.get('summary')?.hasError('maxlength')">Summary cannot exceed
+                                }
+                                @if (summaryForm.get('summary')?.hasError('maxlength')) {
+                                <span>Summary cannot exceed
                                     10000 characters</span>
+                                }
                             </p>
+                            }
                         </div>
 
                         <div class="flex justify-end gap-3">
-                            <button *ngIf="book.summary" type="button"
+                            @if (book.summary) {
+                            <button type="button"
                                 class="px-6 py-2 rounded-xl border-2 border-base-300 hover:bg-base-300 transition-all duration-200"
                                 (click)="cancelEdit()">
                                 Cancel
                             </button>
+                            }
                             <button type="submit"
                                 class="px-6 py-2 bg-primary text-primary-content rounded-xl hover:brightness-110 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 [disabled]="summaryForm.invalid">
@@ -88,9 +104,11 @@
                         </div>
                     </form>
                 </div>
+                }
 
                 <!-- Empty State (No Summary Yet) -->
-                <div *ngIf="!isEditMode && !book.summary" class="text-center py-16">
+                @if (!isEditMode && !book.summary) {
+                <div class="text-center py-16">
                     <div
                         class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl">
                         ✍️
@@ -98,7 +116,9 @@
                     <p class="text-base-content/70 text-lg font-medium">No summary written yet.</p>
                     <p class="text-base-content/40 text-sm mt-2">Click "Edit" to start writing!</p>
                 </div>
+                }
             </div>
         </div>
     </div>
 </div>
+}

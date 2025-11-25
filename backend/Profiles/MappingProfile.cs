@@ -16,7 +16,8 @@ namespace BookTrackingSystem.Profiles
                 .ForMember(dest => dest.CompletedDate, opt => opt.MapFrom(src => src.CompletedDate)) // New mapping
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating)) // Explicit mapping
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
-            CreateMap<Author, AuthorDto>();
+            CreateMap<Author, AuthorDto>()
+                .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books != null ? src.Books.Count : 0));
             CreateMap<CreateBookDto, Book>()
                 .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
             CreateMap<UpdateBookDto, Book>()

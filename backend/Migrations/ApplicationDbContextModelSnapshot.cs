@@ -17,7 +17,7 @@ namespace BookTrackingSystem.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -47,6 +47,9 @@ namespace BookTrackingSystem.Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Authors_Name");
 
                     b.ToTable("Authors");
                 });
@@ -97,6 +100,21 @@ namespace BookTrackingSystem.Api.Migrations
 
                     b.HasIndex("AuthorId");
 
+                    b.HasIndex("CompletedDate")
+                        .HasDatabaseName("IX_Books_CompletedDate");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Books_CreatedAt");
+
+                    b.HasIndex("Rating")
+                        .HasDatabaseName("IX_Books_Rating");
+
+                    b.HasIndex("StartedReadingDate")
+                        .HasDatabaseName("IX_Books_StartedReadingDate");
+
+                    b.HasIndex("Status", "AuthorId")
+                        .HasDatabaseName("IX_Books_Status_AuthorId");
+
                     b.ToTable("Books");
                 });
 
@@ -120,6 +138,9 @@ namespace BookTrackingSystem.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Tags_Name");
+
                     b.ToTable("BookTags");
                 });
 
@@ -133,7 +154,8 @@ namespace BookTrackingSystem.Api.Migrations
 
                     b.HasKey("BookId", "TagId");
 
-                    b.HasIndex("TagId");
+                    b.HasIndex("TagId", "BookId")
+                        .HasDatabaseName("IX_BookTagAssignments_TagId_BookId");
 
                     b.ToTable("BookTagAssignments");
                 });
@@ -266,7 +288,11 @@ namespace BookTrackingSystem.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("Date")
+                        .HasDatabaseName("IX_ReadingSessions_Date");
+
+                    b.HasIndex("BookId", "Date")
+                        .HasDatabaseName("IX_ReadingSessions_BookId_Date");
 
                     b.ToTable("ReadingSessions");
                 });

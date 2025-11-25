@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookTrackingSystem.Models.Common;
 
 namespace BookTrackingSystem.Services
 {
@@ -17,25 +18,34 @@ namespace BookTrackingSystem.Services
             _cacheService = cacheService;
         }
 
-        public async Task<Dictionary<string, int>> GetHeatmapDataAsync(int year)
+        public async Task<Result<Dictionary<string, int>>> GetHeatmapDataAsync(int year)
         {
-            return await _cacheService.GetOrCreateAsync(
-                $"{CacheService.HEATMAP_PREFIX}{year}",
-                async () =>
-                {
-                    var sessions = await _readingSessionRepository.GetReadingSessionsByYearAsync(year);
+            try
+            {
+                var data = await _cacheService.GetOrCreateAsync(
+                    $"{CacheService.HEATMAP_PREFIX}{year}",
+                    async () =>
+                    {
+                        var sessions = await _readingSessionRepository.GetReadingSessionsByYearAsync(year);
 
-                    var heatmapData = sessions
-                        .GroupBy(s => s.Date.Date) // Group by date only
-                        .ToDictionary(
-                            g => g.Key.ToString("yyyy-MM-dd"), // Key: "YYYY-MM-DD"
-                            g => g.Sum(s => s.PagesRead) // Value: Total pages read for the day
-                        );
+                        var heatmapData = sessions
+                            .GroupBy(s => s.Date.Date) // Group by date only
+                            .ToDictionary(
+                                g => g.Key.ToString("yyyy-MM-dd"), // Key: "YYYY-MM-DD"
+                                g => g.Sum(s => s.PagesRead) // Value: Total pages read for the day
+                            );
 
-                    return heatmapData;
-                },
-                TimeSpan.FromMinutes(30)
-            ) ?? new Dictionary<string, int>();
+                        return heatmapData;
+                    },
+                    TimeSpan.FromMinutes(30)
+                );
+
+                return Result<Dictionary<string, int>>.Success(data ?? new Dictionary<string, int>());
+            }
+            catch (Exception ex)
+            {
+                return Result<Dictionary<string, int>>.Failure($"An error occurred while retrieving heatmap data: {ex.Message}");
+            }
         }
     }
 }

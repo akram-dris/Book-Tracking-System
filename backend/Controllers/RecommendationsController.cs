@@ -1,4 +1,5 @@
 using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +21,10 @@ namespace BookTrackingSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecommendationDto>>> GetRecommendations()
+        public async Task<ActionResult<Result<IEnumerable<RecommendationDto>>>> GetRecommendations()
         {
-            try
-            {
-                var recommendations = await _recommendationService.GetRecommendationsAsync();
-                return Ok(recommendations);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting book recommendations");
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _recommendationService.GetRecommendationsAsync();
+            return Ok(result);
         }
     }
 }
