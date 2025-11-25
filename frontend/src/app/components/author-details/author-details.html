@@ -1,5 +1,6 @@
 <!-- Skeleton Loading State -->
-<div *ngIf="isLoading" class="min-h-screen bg-base-100 p-6">
+@if (isLoading) {
+<div class="min-h-screen bg-base-100 p-6">
   <!-- Back Button Skeleton -->
   <div class="mb-6">
     <div class="h-10 w-24 bg-base-200 rounded-xl animate-pulse"></div>
@@ -23,7 +24,9 @@
 
           <!-- Stats Cards Skeleton -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            <div *ngFor="let i of [1,2,3,4,5]" class="bg-base-100 rounded-xl p-4 h-20 animate-pulse"></div>
+            @for (i of [1,2,3,4,5]; track i) {
+            <div class="bg-base-100 rounded-xl p-4 h-20 animate-pulse"></div>
+            }
           </div>
 
           <!-- Bio Skeleton -->
@@ -46,12 +49,16 @@
       <div class="h-8 w-32 bg-base-300 rounded animate-pulse"></div>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      <div *ngFor="let i of [1,2,3,4,5]" class="bg-base-100 rounded-xl aspect-[2/3] animate-pulse"></div>
+      @for (i of [1,2,3,4,5]; track i) {
+      <div class="bg-base-100 rounded-xl aspect-[2/3] animate-pulse"></div>
+      }
     </div>
   </div>
 </div>
+}
 
-<div *ngIf="!isLoading && author" class="min-h-screen bg-base-100">
+@if (!isLoading && author) {
+<div class="min-h-screen bg-base-100">
   <!-- Back Button -->
   <div class="mb-6">
     <button mat-button (click)="goBack()"
@@ -86,8 +93,10 @@
         <!-- Author Info -->
         <div class="flex-1">
           <h1 class="text-4xl font-bold mb-2 text-base-content">{{ author.name }}</h1>
-          <p *ngIf="author.createdAt" class="text-sm text-base-content/50 mb-6">Added {{ author.createdAt | date:'MMM
+          @if (author.createdAt) {
+          <p class="text-sm text-base-content/50 mb-6">Added {{ author.createdAt | date:'MMM
             dd, yyyy' }}</p>
+          }
 
           <!-- Statistics Cards -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
@@ -144,7 +153,8 @@
             </div>
 
             <!-- Author Rating Card -->
-            <div *ngIf="author.averageRating"
+            @if (author.averageRating) {
+            <div
               class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-error hover:shadow-lg hover:shadow-error/10 transition-all duration-300 hover:-translate-y-1">
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center">
@@ -156,26 +166,31 @@
                 </div>
               </div>
             </div>
+            }
           </div>
 
           <!-- Biography Section -->
-          <div *ngIf="author.bio"
+          @if (author.bio) {
+          <div
             class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 transition-all duration-300 mb-6">
             <div class="flex items-center justify-between mb-3">
               <h2 class="text-lg font-semibold flex items-center gap-2">
                 <ng-icon name="heroDocumentText" size="1.25rem" class="text-primary"></ng-icon>
                 Biography
               </h2>
-              <button *ngIf="author.bio && author.bio.length > 200" (click)="toggleBio()" mat-button
+              @if (author.bio && author.bio.length > 200) {
+              <button (click)="toggleBio()" mat-button
                 class="text-xs hover:bg-primary/10 hover:text-primary transition-all duration-200">
                 {{ bioExpanded ? 'Show Less' : 'Show More' }}
               </button>
+              }
             </div>
             <p class="text-base-content/70 leading-relaxed"
               [class.line-clamp-3]="!bioExpanded && author.bio && author.bio.length > 200">
               {{ author.bio }}
             </p>
           </div>
+          }
 
           <!-- Action Buttons -->
           <div class="flex gap-3">
@@ -205,7 +220,8 @@
       </h2>
 
       <!-- Sort Dropdown -->
-      <div *ngIf="authorBooks.length > 0" class="flex items-center gap-3">
+      @if (authorBooks.length > 0) {
+      <div class="flex items-center gap-3">
         <span class="text-base-content/70 font-medium text-sm whitespace-nowrap hidden sm:inline">Sort by</span>
         <div class="relative">
           <ng-icon name="heroArrowsUpDown" size="1.25rem"
@@ -219,10 +235,12 @@
           </select>
         </div>
       </div>
+      }
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="authorBooks.length === 0" class="text-center py-16">
+    @if (authorBooks.length === 0) {
+    <div class="text-center py-16">
       <div
         class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
         <ng-icon name="heroBookOpen" size="3rem" class="text-primary"></ng-icon>
@@ -234,10 +252,13 @@
         Add First Book
       </a>
     </div>
+    }
 
     <!-- Books Grid -->
-    <div *ngIf="authorBooks.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      <a *ngFor="let book of displayedBooks" [routerLink]="['/books', book.id]"
+    @if (authorBooks.length > 0) {
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      @for (book of displayedBooks; track book.id) {
+      <a [routerLink]="['/books', book.id]"
         class="card bg-base-200 shadow-lg transition-all duration-300 group border-2 border-base-300 hover:-translate-y-1"
         [ngClass]="getRatingBorderClass(book.rating)">
         <!-- Book Cover -->
@@ -281,6 +302,9 @@
           </div>
         </figure>
       </a>
+      }
     </div>
+    }
   </div>
 </div>
+}
