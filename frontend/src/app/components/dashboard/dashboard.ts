@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -64,6 +64,7 @@ interface BookWithStatus extends GetBook {
 })
 export class Dashboard implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   stats: any = null;
   streakData: Streak | null = null;
   currentlyReading: BookWithStatus[] = [];
@@ -237,6 +238,7 @@ export class Dashboard implements OnInit {
       this.loadBooks()
     ]).finally(() => {
       this.loading = false;
+      this.cdr.markForCheck();
     });
   }
 
@@ -253,10 +255,14 @@ export class Dashboard implements OnInit {
               console.error('Error loading stats', result.errors);
             }
             resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
           },
           error: (err) => {
             console.error('Error loading stats', err);
             resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
           }
         });
     });
@@ -274,10 +280,14 @@ export class Dashboard implements OnInit {
               console.error('Error loading streak', result.errors);
             }
             resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
           },
           error: (err) => {
             console.error('Error loading streak', err);
             resolve();
+            this.cdr.markForCheck();
+            this.cdr.markForCheck();
           }
         });
     });
@@ -292,6 +302,7 @@ export class Dashboard implements OnInit {
             if (!statusResult.isSuccess || !statusResult.data) {
               console.error('Error loading status info', statusResult.errors);
               resolve();
+            this.cdr.markForCheck();
               return;
             }
 
@@ -325,21 +336,25 @@ export class Dashboard implements OnInit {
                       this.loadBookProgress(this.currentlyReading).then(() => resolve());
                     } else {
                       resolve();
+            this.cdr.markForCheck();
                     }
                   } else {
                     console.error('Error loading books', bookResult.errors);
                     resolve();
+            this.cdr.markForCheck();
                   }
                 },
                 error: (err) => {
                   console.error('Error loading books', err);
                   resolve();
+            this.cdr.markForCheck();
                 }
               });
           },
           error: (err) => {
             console.error('Error loading status info', err);
             resolve();
+            this.cdr.markForCheck();
           }
         });
     });
@@ -368,10 +383,12 @@ export class Dashboard implements OnInit {
               }
             });
             resolve();
+            this.cdr.markForCheck();
           },
           error: (err) => {
             console.error('Error loading book progress', err);
             resolve();
+            this.cdr.markForCheck();
           }
         });
     });

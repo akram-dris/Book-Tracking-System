@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book';
@@ -47,6 +47,7 @@ type ViewMode = 'grid' | 'list';
 })
 export class BookListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   books: BookWithProgress[] = [];
   displayedBooks: BookWithProgress[] = [];
   rootUrl: string = environment.rootUrl;
@@ -161,6 +162,7 @@ export class BookListComponent implements OnInit {
             console.error('Error loading books:', result.errors);
           }
           this.isLoading = false;
+          this.cdr.markForCheck();
         });
     });
   }
@@ -190,6 +192,7 @@ export class BookListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading book stats:', err);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -246,6 +249,7 @@ export class BookListComponent implements OnInit {
           this.loadProgressForBooks(newBooks);
         }
         this.isLoadingMore = false;
+        this.cdr.markForCheck();
       });
     });
   }

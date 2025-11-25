@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
@@ -232,7 +232,10 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private statisticService: StatisticService) { }
+  constructor(
+    private statisticService: StatisticService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     // Set default date range to last year
@@ -272,16 +275,19 @@ export class StatisticsComponent implements OnInit, OnDestroy {
           this.statistics = result.data;
           this.prepareCharts();
           this.loading = false;
+          this.cdr.markForCheck(); // Trigger change detection with OnPush
         } else {
           console.error('Error loading statistics:', result.errors);
           this.error = 'Failed to load statistics. Please try again later.';
           this.loading = false;
+          this.cdr.markForCheck();
         }
       },
       error: (err) => {
         console.error('Error loading statistics:', err);
         this.error = 'Failed to load statistics. Please try again later.';
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
