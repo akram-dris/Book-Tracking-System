@@ -30,9 +30,11 @@
                   {{ totalPages && totalPages > 0 ? ((currentPage + currentPagesRead) / totalPages * 100 |
                   number:'1.0-0') : progress | number:'1.0-0' }}%
                 </div>
-                <div *ngIf="currentPagesRead > 0" class="text-sm font-semibold text-success">
+                @if (currentPagesRead > 0) {
+                <div class="text-sm font-semibold text-success">
                   (+{{ totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100 | number:'1.0-1') : 0 }}%)
                 </div>
+                }
               </div>
             </div>
 
@@ -71,7 +73,8 @@
           </div>
 
           <!-- Daily Goals Section - Compact -->
-          <div *ngIf="readingGoal" class="bg-base-200 rounded-xl p-4 border-2 border-base-300">
+          @if (readingGoal) {
+          <div class="bg-base-200 rounded-xl p-4 border-2 border-base-300">
             <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
               <span class="text-lg">🎯</span>
               <span class="text-base-content">Daily Goals</span>
@@ -103,8 +106,9 @@
                       {{ readingGoal.lowGoal }}
                     </div>
                   </div>
-                  <ng-icon *ngIf="currentPagesRead >= readingGoal.lowGoal" name="heroCheckCircle" size="1rem"
-                    class="text-accent"></ng-icon>
+                  @if (currentPagesRead >= readingGoal.lowGoal) {
+                  <ng-icon name="heroCheckCircle" size="1rem" class="text-accent"></ng-icon>
+                  }
                 </div>
               </div>
 
@@ -133,8 +137,9 @@
                       {{ readingGoal.mediumGoal }}
                     </div>
                   </div>
-                  <ng-icon *ngIf="currentPagesRead >= readingGoal.mediumGoal" name="heroCheckCircle" size="1rem"
-                    class="text-info"></ng-icon>
+                  @if (currentPagesRead >= readingGoal.mediumGoal) {
+                  <ng-icon name="heroCheckCircle" size="1rem" class="text-info"></ng-icon>
+                  }
                 </div>
               </div>
 
@@ -163,12 +168,14 @@
                       {{ readingGoal.highGoal }}
                     </div>
                   </div>
-                  <ng-icon *ngIf="currentPagesRead >= readingGoal.highGoal" name="heroCheckCircle" size="1rem"
-                    class="text-error"></ng-icon>
+                  @if (currentPagesRead >= readingGoal.highGoal) {
+                  <ng-icon name="heroCheckCircle" size="1rem" class="text-error"></ng-icon>
+                  }
                 </div>
               </div>
             </div>
           </div>
+          }
         </div>
 
         <!-- Right Column: Form Inputs -->
@@ -187,12 +194,16 @@
               <input matInput [matDatepicker]="picker" formControlName="date" [max]="maxDate" required>
               <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
-              <mat-error *ngIf="sessionForm.get('date')?.hasError('required')">
+              @if (sessionForm.get('date')?.hasError('required')) {
+              <mat-error>
                 Date is required
               </mat-error>
-              <mat-error *ngIf="sessionForm.get('date')?.hasError('matDatepickerMax')">
+              }
+              @if (sessionForm.get('date')?.hasError('matDatepickerMax')) {
+              <mat-error>
                 Date cannot be in the future
               </mat-error>
+              }
             </mat-form-field>
           </div>
 
@@ -207,15 +218,21 @@
             <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
               <mat-label>Pages Read</mat-label>
               <input matInput type="number" formControlName="pagesRead" placeholder="e.g., 25" min="1" required>
-              <mat-error *ngIf="sessionForm.get('pagesRead')?.hasError('required')">
+              @if (sessionForm.get('pagesRead')?.hasError('required')) {
+              <mat-error>
                 Pages read is required
               </mat-error>
-              <mat-error *ngIf="sessionForm.get('pagesRead')?.hasError('min')">
+              }
+              @if (sessionForm.get('pagesRead')?.hasError('min')) {
+              <mat-error>
                 Must read at least 1 page
               </mat-error>
-              <mat-error *ngIf="sessionForm.get('pagesRead')?.hasError('max')">
+              }
+              @if (sessionForm.get('pagesRead')?.hasError('max')) {
+              <mat-error>
                 Cannot exceed remaining pages
               </mat-error>
+              }
             </mat-form-field>
           </div>
 
@@ -240,8 +257,12 @@
             </button>
             <button mat-raised-button color="primary" type="submit" class="px-8 gap-2"
               [disabled]="sessionForm.invalid || isLoading">
-              <span *ngIf="isLoading" class="loading loading-spinner loading-sm"></span>
-              <ng-icon *ngIf="!isLoading" name="heroCheckCircle" size="1.25rem"></ng-icon>
+              @if (isLoading) {
+              <span class="loading loading-spinner loading-sm"></span>
+              }
+              @if (!isLoading) {
+              <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
+              }
               <span>{{ existingSession ? 'Update Session' : 'Save Session' }}</span>
             </button>
           </div>
