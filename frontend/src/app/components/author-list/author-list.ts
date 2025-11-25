@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AuthorService } from '../../services/author';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -27,6 +27,7 @@ interface AuthorWithCount extends GetAuthor {
   imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule, InfiniteScrollDirective],
   templateUrl: './author-list.html',
   styleUrls: ['./author-list.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar })]
 })
 export class AuthorListComponent implements OnInit {
@@ -54,7 +55,8 @@ export class AuthorListComponent implements OnInit {
     private authorService: AuthorService,
     private bookService: BookService,
     private dialog: MatDialog,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -85,10 +87,12 @@ export class AuthorListComponent implements OnInit {
           console.error('Error loading authors:', result.errors);
         }
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error loading authors:', error);
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -117,10 +121,12 @@ export class AuthorListComponent implements OnInit {
           console.error('Error loading more authors:', result.errors);
         }
         this.isLoadingMore = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error loading more authors:', error);
         this.isLoadingMore = false;
+        this.cdr.markForCheck();
       }
     });
   }

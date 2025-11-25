@@ -12,5 +12,6 @@ namespace BookTrackingSystem.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public double? AverageRating { get; set; }
+        public int BookCount { get; set; }
     }
 }

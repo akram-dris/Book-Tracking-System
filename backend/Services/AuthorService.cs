@@ -43,7 +43,8 @@ namespace BookTrackingSystem.Services
                     UpdatedAt = author.UpdatedAt,
                     AverageRating = author.Books != null && author.Books.Any(b => b.Rating != null)
                         ? author.Books.Where(b => b.Rating != null).Average(b => b.Rating)
-                        : null
+                        : null,
+                    BookCount = author.Books != null ? author.Books.Count : 0
                 }).ToList();
 
                 return Result<IEnumerable<AuthorDto>>.Success(authorDtos);
@@ -79,7 +80,8 @@ namespace BookTrackingSystem.Services
                     UpdatedAt = author.UpdatedAt,
                     AverageRating = author.Books != null && author.Books.Any(b => b.Rating != null)
                         ? author.Books.Where(b => b.Rating != null).Average(b => b.Rating)
-                        : null
+                        : null,
+                    BookCount = author.Books != null ? author.Books.Count : 0
                 };
 
                 return Result<AuthorDto>.Success(authorDto);
@@ -128,7 +130,8 @@ namespace BookTrackingSystem.Services
                     Bio = newAuthor.Bio,
                     ImageUrl = newAuthor.ImageUrl,
                     CreatedAt = newAuthor.CreatedAt,
-                    UpdatedAt = newAuthor.UpdatedAt
+                    UpdatedAt = newAuthor.UpdatedAt,
+                    BookCount = 0
                 };
 
                 return Result<AuthorDto>.Success(newAuthorDto);
@@ -188,7 +191,8 @@ namespace BookTrackingSystem.Services
                     Bio = updatedAuthor.Bio,
                     ImageUrl = updatedAuthor.ImageUrl,
                     CreatedAt = updatedAuthor.CreatedAt,
-                    UpdatedAt = updatedAuthor.UpdatedAt
+                    UpdatedAt = updatedAuthor.UpdatedAt,
+                    BookCount = updatedAuthor.Books != null ? updatedAuthor.Books.Count : 0
                 };
 
                 return Result<AuthorDto>.Success(updatedAuthorDto);
@@ -244,7 +248,8 @@ namespace BookTrackingSystem.Services
                     UpdatedAt = author.UpdatedAt,
                     AverageRating = author.Books != null && author.Books.Any(b => b.Rating != null)
                         ? author.Books.Where(b => b.Rating != null).Average(b => b.Rating)
-                        : null
+                        : null,
+                    BookCount = author.Books != null ? author.Books.Count : 0
                 }).ToList();
 
                 var result = new PaginatedResult<AuthorDto>
