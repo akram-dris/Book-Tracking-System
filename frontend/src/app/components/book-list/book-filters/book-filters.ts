@@ -3,8 +3,8 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFunnel, heroXMark } from '@ng-icons/heroicons/outline';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthorService } from '../../../services/author.service';
-import { TagService } from '../../../services/tag.service';
+import { AuthorService } from '../../../services/author';
+import { TagService } from '../../../services/tag';
 import { ReadingStatus } from '../../../models/enums/reading-status.enum';
 
 export interface BookFilters {

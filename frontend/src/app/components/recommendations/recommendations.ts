@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { RecommendationService } from '../../services/recommendation.service';
+import { RecommendationService } from '../../services/recommendation';
 import { Recommendation } from '../../models/recommendation.model';
 import { environment } from '../../../environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';

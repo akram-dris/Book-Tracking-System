@@ -1,9 +1,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BookService } from '../../services/book.service';
-import { ReadingSessionService } from '../../services/reading-session.service';
-import { ReadingGoalService } from '../../services/reading-goal.service';
+import { BookService } from '../../services/book';
+import { ReadingSessionService } from '../../services/reading-session';
+import { ReadingGoalService } from '../../services/reading-goal';
 import { GetBook } from '../../models/get-book.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
@@ -12,16 +12,16 @@ import { environment } from '../../../environments/environment';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal.component';
-import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { PlanAndGoalModalComponent } from '../plan-and-goal-modal/plan-and-goal-modal';
+import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal';
 import { RatingModalComponent } from '../rating-modal/rating-modal';
 import { RatingModule } from 'primeng/rating';
 import { QuillModule } from 'ngx-quill';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-// import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { NotificationService } from '../../services/notification.service';
+// import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
+import { NotificationService } from '../../services/notification';
 import {
   heroArrowLeft,
   heroPencil,

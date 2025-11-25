@@ -1,4 +1,4 @@
-@if (isOpen) {
+@if (isOpen()) {
 <div class="modal-backdrop" [class.active]="isAnimatingIn" (click)="onBackdropClick($event)">
     <div class="modal-container" [class.active]="isAnimatingIn">
         <!-- Close button -->
@@ -8,8 +8,8 @@
 
         <!-- Book cover -->
         <div class="book-cover-wrapper">
-            @if (bookCover) {
-            <img [src]="rootUrl + bookCover" [alt]="bookTitle" class="book-cover">
+            @if (bookCover()) {
+            <img [src]="rootUrl + bookCover" [alt]="bookTitle()" class="book-cover">
             } @else {
             <div class="book-cover-placeholder">
                 <ng-icon name="heroStar" size="48"></ng-icon>
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Book title -->
-        <h2 class="book-title">{{ bookTitle }}</h2>
+        <h2 class="book-title">{{ bookTitle() }}</h2>
 
         <!-- Heading -->
         <div class="heading-wrapper">

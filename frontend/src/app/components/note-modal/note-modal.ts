@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GetReadingSession } from '../../models/get-reading-session.model';
@@ -18,8 +18,8 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-note-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, QuillModule, NgIconComponent, MatButtonModule],
-  templateUrl: './note-modal.component.html',
-  styleUrls: ['./note-modal.component.css'],
+  templateUrl: './note-modal.html',
+  styleUrls: ['./note-modal.css'],
   viewProviders: [provideIcons({
     heroDocumentText,
     heroBookOpen,
@@ -29,10 +29,10 @@ import { MatButtonModule } from '@angular/material/button';
   })]
 })
 export class NoteModalComponent implements OnInit {
-  @Input() session: GetReadingSession | null = null;
-  @Input() bookStatus: ReadingStatus | null = null;
-  @Output() noteSaved = new EventEmitter<GetReadingSession>();
-  @Output() close = new EventEmitter<void>();
+  session = input<GetReadingSession | null>(null);
+  bookStatus = input<ReadingStatus | null>(null);
+  noteSaved = output<GetReadingSession>();
+  close = output<void>();
 
   noteForm: FormGroup;
   isReadOnly: boolean = false;
@@ -59,14 +59,14 @@ export class NoteModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.session) {
+    if (this.session()) {
       this.noteForm.patchValue({
-        summary: this.session.summary || '',
+        summary: this.session()!.summary || '',
         pageNumber: this.pageNumber || null,
         noteType: this.noteType || 'general'
       });
     }
-    if (this.bookStatus === ReadingStatus.Completed) {
+    if (this.bookStatus() === ReadingStatus.Completed) {
       this.isReadOnly = true;
       this.noteForm.disable();
     }
@@ -91,8 +91,8 @@ export class NoteModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.noteForm.valid && this.session && !this.isReadOnly) {
-      const updatedSession = { ...this.session, summary: this.noteForm.value.summary };
+    if (this.noteForm.valid && this.session() && !this.isReadOnly) {
+      const updatedSession = { ...this.session()!, summary: this.noteForm.value.summary };
       this.noteSaved.emit(updatedSession);
     }
   }

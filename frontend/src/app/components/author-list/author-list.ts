@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { AuthorService } from '../../services/author.service';
+import { AuthorService } from '../../services/author';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { GetAuthor } from '../../models/get-author.model';
@@ -8,13 +8,13 @@ import { environment } from 'src/environments/environment';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar } from '@ng-icons/heroicons/outline';
-import { BookService } from '../../services/book.service';
+import { BookService } from '../../services/book';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { NotificationService } from '../../services/notification.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 import { PaginationParams } from '../../models/result';
 
 interface AuthorWithCount extends GetAuthor {
@@ -25,8 +25,8 @@ interface AuthorWithCount extends GetAuthor {
   selector: 'app-author-list',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule, InfiniteScrollDirective],
-  templateUrl: './author-list.component.html',
-  styleUrls: ['./author-list.component.css'],
+  templateUrl: './author-list.html',
+  styleUrls: ['./author-list.css'],
   viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar })]
 })
 export class AuthorListComponent implements OnInit {

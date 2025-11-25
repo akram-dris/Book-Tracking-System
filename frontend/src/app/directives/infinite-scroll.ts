@@ -1,12 +1,12 @@
-import { Directive, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, input, output } from '@angular/core';
 
 @Directive({
     selector: '[appInfiniteScroll]',
     standalone: true
 })
 export class InfiniteScrollDirective implements OnInit, OnDestroy {
-    @Input() scrollThreshold = 200; // Pixels from bottom to trigger loading
-    @Output() scrolled = new EventEmitter<void>();
+    scrollThreshold = input(200); // Pixels from bottom to trigger loading
+    scrolled = output<void>();
 
     private observer!: IntersectionObserver;
     private sentinel!: HTMLElement;
@@ -29,7 +29,7 @@ export class InfiniteScrollDirective implements OnInit, OnDestroy {
 
     private createSentinel() {
         this.sentinel = document.createElement('div');
-        this.sentinel.style.height = `${this.scrollThreshold}px`;
+        this.sentinel.style.height = `${this.scrollThreshold()}px`;
         this.sentinel.style.visibility = 'hidden';
         this.el.nativeElement.appendChild(this.sentinel);
     }

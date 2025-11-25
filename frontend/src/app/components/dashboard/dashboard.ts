@@ -12,16 +12,16 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatButtonModule } from '@angular/material/button';
 
-import { BookService } from '../../services/book.service';
-import { StatisticService } from '../../services/statistic.service';
-import { StreakService } from '../../services/streak.service';
-import { ReadingSessionService } from '../../services/reading-session.service';
+import { BookService } from '../../services/book';
+import { StatisticService } from '../../services/statistic';
+import { StreakService } from '../../services/streak';
+import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatusService } from '../../services/reading-status';
 import { GetBook } from '../../models/get-book.model';
 import { Streak } from '../../models/streak.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { Dialog } from '@angular/cdk/dialog';
-import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal.component';
+import { ReadingLogModalComponent } from '../reading-log-modal/reading-log-modal';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 

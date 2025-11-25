@@ -1,30 +1,30 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { ReadingGoalService } from '../../services/reading-goal.service';
-import { BookService } from '../../services/book.service';
+import { ReadingGoalService } from '../../services/reading-goal';
+import { BookService } from '../../services/book';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { NotificationService } from '../../services/notification.service';
+import { NotificationService } from '../../services/notification';
 
 @Component({
   selector: 'app-plan-and-goal-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
-  templateUrl: './plan-and-goal-modal.component.html',
-  styleUrls: ['./plan-and-goal-modal.component.css']
+  templateUrl: './plan-and-goal-modal.html',
+  styleUrls: ['./plan-and-goal-modal.css']
 })
 export class PlanAndGoalModalComponent implements OnInit {
-  @Input() bookId: number | null = null;
-  @Input() bookTitle: string = '';
-  @Input() initialStartedReadingDate: Date | undefined;
-  @Input() initialReadingGoal: GetReadingGoal | null = null;
-  @Input() totalPages: number | null = null; // New input
-  @Output() saved = new EventEmitter<void>();
-  @Output() close = new EventEmitter<void>();
+  bookId = input<number | null>(null);
+  bookTitle = input('');
+  initialStartedReadingDate = input<Date | undefined>(undefined);
+  initialReadingGoal = input<GetReadingGoal | null>(null);
+  totalPages = input<number | null>(null);
+  saved = output<void>();
+  close = output<void>();
 
   planAndGoalForm: FormGroup;
   isLoading = false;
@@ -44,21 +44,21 @@ export class PlanAndGoalModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.initialStartedReadingDate) {
-      this.planAndGoalForm.patchValue({ targetStartDate: this.formatDate(this.initialStartedReadingDate) });
+    if (this.initialStartedReadingDate()) {
+      this.planAndGoalForm.patchValue({ targetStartDate: this.formatDate(this.initialStartedReadingDate()!) });
     }
-    if (this.initialReadingGoal) {
-      this.planAndGoalForm.patchValue(this.initialReadingGoal);
+    if (this.initialReadingGoal()) {
+      this.planAndGoalForm.patchValue(this.initialReadingGoal()!);
     }
     this.updateHighGoalValidator();
   }
 
   updateHighGoalValidator(): void {
-    if (this.totalPages) {
+    if (this.totalPages()) {
       this.planAndGoalForm.get('highGoal')?.setValidators([
         Validators.required,
         Validators.min(1),
-        Validators.max(this.totalPages)
+        Validators.max(this.totalPages()!)
       ]);
       this.planAndGoalForm.get('highGoal')?.updateValueAndValidity();
     }
@@ -93,14 +93,14 @@ export class PlanAndGoalModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.planAndGoalForm.valid && this.bookId) {
+    if (this.planAndGoalForm.valid && this.bookId()) {
       this.isLoading = true;
       const formData = this.planAndGoalForm.value;
 
       const targetStartDate = new Date(formData.targetStartDate);
 
       // Update book status and started reading date
-      this.bookService.updateBookStatus(this.bookId as number, ReadingStatus.Planning, targetStartDate).subscribe({
+      this.bookService.updateBookStatus(this.bookId() as number, ReadingStatus.Planning, targetStartDate).subscribe({
         next: (statusResult) => {
           if (!statusResult.isSuccess) {
             this.isLoading = false;
@@ -111,18 +111,18 @@ export class PlanAndGoalModalComponent implements OnInit {
 
           // Add or update reading goal
           const goalData = {
-            bookId: this.bookId as number,
+            bookId: this.bookId() as number,
             lowGoal: formData.lowGoal,
             mediumGoal: formData.mediumGoal,
             highGoal: formData.highGoal
           };
 
-          if (this.initialReadingGoal) { // Edit mode for goal
-            this.readingGoalService.updateReadingGoal(this.bookId as number, goalData).subscribe({
+          if (this.initialReadingGoal()) { // Edit mode for goal
+            this.readingGoalService.updateReadingGoal(this.bookId() as number, goalData).subscribe({
               next: (goalResult) => {
                 this.isLoading = false;
                 if (goalResult.isSuccess) {
-                  this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
+                  this.notificationService.showSuccess(`Book '${this.bookTitle()}' is now Planning`);
                   this.saved.emit();
                   this.close.emit();
                 } else {
@@ -141,7 +141,7 @@ export class PlanAndGoalModalComponent implements OnInit {
               next: (goalResult) => {
                 this.isLoading = false;
                 if (goalResult.isSuccess) {
-                  this.notificationService.showSuccess(`Book '${this.bookTitle}' is now Planning`);
+                  this.notificationService.showSuccess(`Book '${this.bookTitle()}' is now Planning`);
                   this.saved.emit();
                   this.close.emit();
                 } else {

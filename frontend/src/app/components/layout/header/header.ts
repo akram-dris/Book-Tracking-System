@@ -12,7 +12,7 @@ import { StreakIndicatorComponent } from '../../streak-sidebar/streak-indicator'
 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SearchService } from '../../../services/search.service';
+import { SearchService } from '../../../services/search';
 import { SearchResult } from '../../../models/search-result.model';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError, map } from 'rxjs';
 import { CommonModule } from '@angular/common';

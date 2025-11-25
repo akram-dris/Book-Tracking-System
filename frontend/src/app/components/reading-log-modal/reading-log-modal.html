@@ -117,7 +117,7 @@
                 </button>
 
                 <!-- Delete Button (only if not completed) -->
-                @if (bookStatus !== ReadingStatus.Completed) {
+                @if (bookStatus() !== ReadingStatus.Completed) {
                 <button mat-icon-button (click)="deleteSession(session.id)" class="text-error hover:bg-error/10"
                   title="Delete Session">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -146,7 +146,7 @@
 </div>
 
 @if (isNoteModalOpen && selectedSessionForNote) {
-<app-note-modal [session]="selectedSessionForNote" [bookStatus]="bookStatus" (noteSaved)="handleNoteSaved($event)"
+<app-note-modal [session]="selectedSessionForNote" [bookStatus]="bookStatus()" (noteSaved)="handleNoteSaved($event)"
   (close)="closeNoteModal()">
 </app-note-modal>
 }

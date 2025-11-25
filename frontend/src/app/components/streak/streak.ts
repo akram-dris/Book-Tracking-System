@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate, keyframes } from '@angular/animations';
-import { StreakService } from '../../services/streak.service';
+import { StreakService } from '../../services/streak';
 import { Streak } from '../../models/streak.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroFire, heroTrophy, heroCalendar } from '@ng-icons/heroicons/outline';

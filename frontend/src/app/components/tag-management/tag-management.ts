@@ -1,24 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl, FormsModule } from '@angular/forms';
 import * as common from '@angular/common';
-import { TagService } from '../../services/tag.service';
+import { TagService } from '../../services/tag';
 import { GetTag } from '../../models/get-tag.model';
 import { CreateTag } from '../../models/create-tag.model';
 import { UpdateTag } from '../../models/update-tag.model';
 import { MatDialog } from '@angular/material/dialog';
-import { NotificationService } from '../../services/notification.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroStar, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
-import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 import { PaginationParams } from '../../models/result';
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
   imports: [common.CommonModule, ReactiveFormsModule, FormsModule, NgIconComponent, InfiniteScrollDirective],
-  templateUrl: './tag-management.component.html',
-  styleUrls: ['./tag-management.component.css'],
+  templateUrl: './tag-management.html',
+  styleUrls: ['./tag-management.css'],
   viewProviders: [provideIcons({ heroStar, heroArrowsUpDown })]
 })
 export class TagManagementComponent implements OnInit {

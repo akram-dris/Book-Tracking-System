@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BookService } from '../../services/book.service';
-import { ReadingSessionService } from '../../services/reading-session.service';
+import { BookService } from '../../services/book';
+import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatusService } from '../../services/reading-status';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { GetBook } from '../../models/get-book.model';
@@ -14,7 +14,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus, heroStar } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
-import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 
 interface BookWithProgress extends GetBook {
   progressPercentage?: number;
@@ -39,8 +39,8 @@ type ViewMode = 'grid' | 'list';
     MatButtonModule,
     InfiniteScrollDirective
 ],
-  templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.css'],
+  templateUrl: './book-list.html',
+  styleUrls: ['./book-list.css'],
   viewProviders: [provideIcons({ heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus, heroStar })]
 })
 export class BookListComponent implements OnInit {

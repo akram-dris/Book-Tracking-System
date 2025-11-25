@@ -45,7 +45,7 @@
           <input matInput type="number" formControlName="highGoal" min="1" required>
           @if (planAndGoalForm.get('highGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
           @if (planAndGoalForm.get('highGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
-          @if (planAndGoalForm.get('highGoal')?.hasError('max')) { <mat-error>Max {{ totalPages }}</mat-error> }
+          @if (planAndGoalForm.get('highGoal')?.hasError('max')) { <mat-error>Max {{ totalPages() }}</mat-error> }
         </mat-form-field>
       </div>
 

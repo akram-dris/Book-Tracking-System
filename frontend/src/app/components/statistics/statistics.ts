@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { StatisticService } from '../../services/statistic.service';
+import { StatisticService } from '../../services/statistic';
 import { Statistics, StatisticsFilter } from '../../models/statistics.model';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';

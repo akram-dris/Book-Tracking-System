@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
-import { HeatmapService } from '../../services/heatmap.service';
+import { HeatmapService } from '../../services/heatmap';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroChevronLeft,

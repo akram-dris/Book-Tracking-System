@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AuthorService } from '../../services/author.service';
-import { NotificationService } from '../../services/notification.service';
+import { AuthorService } from '../../services/author';
+import { NotificationService } from '../../services/notification';
 import { CreateAuthor } from '../../models/create-author.model';
 import { GetAuthor } from '../../models/get-author.model';
 import { UpdateAuthor } from '../../models/update-author.model';
@@ -33,8 +33,8 @@ import { MatCardModule } from '@angular/material/card';
     MatCardModule
   ],
   viewProviders: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil, heroArrowLeft })],
-  templateUrl: './author-form.component.html',
-  styleUrls: ['./author-form.component.css']
+  templateUrl: './author-form.html',
+  styleUrls: ['./author-form.css']
 })
 export class AuthorFormComponent implements OnInit {
   authorForm: FormGroup;

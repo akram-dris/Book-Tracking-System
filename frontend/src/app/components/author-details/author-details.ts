@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthorService } from '../../services/author.service';
-import { BookService } from '../../services/book.service';
+import { AuthorService } from '../../services/author';
+import { BookService } from '../../services/book';
 import { ReadingStatusService } from '../../services/reading-status';
 import { GetAuthor } from '../../models/get-author.model';
 import { GetBook } from '../../models/get-book.model';
@@ -15,8 +15,8 @@ import { FormsModule } from '@angular/forms';
 import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { NotificationService } from '../../services/notification.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;

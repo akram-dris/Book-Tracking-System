@@ -1,30 +1,30 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
-import { ReadingSessionService } from '../../services/reading-session.service';
+import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
-import { NoteModalComponent } from '../note-modal/note-modal.component';
+import { NoteModalComponent } from '../note-modal/note-modal';
 import { UpdateReadingSession } from '../../models/update-reading-session.model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { NotificationService } from '../../services/notification.service';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-reading-log-modal',
   standalone: true,
   imports: [CommonModule, NoteModalComponent, MatButtonModule],
-  templateUrl: './reading-log-modal.component.html',
-  styleUrls: ['./reading-log-modal.component.css']
+  templateUrl: './reading-log-modal.html',
+  styleUrls: ['./reading-log-modal.css']
 })
 export class ReadingLogModalComponent implements OnInit {
-  @Input() bookId: number | null = null;
-  @Input() readingGoal: GetReadingGoal | null = null;
-  @Input() totalPages: number | null = null;
-  @Input() bookStatus: ReadingStatus | null = null; // New input
-  @Output() close = new EventEmitter<void>();
-  @Output() sessionDeleted = new EventEmitter<void>(); // New output event
+  bookId = input<number | null>(null);
+  readingGoal = input<GetReadingGoal | null>(null);
+  totalPages = input<number | null>(null);
+  bookStatus = input<ReadingStatus | null>(null);
+  close = output<void>();
+  sessionDeleted = output<void>();
 
   ReadingStatus = ReadingStatus; // Expose enum to template
 
@@ -44,10 +44,10 @@ export class ReadingLogModalComponent implements OnInit {
   }
 
   loadSessions(): void {
-    if (this.bookId) {
+    if (this.bookId()) {
       this.isLoading = true;
-      console.log('Loading sessions for bookId:', this.bookId);
-      this.readingSessionService.getReadingSessionsForBook(this.bookId).subscribe({
+      console.log('Loading sessions for bookId:', this.bookId());
+      this.readingSessionService.getReadingSessionsForBook(this.bookId()!).subscribe({
         next: (result) => {
           if (result.isSuccess && result.data) {
             console.log('Sessions fetched:', result.data);
@@ -101,36 +101,36 @@ export class ReadingLogModalComponent implements OnInit {
   }
 
   getGoalStatus(pagesRead: number): string {
-    if (!this.readingGoal) {
+    if (!this.readingGoal()) {
       return 'N/A';
     }
-    if (pagesRead >= this.readingGoal.highGoal) {
+    if (pagesRead >= this.readingGoal()!.highGoal) {
       return 'High';
-    } else if (pagesRead >= this.readingGoal.mediumGoal) {
+    } else if (pagesRead >= this.readingGoal()!.mediumGoal) {
       return 'Medium';
-    } else if (pagesRead >= this.readingGoal.lowGoal) {
+    } else if (pagesRead >= this.readingGoal()!.lowGoal) {
       return 'Low';
     }
     return 'Below Goal';
   }
 
   getGoalStatusClass(pagesRead: number): string {
-    if (!this.readingGoal) {
+    if (!this.readingGoal()) {
       return '';
     }
-    if (pagesRead >= this.readingGoal.highGoal) {
+    if (pagesRead >= this.readingGoal()!.highGoal) {
       return 'text-red-500 font-bold';
-    } else if (pagesRead >= this.readingGoal.mediumGoal) {
+    } else if (pagesRead >= this.readingGoal()!.mediumGoal) {
       return 'text-blue-500 font-bold';
-    } else if (pagesRead >= this.readingGoal.lowGoal) {
+    } else if (pagesRead >= this.readingGoal()!.lowGoal) {
       return 'text-green-500 font-bold';
     }
     return 'text-gray-500';
   }
 
   getPercentage(pagesRead: number): string {
-    if (this.totalPages && this.totalPages > 0) {
-      const percentage = (pagesRead / this.totalPages) * 100;
+    if (this.totalPages() && this.totalPages()! > 0) {
+      const percentage = (pagesRead / this.totalPages()!) * 100;
       return percentage.toFixed(2) + '%';
     }
     return '0.00%';
