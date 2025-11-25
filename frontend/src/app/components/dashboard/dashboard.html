@@ -4,10 +4,12 @@
 
 
     <!-- Loading State (Skeleton) -->
-    <div *ngIf="loading" class="space-y-6">
+    @if (loading) {
+    <div class="space-y-6">
       <!-- Stats Cards Skeleton -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div *ngFor="let i of [1,2,3,4]" class="card bg-base-100 shadow-xl border-2 border-base-200">
+        @for (i of [1,2,3,4]; track i) {
+        <div class="card bg-base-100 shadow-xl border-2 border-base-200">
           <div class="card-body p-5">
             <div class="flex items-start justify-between mb-3">
               <div class="flex-1">
@@ -19,6 +21,7 @@
             <div class="h-1 bg-base-300 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
+        }
       </div>
 
       <!-- Main Content Grid Skeleton -->
@@ -33,7 +36,9 @@
                 <div class="flex flex-col items-center">
                   <div class="w-56 h-56 rounded-full border-8 border-base-300 animate-pulse"></div>
                   <div class="mt-6 space-y-2 w-full">
-                    <div *ngFor="let i of [1,2,3]" class="h-10 bg-base-300 rounded-lg animate-pulse"></div>
+                    @for (i of [1,2,3]; track i) {
+                    <div class="h-10 bg-base-300 rounded-lg animate-pulse"></div>
+                    }
                   </div>
                 </div>
                 <div class="h-80 bg-base-300 rounded-lg animate-pulse"></div>
@@ -46,7 +51,8 @@
             <div class="card-body">
               <div class="h-6 bg-base-300 rounded w-40 mb-4 animate-pulse"></div>
               <div class="space-y-4">
-                <div *ngFor="let i of [1,2]" class="flex gap-4 p-4 bg-base-200 rounded-lg">
+                @for (i of [1,2]; track i) {
+                <div class="flex gap-4 p-4 bg-base-200 rounded-lg">
                   <div class="w-16 h-24 bg-base-300 rounded-lg animate-pulse"></div>
                   <div class="flex-1 space-y-2">
                     <div class="h-5 bg-base-300 rounded w-3/4 animate-pulse"></div>
@@ -54,6 +60,7 @@
                     <div class="h-2 bg-base-300 rounded-full mt-4 animate-pulse"></div>
                   </div>
                 </div>
+                }
               </div>
             </div>
           </div>
@@ -77,22 +84,26 @@
             <div class="card-body">
               <div class="h-6 bg-base-300 rounded w-32 mb-4 animate-pulse"></div>
               <div class="space-y-2">
-                <div *ngFor="let i of [1,2,3,4]" class="flex items-center gap-3 p-2">
+                @for (i of [1,2,3,4]; track i) {
+                <div class="flex items-center gap-3 p-2">
                   <div class="w-10 h-14 bg-base-300 rounded animate-pulse"></div>
                   <div class="flex-1 space-y-2">
                     <div class="h-4 bg-base-300 rounded w-3/4 animate-pulse"></div>
                     <div class="h-3 bg-base-300 rounded w-1/2 animate-pulse"></div>
                   </div>
                 </div>
+                }
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    }
 
     <!-- Stats Cards -->
-    <div *ngIf="!loading && stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
+    @if (!loading && stats) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
 
       <!-- Total Books -->
       <div
@@ -184,6 +195,7 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -192,7 +204,8 @@
       <div class="lg:col-span-2 space-y-6">
 
         <!-- Reading Progress Charts -->
-        <div *ngIf="!loading && readingProgressChart"
+        @if (!loading && readingProgressChart) {
+        <div
           class="card bg-base-100 shadow-xl border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10"
           @fadeInUp>
           <div class="card-body">
@@ -258,17 +271,19 @@
 
           </div>
         </div>
+        }
 
         <!-- Currently Reading Books -->
-        <div *ngIf="!loading && currentlyReading.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+        @if (!loading && currentlyReading.length > 0) {
+        <div class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body">
             <h2 class="card-title text-xl mb-4 flex items-center gap-2">
               <ng-icon name="heroSparkles" class="text-warning"></ng-icon>
               Continue Reading
             </h2>
             <div class="space-y-4">
-              <div *ngFor="let book of currentlyReading"
-                class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-primary/10 transition-all cursor-pointer group"
+              @for (book of currentlyReading; track book.id) {
+              <div class="flex gap-4 p-4 bg-base-200 rounded-lg hover:bg-primary/10 transition-all cursor-pointer group"
                 (click)="navigateToBookDetails(book.id)">
                 <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
                   [alt]="book.title"
@@ -293,15 +308,18 @@
                   </div>
                 </div>
               </div>
+              }
             </div>
             <button mat-stroked-button (click)="navigateToBooks()" class="btn-sm mt-4 w-full">
               View All Books
             </button>
           </div>
         </div>
+        }
 
         <!-- Empty State for Currently Reading -->
-        <div *ngIf="!loading && currentlyReading.length === 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+        @if (!loading && currentlyReading.length === 0) {
+        <div class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body text-center py-12">
             <ng-icon name="heroBookOpen" class="text-6xl text-base-content/30 mx-auto"></ng-icon>
             <h3 class="text-xl font-semibold mt-4">No books in progress</h3>
@@ -311,14 +329,15 @@
             </button>
           </div>
         </div>
+        }
       </div>
 
       <!-- Right Column: Recent Activity & Streak -->
       <div class="space-y-6">
 
         <!-- Streak Card -->
-        <div *ngIf="!loading && streakData"
-          class="card bg-gradient-to-br from-warning/20 to-warning/5 shadow-xl border border-warning/30" @fadeInUp>
+        @if (!loading && streakData) {
+        <div class="card bg-gradient-to-br from-warning/20 to-warning/5 shadow-xl border border-warning/30" @fadeInUp>
           <div class="card-body text-center">
             <div class="text-6xl mb-2">🔥</div>
             <h2 class="card-title text-2xl justify-center text-warning">{{ streakData.currentStreak }} Day Streak!</h2>
@@ -334,17 +353,19 @@
             </button>
           </div>
         </div>
+        }
 
         <!-- Recent Books -->
-        <div *ngIf="!loading && recentBooks.length > 0" class="card bg-base-100 shadow-xl" @fadeInUp>
+        @if (!loading && recentBooks.length > 0) {
+        <div class="card bg-base-100 shadow-xl" @fadeInUp>
           <div class="card-body">
             <h2 class="card-title text-lg mb-4 flex items-center gap-2">
               <ng-icon name="heroCalendar" class="text-secondary"></ng-icon>
               Recent Books
             </h2>
             <div class="space-y-2">
-              <div *ngFor="let book of recentBooks.slice(0, 4)"
-                class="flex items-center gap-3 p-2 hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
+              @for (book of recentBooks.slice(0, 4); track book.id) {
+              <div class="flex items-center gap-3 p-2 hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
                 (click)="navigateToBookDetails(book.id)">
                 <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
                   [alt]="book.title" class="w-10 h-14 object-cover rounded shadow-sm">
@@ -356,9 +377,11 @@
                   {{ getStatusLabel(book) }}
                 </span>
               </div>
+              }
             </div>
           </div>
         </div>
+        }
       </div>
     </div>
   </div>
