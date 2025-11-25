@@ -58,48 +58,53 @@
               <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Book Title</mat-label>
                 <input matInput type="text" formControlName="title" placeholder="Enter book title" required />
-                <mat-error *ngIf="bookForm.get('title')?.hasError('required')">
-                  Title is required
-                </mat-error>
-                <mat-error *ngIf="bookForm.get('title')?.hasError('maxlength')">
-                  Title cannot exceed 200 characters
-                </mat-error>
+                @if (bookForm.get('title')?.hasError('required')) {
+                <mat-error>Title is required</mat-error>
+                }
+                @if (bookForm.get('title')?.hasError('maxlength')) {
+                <mat-error>Title cannot exceed 200 characters</mat-error>
+                }
               </mat-form-field>
 
               <!-- Author -->
               <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Author</mat-label>
                 <mat-select formControlName="authorId" placeholder="Select an author" required>
-                  <mat-option *ngFor="let author of authors" [value]="author.id">
+                  @for (author of authors; track author.id) {
+                  <mat-option [value]="author.id">
                     <div class="flex items-center gap-2">
-                      <img *ngIf="author.imageUrl" [src]="getRootUrl() + author.imageUrl" [alt]="author.name"
+                      @if (author.imageUrl) {
+                      <img [src]="getRootUrl() + author.imageUrl" [alt]="author.name"
                         class="w-6 h-6 rounded-full object-cover" />
-                      <div *ngIf="!author.imageUrl"
+                      } @else {
+                      <div
                         class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-medium">
                         {{ author.name.charAt(0) }}
                       </div>
+                      }
                       <span>{{ author.name }}</span>
                     </div>
                   </mat-option>
+                  }
                 </mat-select>
-                <mat-error *ngIf="bookForm.get('authorId')?.hasError('required')">
-                  Author is required
-                </mat-error>
+                @if (bookForm.get('authorId')?.hasError('required')) {
+                <mat-error>Author is required</mat-error>
+                }
               </mat-form-field>
 
               <!-- Total Pages -->
               <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Total Pages</mat-label>
                 <input matInput type="number" formControlName="totalPages" placeholder="e.g., 320" min="1" required />
-                <mat-error *ngIf="bookForm.get('totalPages')?.hasError('required')">
-                  Total pages is required
-                </mat-error>
-                <mat-error *ngIf="bookForm.get('totalPages')?.hasError('min')">
-                  Pages must be at least 1
-                </mat-error>
-                <mat-error *ngIf="bookForm.get('totalPages')?.hasError('max')">
-                  Pages cannot exceed 10000
-                </mat-error>
+                @if (bookForm.get('totalPages')?.hasError('required')) {
+                <mat-error>Total pages is required</mat-error>
+                }
+                @if (bookForm.get('totalPages')?.hasError('min')) {
+                <mat-error>Pages must be at least 1</mat-error>
+                }
+                @if (bookForm.get('totalPages')?.hasError('max')) {
+                <mat-error>Pages cannot exceed 10000</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -115,28 +120,36 @@
                   class="text-xs font-semibold text-base-content/70 mb-2 flex items-center gap-2 sticky top-0 bg-base-200/50 pb-2">
                   <mat-icon class="!text-sm">local_offer</mat-icon>
                   Available Tags
-                  <span *ngIf="bookForm.get('tagIds')?.value?.length > 0" class="ml-auto badge badge-primary badge-sm">
+                  @if (bookForm.get('tagIds')?.value?.length > 0) {
+                  <span class="ml-auto badge badge-primary badge-sm">
                     {{ bookForm.get('tagIds')?.value?.length }} selected
                   </span>
+                  }
                 </p>
                 <div class="flex flex-wrap gap-2">
-                  <button *ngFor="let tag of tags" type="button" (click)="toggleTag(tag.id)"
-                    [class.bg-primary]="isTagSelected(tag.id)" [class.text-primary-content]="isTagSelected(tag.id)"
-                    [class.bg-base-100]="!isTagSelected(tag.id)" [class.border-primary]="isTagSelected(tag.id)"
+                  @for (tag of tags; track tag.id) {
+                  <button type="button" (click)="toggleTag(tag.id)" [class.bg-primary]="isTagSelected(tag.id)"
+                    [class.text-primary-content]="isTagSelected(tag.id)" [class.bg-base-100]="!isTagSelected(tag.id)"
+                    [class.border-primary]="isTagSelected(tag.id)"
                     class="px-2.5 py-1.5 rounded-lg border-2 border-base-300 hover:border-primary hover:scale-105 transition-all duration-200 text-xs font-medium cursor-pointer">
                     <span class="flex items-center gap-1.5">
-                      <mat-icon *ngIf="isTagSelected(tag.id)" class="!text-sm">check</mat-icon>
+                      @if (isTagSelected(tag.id)) {
+                      <mat-icon class="!text-sm">check</mat-icon>
+                      }
                       {{ tag.name }}
                     </span>
                   </button>
+                  }
                 </div>
 
                 <!-- Empty state when no tags exist -->
-                <div *ngIf="tags.length === 0" class="py-4 text-center">
+                @if (tags.length === 0) {
+                <div class="py-4 text-center">
                   <mat-icon class="text-base-content/30 !text-3xl mb-1">local_offer</mat-icon>
                   <p class="text-xs font-medium text-base-content/70">No tags available</p>
                   <p class="text-xs text-base-content/50 mt-1">Create tags first</p>
                 </div>
+                }
               </div>
             </div>
           </div>
@@ -150,8 +163,12 @@
           Cancel
         </button>
         <button mat-raised-button color="primary" type="submit" [disabled]="bookForm.invalid || isLoading">
-          <mat-spinner *ngIf="isLoading" diameter="20" class="mr-2"></mat-spinner>
-          <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          @if (isLoading) {
+          <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+          }
+          @if (!isLoading) {
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          }
           {{ isEditMode ? 'Update Book' : 'Add Book' }}
         </button>
       </mat-card-actions>
