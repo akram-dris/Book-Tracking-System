@@ -186,6 +186,7 @@ export class BookListComponent implements OnInit {
             completed: completedCount + summarizedCount,
             summarized: summarizedCount
           };
+          this.cdr.markForCheck();
         } else {
           console.error('Error loading book stats:', result.errors);
         }
