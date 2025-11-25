@@ -19,7 +19,8 @@
             <h3 class="text-sm font-semibold mb-2 text-base-content">Author Photo</h3>
             <div class="aspect-[3/4] w-full max-w-[220px] mx-auto lg:mx-0">
               <!-- Upload Area -->
-              <div *ngIf="!imagePreviewUrl" (click)="fileInput.click()"
+              @if (!imagePreviewUrl) {
+              <div (click)="fileInput.click()"
                 class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-xl bg-base-200 hover:bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group">
                 <div class="flex flex-col items-center justify-center p-4">
                   <div
@@ -30,9 +31,11 @@
                   <p class="text-xs opacity-70 text-center mt-1">or click</p>
                 </div>
               </div>
+              }
 
               <!-- Image Preview -->
-              <div *ngIf="imagePreviewUrl" class="relative group h-full w-full">
+              @if (imagePreviewUrl) {
+              <div class="relative group h-full w-full">
                 <div
                   class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg"
                   (click)="fileInput.click()">
@@ -45,6 +48,7 @@
                   <mat-icon class="!text-lg">close</mat-icon>
                 </button>
               </div>
+              }
               <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
             </div>
           </div>
@@ -57,15 +61,15 @@
               <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Author Name</mat-label>
                 <input matInput type="text" formControlName="name" placeholder="Enter author name" required />
-                <mat-error *ngIf="authorForm.get('name')?.hasError('required')">
-                  Name is required
-                </mat-error>
-                <mat-error *ngIf="authorForm.get('name')?.hasError('minlength')">
-                  Name must be at least 2 characters
-                </mat-error>
-                <mat-error *ngIf="authorForm.get('name')?.hasError('maxlength')">
-                  Name cannot exceed 100 characters
-                </mat-error>
+                @if (authorForm.get('name')?.hasError('required')) {
+                <mat-error>Name is required</mat-error>
+                }
+                @if (authorForm.get('name')?.hasError('minlength')) {
+                <mat-error>Name must be at least 2 characters</mat-error>
+                }
+                @if (authorForm.get('name')?.hasError('maxlength')) {
+                <mat-error>Name cannot exceed 100 characters</mat-error>
+                }
               </mat-form-field>
 
               <!-- Biography -->
@@ -74,9 +78,9 @@
                 <textarea matInput formControlName="bio" placeholder="Write a brief biography..." rows="6"
                   class="resize-none"></textarea>
                 <mat-hint align="end">{{authorForm.get('bio')?.value?.length || 0}}/1000</mat-hint>
-                <mat-error *ngIf="authorForm.get('bio')?.hasError('maxlength')">
-                  Bio cannot exceed 1000 characters
-                </mat-error>
+                @if (authorForm.get('bio')?.hasError('maxlength')) {
+                <mat-error>Bio cannot exceed 1000 characters</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -90,8 +94,12 @@
           Cancel
         </button>
         <button mat-raised-button color="primary" type="submit" [disabled]="authorForm.invalid || isLoading">
-          <mat-spinner *ngIf="isLoading" diameter="20" class="mr-2"></mat-spinner>
-          <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          @if (isLoading) {
+          <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+          }
+          @if (!isLoading) {
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          }
           {{ isEditMode ? 'Update Author' : 'Add Author' }}
         </button>
       </mat-card-actions>
