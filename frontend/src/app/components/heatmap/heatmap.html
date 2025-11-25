@@ -34,7 +34,8 @@
   </div>
 
   <!-- Stats Section with Enhanced Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" *ngIf="!loading" @fadeIn>
+  @if (!loading) {
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" @fadeIn>
     <!-- Total Pages Card -->
     <div
       class="group relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-primary/20 p-6 hover:border-primary/50 transition-all duration-500 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1">
@@ -122,12 +123,15 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Skeleton Loading State -->
-  <div *ngIf="loading" class="animate-pulse">
+  @if (loading) {
+  <div class="animate-pulse">
     <!-- Stats Cards Skeleton -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div *ngFor="let i of [1,2,3,4]" class="bg-base-100/40 rounded-2xl p-6 h-32 border border-base-300/50">
+      @for (i of [1,2,3,4]; track i) {
+      <div class="bg-base-100/40 rounded-2xl p-6 h-32 border border-base-300/50">
         <div class="flex items-center gap-2 mb-2">
           <div class="w-8 h-8 rounded-lg bg-base-300"></div>
           <div class="h-4 w-24 bg-base-300 rounded"></div>
@@ -138,25 +142,30 @@
 
     <!-- Calendar Grid Skeleton -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-      <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]"
-        class="rounded-2xl p-5 bg-base-100/40 border border-base-300/50 h-[320px]">
+      @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
+      <div class="rounded-2xl p-5 bg-base-100/40 border border-base-300/50 h-[320px]">
         <div class="h-6 w-24 bg-base-300 rounded mx-auto mb-4"></div>
         <div class="grid grid-cols-7 gap-1.5 mb-3">
-          <div *ngFor="let d of [1,2,3,4,5,6,7]" class="h-4 w-4 bg-base-300 rounded mx-auto"></div>
+          @for (d of [1,2,3,4,5,6,7]; track d) {
+          <div class="h-4 w-4 bg-base-300 rounded mx-auto"></div>
+          }
         </div>
         <div class="grid grid-cols-7 gap-1.5">
-          <div *ngFor="let d of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]"
-            class="aspect-square bg-base-300 rounded-sm opacity-50"></div>
+          @for (d of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]; track d) {
+          <div class="aspect-square bg-base-300 rounded-sm opacity-50"></div>
+          }
         </div>
       </div>
     </div>
   </div>
+  }
 
   <!-- Calendar Grid with Modern Design -->
-  <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
+  @if (!loading) {
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
+    @for (month of calendarMonths; track i; let i = $index) {
     <div class="month-container group relative rounded-2xl p-5 flex flex-col h-full min-h-[320px]"
-      *ngFor="let month of calendarMonths; let i = index" (mouseenter)="setHoveredMonth(i)"
-      (mouseleave)="clearHoveredMonth()" [class.z-50]="hoveredMonth === i">
+      (mouseenter)="setHoveredMonth(i)" (mouseleave)="clearHoveredMonth()" [class.z-50]="hoveredMonth === i">
       <!-- Month Header with Icon -->
       <div class="flex items-center justify-center gap-2 mb-4">
         <h3
@@ -177,18 +186,21 @@
 
       <!-- Calendar Days -->
       <div class="flex flex-col gap-1.5 flex-grow">
-        <div class="grid grid-cols-7 gap-1.5" *ngFor="let week of month.weeks">
+        @for (week of month.weeks; track $index) {
+        <div class="grid grid-cols-7 gap-1.5">
           @for (day of week.days; track day.date) {
           @if (day.isCurrentMonth) {
           <div class="day-cell current-month" [class.today]="isToday(day.date)" [ngClass]="getDayClass(day.pagesRead)"
             [attr.data-tooltip]="getTooltipText(day)">
             <span class="day-number">{{ day.dayOfMonth }}</span>
           </div>
+          }
           } @else {
           <div class="day-cell-invisible"></div>
           }
           }
         </div>
+        }
       </div>
 
       <!-- Month Summary -->
@@ -205,10 +217,12 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Enhanced Legend with Modern Design -->
+  @if (!loading) {
   <div class="relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-300/50 p-6"
-    *ngIf="!loading" @fadeIn>
+    @fadeIn>
     <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
     <div class="relative">
       <div class="flex items-center gap-3 mb-6">
@@ -222,9 +236,9 @@
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        @for (item of legendItems; track item.label) {
         <div
-          class="group flex items-center gap-3 p-3 rounded-xl bg-base-100/50 hover:bg-base-100 border border-base-300/30 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-          *ngFor="let item of legendItems">
+          class="group flex items-center gap-3 p-3 rounded-xl bg-base-100/50 hover:bg-base-100 border border-base-300/30 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
           <div
             class="w-8 h-8 rounded-lg flex-shrink-0 ring-2 ring-base-300/30 group-hover:ring-primary/30 transition-all duration-300"
             [ngClass]="item.className"></div>
@@ -233,7 +247,9 @@
             <div class="text-xs text-base-content/50">{{ item.range }}</div>
           </div>
         </div>
+        }
       </div>
     </div>
   </div>
+  }
 </div>
