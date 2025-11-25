@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatusService } from '../../services/reading-status';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -38,12 +39,14 @@ type ViewMode = 'grid' | 'list';
     NgIconComponent,
     MatButtonModule,
     InfiniteScrollDirective
-],
+  ],
   templateUrl: './book-list.html',
   styleUrls: ['./book-list.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [provideIcons({ heroSquares2x2, heroBars3, heroEllipsisVertical, heroBookOpen, heroPencil, heroTrash, heroPlus, heroStar })]
 })
 export class BookListComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   books: BookWithProgress[] = [];
   displayedBooks: BookWithProgress[] = [];
   rootUrl: string = environment.rootUrl;
@@ -97,11 +100,13 @@ export class BookListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const search = params['search'] || null;
-      const tagId = params['tagId'] ? +params['tagId'] : (this.selectedTagId || null);
-      this.loadBooks(tagId, search);
-    });
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const search = params['search'] || null;
+        const tagId = params['tagId'] ? +params['tagId'] : (this.selectedTagId || null);
+        this.loadBooks(tagId, search);
+      });
   }
 
   loadBooks(tagId: number | null = null, search: string | null = null): void {
@@ -136,26 +141,27 @@ export class BookListComponent implements OnInit {
         this.sortBy,
         this.currentAuthorId,
         this.currentRating
-      ).subscribe(result => {
-        if (result.isSuccess && result.data) {
-          this.books = result.data.items.map(book => {
-            const statusInfo = statusMap.get(book.status);
-            return {
-              ...book,
-              statusName: statusInfo?.displayName || 'Unknown',
-              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
-            };
-          });
-          this.displayedBooks = this.books;
+      ).pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(result => {
+          if (result.isSuccess && result.data) {
+            this.books = result.data.items.map(book => {
+              const statusInfo = statusMap.get(book.status);
+              return {
+                ...book,
+                statusName: statusInfo?.displayName || 'Unknown',
+                statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+              };
+            });
+            this.displayedBooks = this.books;
 
-          this.hasMorePages = result.data.hasNextPage;
-          this.loadBookStats();
-          this.loadProgressForBooks(this.books);
-        } else {
-          console.error('Error loading books:', result.errors);
-        }
-        this.isLoading = false;
-      });
+            this.hasMorePages = result.data.hasNextPage;
+            this.loadBookStats();
+            this.loadProgressForBooks(this.books);
+          } else {
+            console.error('Error loading books:', result.errors);
+          }
+          this.isLoading = false;
+        });
     });
   }
 

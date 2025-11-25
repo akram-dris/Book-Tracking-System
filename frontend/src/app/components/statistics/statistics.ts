@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
@@ -39,6 +39,7 @@ Chart.register(...registerables);
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [provideIcons({
     heroBookOpen, heroFire, heroChartBar, heroUsers, heroTag,
     heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
