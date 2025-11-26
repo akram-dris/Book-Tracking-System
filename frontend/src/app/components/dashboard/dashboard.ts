@@ -5,8 +5,9 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   heroBookOpen, heroFire, heroChartBar, heroPlus,
   heroClock, heroTrophy, heroArrowTrendingUp, heroSparkles,
-  heroCalendar, heroBookmark, heroCheckCircle
+  heroCalendar, heroBookmark, heroCheckCircle, heroDocumentText
 } from '@ng-icons/heroicons/outline';
+
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -38,7 +39,7 @@ interface BookWithStatus extends GetBook {
   viewProviders: [provideIcons({
     heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock,
     heroTrophy, heroArrowTrendingUp, heroSparkles, heroCalendar,
-    heroBookmark, heroCheckCircle
+    heroBookmark, heroCheckCircle, heroDocumentText
   })],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -83,7 +84,7 @@ export class Dashboard implements OnInit {
   doughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
     maintainAspectRatio: true,
-    cutout: '70%',
+    cutout: '75%',
     plugins: {
       legend: {
         display: false,
@@ -99,15 +100,15 @@ export class Dashboard implements OnInit {
             return `${label}: ${value} books (${percentage}%)`;
           }
         },
-        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        backgroundColor: 'rgba(23, 23, 23, 0.9)', // Darker background
         titleColor: 'rgba(255, 255, 255, 1)',
         bodyColor: 'rgba(255, 255, 255, 0.9)',
-        borderColor: 'rgba(59, 130, 246, 0.5)',
-        borderWidth: 2,
-        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1,
+        titleFont: { size: 14, weight: 'bold', family: "'Outfit', sans-serif" },
         bodyFont: { size: 13, family: "'Inter', sans-serif" },
         padding: 12,
-        cornerRadius: 8,
+        cornerRadius: 12,
         displayColors: true,
         boxPadding: 6
       }
@@ -134,15 +135,15 @@ export class Dashboard implements OnInit {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        backgroundColor: 'rgba(23, 23, 23, 0.9)',
         titleColor: 'rgba(255, 255, 255, 1)',
         bodyColor: 'rgba(255, 255, 255, 0.9)',
-        borderColor: 'rgba(59, 130, 246, 0.5)',
-        borderWidth: 2,
-        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1,
+        titleFont: { size: 14, weight: 'bold', family: "'Outfit', sans-serif" },
         bodyFont: { size: 13, family: "'Inter', sans-serif" },
         padding: 12,
-        cornerRadius: 8,
+        cornerRadius: 12,
         displayColors: true,
         boxPadding: 6,
         callbacks: {
@@ -169,7 +170,7 @@ export class Dashboard implements OnInit {
           padding: 8
         },
         grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
+          color: 'rgba(255, 255, 255, 0.05)',
           lineWidth: 1
         },
         border: {
@@ -302,7 +303,7 @@ export class Dashboard implements OnInit {
             if (!statusResult.isSuccess || !statusResult.data) {
               console.error('Error loading status info', statusResult.errors);
               resolve();
-            this.cdr.markForCheck();
+              this.cdr.markForCheck();
               return;
             }
 
@@ -336,18 +337,18 @@ export class Dashboard implements OnInit {
                       this.loadBookProgress(this.currentlyReading).then(() => resolve());
                     } else {
                       resolve();
-            this.cdr.markForCheck();
+                      this.cdr.markForCheck();
                     }
                   } else {
                     console.error('Error loading books', bookResult.errors);
                     resolve();
-            this.cdr.markForCheck();
+                    this.cdr.markForCheck();
                   }
                 },
                 error: (err) => {
                   console.error('Error loading books', err);
                   resolve();
-            this.cdr.markForCheck();
+                  this.cdr.markForCheck();
                 }
               });
           },
@@ -411,29 +412,29 @@ export class Dashboard implements OnInit {
       datasets: [{
         data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
-          'rgba(59, 130, 246, 0.85)',   // Primary Blue
-          'rgba(251, 191, 36, 0.85)',   // Warning Amber
-          'rgba(34, 197, 94, 0.85)'     // Success Green
+          'rgba(255, 20, 147, 0.8)',   // Hot Pink (Planning)
+          'rgba(124, 58, 237, 0.8)',   // Electric Violet (In Progress)
+          'rgba(0, 255, 255, 0.8)'     // Cyan (Finished)
         ],
         borderColor: [
-          'rgba(59, 130, 246, 1)',
-          'rgba(251, 191, 36, 1)',
-          'rgba(34, 197, 94, 1)'
+          'rgba(255, 20, 147, 1)',
+          'rgba(124, 58, 237, 1)',
+          'rgba(0, 255, 255, 1)'
         ],
-        borderWidth: 2,
+        borderWidth: 0,
         hoverBackgroundColor: [
-          'rgba(37, 99, 235, 1)',
-          'rgba(245, 158, 11, 1)',
-          'rgba(22, 163, 74, 1)'
+          'rgba(255, 20, 147, 1)',
+          'rgba(124, 58, 237, 1)',
+          'rgba(0, 255, 255, 1)'
         ],
         hoverBorderColor: [
-          'rgba(96, 165, 250, 1)',
-          'rgba(252, 211, 77, 1)',
-          'rgba(134, 239, 172, 1)'
+          'rgba(255, 255, 255, 0.5)',
+          'rgba(255, 255, 255, 0.5)',
+          'rgba(255, 255, 255, 0.5)'
         ],
-        hoverBorderWidth: 3,
-        spacing: 2,
-        hoverOffset: 12
+        hoverBorderWidth: 2,
+        spacing: 4,
+        hoverOffset: 10
       }]
     };
 
@@ -444,29 +445,29 @@ export class Dashboard implements OnInit {
         label: 'Books',
         data: hasData ? [toReadChart, readingChart, completedChart] : [1, 1, 1],
         backgroundColor: [
-          'rgba(59, 130, 246, 0.85)',
-          'rgba(251, 191, 36, 0.85)',
-          'rgba(34, 197, 94, 0.85)'
+          'rgba(255, 20, 147, 0.6)',
+          'rgba(124, 58, 237, 0.6)',
+          'rgba(0, 255, 255, 0.6)'
         ],
         borderColor: [
-          'rgba(59, 130, 246, 1)',
-          'rgba(251, 191, 36, 1)',
-          'rgba(34, 197, 94, 1)'
+          'rgba(255, 20, 147, 1)',
+          'rgba(124, 58, 237, 1)',
+          'rgba(0, 255, 255, 1)'
         ],
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 8,
         borderSkipped: false,
         hoverBackgroundColor: [
-          'rgba(59, 130, 246, 1)',
-          'rgba(245, 158, 11, 1)',
-          'rgba(16, 185, 129, 1)'
+          'rgba(255, 20, 147, 0.8)',
+          'rgba(124, 58, 237, 0.8)',
+          'rgba(0, 255, 255, 0.8)'
         ],
         hoverBorderColor: [
-          'rgba(147, 197, 253, 1)',
-          'rgba(252, 211, 77, 1)',
-          'rgba(110, 231, 183, 1)'
+          'rgba(255, 255, 255, 0.8)',
+          'rgba(255, 255, 255, 0.8)',
+          'rgba(255, 255, 255, 0.8)'
         ],
-        hoverBorderWidth: 3
+        hoverBorderWidth: 2
       }]
     };
   }
