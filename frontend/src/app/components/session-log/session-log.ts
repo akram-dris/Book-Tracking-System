@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ReadingSessionService } from '../../services/reading-session';
 import { BookService } from '../../services/book';
 import { ReadingGoalService } from '../../services/reading-goal';
@@ -10,7 +10,7 @@ import { UpdateReadingSession } from '../../models/update-reading-session.model'
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText } from '@ng-icons/heroicons/outline';
+import { heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText, heroTrophy } from '@ng-icons/heroicons/outline';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,7 +24,7 @@ import { NotificationService } from '../../services/notification';
   imports: [CommonModule, ReactiveFormsModule, NgIconComponent, MatDatepickerModule, MatInputModule, MatFormFieldModule, MatButtonModule],
   templateUrl: './session-log.html',
   styleUrls: ['./session-log.css'],
-  viewProviders: [provideIcons({ heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText })]
+  viewProviders: [provideIcons({ heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText, heroTrophy })]
 })
 export class SessionLogComponent implements OnInit {
   bookId: number | null = null;
@@ -42,14 +42,13 @@ export class SessionLogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
     private readingSessionService: ReadingSessionService,
     private bookService: BookService,
     private readingGoalService: ReadingGoalService,
     private streakService: StreakService,
     private notificationService: NotificationService,
-    private location: Location
+    public dialogRef: MatDialogRef<SessionLogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { bookId: number }
   ) {
     this.sessionForm = this.fb.group({
       pagesRead: [null, [Validators.required, Validators.min(1)]],
@@ -59,13 +58,10 @@ export class SessionLogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Get bookId from route params
-    this.route.params.subscribe(params => {
-      this.bookId = +params['bookId'];
-      if (this.bookId) {
-        this.loadBookData();
-      }
-    });
+    if (this.data && this.data.bookId) {
+      this.bookId = this.data.bookId;
+      this.loadBookData();
+    }
 
     this.sessionForm.get('date')?.valueChanges.subscribe(date => {
       this.checkForExistingSession(date);
@@ -231,7 +227,7 @@ export class SessionLogComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.location.back();
+    this.dialogRef.close();
   }
 
   onSubmit(): void {
@@ -268,7 +264,7 @@ export class SessionLogComponent implements OnInit {
                 this.notificationService.showSuccess('Reading session updated successfully');
               }
 
-              this.location.back();
+              this.dialogRef.close(true);
             } else {
               this.isLoading = false;
               console.error('Error updating reading session', result.errors);
@@ -296,7 +292,7 @@ export class SessionLogComponent implements OnInit {
                 this.notificationService.showSuccess('Reading session logged successfully');
               }
 
-              this.location.back();
+              this.dialogRef.close(true);
             } else {
               this.isLoading = false;
               console.error('Error logging reading session', result.errors);

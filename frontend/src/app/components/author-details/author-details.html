@@ -1,310 +1,307 @@
 <!-- Skeleton Loading State -->
 @if (isLoading) {
-<div class="min-h-screen bg-base-100 p-6">
+<div class="min-h-screen p-6 pb-24">
   <!-- Back Button Skeleton -->
   <div class="mb-6">
-    <div class="h-10 w-24 bg-base-200 rounded-xl animate-pulse"></div>
+    <div class="h-10 w-24 bg-base-200/50 rounded-xl animate-pulse"></div>
   </div>
 
-  <!-- Hero Section Skeleton -->
-  <div class="bg-base-200 rounded-2xl border-2 border-base-300 mb-6">
-    <div class="p-8">
-      <div class="flex flex-col md:flex-row gap-8 items-start">
-        <!-- Author Image Skeleton -->
-        <div class="flex-shrink-0">
-          <div class="w-48 h-48 rounded-2xl bg-base-300 animate-pulse"></div>
-        </div>
-
-        <!-- Author Info Skeleton -->
-        <div class="flex-1 w-full space-y-6">
-          <div>
-            <div class="h-10 bg-base-300 rounded w-1/2 mb-2 animate-pulse"></div>
-            <div class="h-4 bg-base-300 rounded w-32 animate-pulse"></div>
-          </div>
-
-          <!-- Stats Cards Skeleton -->
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            @for (i of [1,2,3,4,5]; track i) {
-            <div class="bg-base-100 rounded-xl p-4 h-20 animate-pulse"></div>
-            }
-          </div>
-
-          <!-- Bio Skeleton -->
-          <div class="bg-base-100 rounded-xl p-6 h-32 animate-pulse"></div>
-
-          <!-- Action Buttons Skeleton -->
-          <div class="flex gap-3">
-            <div class="h-10 w-32 bg-base-300 rounded-lg animate-pulse"></div>
-            <div class="h-10 w-24 bg-base-300 rounded-lg animate-pulse"></div>
-          </div>
+  <!-- Hero Skeleton -->
+  <div class="glass-panel rounded-3xl p-8 mb-8 animate-pulse">
+    <div class="flex flex-col md:flex-row gap-8">
+      <div class="w-full md:w-64 aspect-[3/4] bg-base-300 rounded-2xl"></div>
+      <div class="flex-1 space-y-4">
+        <div class="h-12 bg-base-300 rounded-xl w-3/4"></div>
+        <div class="h-6 bg-base-300 rounded-lg w-1/2"></div>
+        <div class="flex gap-2 mt-4">
+          <div class="h-8 w-24 bg-base-300 rounded-full"></div>
+          <div class="h-8 w-24 bg-base-300 rounded-full"></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Books Section Skeleton -->
-  <div class="bg-base-200 rounded-2xl border-2 border-base-300 p-6">
-    <div class="flex justify-between mb-6">
-      <div class="h-8 w-48 bg-base-300 rounded animate-pulse"></div>
-      <div class="h-8 w-32 bg-base-300 rounded animate-pulse"></div>
-    </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      @for (i of [1,2,3,4,5]; track i) {
-      <div class="bg-base-100 rounded-xl aspect-[2/3] animate-pulse"></div>
-      }
     </div>
   </div>
 </div>
 }
 
 @if (!isLoading && author) {
-<div class="min-h-screen bg-base-100">
-  <!-- Back Button -->
-  <div class="mb-6">
-    <button mat-button (click)="goBack()"
-      class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
-      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
-      <span class="font-medium">Back</span>
-    </button>
+<div class="min-h-screen pb-24 relative">
+  <!-- Immersive Background (Blurred Author Image) -->
+  <div class="absolute inset-0 h-[500px] overflow-hidden -z-10 mask-gradient-b">
+    <div class="absolute inset-0 backdrop-blur-3xl z-10 transition-colors duration-500" [ngClass]="{
+           'bg-amber-500/10': author.averageRating && author.averageRating >= 4,
+           'bg-slate-300/10': author.averageRating && author.averageRating >= 2 && author.averageRating < 4,
+           'bg-orange-400/10': author.averageRating && author.averageRating < 2,
+           'bg-base-content/5': !author.averageRating
+         }"></div>
+    <img [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'"
+      class="w-full h-full object-cover opacity-50 blur-3xl scale-110" />
   </div>
 
-  <!-- Hero Section -->
-  <div
-    class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/30 shadow-xl transition-all duration-300 overflow-hidden mb-6">
-    <div class="p-8">
-      <div class="flex flex-col md:flex-row gap-8 items-start">
-        <!-- Author Image -->
-        <div class="flex-shrink-0">
-          <div class="relative group">
+  <div class="p-6 max-w-7xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-8">
+      <button mat-button (click)="goBack()"
+        class="!flex !items-center !justify-center !w-10 !h-10 !min-w-0 !p-0 !rounded-full !bg-black/40 !backdrop-blur-xl !border !border-white/10 hover:!bg-white/10 hover:!scale-110 !transition-all !duration-300 group text-white"
+        aria-label="Back to Authors">
+        <ng-icon name="heroArrowLeft" size="1.25rem"
+          class="!text-white group-hover:!-translate-x-1 group-hover:!scale-110 !transition-all !duration-300"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12">
+
+      <!-- Left: Author Image (Floating) -->
+      <div class="lg:col-span-4 xl:col-span-3">
+        <div class="relative group">
+          <div
+            class="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative z-10 bg-base-200">
+            <img [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'"
+              [alt]="author.name"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              (error)="onImageError($event)" />
+
+            <!-- Rating Badge Overlay -->
+            @if (author.averageRating) {
             <div
-              class="w-48 h-48 rounded-2xl overflow-hidden border-2 border-base-300 hover:border-primary shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300">
-              <img [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'"
-                [alt]="author.name"
-                class="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-500"
-                (error)="onImageError($event)" />
+              class="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg border border-white/20 transition-all duration-300 group-hover:scale-110"
+              [ngClass]="getRatingBadgeClass(author.averageRating)">
+              <ng-icon name="heroStar" size="1rem" class="text-white drop-shadow-md"></ng-icon>
+              <span class="font-bold text-white text-sm tracking-wide drop-shadow-md">{{ author.averageRating |
+                number:'1.1-1' }}</span>
             </div>
+            }
+
             <!-- Overlay on hover -->
             <div
               class="absolute inset-0 bg-gradient-to-t from-primary/60 via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl">
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Author Info -->
-        <div class="flex-1">
-          <h1 class="text-4xl font-bold mb-2 text-base-content">{{ author.name }}</h1>
-          @if (author.createdAt) {
-          <p class="text-sm text-base-content/50 mb-6">Added {{ author.createdAt | date:'MMM
-            dd, yyyy' }}</p>
-          }
-
-          <!-- Statistics Cards -->
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-            <div
-              class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <ng-icon name="heroBookOpen" size="1.5rem" class="text-primary"></ng-icon>
-                </div>
-                <div>
-                  <div class="text-2xl font-bold text-primary">{{ totalBooks }}</div>
-                  <div class="text-xs text-base-content/60">Total Books</div>
-                </div>
-              </div>
+      <!-- Right: Author Info & Stats -->
+      <div class="lg:col-span-8 xl:col-span-9 flex flex-col justify-center">
+        <div class="flex flex-col gap-6">
+          <!-- Name & Date -->
+          <div>
+            <h1 class="text-4xl md:text-5xl font-bold text-base-content mb-2 tracking-tight drop-shadow-sm">{{
+              author.name }}</h1>
+            <div class="flex items-center gap-2 text-base-content/60">
+              <ng-icon name="heroCalendar" size="1.1rem"></ng-icon>
+              <span class="text-sm font-medium">Added {{ author.createdAt | date:'longDate' }}</span>
             </div>
-
-            <div
-              class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-accent hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 hover:-translate-y-1">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <ng-icon name="heroCheckCircle" size="1.5rem" class="text-accent"></ng-icon>
-                </div>
-                <div>
-                  <div class="text-2xl font-bold text-accent">{{ booksCompleted }}</div>
-                  <div class="text-xs text-base-content/60">Completed</div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-warning hover:shadow-lg hover:shadow-warning/10 transition-all duration-300 hover:-translate-y-1">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                  <ng-icon name="heroBookOpen" size="1.5rem" class="text-warning"></ng-icon>
-                </div>
-                <div>
-                  <div class="text-2xl font-bold text-warning">{{ booksReading }}</div>
-                  <div class="text-xs text-base-content/60">Reading</div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-secondary hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 hover:-translate-y-1">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
-                  <ng-icon name="heroDocumentText" size="1.5rem" class="text-secondary"></ng-icon>
-                </div>
-                <div>
-                  <div class="text-2xl font-bold text-secondary">{{ totalPagesRead }}</div>
-                  <div class="text-xs text-base-content/60">Pages Read</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Author Rating Card -->
-            @if (author.averageRating) {
-            <div
-              class="bg-base-100 rounded-xl p-4 border-2 border-base-300 hover:border-error hover:shadow-lg hover:shadow-error/10 transition-all duration-300 hover:-translate-y-1">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center">
-                  <ng-icon name="heroStar" size="1.5rem" class="text-error"></ng-icon>
-                </div>
-                <div>
-                  <div class="text-2xl font-bold text-error">{{ author.averageRating | number:'1.1-1' }}</div>
-                  <div class="text-xs text-base-content/60">Avg Rating</div>
-                </div>
-              </div>
-            </div>
-            }
           </div>
 
-          <!-- Biography Section -->
-          @if (author.bio) {
-          <div
-            class="bg-base-100 rounded-xl p-6 border-2 border-base-300 hover:border-primary/30 transition-all duration-300 mb-6">
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-lg font-semibold flex items-center gap-2">
-                <ng-icon name="heroDocumentText" size="1.25rem" class="text-primary"></ng-icon>
-                Biography
-              </h2>
-              @if (author.bio && author.bio.length > 200) {
-              <button (click)="toggleBio()" mat-button
-                class="text-xs hover:bg-primary/10 hover:text-primary transition-all duration-200">
-                {{ bioExpanded ? 'Show Less' : 'Show More' }}
-              </button>
-              }
+          <!-- Stats Pills -->
+          <div class="flex flex-wrap gap-3">
+            <div
+              class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-content/5 shadow-sm hover:bg-base-100/60 transition-colors">
+              <div class="p-2 rounded-xl bg-primary/10 text-primary">
+                <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider">Books</p>
+                <p class="text-lg font-bold text-base-content">{{ totalBooks }}</p>
+              </div>
             </div>
-            <p class="text-base-content/70 leading-relaxed"
-              [class.line-clamp-3]="!bioExpanded && author.bio && author.bio.length > 200">
-              {{ author.bio }}
-            </p>
+
+            <div
+              class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-content/5 shadow-sm hover:bg-base-100/60 transition-colors">
+              <div class="p-2 rounded-xl bg-amber-500/10 text-amber-600">
+                <ng-icon name="heroStar" size="1.25rem"></ng-icon>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider">Avg Rating</p>
+                <p class="text-lg font-bold text-base-content">{{ author.averageRating ? (author.averageRating |
+                  number:'1.1-1') : 'N/A' }}</p>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-content/5 shadow-sm hover:bg-base-100/60 transition-colors">
+              <div class="p-2 rounded-xl bg-success/10 text-success">
+                <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider">Pages Read</p>
+                <p class="text-lg font-bold text-base-content">{{ totalPagesRead | number }}</p>
+              </div>
+            </div>
+
+            <div
+              class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-content/5 shadow-sm hover:bg-base-100/60 transition-colors">
+              <div class="p-2 rounded-xl bg-secondary/10 text-secondary">
+                <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-base-content/50 uppercase tracking-wider">Completion</p>
+                <p class="text-lg font-bold text-base-content">{{ completionRate | number:'1.0-0' }}%</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bio Section -->
+          @if (author.bio) {
+          <div class="relative group/bio">
+            <div
+              class="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur opacity-0 group-hover/bio:opacity-100 transition duration-500">
+            </div>
+            <div class="relative bg-base-100/40 backdrop-blur-md rounded-2xl p-6 border border-base-content/5">
+              <div class="flex items-start gap-4">
+                <ng-icon name="heroDocumentText" size="1.5rem" class="text-primary mt-1 shrink-0"></ng-icon>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-base-content mb-2">Biography</h3>
+                  <p class="text-base-content/80 leading-relaxed" [class.line-clamp-3]="!bioExpanded">
+                    {{ author.bio }}
+                  </p>
+                  @if (author.bio.length > 200) {
+                  <button (click)="toggleBio()"
+                    class="text-primary text-sm font-medium mt-2 hover:underline focus:outline-none">
+                    {{ bioExpanded ? 'Show Less' : 'Read More' }}
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
           </div>
           }
 
           <!-- Action Buttons -->
-          <div class="flex gap-3">
-            <a mat-button [routerLink]="['/authors', author.id, 'edit']"
-              class="gap-2 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-primary/20">
-              <ng-icon name="heroPencilSquare" size="1.25rem"></ng-icon>
-              Edit Author
-            </a>
-            <button mat-stroked-button color="warn" (click)="deleteAuthor()"
-              class="gap-2 hover:scale-105 transition-all duration-200">
-              <ng-icon name="heroTrash" size="1.25rem"></ng-icon>
-              Delete
+          <div class="flex gap-3 mt-2">
+            <button mat-stroked-button (click)="openEditModal()"
+              class="!rounded-xl !border-base-content/20 hover:!bg-base-content/10 hover:!border-base-content/30 !px-6 !h-11 !text-base-content">
+              <ng-icon name="heroPencilSquare" size="1.1rem" class="mr-2"></ng-icon>
+              Edit Profile
+            </button>
+            <button mat-stroked-button color="warn" (click)="confirmDelete()"
+              class="!rounded-xl !border-error/40 hover:!bg-error/10 hover:!border-error/60 !px-6 !h-11">
+              <ng-icon name="heroTrash" size="1.1rem" class="mr-2"></ng-icon>
+              Delete Author
             </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Books Section -->
-  <div
-    class="bg-base-200 rounded-2xl border-2 border-base-300 hover:border-primary/30 shadow-xl transition-all duration-300 p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-base-content flex items-center gap-2">
-        <ng-icon name="heroBookOpen" size="1.5rem" class="text-primary"></ng-icon>
-        Books by {{ author.name }}
-      </h2>
+    <!-- Books Section -->
+    <div class="bg-base-200/50 backdrop-blur-sm rounded-3xl border border-base-content/5 p-6 md:p-8">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <h2 class="text-2xl font-bold text-base-content flex items-center gap-3">
+          <div class="p-2 rounded-xl bg-primary/10 text-primary">
+            <ng-icon name="heroBookOpen" size="1.5rem"></ng-icon>
+          </div>
+          Books by {{ author.name }}
+        </h2>
 
-      <!-- Sort Dropdown -->
-      @if (authorBooks.length > 0) {
-      <div class="flex items-center gap-3">
-        <span class="text-base-content/70 font-medium text-sm whitespace-nowrap hidden sm:inline">Sort by</span>
-        <div class="relative">
-          <ng-icon name="heroArrowsUpDown" size="1.25rem"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none z-10"></ng-icon>
-          <select
-            class="select select-bordered select-sm w-48 pl-10 rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-            [(ngModel)]="sortBy" (change)="onSortChange()">
-            @for (option of sortOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
+        <!-- Sort Dropdown -->
+        @if (authorBooks.length > 0) {
+        <div class="flex items-center gap-3 self-end sm:self-auto">
+          <span class="text-base-content/60 font-medium text-sm hidden sm:inline">Sort by</span>
+          <div class="relative">
+            <ng-icon name="heroArrowsUpDown" size="1rem"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none z-10"></ng-icon>
+            <select
+              class="select select-bordered select-sm pl-9 pr-8 rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              [(ngModel)]="sortBy" (change)="onSortChange()">
+              @for (option of sortOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
         </div>
+        }
       </div>
-      }
-    </div>
 
-    <!-- Empty State -->
-    @if (authorBooks.length === 0) {
-    <div class="text-center py-16">
-      <div
-        class="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-        <ng-icon name="heroBookOpen" size="3rem" class="text-primary"></ng-icon>
+      <!-- Empty State -->
+      @if (authorBooks.length === 0) {
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <div class="w-20 h-20 rounded-full bg-base-300/50 flex items-center justify-center mb-4">
+          <ng-icon name="heroBookOpen" size="2.5rem" class="text-base-content/30"></ng-icon>
+        </div>
+        <h3 class="text-lg font-bold text-base-content mb-2">No books found</h3>
+        <p class="text-base-content/60 max-w-xs mb-6">This author hasn't been assigned to any books in your library yet.
+        </p>
+        <button mat-flat-button color="primary" (click)="navigateToAddBook()" class="!rounded-full !px-6">
+          <ng-icon name="heroPlus" size="1.1rem" class="mr-2"></ng-icon>
+          Add First Book
+        </button>
       </div>
-      <p class="text-xl text-base-content/70 font-medium">No books yet</p>
-      <p class="text-sm text-base-content/50 mt-2">Add the first book by this author</p>
-      <a mat-raised-button color="primary" routerLink="/books/new" class="mt-4">
-        <ng-icon name="heroPlus" size="1rem"></ng-icon>
-        Add First Book
-      </a>
-    </div>
-    }
+      } @else {
+      <!-- Books Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-2">
+        @for (book of displayedBooks; track book.id) {
+        <div
+          class="group relative aspect-[2/3] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+          [routerLink]="['/books', book.id]">
 
-    <!-- Books Grid -->
-    @if (authorBooks.length > 0) {
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      @for (book of displayedBooks; track book.id) {
-      <a [routerLink]="['/books', book.id]"
-        class="card bg-base-200 shadow-lg transition-all duration-300 group border-2 border-base-300 hover:-translate-y-1"
-        [ngClass]="getRatingBorderClass(book.rating)">
-        <!-- Book Cover -->
-        <figure
-          class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-base-300 to-base-200 cursor-pointer">
-          <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" [alt]="book.title"
-            class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-90" />
+          <!-- Book Cover -->
+          <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 
-          <!-- Hover Overlay with Dynamic Rating Color -->
-          <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
-            [ngClass]="getRatingColorClass(book.rating)">
+          <!-- Cinematic Gradient Overlay -->
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-base-300/90 via-base-300/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           </div>
 
-          <!-- Rating Badge (Top Left - Always Visible) -->
+          <!-- Status Dot (Top Right) -->
+          <div class="absolute top-3 right-3 z-30 tooltip tooltip-left" [attr.data-tip]="book.statusName">
+            <div class="flex items-center h-5">
+              <div
+                class="w-3 h-3 rounded-full shadow-lg transition-all duration-300 ring-2 ring-base-content/10 backdrop-blur-sm"
+                [ngClass]="{
+                'bg-white/50': book.status === ReadingStatus.NotReading,
+                'bg-info shadow-[0_0_10px_rgba(var(--in),0.8)]': book.status === ReadingStatus.Planning,
+                'bg-warning shadow-[0_0_10px_rgba(var(--wa),0.8)] animate-pulse': book.status === ReadingStatus.CurrentlyReading,
+                'bg-success shadow-[0_0_10px_rgba(var(--su),0.8)]': book.status === ReadingStatus.Completed,
+                'bg-secondary shadow-[0_0_10px_rgba(var(--s),0.8)]': book.status === ReadingStatus.Summarized
+              }"></div>
+            </div>
+          </div>
+
+          <!-- Rating Badge (Top Left) -->
           @if (book.rating) {
-          <div class="absolute top-2 left-2 z-20">
-            <div
-              class="relative flex items-center gap-1 rounded-full px-2 py-1 border transition-all duration-300 hover:scale-105"
-              [ngClass]="getRatingBadgeClass(book.rating)">
-              <ng-icon name="heroStar" size="0.875rem" class="text-white"></ng-icon>
-              <span class="font-bold text-xs tracking-tight text-white">{{ book.rating }}</span>
+          <div class="absolute top-3 left-3 z-20">
+            <div class="flex items-center gap-0.5 transition-all duration-300 hover:scale-110">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+              @if (book.rating && star <= (book.rating + 0.5)) { <span class="text-xl leading-none"
+                [class]="book.rating >= 4 ? 'text-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : (book.rating >= 2 ? 'text-slate-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : 'text-orange-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]')">
+                ★
+                </span>
+                }
+                }
             </div>
           </div>
           }
 
-          <!-- Status Badge (Top Right) -->
-          <div class="absolute top-2 right-2 z-20">
-            <div
-              class="badge badge-sm {{ getStatusClass(book) }} shadow-xl border-0 transition-transform group-hover:scale-110">
-              {{ getStatusText(book) }}
-            </div>
-          </div>
-
-          <!-- Book Info on Hover -->
+          <!-- Content (Bottom) -->
           <div
-            class="absolute inset-0 flex flex-col justify-end p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
-            <h3 class="text-white font-bold text-sm line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">{{ book.title
-              }}</h3>
-            <p class="text-white/90 text-xs mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">{{ book.totalPages }} pages
+            class="absolute inset-x-0 bottom-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+            <h3
+              class="text-white font-heading font-bold text-lg leading-tight mb-1 line-clamp-2 drop-shadow-md group-hover:text-primary-content transition-colors">
+              {{ book.title }}
+            </h3>
+            <p class="text-white/70 text-sm font-medium line-clamp-1 mb-3">
+              {{ author.name }}
             </p>
+
+            <!-- Progress Bar (Only if reading) -->
+            @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
+            <div class="w-full bg-white/20 rounded-full h-1.5 overflow-hidden backdrop-blur-sm mb-2">
+              <div
+                class="bg-gradient-to-r from-primary to-secondary h-full rounded-full shadow-[0_0_10px_rgba(var(--p),0.5)]"
+                [style.width.%]="book.progressPercentage">
+              </div>
+            </div>
+            <div class="text-xs text-white/80 font-medium text-right">{{ book.progressPercentage | number:'1.2-2' }}%
+            </div>
+            }
           </div>
-        </figure>
-      </a>
+        </div>
+        }
+      </div>
       }
     </div>
-    }
   </div>
 </div>
 }

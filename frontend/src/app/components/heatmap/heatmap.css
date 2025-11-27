@@ -1,18 +1,29 @@
+/* Day Cell Base Styles */
 .day-cell {
   aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.375rem;
-  /* Slightly sharper for a modern tech feel */
+  border-radius: 0.5rem;
   font-size: 0.7rem;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 700;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
   min-width: 28px;
   min-height: 28px;
   border: 1px solid transparent;
+  color: hsl(var(--bc) / 0.3);
+  /* Visible but subtle numbers */
+}
+
+.day-cell:hover {
+  transform: scale(1.15) translateY(-2px);
+  z-index: 20;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.3);
+  color: hsl(var(--bc));
+  /* Fully visible on hover */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .day-cell-invisible {
@@ -22,31 +33,29 @@
   visibility: hidden;
 }
 
-
+/* Current Month Border */
 .day-cell.current-month {
-  border-color: hsl(var(--b3) / 0.1);
-}
-
-.day-cell:hover {
-  transform: scale(1.2);
-  z-index: 20;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  background-color: hsl(var(--b2) / 0.5);
+  /* Increased opacity */
+  border-color: hsl(var(--b3) / 0.3);
 }
 
 /* Today Indicator */
 .day-cell.today {
   position: relative;
+  background-color: hsl(var(--b3) / 0.8);
+  color: hsl(var(--bc));
 }
 
 .day-cell.today::after {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 0.5rem;
-  border: 2px solid hsl(var(--wa));
-  /* Warning color for visibility */
+  inset: -3px;
+  border-radius: 0.6rem;
+  border: 2px solid hsl(var(--p));
   animation: pulse-border 2s ease-in-out infinite;
   pointer-events: none;
+  z-index: 25;
 }
 
 @keyframes pulse-border {
@@ -67,19 +76,38 @@
 .day-cell.current-month:hover::before {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
   padding: 0.5rem 0.75rem;
-  background: hsl(var(--b1));
+  background: hsl(var(--b1) / 0.9);
+  backdrop-filter: blur(8px);
   color: hsl(var(--bc));
   font-size: 0.75rem;
   font-weight: 600;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px hsl(var(--bc) / 0.1);
+  border-radius: 0.75rem;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 0 0 1px hsl(var(--bc) / 0.1);
   white-space: nowrap;
   z-index: 50;
   animation: tooltipIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+/* Tooltip Arrow */
+.day-cell.current-month:hover::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: hsl(var(--b1) / 0.9) transparent transparent transparent;
+  z-index: 50;
+  animation: tooltipIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
 }
 
 @keyframes tooltipIn {
@@ -94,77 +122,76 @@
   }
 }
 
-/* Activity Levels - Matching Personality */
+/* Activity Levels - Luminous Glass Style */
 
-/* Level 0: No Activity - Subtle Base */
+/* Level 0: No Activity */
 .day-0 {
-  background-color: hsl(var(--b2) / 0.5);
-  color: hsl(var(--bc) / 0.2);
+  background-color: hsl(var(--b3) / 0.3);
+  /* Darker/More visible base */
+  border-color: hsl(var(--b3) / 0.4);
 }
 
 .day-0:hover {
-  background-color: hsl(var(--b3));
-  color: hsl(var(--bc) / 0.5);
-  border-color: hsl(var(--bc) / 0.2);
+  background-color: hsl(var(--b3) / 0.6);
+  border-color: hsl(var(--bc) / 0.3);
 }
 
-/* Level 1: Low Activity - Soft Primary (Blue) */
+/* Level 1: Low Activity - Soft Primary */
 .day-low {
-  background: linear-gradient(135deg, hsl(var(--p) / 0.15), hsl(var(--p) / 0.25));
-  color: hsl(var(--p));
-  border-color: hsl(var(--p) / 0.2);
+  background: linear-gradient(135deg, hsl(var(--p) / 0.4), hsl(var(--p) / 0.6));
+  border-color: hsl(var(--p) / 0.5);
+  color: white;
+  box-shadow: 0 0 10px hsl(var(--p) / 0.2);
 }
 
 .day-low:hover {
-  background: linear-gradient(135deg, hsl(var(--p) / 0.25), hsl(var(--p) / 0.35));
-  box-shadow: 0 0 15px hsl(var(--p) / 0.2);
+  background: linear-gradient(135deg, hsl(var(--p) / 0.6), hsl(var(--p) / 0.8));
+  box-shadow: 0 0 15px hsl(var(--p) / 0.4);
 }
 
-/* Level 2: Medium Activity - Vibrant Primary to Secondary (Blue -> Purple) */
+/* Level 2: Medium Activity - Vibrant Secondary */
 .day-medium {
-  background: linear-gradient(135deg, hsl(var(--p) / 0.6), hsl(var(--s) / 0.6));
-  color: white;
+  background: linear-gradient(135deg, hsl(var(--s) / 0.6), hsl(var(--s) / 0.8));
   border-color: transparent;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px hsl(var(--s) / 0.3);
+  color: white;
 }
 
 .day-medium:hover {
-  background: linear-gradient(135deg, hsl(var(--p) / 0.8), hsl(var(--s) / 0.8));
-  box-shadow: 0 0 20px hsl(var(--p) / 0.4);
+  background: linear-gradient(135deg, hsl(var(--s) / 0.8), hsl(var(--s)));
+  box-shadow: 0 0 20px hsl(var(--s) / 0.5);
 }
 
-/* Level 3: High Activity - Intense Secondary to Accent (Purple -> Emerald) */
+/* Level 3: High Activity - Intense Accent */
 .day-high {
-  background: linear-gradient(135deg, hsl(var(--s)), hsl(var(--a)));
-  color: white;
+  background: linear-gradient(135deg, hsl(var(--a) / 0.7), hsl(var(--a)));
   border-color: transparent;
-  font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px hsl(var(--a) / 0.4);
+  color: white;
+  font-weight: 800;
 }
 
 .day-high:hover {
-  background: linear-gradient(135deg, hsl(var(--s) / 0.9), hsl(var(--a) / 0.9));
-  box-shadow: 0 0 25px hsl(var(--a) / 0.5);
-  transform: scale(1.25);
+  background: linear-gradient(135deg, hsl(var(--a)), hsl(var(--a)));
+  /* Keep same gradient but brighter via filter if needed, or just shadow */
+  box-shadow: 0 0 25px hsl(var(--a) / 0.6);
+  filter: brightness(1.1);
 }
 
-/* Month Container */
-.month-container {
-  background: hsl(var(--b1) / 0.5);
-  backdrop-filter: blur(8px);
-  border: 1px solid hsl(var(--b3) / 0.5);
-  transition: all 0.3s ease;
-  min-height: 340px;
-  /* Ensure consistent height for alignment */
+/* Month Container Hover Effects */
+.month-container:hover .day-cell.current-month:not(:hover) {
+  opacity: 0.8;
+  /* Less fade */
+  filter: grayscale(0.2);
 }
 
-.month-container:hover {
-  border-color: hsl(var(--p) / 0.3);
-  box-shadow: 0 10px 30px -10px hsl(var(--p) / 0.1);
-  transform: translateY(-2px);
+.month-container .day-cell.current-month:hover {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.2) translateY(-2px);
 }
 
-/* Responsive */
+/* Responsive Adjustments */
 @media (max-width: 640px) {
   .day-cell {
     min-width: 24px;

@@ -273,3 +273,55 @@ h6 {
     --mdc-snackbar-supporting-text-color: white;
   }
 }
+
+/* Select Dropdown Options - Force Opaque Background */
+select {
+  background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+}
+
+select option {
+  background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+  color: var(--fallback-bc, oklch(var(--bc) / 1)) !important;
+  padding: 0.5rem !important;
+}
+
+select option:hover {
+  background-color: var(--fallback-b2, oklch(var(--b2) / 1)) !important;
+}
+
+select option:checked,
+select option:focus {
+  background-color: var(--fallback-b2, oklch(var(--b2) / 1)) !important;
+  color: var(--fallback-bc, oklch(var(--bc) / 1)) !important;
+}
+
+/* Specific for DaisyUI select elements */
+.select option {
+  background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+  color: var(--fallback-bc, oklch(var(--bc) / 1)) !important;
+}
+
+.select option:checked {
+  background-color: var(--fallback-b2, oklch(var(--b2) / 1)) !important;
+}
+
+/* ============================================
+   GLOBAL MODAL STYLES
+   ============================================ */
+
+/* Glass Modal Panel - Overrides Angular Material Dialog */
+.glass-modal .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.glass-modal .mat-mdc-dialog-container {
+  padding: 0 !important;
+}
+
+/* Backdrop Blur for Glass Modals */
+.glass-modal-backdrop {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}

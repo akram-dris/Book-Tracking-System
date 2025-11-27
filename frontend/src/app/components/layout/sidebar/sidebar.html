@@ -1,17 +1,17 @@
-<aside [class.w-20]="isCollapsed()" [class.w-72]="!isCollapsed()"
-  class="glass-float flex flex-col h-[calc(100vh-1.5rem)] my-3 ml-3 rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] relative z-50">
+<aside [class.w-16]="isCollapsed()" [class.w-56]="!isCollapsed()"
+  class="glass-float flex flex-col h-[calc(100vh-1rem)] my-2 ml-2 rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] relative z-50">
 
   <!-- Header -->
-  <div class="flex items-center justify-center h-24 shrink-0 relative overflow-hidden">
+  <div class="flex items-center justify-center h-18 shrink-0 relative overflow-hidden">
     <a routerLink="/" class="flex items-center gap-3 transition-all duration-300" [class.w-full]="!isCollapsed()"
       [class.px-6]="!isCollapsed()" [class.justify-center]="isCollapsed()">
       <div
-        class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0 transition-all duration-500 z-10"
+        class="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0 transition-all duration-500 z-10"
         [class.scale-110]="isCollapsed()" [class.rotate-3]="isCollapsed()">
-        <ng-icon name="heroBookOpen" size="1.5rem" class="text-white"></ng-icon>
+        <ng-icon name="heroBookOpen" size="1.25rem" class="text-white"></ng-icon>
       </div>
       <span
-        class="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent whitespace-nowrap transition-all duration-300 origin-left absolute left-20"
+        class="text-xl font-heading font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent whitespace-nowrap transition-all duration-300 origin-left absolute left-20"
         [class.opacity-0]="isCollapsed()" [class.translate-x-[-20px]]="isCollapsed()">
         BookTrack
       </span>
@@ -19,15 +19,15 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 px-3 custom-scrollbar" [class.overflow-y-auto]="!isCollapsed()"
+  <nav class="flex-1 px-2 custom-scrollbar" [class.overflow-y-auto]="!isCollapsed()"
     [class.overflow-visible]="isCollapsed()">
-    <ul class="space-y-3">
+    <ul class="space-y-2">
       @for (item of navItems; track item.path) {
       <li>
         <a [routerLink]="item.path" routerLinkActive="active-nav-item" #rla="routerLinkActive"
           [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
-          class="flex items-center h-12 rounded-xl transition-all duration-300 group hover:bg-base-content/5 relative"
-          [class.justify-center]="isCollapsed()" [class.px-4]="!isCollapsed()">
+          class="flex items-center h-10 rounded-xl transition-all duration-300 group hover:bg-base-content/5 relative"
+          [class.justify-center]="isCollapsed()" [class.px-3]="!isCollapsed()">
 
           <!-- Active Indicator Background -->
           <div
@@ -35,7 +35,7 @@
           </div>
 
           <!-- Icon -->
-          <ng-icon [name]="item.icon" size="1.5rem"
+          <ng-icon [name]="item.icon" size="1.25rem"
             class="transition-colors duration-300 group-hover:text-primary z-10 shrink-0"
             [class.text-primary]="rla.isActive">
           </ng-icon>
@@ -69,13 +69,13 @@
   </nav>
 
   <!-- Toggle Button (Footer) -->
-  <div class="p-4 shrink-0">
+  <div class="p-3 shrink-0">
     <button (click)="onToggle()"
       class="btn btn-ghost w-full hover:bg-base-content/5 border border-transparent hover:border-base-content/10 transition-all duration-300 group relative overflow-hidden"
-      [class.btn-circle]="isCollapsed()" [class.h-12]="!isCollapsed()" [class.rounded-xl]="!isCollapsed()">
+      [class.btn-circle]="isCollapsed()" [class.h-10]="!isCollapsed()" [class.rounded-xl]="!isCollapsed()">
 
       <!-- Icon -->
-      <ng-icon [name]="isCollapsed() ? 'heroBars3' : 'heroBars3BottomLeft'" size="1.5rem"
+      <ng-icon [name]="isCollapsed() ? 'heroBars3' : 'heroBars3BottomLeft'" size="1.25rem"
         class="transition-transform duration-500 group-hover:scale-110" [class.rotate-180]="!isCollapsed()"></ng-icon>
 
       <!-- Text -->

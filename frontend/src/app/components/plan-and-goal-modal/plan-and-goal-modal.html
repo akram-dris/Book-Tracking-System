@@ -1,61 +1,152 @@
-<div class="modal modal-open">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">Plan Reading & Set Goals</h3>
-
-    <form [formGroup]="planAndGoalForm" (ngSubmit)="onSubmit()" class="py-4">
-      <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text">Target Start Date</span>
-        </label>
-        <input type="date" formControlName="targetStartDate" class="input input-bordered w-full">
-        @if (planAndGoalForm.controls['targetStartDate'].invalid && planAndGoalForm.controls['targetStartDate'].touched)
-        {
-        <label class="label">
-          <span class="label-text-alt text-error">Target start date is required.</span>
-        </label>
-        }
+<div class="modal modal-open backdrop-blur-sm bg-black/60">
+  <div class="modal-box max-w-2xl p-0 overflow-hidden bg-transparent shadow-2xl rounded-3xl">
+    <!-- Glass Container -->
+    <div
+      class="glass-panel h-full w-full relative overflow-hidden bg-[#1a1a1a]/90 backdrop-blur-xl border border-white/10">
+      <!-- Decorative Header Gradient -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50">
       </div>
 
-      <div class="form-control mb-4">
-        <!-- Low Goal -->
-        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-          <mat-label>Low Goal</mat-label>
-          <input matInput type="number" formControlName="lowGoal" min="1" required>
-          @if (planAndGoalForm.get('lowGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
-          @if (planAndGoalForm.get('lowGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
-          @if (planAndGoalForm.hasError('lowNotLessThanMedium')) { <mat-error>Must be &lt; Medium</mat-error> }
-        </mat-form-field>
-      </div>
-
-      <div class="form-control mb-4">
-        <!-- Medium Goal -->
-        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-          <mat-label>Medium Goal</mat-label>
-          <input matInput type="number" formControlName="mediumGoal" min="1" required>
-          @if (planAndGoalForm.get('mediumGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
-          @if (planAndGoalForm.get('mediumGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
-          @if (planAndGoalForm.hasError('mediumNotLessThanHigh')) { <mat-error>Must be &lt; High</mat-error> }
-        </mat-form-field>
-      </div>
-
-      <div class="form-control mb-4">
-        <!-- High Goal -->
-        <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-          <mat-label>High Goal</mat-label>
-          <input matInput type="number" formControlName="highGoal" min="1" required>
-          @if (planAndGoalForm.get('highGoal')?.hasError('required')) { <mat-error>Required</mat-error> }
-          @if (planAndGoalForm.get('highGoal')?.hasError('min')) { <mat-error>Min 1</mat-error> }
-          @if (planAndGoalForm.get('highGoal')?.hasError('max')) { <mat-error>Max {{ totalPages() }}</mat-error> }
-        </mat-form-field>
-      </div>
-
-      <div class="modal-action">
-        <button mat-raised-button color="primary" type="submit" [disabled]="planAndGoalForm.invalid || isLoading">
-          @if (isLoading) { <span class="loading loading-spinner"></span> }
-          Confirm Plan & Goals
+      <!-- Header -->
+      <div class="p-6 md:p-8 pb-0 flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <div class="p-3 rounded-2xl bg-primary/10 text-primary">
+            <ng-icon name="heroTrophy" size="1.75rem"></ng-icon>
+          </div>
+          <div>
+            <h3 class="font-bold text-2xl text-white tracking-tight">Plan Reading Journey</h3>
+            <p class="text-sm text-base-content/60">Set your goals for <span class="text-primary font-medium">{{
+                bookTitle() }}</span></p>
+          </div>
+        </div>
+        <button (click)="onCancel()"
+          class="btn btn-circle btn-ghost btn-sm text-base-content/50 hover:text-white hover:bg-white/10">
+          <ng-icon name="heroXMark" size="1.5rem"></ng-icon>
         </button>
-        <button mat-button type="button" (click)="onCancel()">Cancel</button>
       </div>
-    </form>
+
+      <form [formGroup]="planAndGoalForm" (ngSubmit)="onSubmit()" class="p-6 md:p-8 space-y-8">
+
+        <!-- Start Date Section -->
+        <div class="form-control w-full">
+          <label class="label px-0">
+            <span class="label-text font-medium text-base-content/80">When will you start?</span>
+          </label>
+          <div class="relative group">
+            <div
+              class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-base-content/40 group-focus-within:text-primary transition-colors">
+              <ng-icon name="heroCalendar" size="1.25rem"></ng-icon>
+            </div>
+            <input type="date" formControlName="targetStartDate"
+              class="input input-bordered w-full pl-11 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-12 text-base-content placeholder:text-base-content/30"
+              [class.input-error]="planAndGoalForm.controls['targetStartDate'].invalid && planAndGoalForm.controls['targetStartDate'].touched">
+          </div>
+          @if (planAndGoalForm.controls['targetStartDate'].invalid &&
+          planAndGoalForm.controls['targetStartDate'].touched) {
+          <label class="label px-0">
+            <span class="label-text-alt text-error">Target start date is required.</span>
+          </label>
+          }
+        </div>
+
+        <!-- Goals Section -->
+        <div class="space-y-4">
+          <label class="label px-0 pb-0">
+            <span class="label-text font-medium text-base-content/80">Daily Reading Goals (Pages)</span>
+          </label>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Low Goal -->
+            <div
+              class="bg-base-200/20 rounded-2xl p-4 border border-white/5 hover:border-accent/30 transition-all duration-300 group">
+              <div class="flex items-center gap-2 mb-2 text-accent">
+                <span class="text-lg">🌱</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Minimum</span>
+              </div>
+              <div class="relative">
+                <input type="number" formControlName="lowGoal" placeholder="10"
+                  class="input input-ghost w-full text-center font-bold text-2xl p-0 h-auto focus:bg-transparent focus:text-accent placeholder:text-base-content/20"
+                  min="1">
+              </div>
+              <div class="text-center text-xs text-base-content/40 mt-1">pages/day</div>
+              @if (planAndGoalForm.get('lowGoal')?.invalid && planAndGoalForm.get('lowGoal')?.touched) {
+              <div class="text-center text-xs text-error mt-2">Required (Min 1)</div>
+              }
+            </div>
+
+            <!-- Medium Goal -->
+            <div
+              class="bg-base-200/20 rounded-2xl p-4 border border-white/5 hover:border-info/30 transition-all duration-300 group">
+              <div class="flex items-center gap-2 mb-2 text-info">
+                <span class="text-lg">🔥</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Target</span>
+              </div>
+              <div class="relative">
+                <input type="number" formControlName="mediumGoal" placeholder="25"
+                  class="input input-ghost w-full text-center font-bold text-2xl p-0 h-auto focus:bg-transparent focus:text-info placeholder:text-base-content/20"
+                  min="1">
+              </div>
+              <div class="text-center text-xs text-base-content/40 mt-1">pages/day</div>
+              @if (planAndGoalForm.get('mediumGoal')?.invalid && planAndGoalForm.get('mediumGoal')?.touched) {
+              <div class="text-center text-xs text-error mt-2">Required</div>
+              }
+            </div>
+
+            <!-- High Goal -->
+            <div
+              class="bg-base-200/20 rounded-2xl p-4 border border-white/5 hover:border-error/30 transition-all duration-300 group">
+              <div class="flex items-center gap-2 mb-2 text-error">
+                <span class="text-lg">🚀</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Stretch</span>
+              </div>
+              <div class="relative">
+                <input type="number" formControlName="highGoal" placeholder="50"
+                  class="input input-ghost w-full text-center font-bold text-2xl p-0 h-auto focus:bg-transparent focus:text-error placeholder:text-base-content/20"
+                  min="1">
+              </div>
+              <div class="text-center text-xs text-base-content/40 mt-1">pages/day</div>
+              @if (planAndGoalForm.get('highGoal')?.invalid && planAndGoalForm.get('highGoal')?.touched) {
+              <div class="text-center text-xs text-error mt-2">Required</div>
+              }
+            </div>
+          </div>
+
+          <!-- Validation Errors for Hierarchy -->
+          @if (planAndGoalForm.hasError('lowNotLessThanMedium')) {
+          <div class="alert alert-error text-xs py-2 rounded-xl bg-error/10 text-error border-error/20">
+            <ng-icon name="heroXMark" size="1rem"></ng-icon>
+            <span>Minimum goal must be less than Target goal</span>
+          </div>
+          }
+          @if (planAndGoalForm.hasError('mediumNotLessThanHigh')) {
+          <div class="alert alert-error text-xs py-2 rounded-xl bg-error/10 text-error border-error/20">
+            <ng-icon name="heroXMark" size="1rem"></ng-icon>
+            <span>Target goal must be less than Stretch goal</span>
+          </div>
+          }
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-4 pt-4 mt-4 border-t border-white/5">
+          <button type="button" (click)="onCancel()"
+            class="btn btn-ghost hover:bg-white/5 text-base-content/70 hover:text-white rounded-xl px-6">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="planAndGoalForm.invalid || isLoading"
+            class="btn btn-primary text-white rounded-xl px-8 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:shadow-none gap-2">
+            @if (isLoading) {
+            <span class="loading loading-spinner loading-sm"></span>
+            } @else {
+            <span>Start Journey</span>
+            <ng-icon name="heroArrowRight" size="1.25rem"></ng-icon>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
+  <form method="dialog" class="modal-backdrop backdrop-blur-sm">
+    <button (click)="onCancel()">close</button>
+  </form>
 </div>

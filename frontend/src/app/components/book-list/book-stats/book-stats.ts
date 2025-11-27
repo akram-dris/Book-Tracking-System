@@ -1,6 +1,4 @@
 import { Component, input } from '@angular/core';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroBookOpen, heroCheckCircle, heroClock } from '@ng-icons/heroicons/outline';
 
 export interface BookStatistics {
   total: number;
@@ -13,19 +11,18 @@ export interface BookStatistics {
 
 @Component({
   selector: 'app-book-stats',
-  imports: [NgIconComponent],
+  imports: [],
   templateUrl: './book-stats.html',
   styleUrl: './book-stats.css',
-  standalone: true,
-  viewProviders: [provideIcons({ heroBookOpen, heroCheckCircle, heroClock })]
+  standalone: true
 })
 export class BookStatsComponent {
-  stats = input<BookStatistics>({ 
-    total: 0, 
-    notReading: 0, 
-    planning: 0, 
-    currentlyReading: 0, 
-    completed: 0, 
-    summarized: 0 
+  stats = input<BookStatistics>({
+    total: 0,
+    notReading: 0,
+    planning: 0,
+    currentlyReading: 0,
+    completed: 0,
+    summarized: 0
   });
 }

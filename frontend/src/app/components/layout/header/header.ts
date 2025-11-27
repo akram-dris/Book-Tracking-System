@@ -38,7 +38,7 @@ import { environment } from 'src/environments/environment';
   ]
 })
 export class HeaderComponent {
-  isDarkMode = false;
+  isDarkMode = true;
   searchQuery: string = '';
   searchResults: SearchResult | null = null;
   showDropdown = false;

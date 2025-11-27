@@ -9,13 +9,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NotificationService } from '../../services/notification';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-plan-and-goal-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, NgIconComponent],
   templateUrl: './plan-and-goal-modal.html',
-  styleUrls: ['./plan-and-goal-modal.css']
+  styleUrls: ['./plan-and-goal-modal.css'],
+  viewProviders: [provideIcons({ heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight })]
 })
 export class PlanAndGoalModalComponent implements OnInit {
   bookId = input<number | null>(null);

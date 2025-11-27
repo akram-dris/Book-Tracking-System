@@ -10,14 +10,6 @@ export const routes: Routes = [
         loadComponent: () => import('./components/book-list/book-list').then(m => m.BookListComponent)
     },
     {
-        path: 'books/new',
-        loadComponent: () => import('./components/book-form/book-form').then(m => m.BookFormComponent)
-    },
-    {
-        path: 'books/:id/edit',
-        loadComponent: () => import('./components/book-form/book-form').then(m => m.BookFormComponent)
-    },
-    {
         path: 'books/:id/summary',
         loadComponent: () => import('./components/book-summary/book-summary').then(m => m.BookSummaryComponent)
     },
@@ -30,24 +22,12 @@ export const routes: Routes = [
         loadComponent: () => import('./components/author-list/author-list').then(m => m.AuthorListComponent)
     },
     {
-        path: 'authors/new',
-        loadComponent: () => import('./components/author-form/author-form').then(m => m.AuthorFormComponent)
-    },
-    {
-        path: 'authors/:id/edit',
-        loadComponent: () => import('./components/author-form/author-form').then(m => m.AuthorFormComponent)
-    },
-    {
         path: 'authors/:id',
         loadComponent: () => import('./components/author-details/author-details').then(m => m.AuthorDetailsComponent)
     },
     {
         path: 'tags',
         loadComponent: () => import('./components/tag-management/tag-management').then(m => m.TagManagementComponent)
-    },
-    {
-        path: 'books/:bookId/session/log',
-        loadComponent: () => import('./components/session-log/session-log').then(m => m.SessionLogComponent)
     },
     {
         path: 'heatmap',

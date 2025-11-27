@@ -1,108 +1,140 @@
-<!-- Full Page Form -->
-<div class="space-y-3">
-  <!-- Back Button -->
-  <div>
-    <button mat-button (click)="goBack()"
-      class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
-      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
-      <span class="font-medium">Back</span>
+<!-- Author Form Modal -->
+<div class="glass-panel relative bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 flex flex-col h-full">
+  <!-- Decorative Header Gradient -->
+  <div
+    class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50 z-10">
+  </div>
+
+  <!-- Header -->
+  <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="p-2 rounded-xl bg-primary/10 text-primary">
+        <ng-icon [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1.25rem"></ng-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-white tracking-tight">{{ isEditMode ? 'Edit Author' : 'Add New Author' }}
+        </h2>
+      </div>
+    </div>
+    <button (click)="goBack()"
+      class="btn btn-circle btn-ghost btn-sm text-base-content/50 hover:text-white hover:bg-white/10">
+      <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
     </button>
   </div>
 
-  <!-- Form Card -->
-  <mat-card class="!shadow-xl border-2 border-base-300">
-    <form [formGroup]="authorForm" (ngSubmit)="onSubmit()">
-      <mat-card-content class="p-4">
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <!-- Column 1: Author Photo -->
-          <div class="lg:col-span-2">
-            <h3 class="text-sm font-semibold mb-2 text-base-content">Author Photo</h3>
-            <div class="aspect-[3/4] w-full max-w-[220px] mx-auto lg:mx-0">
-              <!-- Upload Area -->
-              @if (!imagePreviewUrl) {
-              <div (click)="fileInput.click()"
-                class="h-full w-full border-2 border-dashed border-base-300 hover:border-primary rounded-xl bg-base-200 hover:bg-primary/5 transition-all duration-300 cursor-pointer flex items-center justify-center group">
-                <div class="flex flex-col items-center justify-center p-4">
-                  <div
-                    class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors duration-200">
-                    <mat-icon class="text-primary !text-3xl !w-8 !h-8">photo_camera</mat-icon>
-                  </div>
-                  <p class="text-sm font-medium text-center">Drop photo</p>
-                  <p class="text-xs opacity-70 text-center mt-1">or click</p>
-                </div>
-              </div>
-              }
+  <!-- Form Content -->
+  <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="flex-1 flex flex-col md:flex-row overflow-hidden">
 
-              <!-- Image Preview -->
-              @if (imagePreviewUrl) {
-              <div class="relative group h-full w-full">
-                <div
-                  class="h-full w-full rounded-xl overflow-hidden border-2 hover:border-primary transition-all duration-300 shadow-lg"
-                  (click)="fileInput.click()">
-                  <img [src]="imagePreviewUrl" alt="Author photo"
-                    class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <button mat-mini-fab color="warn" type="button" (click)="removeImage($event)"
-                  class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity !shadow-lg !w-7 !h-7"
-                  aria-label="Remove image">
-                  <mat-icon class="!text-lg">close</mat-icon>
-                </button>
+    <!-- Left Column: Author Photo (Fixed Width) -->
+    <div
+      class="w-full md:w-64 p-4 border-b md:border-b-0 md:border-r border-white/5 flex flex-col gap-3 shrink-0 bg-white/5 md:bg-transparent overflow-y-auto md:overflow-visible">
+      <div class="form-control w-full">
+        <div
+          class="relative group aspect-[3/4] w-full rounded-xl overflow-hidden shadow-xl shadow-black/50 border border-white/10 bg-base-300/30 transition-all duration-300 hover:shadow-primary/20 hover:border-primary/30">
+          @if (!imagePreviewUrl) {
+          <div (click)="fileInput.click()"
+            class="h-full w-full flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group-hover:bg-white/5">
+            <div
+              class="flex flex-col items-center gap-2 text-base-content/40 group-hover:text-primary/80 transition-colors duration-300">
+              <div class="p-3 rounded-full bg-base-100/50 group-hover:bg-primary/10 transition-colors duration-300">
+                <ng-icon name="heroPhoto" size="1.5rem"></ng-icon>
               </div>
-              }
-              <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
+              <div class="text-center">
+                <p class="text-xs font-medium">Drop photo here</p>
+                <p class="text-[10px] opacity-60 mt-1">or click to browse</p>
+              </div>
             </div>
           </div>
+          }
 
-          <!-- Column 2: Author Information -->
-          <div class="lg:col-span-3">
-            <h3 class="text-sm font-semibold mb-2 text-base-content">Author Information</h3>
-            <div class="space-y-4">
-              <!-- Name -->
-              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-                <mat-label>Author Name</mat-label>
-                <input matInput type="text" formControlName="name" placeholder="Enter author name" required />
-                @if (authorForm.get('name')?.hasError('required')) {
-                <mat-error>Name is required</mat-error>
-                }
-                @if (authorForm.get('name')?.hasError('minlength')) {
-                <mat-error>Name must be at least 2 characters</mat-error>
-                }
-                @if (authorForm.get('name')?.hasError('maxlength')) {
-                <mat-error>Name cannot exceed 100 characters</mat-error>
-                }
-              </mat-form-field>
-
-              <!-- Biography -->
-              <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-                <mat-label>Biography</mat-label>
-                <textarea matInput formControlName="bio" placeholder="Write a brief biography..." rows="6"
-                  class="resize-none"></textarea>
-                <mat-hint align="end">{{authorForm.get('bio')?.value?.length || 0}}/1000</mat-hint>
-                @if (authorForm.get('bio')?.hasError('maxlength')) {
-                <mat-error>Bio cannot exceed 1000 characters</mat-error>
-                }
-              </mat-form-field>
+          @if (imagePreviewUrl) {
+          <div class="relative h-full w-full group">
+            <img [src]="imagePreviewUrl" alt="Author photo"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <!-- Overlay Actions -->
+            <div
+              class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 backdrop-blur-sm">
+              <button type="button"
+                class="btn btn-circle btn-xs btn-error text-white shadow-lg scale-90 hover:scale-110 transition-transform duration-200"
+                (click)="removeImage($event)" matTooltip="Remove photo">
+                <ng-icon name="heroXMark" size="1rem"></ng-icon>
+              </button>
+              <button type="button"
+                class="btn btn-circle btn-xs btn-primary text-white shadow-lg scale-90 hover:scale-110 transition-transform duration-200 relative overflow-hidden">
+                <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" (change)="onFileSelected($event)"
+                  accept="image/*">
+                <ng-icon name="heroPencil" size="1rem"></ng-icon>
+              </button>
             </div>
           </div>
+          }
+          <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept="image/*" />
         </div>
-      </mat-card-content>
+        <p class="text-[10px] text-center text-base-content/30 mt-2">JPG, PNG, WEBP</p>
+      </div>
+    </div>
 
-      <!-- Form Actions -->
-      <mat-card-actions class="flex items-center justify-end gap-3 px-4 py-4 !m-0 !mt-4">
-        <button mat-button type="button" routerLink="/authors">
-          <mat-icon>close</mat-icon>
+    <!-- Right Column: Details (Scrollable) -->
+    <div class="flex-1 flex flex-col min-h-0">
+      <div class="flex-1 overflow-y-auto p-4 space-y-5">
+
+        <!-- Name Input -->
+        <div class="form-control w-full relative">
+          <label class="label px-0 pt-0">
+            <span class="label-text font-medium text-base-content/80">Author Name</span>
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
+              <ng-icon name="heroUser" size="1.1rem"></ng-icon>
+            </div>
+            <input type="text" formControlName="name" placeholder="e.g. J.K. Rowling"
+              class="input w-full pl-10 h-12 rounded-xl bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 text-base-content placeholder:text-base-content/30"
+              [class.input-error]="authorForm.get('name')?.invalid && authorForm.get('name')?.touched" />
+          </div>
+          @if (authorForm.get('name')?.invalid && authorForm.get('name')?.touched) {
+          <span class="text-xs text-error absolute -bottom-5 left-1">Name is required (2-100 chars)</span>
+          }
+        </div>
+
+        <!-- Bio Textarea -->
+        <div class="form-control w-full relative">
+          <label class="label px-0 pt-0">
+            <span class="label-text font-medium text-base-content/80">Biography</span>
+          </label>
+          <div class="relative w-full h-32">
+            <div class="absolute top-3 left-3 pointer-events-none text-base-content/40 z-10">
+              <ng-icon name="heroDocumentText" size="1.1rem"></ng-icon>
+            </div>
+            <textarea formControlName="bio" placeholder="Write a brief biography..."
+              class="textarea w-full pl-10 pt-3 h-full rounded-xl bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 text-base-content placeholder:text-base-content/30 resize-none leading-relaxed text-sm"></textarea>
+            <div
+              class="absolute bottom-2 right-2 text-[10px] text-base-content/40 bg-base-300/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
+              {{authorForm.get('bio')?.value?.length || 0}}/1000
+            </div>
+          </div>
+          @if (authorForm.get('bio')?.hasError('maxlength')) {
+          <span class="text-xs text-error absolute -bottom-5 left-1">Bio cannot exceed 1000 characters</span>
+          }
+        </div>
+
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="p-4 border-t border-white/5 bg-white/5 flex items-center justify-end gap-3 shrink-0">
+        <button type="button" (click)="goBack()"
+          class="btn btn-ghost hover:bg-white/5 text-base-content/70 hover:text-white rounded-xl px-6">
           Cancel
         </button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="authorForm.invalid || isLoading">
+        <button type="submit" [disabled]="authorForm.invalid || isLoading"
+          class="btn btn-primary text-white rounded-xl px-8 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:shadow-none">
           @if (isLoading) {
-          <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+          <span class="loading loading-spinner loading-xs"></span>
+          } @else {
+          <ng-icon [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1.1rem"></ng-icon>
           }
-          @if (!isLoading) {
-          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
-          }
-          {{ isEditMode ? 'Update Author' : 'Add Author' }}
+          {{ isEditMode ? 'Update' : 'Add Author' }}
         </button>
-      </mat-card-actions>
-    </form>
-  </mat-card>
+      </div>
+    </div>
+  </form>
 </div>

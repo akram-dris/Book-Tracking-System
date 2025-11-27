@@ -5,7 +5,7 @@ import { BookService } from '../../services/book';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatusService } from '../../services/reading-status';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { environment } from 'src/environments/environment';
@@ -25,6 +25,9 @@ interface BookWithProgress extends GetBook {
 
 type SortOption = 'title' | 'dateAdded' | 'progress' | 'author' | 'rating';
 type ViewMode = 'grid' | 'list';
+
+import { MatDialog } from '@angular/material/dialog';
+import { BookFormComponent } from '../book-form/book-form';
 
 @Component({
   selector: 'app-book-list',
@@ -90,14 +93,13 @@ export class BookListComponent implements OnInit {
   };
 
 
-
-  // ... imports
-
   constructor(
     private bookService: BookService,
     private readingSessionService: ReadingSessionService,
     private readingStatusService: ReadingStatusService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -283,10 +285,12 @@ export class BookListComponent implements OnInit {
               console.error(`Error fetching reading sessions for book ${book.id}:`, result.errors);
               book.progressPercentage = 0;
             }
+            this.cdr.markForCheck();
           },
           error: err => {
             console.error(`Error fetching reading sessions for book ${book.id}:`, err);
             book.progressPercentage = 0;
+            this.cdr.markForCheck();
           }
         });
       } else {
@@ -322,54 +326,72 @@ export class BookListComponent implements OnInit {
   getRatingColorClass(rating: number | undefined): string {
     if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-gradient-to-t from-amber-600/90 via-amber-500/60 to-transparent'; // Gold/Masterpiece
-      case 4: return 'bg-gradient-to-t from-emerald-600/90 via-emerald-500/60 to-transparent'; // Emerald/Great
-      case 3: return 'bg-gradient-to-t from-cyan-600/90 via-cyan-500/60 to-transparent'; // Cyan/Good
-      case 2: return 'bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-transparent'; // Orange/Fair
-      case 1: return 'bg-gradient-to-t from-rose-600/90 via-rose-500/60 to-transparent'; // Rose/Poor
-      default: return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-    }
+    if (roundedRating >= 4) return 'bg-gradient-to-t from-amber-500/90 via-amber-400/60 to-transparent'; // Gold (4-5)
+    if (roundedRating >= 2) return 'bg-gradient-to-t from-slate-500/90 via-slate-400/60 to-transparent'; // Silver (2-3)
+    return 'bg-gradient-to-t from-orange-700/90 via-orange-600/60 to-transparent'; // Bronze (1)
   }
 
   getRatingBorderClass(rating: number | undefined): string {
     if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'hover:shadow-amber-500/40 hover:border-amber-400';
-      case 4: return 'hover:shadow-emerald-500/40 hover:border-emerald-400';
-      case 3: return 'hover:shadow-cyan-500/40 hover:border-cyan-400';
-      case 2: return 'hover:shadow-orange-500/40 hover:border-orange-400';
-      case 1: return 'hover:shadow-rose-500/40 hover:border-rose-400';
-      default: return 'hover:shadow-primary/20 hover:border-primary';
-    }
+    if (roundedRating >= 4) return 'hover:shadow-amber-500/40 hover:border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'hover:shadow-slate-500/40 hover:border-slate-400'; // Silver
+    return 'hover:shadow-orange-700/40 hover:border-orange-600'; // Bronze
   }
 
   getRatingBadgeClass(rating: number | undefined): string {
     if (!rating) return '';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-amber-500 border-amber-400';
-      case 4: return 'bg-emerald-500 border-emerald-400';
-      case 3: return 'bg-cyan-500 border-cyan-400';
-      case 2: return 'bg-orange-500 border-orange-400';
-      case 1: return 'bg-rose-500 border-rose-400';
-      default: return 'bg-gray-500 border-gray-400';
-    }
+    if (roundedRating >= 4) return 'bg-amber-500 border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'bg-slate-500 border-slate-400'; // Silver
+    return 'bg-orange-700 border-orange-600'; // Bronze
   }
 
   deleteBook(id: number): void {
-    this.bookService.deleteBook(id).subscribe(result => {
-      if (result.isSuccess) {
+    if (confirm('Are you sure you want to delete this book?')) {
+      this.bookService.deleteBook(id).subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.loadBooks();
+          }
+        },
+        error: (error) => console.error('Error deleting book', error)
+      });
+    }
+  }
+
+  openAddBookModal(): void {
+    const dialogRef = this.dialog.open(BookFormComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'glass-modal',
+      data: { bookId: null }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
         this.loadBooks();
-      } else {
-        console.error('Error deleting book:', result.errors);
+      }
+    });
+  }
+
+  openEditBookModal(bookId: number): void {
+    const dialogRef = this.dialog.open(BookFormComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'glass-modal',
+      data: { bookId: bookId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadBooks();
       }
     });
   }

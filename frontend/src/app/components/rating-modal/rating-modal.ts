@@ -1,21 +1,21 @@
 import { Component, input, output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroStar, heroXMark } from '@ng-icons/heroicons/outline';
+import { heroStar, heroXMark, heroCheckCircle } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-rating-modal',
   standalone: true,
-  imports: [CommonModule, RatingModule, FormsModule, NgIconComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent],
   templateUrl: './rating-modal.html',
   styleUrls: ['./rating-modal.css'],
   viewProviders: [
     provideIcons({
       heroStar,
-      heroXMark
+      heroXMark,
+      heroCheckCircle
     })
   ]
 })
@@ -29,6 +29,8 @@ export class RatingModalComponent implements OnInit {
   cancel = output<void>();
 
   selectedRating: number | null = null;
+  hoverRating: number = 0;
+  stars: number[] = [1, 2, 3, 4, 5];
   rootUrl = environment.rootUrl;
   isAnimatingIn: boolean = false;
 
@@ -46,6 +48,10 @@ export class RatingModalComponent implements OnInit {
     } else {
       this.isAnimatingIn = false;
     }
+  }
+
+  setRating(rating: number): void {
+    this.selectedRating = rating;
   }
 
   onRatingChange(rating: number): void {
@@ -69,11 +75,18 @@ export class RatingModalComponent implements OnInit {
   }
 
   get canSave(): boolean {
-    return this.selectedRating !== null && this.selectedRating >= 0.5 && this.selectedRating <= 5;
+    return this.selectedRating !== null && this.selectedRating >= 1 && this.selectedRating <= 5;
   }
 
   get ratingText(): string {
     if (!this.selectedRating) return 'Select your rating';
-    return `${this.selectedRating.toFixed(1)} out of 5`;
+    const ratingDescriptions = [
+      'Poor',
+      'Fair',
+      'Good',
+      'Very Good',
+      'Excellent'
+    ];
+    return `${ratingDescriptions[this.selectedRating - 1]} (${this.selectedRating}/5)`;
   }
 }

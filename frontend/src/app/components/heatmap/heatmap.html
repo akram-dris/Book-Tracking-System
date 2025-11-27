@@ -1,250 +1,253 @@
-<div @fadeIn>
-  <!-- Header Section with Enhanced Design -->
-  <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-6">
-    <!-- Year Navigation with Modern Style -->
-    <div class="flex items-center gap-4 bg-base-200/50 rounded-2xl p-3 border border-base-300/30 backdrop-blur-sm">
-      <button
-        class="btn btn-circle btn-ghost hover:bg-primary/10 hover:text-primary hover:scale-110 transition-all duration-300"
-        (click)="previousYear()" [disabled]="loading">
-        <ng-icon name="heroChevronLeft" size="24"></ng-icon>
-      </button>
+<div class="min-h-screen pb-24 relative" @fadeIn>
+  <!-- Sticky Header Section -->
+  <div class="mb-8 sticky top-4 z-30">
+    <div
+      class="glass-panel rounded-full p-2 pr-4 border border-white/10 shadow-lg flex flex-col md:flex-row gap-3 items-center max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
 
-      <div class="flex items-center gap-2 px-4">
-        <ng-icon name="heroCalendarDays" size="20" class="text-primary"></ng-icon>
-        <span class="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{{
-          currentYear }}</span>
+      <!-- Year Navigation -->
+      <div class="flex items-center gap-2 px-2 flex-1 justify-center md:justify-start">
+        <button
+          class="btn btn-circle btn-sm btn-ghost hover:bg-white/10 text-white/70 hover:text-white transition-all duration-300"
+          (click)="previousYear()" [disabled]="loading">
+          <ng-icon name="heroChevronLeft" size="1.25rem"></ng-icon>
+        </button>
+
+        <div class="flex items-center gap-2 px-4 py-1 rounded-full bg-white/5 border border-white/5">
+          <ng-icon name="heroCalendarDays" size="1.25rem" class="text-primary"></ng-icon>
+          <span class="text-xl font-bold text-white tracking-tight">{{ currentYear }}</span>
+        </div>
+
+        <button
+          class="btn btn-circle btn-sm btn-ghost hover:bg-white/10 text-white/70 hover:text-white transition-all duration-300"
+          (click)="nextYear()" [disabled]="loading">
+          <ng-icon name="heroChevronRight" size="1.25rem"></ng-icon>
+        </button>
       </div>
 
-      <button
-        class="btn btn-circle btn-ghost hover:bg-primary/10 hover:text-primary hover:scale-110 transition-all duration-300"
-        (click)="nextYear()" [disabled]="loading">
-        <ng-icon name="heroChevronRight" size="24"></ng-icon>
-      </button>
-    </div>
-
-    <!-- Streak Info (New Feature) -->
-    <div
-      class="flex items-center gap-3 bg-gradient-to-r from-accent/10 to-secondary/10 rounded-2xl px-6 py-3 border border-accent/20">
-      <ng-icon name="heroFire" size="24" class="text-accent"></ng-icon>
-      <div class="flex flex-col">
-        <span class="text-2xl font-bold text-accent">{{ currentStreak }}</span>
-        <span class="text-xs text-base-content/60">Day Streak</span>
+      <!-- Streak Info -->
+      <div
+        class="flex items-center gap-3 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/20 to-secondary/20 border border-accent/20">
+        <div class="p-1.5 rounded-full bg-accent/20 text-accent">
+          <ng-icon name="heroFire" size="1.25rem"></ng-icon>
+        </div>
+        <div class="flex flex-col leading-none">
+          <span class="text-lg font-bold text-white">{{ currentStreak }}</span>
+          <span class="text-[10px] uppercase tracking-wider font-bold text-white/60">Day Streak</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Stats Section with Enhanced Cards -->
-  @if (!loading) {
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" @fadeIn>
-    <!-- Total Pages Card -->
-    <div
-      class="group relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-primary/20 p-6 hover:border-primary/50 transition-all duration-500 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Stats Section -->
+    @if (!loading) {
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" @fadeIn>
+      <!-- Total Pages Card -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-      </div>
-      <div
-        class="absolute -right-6 -top-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all duration-500">
-      </div>
-      <div class="relative">
-        <div class="flex items-center gap-2 mb-2">
-          <div
-            class="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
-            <ng-icon name="heroBookOpen" size="20"></ng-icon>
+        class="group relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/60 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        </div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="p-2 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+              <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+            </div>
+            <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Total Pages</div>
           </div>
-          <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Total Pages</div>
-        </div>
-        <div class="text-4xl font-black text-base-content group-hover:text-primary transition-colors duration-300">{{
-          totalPages | number }}</div>
-      </div>
-    </div>
-
-    <!-- Active Days Card -->
-    <div
-      class="group relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-secondary/20 p-6 hover:border-secondary/50 transition-all duration-500 hover:shadow-lg hover:shadow-secondary/20 hover:-translate-y-1">
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-      </div>
-      <div
-        class="absolute -right-6 -top-6 w-32 h-32 bg-secondary/20 rounded-full blur-3xl group-hover:bg-secondary/30 transition-all duration-500">
-      </div>
-      <div class="relative">
-        <div class="flex items-center gap-2 mb-2">
-          <div
-            class="p-2 rounded-lg bg-secondary/10 text-secondary group-hover:scale-110 transition-transform duration-300">
-            <ng-icon name="heroCalendarDays" size="20"></ng-icon>
+          <div class="text-3xl font-black text-base-content group-hover:text-primary transition-colors duration-300">
+            {{ totalPages | number }}
           </div>
-          <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Active Days</div>
         </div>
-        <div class="text-4xl font-black text-base-content group-hover:text-secondary transition-colors duration-300">{{
-          totalDays }}</div>
       </div>
-    </div>
 
-    <!-- Average Pages/Day Card -->
-    <div
-      class="group relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-accent/20 p-6 hover:border-accent/50 transition-all duration-500 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-1">
+      <!-- Active Days Card -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-      </div>
-      <div
-        class="absolute -right-6 -top-6 w-32 h-32 bg-accent/20 rounded-full blur-3xl group-hover:bg-accent/30 transition-all duration-500">
-      </div>
-      <div class="relative">
-        <div class="flex items-center gap-2 mb-2">
-          <div class="p-2 rounded-lg bg-accent/10 text-accent group-hover:scale-110 transition-transform duration-300">
-            <ng-icon name="heroChartBarSquare" size="20"></ng-icon>
+        class="group relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/60 transition-all duration-500 hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        </div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="p-2 rounded-xl bg-secondary/10 text-secondary group-hover:scale-110 transition-transform duration-300">
+              <ng-icon name="heroCalendarDays" size="1.25rem"></ng-icon>
+            </div>
+            <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Active Days</div>
           </div>
-          <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Avg Pages/Day</div>
-        </div>
-        <div class="text-4xl font-black text-base-content group-hover:text-accent transition-colors duration-300">{{
-          totalPages > 0 ? (totalPages / totalDays | number:'1.0-0') : 0 }}</div>
-      </div>
-    </div>
-
-    <!-- Longest Streak Card -->
-    <div
-      class="group relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-warning/20 p-6 hover:border-warning/50 transition-all duration-500 hover:shadow-lg hover:shadow-warning/20 hover:-translate-y-1">
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-warning/10 via-warning/5 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-      </div>
-      <div
-        class="absolute -right-6 -top-6 w-32 h-32 bg-warning/20 rounded-full blur-3xl group-hover:bg-warning/30 transition-all duration-500">
-      </div>
-      <div class="relative">
-        <div class="flex items-center gap-2 mb-2">
-          <div
-            class="p-2 rounded-lg bg-warning/10 text-warning group-hover:scale-110 transition-transform duration-300">
-            <ng-icon name="heroTrophy" size="20"></ng-icon>
+          <div class="text-3xl font-black text-base-content group-hover:text-secondary transition-colors duration-300">
+            {{ totalDays }}
           </div>
-          <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Best Streak</div>
-        </div>
-        <div class="text-4xl font-black text-base-content group-hover:text-warning transition-colors duration-300">{{
-          longestStreak }}</div>
-      </div>
-    </div>
-  </div>
-  }
-
-  <!-- Skeleton Loading State -->
-  @if (loading) {
-  <div class="animate-pulse">
-    <!-- Stats Cards Skeleton -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      @for (i of [1,2,3,4]; track i) {
-      <div class="bg-base-100/40 rounded-2xl p-6 h-32 border border-base-300/50">
-        <div class="flex items-center gap-2 mb-2">
-          <div class="w-8 h-8 rounded-lg bg-base-300"></div>
-          <div class="h-4 w-24 bg-base-300 rounded"></div>
-        </div>
-        <div class="h-10 w-16 bg-base-300 rounded mt-2"></div>
-      </div>
-      }
-    </div>
-
-    <!-- Calendar Grid Skeleton -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-      @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
-      <div class="rounded-2xl p-5 bg-base-100/40 border border-base-300/50 h-[320px]">
-        <div class="h-6 w-24 bg-base-300 rounded mx-auto mb-4"></div>
-        <div class="grid grid-cols-7 gap-1.5 mb-3">
-          @for (d of [1,2,3,4,5,6,7]; track d) {
-          <div class="h-4 w-4 bg-base-300 rounded mx-auto"></div>
-          }
-        </div>
-        <div class="grid grid-cols-7 gap-1.5">
-          @for (d of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]; track d) {
-          <div class="aspect-square bg-base-300 rounded-sm opacity-50"></div>
-          }
         </div>
       </div>
-      }
-    </div>
-  </div>
-  }
 
-  <!-- Calendar Grid with Modern Design -->
-  @if (!loading) {
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
-    @for (month of calendarMonths; track i; let i = $index) {
-    <div class="month-container group relative rounded-2xl p-5 flex flex-col h-full min-h-[320px]"
-      (mouseenter)="setHoveredMonth(i)" (mouseleave)="clearHoveredMonth()" [class.z-50]="hoveredMonth === i">
-      <!-- Month Header with Icon -->
-      <div class="flex items-center justify-center gap-2 mb-4">
-        <h3
-          class="text-center font-bold text-xl text-base-content group-hover:text-primary transition-colors duration-300">
-          {{ month.monthName }}</h3>
-      </div>
-
-      <!-- Day Headers -->
-      <div class="grid grid-cols-7 text-center mb-3 text-xs font-bold opacity-50">
-        <div class="p-1">S</div>
-        <div class="p-1">M</div>
-        <div class="p-1">T</div>
-        <div class="p-1">W</div>
-        <div class="p-1">T</div>
-        <div class="p-1">F</div>
-        <div class="p-1">S</div>
-      </div>
-
-      <!-- Calendar Days -->
-      <div class="flex flex-col gap-1.5 flex-grow">
-        @for (week of month.weeks; track $index) {
-        <div class="grid grid-cols-7 gap-1.5">
-          @for (day of week.days; track day.date) {
-          @if (day.isCurrentMonth) {
-          <div class="day-cell current-month" [class.today]="isToday(day.date)" [ngClass]="getDayClass(day.pagesRead)"
-            [attr.data-tooltip]="getTooltipText(day)">
-            <span class="day-number">{{ day.dayOfMonth }}</span>
-          </div>
-          } @else {
-          <div class="day-cell-invisible"></div>
-          }
-          }
-        </div>
-        }
-      </div>
-
-      <!-- Month Summary -->
+      <!-- Average Pages/Day Card -->
       <div
-        class="mt-auto pt-4 border-t border-base-content/5 flex items-center justify-between text-xs opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-        <div class="flex items-center gap-1">
-          <ng-icon name="heroBookOpen" size="14" class="text-primary"></ng-icon>
-          <span class="font-semibold">{{ getMonthTotal(month) }} pages</span>
+        class="group relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/60 transition-all duration-500 hover:shadow-xl hover:shadow-accent/10 hover:-translate-y-1">
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
         </div>
-        <div class="flex items-center gap-1">
-          <ng-icon name="heroFire" size="14" class="text-secondary"></ng-icon>
-          <span class="font-semibold">{{ getMonthActiveDays(month) }} days</span>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="p-2 rounded-xl bg-accent/10 text-accent group-hover:scale-110 transition-transform duration-300">
+              <ng-icon name="heroChartBarSquare" size="1.25rem"></ng-icon>
+            </div>
+            <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Avg Pages/Day</div>
+          </div>
+          <div class="text-3xl font-black text-base-content group-hover:text-accent transition-colors duration-300">
+            {{ totalPages > 0 ? (totalPages / totalDays | number:'1.0-0') : 0 }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Longest Streak Card -->
+      <div
+        class="group relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/60 transition-all duration-500 hover:shadow-xl hover:shadow-warning/10 hover:-translate-y-1">
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-warning/10 via-warning/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        </div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="p-2 rounded-xl bg-warning/10 text-warning group-hover:scale-110 transition-transform duration-300">
+              <ng-icon name="heroTrophy" size="1.25rem"></ng-icon>
+            </div>
+            <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Best Streak</div>
+          </div>
+          <div class="text-3xl font-black text-base-content group-hover:text-warning transition-colors duration-300">
+            {{ longestStreak }}
+          </div>
         </div>
       </div>
     </div>
     }
-  </div>
-  }
 
-  <!-- Enhanced Legend with Modern Design -->
-  <div class="relative overflow-hidden rounded-2xl bg-base-100/40 backdrop-blur-md border border-base-300/50 p-6"
-    @fadeIn>
-    <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
-    <div class="relative">
+    <!-- Skeleton Loading State -->
+    @if (loading) {
+    <div class="animate-pulse">
+      <!-- Stats Cards Skeleton -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        @for (i of [1,2,3,4]; track i) {
+        <div class="bg-base-200/40 rounded-2xl p-6 h-32 border border-white/5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-8 h-8 rounded-xl bg-base-300/50"></div>
+            <div class="h-3 w-24 bg-base-300/50 rounded"></div>
+          </div>
+          <div class="h-8 w-16 bg-base-300/50 rounded mt-2"></div>
+        </div>
+        }
+      </div>
+
+      <!-- Calendar Grid Skeleton -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
+        <div class="rounded-2xl p-5 bg-base-200/40 border border-white/5 h-[320px]">
+          <div class="h-6 w-24 bg-base-300/50 rounded mx-auto mb-4"></div>
+          <div class="grid grid-cols-7 gap-1.5 mb-3">
+            @for (d of [1,2,3,4,5,6,7]; track d) {
+            <div class="h-4 w-4 bg-base-300/50 rounded mx-auto"></div>
+            }
+          </div>
+          <div class="grid grid-cols-7 gap-1.5">
+            @for (d of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28]; track d) {
+            <div class="aspect-square bg-base-300/50 rounded-sm opacity-50"></div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Calendar Grid -->
+    @if (!loading) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" @staggerFade>
+      @for (month of calendarMonths; track i; let i = $index) {
+      <div
+        class="month-container group relative rounded-2xl p-5 flex flex-col h-full min-h-[320px] bg-base-200/40 backdrop-blur-md border border-white/5 hover:border-primary/20 hover:bg-base-200/60 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+        (mouseenter)="setHoveredMonth(i)" (mouseleave)="clearHoveredMonth()" [class.z-20]="hoveredMonth === i">
+
+        <!-- Month Header -->
+        <div class="flex items-center justify-center gap-2 mb-4">
+          <h3
+            class="text-center font-bold text-lg text-base-content group-hover:text-primary transition-colors duration-300">
+            {{ month.monthName }}
+          </h3>
+        </div>
+
+        <!-- Day Headers -->
+        <div
+          class="grid grid-cols-7 text-center mb-3 text-[10px] font-bold text-base-content/40 uppercase tracking-wider">
+          <div>S</div>
+          <div>M</div>
+          <div>T</div>
+          <div>W</div>
+          <div>T</div>
+          <div>F</div>
+          <div>S</div>
+        </div>
+
+        <!-- Calendar Days -->
+        <div class="flex flex-col gap-1.5 flex-grow">
+          @for (week of month.weeks; track $index) {
+          <div class="grid grid-cols-7 gap-1.5">
+            @for (day of week.days; track day.date) {
+            @if (day.isCurrentMonth) {
+            <div class="day-cell current-month" [class.today]="isToday(day.date)" [ngClass]="getDayClass(day.pagesRead)"
+              [attr.data-tooltip]="getTooltipText(day)">
+              <span class="day-number">{{ day.dayOfMonth }}</span>
+            </div>
+            } @else {
+            <div class="day-cell-invisible"></div>
+            }
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Month Summary -->
+        <div
+          class="mt-auto pt-4 border-t border-base-content/5 flex items-center justify-between text-xs opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="flex items-center gap-1.5">
+            <ng-icon name="heroBookOpen" size="0.8rem" class="text-primary"></ng-icon>
+            <span class="font-medium text-base-content/80">{{ getMonthTotal(month) }} pages</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <ng-icon name="heroFire" size="0.8rem" class="text-secondary"></ng-icon>
+            <span class="font-medium text-base-content/80">{{ getMonthActiveDays(month) }} days</span>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Legend -->
+    <div class="relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-6 mb-8"
+      @fadeIn>
       <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 rounded-lg bg-primary/10 text-primary">
-          <ng-icon name="heroSparkles" size="20"></ng-icon>
+        <div class="p-2 rounded-xl bg-primary/10 text-primary">
+          <ng-icon name="heroSparkles" size="1.25rem"></ng-icon>
         </div>
         <div>
-          <h3 class="text-lg font-bold">Activity Level Guide</h3>
-          <p class="text-xs text-base-content/60">Track your reading intensity throughout the year</p>
+          <h3 class="text-lg font-bold text-base-content">Activity Level</h3>
+          <p class="text-xs text-base-content/60">Reading intensity guide</p>
         </div>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         @for (item of legendItems; track item.label) {
         <div
-          class="group flex items-center gap-3 p-3 rounded-xl bg-base-100/50 hover:bg-base-100 border border-base-300/30 hover:border-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+          class="group flex items-center gap-3 p-3 rounded-xl bg-base-100/50 hover:bg-base-100 border border-white/5 hover:border-primary/20 transition-all duration-300 hover:scale-105 hover:shadow-lg">
           <div
-            class="w-8 h-8 rounded-lg flex-shrink-0 ring-2 ring-base-300/30 group-hover:ring-primary/30 transition-all duration-300"
-            [ngClass]="item.className"></div>
+            class="w-10 h-10 rounded-lg flex-shrink-0 ring-2 ring-white/10 group-hover:ring-primary/30 transition-all duration-300 flex items-center justify-center font-bold text-xs"
+            [ngClass]="item.className">
+            <ng-icon name="heroBookOpen" size="1rem" class="opacity-80"></ng-icon>
+          </div>
           <div class="flex flex-col">
-            <div class="text-sm font-bold">{{ item.label }}</div>
+            <div class="text-sm font-bold text-base-content">{{ item.label }}</div>
             <div class="text-xs text-base-content/50">{{ item.range }}</div>
           </div>
         </div>

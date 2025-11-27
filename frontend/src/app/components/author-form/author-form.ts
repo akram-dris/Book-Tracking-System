@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthorService } from '../../services/author';
@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-author-form',
@@ -50,7 +51,9 @@ export class AuthorFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notificationService: NotificationService,
-    private location: Location
+    private location: Location,
+    @Optional() public dialogRef: MatDialogRef<AuthorFormComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: { authorId: number }
   ) {
     this.authorForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -60,7 +63,11 @@ export class AuthorFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authorId = this.route.snapshot.params['id'];
+    if (this.data && this.data.authorId) {
+      this.authorId = this.data.authorId;
+    } else {
+      this.authorId = this.route.snapshot.params['id'];
+    }
     if (this.authorId) {
       this.isEditMode = true;
       this.authorService.getAuthor(this.authorId).subscribe({
@@ -115,7 +122,11 @@ export class AuthorFormComponent implements OnInit {
           next: (result) => {
             if (result.isSuccess) {
               this.notificationService.showSuccess('Author updated successfully');
-              this.location.back();
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.location.back();
+              }
             } else {
               console.error('Error updating author:', result.errors);
               this.notificationService.showError('Failed to update author');
@@ -133,7 +144,11 @@ export class AuthorFormComponent implements OnInit {
           next: (result) => {
             if (result.isSuccess) {
               this.notificationService.showSuccess('Author added successfully');
-              this.router.navigate(['/authors']);
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.router.navigate(['/authors']);
+              }
             } else {
               console.error('Error adding author:', result.errors);
               this.notificationService.showError('Failed to add author');
@@ -151,6 +166,10 @@ export class AuthorFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.location.back();
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    } else {
+      this.location.back();
+    }
   }
 }

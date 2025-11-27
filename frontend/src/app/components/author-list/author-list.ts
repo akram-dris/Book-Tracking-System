@@ -1,66 +1,88 @@
-
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { AuthorService } from '../../services/author';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { GetAuthor } from '../../models/get-author.model';
 import { environment } from 'src/environments/environment';
 import { FormsModule } from '@angular/forms';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar } from '@ng-icons/heroicons/outline';
+import { heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar, heroBookOpen, heroUsers } from '@ng-icons/heroicons/outline';
 import { BookService } from '../../services/book';
-import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
-import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 import { PaginationParams } from '../../models/result';
 
 interface AuthorWithCount extends GetAuthor {
   bookCount?: number;
+  averageRating?: number;
 }
+
+type SortOption = 'name' | 'bookCount' | 'rating' | 'dateAdded';
+
+import { AuthorFormComponent } from '../author-form/author-form';
 
 @Component({
   selector: 'app-author-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule, InfiniteScrollDirective],
+  imports: [CommonModule, RouterModule, FormsModule, NgIconComponent, MatButtonModule, InfiniteScrollDirective, EmptyStateComponent],
   templateUrl: './author-list.html',
   styleUrls: ['./author-list.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [provideIcons({ heroMagnifyingGlass, heroXMark, heroUserPlus, heroFunnel, heroArrowsUpDown, heroPlus, heroStar })]
+  viewProviders: [provideIcons({ heroMagnifyingGlass, heroArrowsUpDown, heroXMark, heroBookOpen, heroStar, heroUsers, heroPlus })]
 })
 export class AuthorListComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
+  private authorService = inject(AuthorService);
+  private router = inject(Router);
+  private bookService = inject(BookService);
+  private dialog = inject(MatDialog);
+  private notificationService = inject(NotificationService);
+
   authors: AuthorWithCount[] = [];
   filteredAuthors: AuthorWithCount[] = [];
   rootUrl: string = environment.rootUrl;
   searchQuery: string = '';
-  sortBy: string = 'name-asc';
+  sortBy: SortOption = 'name';
   currentPage: number = 1;
   pageSize: number = 20;
   hasMorePages: boolean = true;
   isLoadingMore: boolean = false;
   isLoading: boolean = true;
 
-  sortOptions = [
-    { value: 'name-asc', label: 'Name (A-Z)' },
-    { value: 'name-desc', label: 'Name (Z-A)' },
-    { value: 'books-desc', label: 'Most Books' },
-    { value: 'books-asc', label: 'Least Books' },
-    { value: 'rating-desc', label: 'Highest Rated' },
-    { value: 'recent', label: 'Recently Added' }
+  sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'name', label: 'Name (A-Z)' },
+    { value: 'bookCount', label: 'Most Books' },
+    { value: 'rating', label: 'Highest Rated' },
+    { value: 'dateAdded', label: 'Recently Added' }
   ];
-
-  constructor(
-    private authorService: AuthorService,
-    private bookService: BookService,
-    private dialog: MatDialog,
-    private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
-  ) { }
 
   ngOnInit(): void {
     this.loadAuthors();
+  }
+
+
+  openAddAuthorModal() {
+    const dialogRef = this.dialog.open(AuthorFormComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'glass-modal',
+      backdropClass: 'glass-modal-backdrop',
+      data: { authorId: null }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadAuthors();
+      }
+    });
   }
 
   loadAuthors(): void {
@@ -77,58 +99,59 @@ export class AuthorListComponent implements OnInit {
       sort: this.sortBy
     };
 
-    this.authorService.getAuthorsPaginated(params).subscribe({
-      next: (result) => {
-        if (result.isSuccess && result.data) {
-          this.authors = result.data.items;
-          this.filteredAuthors = result.data.items;
-          this.hasMorePages = result.data.items.length === this.pageSize;
-        } else {
-          console.error('Error loading authors:', result.errors);
+    this.authorService.getAuthorsPaginated(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.authors = result.data.items;
+            this.filteredAuthors = result.data.items;
+            this.hasMorePages = result.data.hasNextPage;
+          } else {
+            console.error('Error loading authors:', result.errors);
+          }
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading authors:', error);
+          this.isLoading = false;
+          this.cdr.markForCheck();
         }
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Error loading authors:', error);
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    });
+      });
   }
 
   loadMore(): void {
     if (this.isLoadingMore || !this.hasMorePages) return;
 
     this.isLoadingMore = true;
-    this.currentPage++;
-
+    const nextPage = this.currentPage + 1;
     const params: PaginationParams = {
-      pageNumber: this.currentPage,
+      pageNumber: nextPage,
       pageSize: this.pageSize,
       search: this.searchQuery,
       sort: this.sortBy
     };
 
-    this.authorService.getAuthorsPaginated(params).subscribe({
-      next: (result) => {
-        if (result.isSuccess && result.data) {
-          const newAuthors = result.data.items;
-          this.authors = [...this.authors, ...newAuthors];
-          this.filteredAuthors = [...this.filteredAuthors, ...newAuthors];
-          this.hasMorePages = newAuthors.length === this.pageSize;
-        } else {
-          console.error('Error loading more authors:', result.errors);
+    this.authorService.getAuthorsPaginated(params)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.isSuccess && result.data) {
+            this.authors = [...this.authors, ...result.data.items];
+            this.filteredAuthors = [...this.filteredAuthors, ...result.data.items];
+            this.hasMorePages = result.data.hasNextPage;
+            this.currentPage = nextPage;
+          }
+          this.isLoadingMore = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading more authors:', error);
+          this.isLoadingMore = false;
+          this.cdr.markForCheck();
         }
-        this.isLoadingMore = false;
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Error loading more authors:', error);
-        this.isLoadingMore = false;
-        this.cdr.markForCheck();
-      }
-    });
+      });
   }
 
   onSearchChange(): void {
@@ -178,45 +201,30 @@ export class AuthorListComponent implements OnInit {
   getRatingColorClass(rating: number | undefined): string {
     if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-gradient-to-t from-amber-600/90 via-amber-500/60 to-transparent'; // Gold/Masterpiece
-      case 4: return 'bg-gradient-to-t from-emerald-600/90 via-emerald-500/60 to-transparent'; // Emerald/Great
-      case 3: return 'bg-gradient-to-t from-cyan-600/90 via-cyan-500/60 to-transparent'; // Cyan/Good
-      case 2: return 'bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-transparent'; // Orange/Fair
-      case 1: return 'bg-gradient-to-t from-rose-600/90 via-rose-500/60 to-transparent'; // Rose/Poor
-      default: return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-    }
+    if (roundedRating >= 4) return 'bg-gradient-to-t from-amber-500/90 via-amber-400/60 to-transparent'; // Gold (4-5)
+    if (roundedRating >= 2) return 'bg-gradient-to-t from-slate-500/90 via-slate-400/60 to-transparent'; // Silver (2-3)
+    return 'bg-gradient-to-t from-orange-700/90 via-orange-600/60 to-transparent'; // Bronze (1)
   }
 
   getRatingBorderClass(rating: number | undefined): string {
     if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'hover:shadow-amber-500/40 hover:border-amber-400';
-      case 4: return 'hover:shadow-emerald-500/40 hover:border-emerald-400';
-      case 3: return 'hover:shadow-cyan-500/40 hover:border-cyan-400';
-      case 2: return 'hover:shadow-orange-500/40 hover:border-orange-400';
-      case 1: return 'hover:shadow-rose-500/40 hover:border-rose-400';
-      default: return 'hover:shadow-primary/20 hover:border-primary';
-    }
+    if (roundedRating >= 4) return 'hover:shadow-amber-500/40 hover:border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'hover:shadow-slate-500/40 hover:border-slate-400'; // Silver
+    return 'hover:shadow-orange-700/40 hover:border-orange-600'; // Bronze
   }
 
   getRatingBadgeClass(rating: number | undefined): string {
     if (!rating) return '';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-amber-500 border-amber-400';
-      case 4: return 'bg-emerald-500 border-emerald-400';
-      case 3: return 'bg-cyan-500 border-cyan-400';
-      case 2: return 'bg-orange-500 border-orange-400';
-      case 1: return 'bg-rose-500 border-rose-400';
-      default: return 'bg-gray-500 border-gray-400';
-    }
+    if (roundedRating >= 4) return 'bg-amber-500 border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'bg-slate-500 border-slate-400'; // Silver
+    return 'bg-orange-700 border-orange-600'; // Bronze
   }
 }

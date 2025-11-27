@@ -1,16 +1,16 @@
-<div class="min-h-screen p-6">
-  <div class="space-y-8 max-w-7xl mx-auto">
+<div class="min-h-screen p-4">
+  <div class="space-y-4 max-w-7xl mx-auto">
 
     <!-- Welcome Section (Animated) -->
     <div class="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-2">
         <h1
-          class="text-4xl md:text-5xl font-heading font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          class="text-3xl md:text-4xl font-heading font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
           Welcome back!
         </h1>
 
         <button mat-raised-button color="primary" (click)="navigateToBooks()"
-          class="!rounded-xl !px-8 !py-4 !text-lg shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:scale-105">
+          class="!rounded-xl !px-6 !py-2.5 !text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:scale-105">
           <span class="flex items-center gap-3">
             <ng-icon name="heroBookOpen" size="1.4rem"></ng-icon>
             <span>My Library</span>
@@ -45,24 +45,24 @@
 
     <!-- Stats Cards -->
     @if (!loading && stats) {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" @staggerCards>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" @staggerCards>
 
       <!-- Total Books -->
       <div
-        class="group glass-panel rounded-3xl p-6 relative overflow-hidden transition-all duration-300 hover-lift cursor-pointer"
+        class="group glass-panel rounded-3xl p-4 relative overflow-hidden transition-all duration-300 hover-lift cursor-pointer"
         (click)="navigateToBooks()">
         <div
           class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-          <ng-icon name="heroBookOpen" size="8rem" class="text-primary"></ng-icon>
+          <ng-icon name="heroBookOpen" size="6rem" class="text-primary"></ng-icon>
         </div>
         <div class="relative z-10">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="p-2 rounded-lg bg-primary/10 text-primary">
-              <ng-icon name="heroBookOpen" size="1.5rem"></ng-icon>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 rounded-lg bg-primary/10 text-primary">
+              <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
             </div>
-            <p class="text-sm font-bold uppercase tracking-wider text-base-content/60">Total Books</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-base-content/60">Total Books</p>
           </div>
-          <h3 class="text-5xl font-heading font-bold text-primary mb-2">{{ getTotalBooks() }}</h3>
+          <h3 class="text-3xl font-heading font-bold text-primary mb-2">{{ getTotalBooks() }}</h3>
           <div class="w-full bg-base-content/5 rounded-full h-1.5 overflow-hidden">
             <div class="bg-primary h-full rounded-full w-full animate-pulse"></div>
           </div>
@@ -70,19 +70,19 @@
       </div>
 
       <!-- Pages Read -->
-      <div class="group glass-panel rounded-3xl p-6 relative overflow-hidden transition-all duration-300 hover-lift">
+      <div class="group glass-panel rounded-3xl p-4 relative overflow-hidden transition-all duration-300 hover-lift">
         <div
           class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-          <ng-icon name="heroCheckCircle" size="8rem" class="text-secondary"></ng-icon>
+          <ng-icon name="heroCheckCircle" size="6rem" class="text-secondary"></ng-icon>
         </div>
         <div class="relative z-10">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="p-2 rounded-lg bg-secondary/10 text-secondary">
-              <ng-icon name="heroDocumentText" size="1.5rem"></ng-icon>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 rounded-lg bg-secondary/10 text-secondary">
+              <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
             </div>
-            <p class="text-sm font-bold uppercase tracking-wider text-base-content/60">Pages Read</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-base-content/60">Pages Read</p>
           </div>
-          <h3 class="text-5xl font-heading font-bold text-secondary mb-2">{{ stats.overview?.totalPagesRead || 0 }}</h3>
+          <h3 class="text-3xl font-heading font-bold text-secondary mb-2">{{ stats.overview?.totalPagesRead || 0 }}</h3>
           <div class="w-full bg-base-content/5 rounded-full h-1.5 overflow-hidden">
             <div class="bg-secondary h-full rounded-full w-3/4 animate-pulse"></div>
           </div>
@@ -91,38 +91,38 @@
 
       <!-- Reading Streak -->
       <div
-        class="group glass-panel rounded-3xl p-6 relative overflow-hidden transition-all duration-300 hover-lift cursor-pointer"
+        class="group glass-panel rounded-3xl p-4 relative overflow-hidden transition-all duration-300 hover-lift cursor-pointer"
         (click)="navigateToHeatmap()">
         <div
           class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-          <ng-icon name="heroFire" size="8rem" class="text-accent"></ng-icon>
+          <ng-icon name="heroFire" size="6rem" class="text-accent"></ng-icon>
         </div>
         <div class="relative z-10">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="p-2 rounded-lg bg-accent/10 text-accent">
-              <ng-icon name="heroFire" size="1.5rem"></ng-icon>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 rounded-lg bg-accent/10 text-accent">
+              <ng-icon name="heroFire" size="1.25rem"></ng-icon>
             </div>
-            <p class="text-sm font-bold uppercase tracking-wider text-base-content/60">Current Streak</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-base-content/60">Current Streak</p>
           </div>
-          <h3 class="text-5xl font-heading font-bold text-accent mb-2">{{ streakData?.currentStreak || 0 }}</h3>
+          <h3 class="text-3xl font-heading font-bold text-accent mb-2">{{ streakData?.currentStreak || 0 }}</h3>
           <p class="text-sm text-base-content/60 font-medium">days in a row</p>
         </div>
       </div>
 
       <!-- Currently Reading -->
-      <div class="group glass-panel rounded-3xl p-6 relative overflow-hidden transition-all duration-300 hover-lift">
+      <div class="group glass-panel rounded-3xl p-4 relative overflow-hidden transition-all duration-300 hover-lift">
         <div
           class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-          <ng-icon name="heroBookmark" size="8rem" class="text-info"></ng-icon>
+          <ng-icon name="heroBookmark" size="6rem" class="text-info"></ng-icon>
         </div>
         <div class="relative z-10">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="p-2 rounded-lg bg-info/10 text-info">
-              <ng-icon name="heroBookmark" size="1.5rem"></ng-icon>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 rounded-lg bg-info/10 text-info">
+              <ng-icon name="heroBookmark" size="1.25rem"></ng-icon>
             </div>
-            <p class="text-sm font-bold uppercase tracking-wider text-base-content/60">In Progress</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-base-content/60">In Progress</p>
           </div>
-          <h3 class="text-5xl font-heading font-bold text-info mb-2">{{ stats.overview?.booksCurrentlyReading || 0 }}
+          <h3 class="text-3xl font-heading font-bold text-info mb-2">{{ stats.overview?.booksCurrentlyReading || 0 }}
           </h3>
           <p class="text-sm text-base-content/60 font-medium">books active</p>
         </div>
@@ -131,18 +131,18 @@
     }
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
       <!-- Left Column: Charts and Stats -->
-      <div class="lg:col-span-2 space-y-8">
+      <div class="lg:col-span-2 space-y-4">
 
         <!-- Reading Progress Charts -->
         @if (!loading && readingProgressChart) {
-        <div class="glass-panel rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl" @fadeInUp>
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-2xl font-heading font-bold flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-primary/10 text-primary">
-                <ng-icon name="heroChartBar" size="1.5rem"></ng-icon>
+        <div class="glass-panel rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl" @fadeInUp>
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="text-xl font-heading font-bold flex items-center gap-3">
+              <div class="p-1.5 rounded-xl bg-primary/10 text-primary">
+                <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
               </div>
               Reading Analytics
             </h2>
@@ -153,7 +153,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               <!-- Doughnut Chart -->
               <div class="flex justify-center relative">
-                <div class="relative w-64 h-64">
+                <div class="relative w-48 h-48">
                   <canvas baseChart [data]="readingProgressChart" [options]="doughnutOptions" type="doughnut"></canvas>
                   <!-- Center Label -->
                   <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -164,7 +164,7 @@
               </div>
 
               <!-- Bar Chart -->
-              <div class="h-64 w-full">
+              <div class="h-48 w-full">
                 <canvas baseChart [data]="monthlyActivityChart" [options]="barOptions" type="bar"></canvas>
               </div>
             </div>
@@ -204,11 +204,11 @@
 
         <!-- Currently Reading Books -->
         @if (!loading && currentlyReading.length > 0) {
-        <div class="glass-panel rounded-3xl p-8" @fadeInUp>
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-heading font-bold flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-warning/10 text-warning">
-                <ng-icon name="heroSparkles" size="1.5rem"></ng-icon>
+        <div class="glass-panel rounded-3xl p-5" @fadeInUp>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-heading font-bold flex items-center gap-3">
+              <div class="p-1.5 rounded-xl bg-warning/10 text-warning">
+                <ng-icon name="heroSparkles" size="1.25rem"></ng-icon>
               </div>
               Continue Reading
             </h2>
@@ -218,12 +218,12 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @for (book of currentlyReading; track book.id) {
             <div
-              class="group flex gap-4 p-4 rounded-2xl bg-base-100/50 border border-base-content/5 hover:bg-base-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
+              class="group flex gap-3 p-3 rounded-2xl bg-base-100/50 border border-base-content/5 hover:bg-base-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
               (click)="navigateToBookDetails(book.id)">
 
               <!-- Cover -->
               <div
-                class="relative w-20 h-28 rounded-xl overflow-hidden shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+                class="relative w-16 h-24 rounded-xl overflow-hidden shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
                 <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
                   [alt]="book.title" class="w-full h-full object-cover">
               </div>
@@ -271,11 +271,11 @@
       </div>
 
       <!-- Right Column: Recent Activity & Streak -->
-      <div class="space-y-8">
+      <div class="space-y-4">
 
         <!-- Streak Card -->
         @if (!loading && streakData) {
-        <div class="glass-panel rounded-3xl p-8 relative overflow-hidden group" @fadeInUp>
+        <div class="glass-panel rounded-3xl p-5 relative overflow-hidden group" @fadeInUp>
           <!-- Background Glow -->
           <div
             class="absolute top-0 right-0 w-64 h-64 bg-warning/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-warning/20 transition-colors duration-500">
@@ -283,11 +283,11 @@
 
           <div class="relative z-10 text-center">
             <div
-              class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-warning to-orange-500 shadow-lg shadow-warning/30 mb-4 animate-bounce-slow">
-              <span class="text-4xl">🔥</span>
+              class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-warning to-orange-500 shadow-lg shadow-warning/30 mb-3 animate-bounce-slow">
+              <span class="text-3xl">🔥</span>
             </div>
 
-            <h2 class="text-3xl font-heading font-bold text-base-content mb-1">{{ streakData.currentStreak }} Day
+            <h2 class="text-2xl font-heading font-bold text-base-content mb-1">{{ streakData.currentStreak }} Day
               Streak!</h2>
             <p class="text-base-content/60 mb-6">Keep the flame alive!</p>
 
@@ -297,7 +297,7 @@
             </div>
 
             <button mat-flat-button color="warn" (click)="navigateToHeatmap()"
-              class="w-full !rounded-xl !py-6 shadow-lg shadow-warning/20">
+              class="w-full !rounded-xl !py-4 shadow-lg shadow-warning/20">
               View Activity Log
             </button>
           </div>
@@ -306,10 +306,10 @@
 
         <!-- Recent Books -->
         @if (!loading && recentBooks.length > 0) {
-        <div class="glass-panel rounded-3xl p-6" @fadeInUp>
-          <h2 class="text-xl font-heading font-bold mb-6 flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-secondary/10 text-secondary">
-              <ng-icon name="heroClock" size="1.25rem"></ng-icon>
+        <div class="glass-panel rounded-3xl p-4" @fadeInUp>
+          <h2 class="text-lg font-heading font-bold mb-4 flex items-center gap-2">
+            <div class="p-1.5 rounded-xl bg-secondary/10 text-secondary">
+              <ng-icon name="heroClock" size="1.1rem"></ng-icon>
             </div>
             Recent Activity
           </h2>
@@ -319,7 +319,7 @@
             <div
               class="flex items-center gap-4 p-3 rounded-2xl hover:bg-base-content/5 transition-colors cursor-pointer group"
               (click)="navigateToBookDetails(book.id)">
-              <div class="w-12 h-16 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all">
+              <div class="w-10 h-14 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all">
                 <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
                   [alt]="book.title" class="w-full h-full object-cover">
               </div>

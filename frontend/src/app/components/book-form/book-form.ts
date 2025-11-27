@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, FormControl, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BookService } from '../../services/book';
@@ -13,7 +13,7 @@ import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft } from '@ng-icons/heroicons/outline';
+import { heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft, heroCheckCircle, heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +26,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { GetBook } from '../../models/get-book.model';
 import { CreateBook } from '../../models/create-book.model';
@@ -36,8 +37,8 @@ import { GetTag } from '../../models/get-tag.model';
 @Component({
   selector: 'app-book-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, RouterModule,  common.CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatAutocompleteModule, MatCardModule, MatDividerModule],
-  providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft })],
+  imports: [ReactiveFormsModule, FormsModule, RouterModule, common.CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatAutocompleteModule, MatCardModule, MatDividerModule],
+  providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft, heroCheckCircle, heroMagnifyingGlass })],
   templateUrl: './book-form.html',
   styleUrls: ['./book-form.css']
 })
@@ -47,6 +48,7 @@ export class BookFormComponent implements OnInit {
   bookId: number | null = null;
   authors: GetAuthor[] = [];
   tags: GetTag[] = [];
+  tagSearchQuery = '';
   selectedFile: File | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
   isLoading = false;
@@ -69,7 +71,9 @@ export class BookFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notificationService: NotificationService,
-    private location: common.Location
+    private location: common.Location,
+    @Optional() public dialogRef: MatDialogRef<BookFormComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: { bookId: number }
   ) {
     this.bookForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(200)]],
@@ -81,7 +85,11 @@ export class BookFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bookId = this.route.snapshot.params['id'];
+    if (this.data && this.data.bookId) {
+      this.bookId = this.data.bookId;
+    } else {
+      this.bookId = this.route.snapshot.params['id'];
+    }
     this.isEditMode = !!this.bookId;
 
     const book$ = this.isEditMode ? this.bookService.getBook(this.bookId!) : of({ isSuccess: true, data: null } as any);
@@ -160,6 +168,14 @@ export class BookFormComponent implements OnInit {
   isTagSelected(tagId: number): boolean {
     const currentTags = this.bookForm.get('tagIds')?.value || [];
     return currentTags.includes(tagId);
+  }
+
+  get filteredTags(): GetTag[] {
+    if (!this.tagSearchQuery) {
+      return this.tags;
+    }
+    const query = this.tagSearchQuery.toLowerCase();
+    return this.tags.filter(tag => tag.name.toLowerCase().includes(query));
   }
 
   getTagName(tagId: number): string {
@@ -270,7 +286,11 @@ export class BookFormComponent implements OnInit {
           next: (tagResult) => {
             if (tagResult.isSuccess) {
               this.notificationService.showSuccess('Book updated successfully');
-              this.location.back();
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.location.back();
+              }
             } else {
               console.error('Error assigning tags:', tagResult.errors);
               this.notificationService.showError('Book updated but failed to update tags');
@@ -294,11 +314,19 @@ export class BookFormComponent implements OnInit {
           next: (tagResult) => {
             if (tagResult.isSuccess) {
               this.notificationService.showSuccess('Book added successfully');
-              this.router.navigate(['/books']);
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.router.navigate(['/books']);
+              }
             } else {
               console.error('Error assigning tags:', tagResult.errors);
               this.notificationService.showError('Book added but failed to assign tags');
-              this.router.navigate(['/books']);
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.router.navigate(['/books']);
+              }
             }
           },
           error: (err) => {
@@ -311,6 +339,10 @@ export class BookFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.location.back();
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    } else {
+      this.location.back();
+    }
   }
 }
