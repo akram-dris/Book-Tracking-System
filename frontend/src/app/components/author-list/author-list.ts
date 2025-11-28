@@ -174,7 +174,9 @@ export class AuthorListComponent implements OnInit {
         message: 'Are you sure you want to delete this author? This will also remove all their books.',
         confirmText: 'Delete',
         confirmColor: 'warn'
-      }
+      },
+      panelClass: 'glass-modal',
+      backdropClass: 'glass-modal-backdrop'
     });
 
     dialogRef.afterClosed().subscribe(result => {

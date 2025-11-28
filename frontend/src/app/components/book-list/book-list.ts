@@ -29,6 +29,7 @@ type ViewMode = 'grid' | 'list';
 import { MatDialog } from '@angular/material/dialog';
 import { BookFormComponent } from '../book-form/book-form';
 import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-book-list',
@@ -356,23 +357,36 @@ export class BookListComponent implements OnInit {
   }
 
   deleteBook(id: number): void {
-    if (confirm('Are you sure you want to delete this book?')) {
-      this.bookService.deleteBook(id).subscribe({
-        next: (response) => {
-          if (response.isSuccess) {
-            this.notificationService.showSuccess('Book deleted successfully');
-            this.loadBooks();
-          } else {
-            console.error('Error deleting book', response.errors);
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Book',
+        message: 'Are you sure you want to delete this book? This action cannot be undone.',
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      },
+      panelClass: 'glass-modal',
+      backdropClass: 'glass-modal-backdrop'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.bookService.deleteBook(id).subscribe({
+          next: (response) => {
+            if (response.isSuccess) {
+              this.notificationService.showSuccess('Book deleted successfully');
+              this.loadBooks();
+            } else {
+              console.error('Error deleting book', response.errors);
+              this.notificationService.showError('Failed to delete book');
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting book', error);
             this.notificationService.showError('Failed to delete book');
           }
-        },
-        error: (error) => {
-          console.error('Error deleting book', error);
-          this.notificationService.showError('Failed to delete book');
-        }
-      });
-    }
+        });
+      }
+    });
   }
 
   openAddBookModal(): void {

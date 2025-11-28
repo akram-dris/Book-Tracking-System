@@ -28,6 +28,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 // import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   heroArrowLeft,
@@ -546,17 +547,31 @@ export class BookDetailsComponent implements OnInit {
 
   deleteBook(): void {
     if (this.book) {
-      // Directly delete without confirmation dialog
-      this.bookService.deleteBook(this.book.id).pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(result => {
-          if (result.isSuccess) {
-            this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
-            this.router.navigate(['/books']);
-          } else {
-            console.error('Error deleting book:', result.errors);
-            this.notificationService.showError('Failed to delete book');
-          }
-        });
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Delete Book',
+          message: `Are you sure you want to delete "${this.book.title}"? This action cannot be undone.`,
+          confirmText: 'Delete',
+          confirmColor: 'warn'
+        },
+        panelClass: 'glass-modal',
+        backdropClass: 'glass-modal-backdrop'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.bookService.deleteBook(this.book!.id).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(result => {
+              if (result.isSuccess) {
+                this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
+                this.router.navigate(['/books']);
+              } else {
+                console.error('Error deleting book:', result.errors);
+                this.notificationService.showError('Failed to delete book');
+              }
+            });
+        }
+      });
     }
   }
 
