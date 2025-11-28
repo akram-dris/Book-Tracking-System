@@ -24,7 +24,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Skeleton Loading State -->
         @if (loading) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-pulse">
             @for (i of [1,2,3,4,5,6,7,8]; track i) {
             <div class="rounded-2xl bg-base-200/40 h-[420px] border border-white/5 overflow-hidden">
                 <div class="h-64 bg-base-300/50 w-full"></div>
@@ -68,7 +68,7 @@
 
         <!-- Recommendations Grid -->
         @if (!loading && recommendations.length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" @staggerFade>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" @staggerFade>
             @for (rec of recommendations; track rec.bookId) {
             <div class="group relative flex flex-col h-full bg-base-200/30 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-500 cursor-pointer"
                 (click)="navigateToBook(rec.bookId)">
@@ -111,7 +111,7 @@
                 </div>
 
                 <!-- Card Content -->
-                <div class="p-5 flex flex-col flex-grow relative">
+                <div class="p-4 flex flex-col flex-grow relative">
                     <!-- Reason Badge -->
                     <div class="mb-3">
                         <span
@@ -122,7 +122,7 @@
                     </div>
 
                     <h3
-                        class="text-lg font-bold text-base-content leading-tight mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                        class="text-base font-bold text-base-content leading-tight mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-300">
                         {{ rec.bookTitle }}
                     </h3>
                     <p class="text-sm text-base-content/60 font-medium mb-4">{{ rec.authorName }}</p>

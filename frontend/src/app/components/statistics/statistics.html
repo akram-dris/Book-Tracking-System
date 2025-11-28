@@ -2,16 +2,16 @@
   <!-- Sticky Header Section -->
   <div class="mb-8 sticky top-4 z-30">
     <div
-      class="glass-panel rounded-2xl p-3 border border-white/10 shadow-lg flex flex-col gap-4 max-w-7xl mx-auto backdrop-blur-xl bg-black/40">
+      class="glass-panel rounded-2xl p-2.5 border border-white/10 shadow-lg flex flex-col gap-4 max-w-7xl mx-auto backdrop-blur-xl bg-black/40">
 
       <!-- Top Row: Title & Time Filter -->
       <div class="flex flex-col md:flex-row items-center justify-between gap-4 px-2">
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-full bg-primary/10 text-primary">
-            <ng-icon name="heroChartBarSquare" size="1.5rem"></ng-icon>
+            <ng-icon name="heroChartBarSquare" size="1.25rem"></ng-icon>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-white tracking-tight">Statistics & Insights</h1>
+            <h1 class="text-lg font-bold text-white tracking-tight">Statistics & Insights</h1>
             <p class="text-xs text-base-content/60 font-medium">{{ getDateRangeLabel() }}</p>
           </div>
         </div>
@@ -154,26 +154,26 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Books Read -->
           <div
-            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
+            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-4 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <ng-icon name="heroBookOpen" size="5rem" class="text-primary"></ng-icon>
+              <ng-icon name="heroBookOpen" size="4rem" class="text-primary"></ng-icon>
             </div>
             <div class="relative z-10">
               <div class="text-sm font-medium text-base-content/60 mb-1">Books Read</div>
-              <div class="text-4xl font-bold text-primary mb-2">{{ statistics.overview.totalBooksRead }}</div>
+              <div class="text-3xl font-bold text-primary mb-2">{{ statistics.overview.totalBooksRead }}</div>
               <div class="text-xs text-base-content/40">Completed + Summarized</div>
             </div>
           </div>
 
           <!-- Total Pages -->
           <div
-            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-4 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <ng-icon name="heroBookOpen" size="5rem" class="text-secondary"></ng-icon>
+              <ng-icon name="heroBookOpen" size="4rem" class="text-secondary"></ng-icon>
             </div>
             <div class="relative z-10">
               <div class="text-sm font-medium text-base-content/60 mb-1">Total Pages</div>
-              <div class="text-4xl font-bold text-secondary mb-2">{{ statistics.overview.totalPagesRead | number }}
+              <div class="text-3xl font-bold text-secondary mb-2">{{ statistics.overview.totalPagesRead | number }}
               </div>
               <div class="text-xs text-base-content/40">Across all books</div>
             </div>
@@ -181,33 +181,33 @@
 
           <!-- Avg Pages/Day -->
           <div
-            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-accent/10 hover:-translate-y-1">
+            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-4 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-accent/10 hover:-translate-y-1">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <ng-icon name="heroChartBar" size="5rem" class="text-accent"></ng-icon>
+              <ng-icon name="heroChartBar" size="4rem" class="text-accent"></ng-icon>
             </div>
             <div class="relative z-10">
               <div class="text-sm font-medium text-base-content/60 mb-1">Avg Pages/Day</div>
-              <div class="text-4xl font-bold text-accent mb-2">{{ statistics.overview.averagePagesPerDay }}</div>
+              <div class="text-3xl font-bold text-accent mb-2">{{ statistics.overview.averagePagesPerDay }}</div>
               <div class="text-xs text-base-content/40">Daily average</div>
             </div>
           </div>
 
           <!-- Current Streak -->
           <div
-            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-6 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-warning/10 hover:-translate-y-1">
+            class="group relative overflow-hidden rounded-2xl bg-base-200/30 backdrop-blur-md border border-white/5 p-4 hover:bg-base-200/50 transition-all duration-300 hover:shadow-xl hover:shadow-warning/10 hover:-translate-y-1">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <ng-icon name="heroFire" size="5rem" class="text-warning"></ng-icon>
+              <ng-icon name="heroFire" size="4rem" class="text-warning"></ng-icon>
             </div>
             <div class="relative z-10">
               <div class="text-sm font-medium text-base-content/60 mb-1">Current Streak</div>
-              <div class="text-4xl font-bold text-warning mb-2">{{ statistics.overview.currentStreak }}</div>
+              <div class="text-3xl font-bold text-warning mb-2">{{ statistics.overview.currentStreak }}</div>
               <div class="text-xs text-base-content/40">Best: {{ statistics.overview.longestStreak }} days</div>
             </div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="flex items-center justify-between mb-2">
               <h3 class="font-bold text-lg">Currently Reading</h3>
               <div class="badge badge-primary badge-lg">{{ statistics.overview.booksCurrentlyReading }}</div>
@@ -218,7 +218,7 @@
             </div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="flex items-center justify-between mb-2">
               <h3 class="font-bold text-lg">Books Pending</h3>
               <div class="badge badge-neutral badge-lg">{{ statistics.overview.booksPending }}</div>
@@ -236,19 +236,19 @@
       @if (activeTab === 'authors') {
       <div class="space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Authors Read</div>
             <div class="text-3xl font-bold">{{ statistics.authors.totalAuthorsRead }}</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Most Read Author</div>
             <div class="text-xl font-bold text-primary truncate" [title]="statistics.authors.mostReadAuthor">{{
               statistics.authors.mostReadAuthor || 'N/A' }}</div>
             <div class="text-xs text-base-content/40 mt-1">{{ statistics.authors.mostReadAuthorBookCount }} books</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Diversity Score</div>
             <div class="text-3xl font-bold text-secondary">{{ statistics.authors.authorDiversityScore }}</div>
             <div class="text-xs text-base-content/40 mt-1">Unique authors / total books</div>
@@ -258,7 +258,7 @@
         @if (authorBooksChart) {
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-6">Top Authors by Books</h3>
-          <div style="height: 350px;">
+          <div style="height: 300px;">
             <canvas baseChart [data]="authorBooksChart" [options]="barChartOptions" type="bar">
             </canvas>
           </div>
@@ -302,18 +302,18 @@
       @if (activeTab === 'tags') {
       <div class="space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Total Tags</div>
             <div class="text-3xl font-bold">{{ statistics.tags.totalTags }}</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Favorite Tag</div>
             <div class="text-xl font-bold text-primary truncate">{{ statistics.tags.favoriteTag || 'N/A' }}</div>
             <div class="text-xs text-base-content/40 mt-1">{{ statistics.tags.favoriteTagBookCount }} books</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Diversity Score</div>
             <div class="text-3xl font-bold text-success">{{ statistics.tags.tagDiversityScore }}</div>
           </div>
@@ -321,16 +321,16 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           @if (tagBooksChart) {
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <h3 class="font-bold text-lg mb-6">Books by Tag</h3>
-            <div style="height: 350px;">
+            <div style="height: 300px;">
               <canvas baseChart [data]="tagBooksChart" [options]="pieChartOptions" type="pie">
               </canvas>
             </div>
           </div>
           }
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <h3 class="font-bold text-lg mb-4">Top Tags</h3>
             <div class="overflow-x-auto">
               <table class="table table-sm w-full">
@@ -367,13 +367,13 @@
       @if (activeTab === 'time') {
       <div class="space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Best Reading Month</div>
             <div class="text-2xl font-bold text-info">{{ statistics.timeBased.bestReadingMonth || 'N/A' }}</div>
             <div class="text-xs text-base-content/40 mt-1">{{ statistics.timeBased.bestReadingMonthPages }} pages</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Best Day of Week</div>
             <div class="text-2xl font-bold text-warning">{{ statistics.timeBased.bestReadingDayOfWeek || 'N/A' }}</div>
             <div class="text-xs text-base-content/40 mt-1">{{ statistics.timeBased.bestReadingDayPages }} pages total
@@ -384,7 +384,7 @@
         @if (monthlyTrendChart) {
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-6">Monthly Reading Trend</h3>
-          <div style="height: 350px;">
+          <div style="height: 300px;">
             <canvas baseChart [data]="monthlyTrendChart" [options]="lineChartOptions" type="line">
             </canvas>
           </div>
@@ -394,7 +394,7 @@
         @if (weeklyPatternChart) {
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-6">Weekly Reading Pattern</h3>
-          <div style="height: 350px;">
+          <div style="height: 300px;">
             <canvas baseChart [data]="weeklyPatternChart" [options]="barChartOptions" type="bar">
             </canvas>
           </div>
@@ -408,7 +408,7 @@
       <div class="space-y-8">
         <!-- Overall Goal Achievement Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Overall Completion</div>
             <div class="text-3xl font-bold text-success">{{ statistics.goals.overallCompletionRate.toFixed(1) }}%</div>
             <div class="text-xs text-base-content/40 mt-1">All books average</div>
@@ -439,9 +439,9 @@
         <!-- Goal Achievement Visualization -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           @if (goalAchievementChart) {
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <h3 class="font-bold text-lg mb-6">Goal Achievement Overview</h3>
-            <div style="height: 350px;">
+            <div style="height: 300px;">
               <canvas baseChart [data]="goalAchievementChart" [options]="barChartOptions" type="bar">
               </canvas>
             </div>
@@ -449,9 +449,9 @@
           }
 
           @if (goalCompletionChart) {
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <h3 class="font-bold text-lg mb-6">Completion Distribution</h3>
-            <div style="height: 350px;">
+            <div style="height: 300px;">
               <canvas baseChart [data]="goalCompletionChart" [options]="doughnutChartOptions" type="doughnut">
               </canvas>
             </div>
@@ -550,24 +550,24 @@
       @if (activeTab === 'books') {
       <div class="space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Avg Length</div>
             <div class="text-2xl font-bold">{{ statistics.books.averageBookLength }}</div>
             <div class="text-xs text-base-content/40">pages</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Reading Speed</div>
             <div class="text-2xl font-bold">{{ statistics.books.averageReadingSpeed }}</div>
             <div class="text-xs text-base-content/40">pages/session</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Completion</div>
             <div class="text-2xl font-bold text-success">{{ statistics.books.completionRate }}%</div>
           </div>
 
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-sm font-medium text-base-content/60 mb-1">Avg Rating</div>
             <div class="text-2xl font-bold text-warning flex items-center gap-1">
               {{ statistics.books.averageRating | number:'1.1-1' }} <ng-icon name="heroStar" size="1.25rem"></ng-icon>
@@ -579,7 +579,7 @@
         @if (ratingDistributionChart) {
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-6">Rating Distribution</h3>
-          <div style="height: 350px;">
+          <div style="height: 300px;">
             <canvas baseChart [data]="ratingDistributionChart" [options]="barChartOptions" type="bar">
             </canvas>
           </div>
@@ -606,7 +606,7 @@
           }
 
           @if (statistics.books.lowestRatedBook) {
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="flex items-start justify-between mb-4">
               <div>
                 <div class="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-1">Lowest Rated</div>
@@ -627,7 +627,7 @@
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-2">Rating Trend Over Time</h3>
           <p class="text-sm text-base-content/60 mb-6">See how your reading taste evolves</p>
-          <div style="height: 350px;">
+          <div style="height: 300px;">
             <canvas baseChart [data]="ratingTrendChart" [options]="lineChartOptions" type="line">
             </canvas>
           </div>
@@ -639,7 +639,7 @@
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-2">Book Status Timeline</h3>
           <p class="text-sm text-base-content/60 mb-6">Track how your reading journey evolved</p>
-          <div style="height: 400px;">
+          <div style="height: 320px;">
             <canvas baseChart [data]="statusTimelineChart" [options]="lineChartOptions" type="line">
             </canvas>
           </div>
@@ -648,7 +648,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           @if (statistics.books.shortestBook) {
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-2">Shortest Book</div>
             <h3 class="text-lg font-bold">{{ statistics.books.shortestBook.title }}</h3>
             <p class="text-sm text-base-content/60 mb-2">{{ statistics.books.shortestBook.authorName }}</p>
@@ -657,7 +657,7 @@
           }
 
           @if (statistics.books.longestBook) {
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
+          <div class="glass-panel p-4 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
             <div class="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-2">Longest Book</div>
             <h3 class="text-lg font-bold">{{ statistics.books.longestBook.title }}</h3>
             <p class="text-sm text-base-content/60 mb-2">{{ statistics.books.longestBook.authorName }}</p>
@@ -669,7 +669,7 @@
         @if (statusChart) {
         <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-base-200/20 backdrop-blur-md">
           <h3 class="font-bold text-lg mb-6">Books by Status Distribution</h3>
-          <div style="height: 350px;">
+          <div style="height: 300px;">
             <canvas baseChart [data]="statusChart" [options]="doughnutChartOptions" type="doughnut">
             </canvas>
           </div>
@@ -691,7 +691,7 @@
               </div>
               <div class="text-sm font-bold uppercase tracking-wider text-primary">Most Pages in a Day</div>
             </div>
-            <div class="text-4xl font-bold text-white mb-2">{{ statistics.records.mostPagesInDay.pages }}</div>
+            <div class="text-3xl font-bold text-white mb-2">{{ statistics.records.mostPagesInDay.pages }}</div>
             <div class="text-sm text-base-content/60">{{ statistics.records.mostPagesInDay.date | date:'mediumDate' }}
             </div>
           </div>
@@ -706,7 +706,7 @@
               </div>
               <div class="text-sm font-bold uppercase tracking-wider text-secondary">Most Pages in a Month</div>
             </div>
-            <div class="text-4xl font-bold text-white mb-2">{{ statistics.records.mostPagesInMonth.pages }}</div>
+            <div class="text-3xl font-bold text-white mb-2">{{ statistics.records.mostPagesInMonth.pages }}</div>
             <div class="text-sm text-base-content/60">{{ statistics.records.mostPagesInMonth.date | date:'MMMM yyyy' }}
             </div>
           </div>
@@ -721,7 +721,7 @@
               </div>
               <div class="text-sm font-bold uppercase tracking-wider text-accent">Fastest Completion</div>
             </div>
-            <div class="text-4xl font-bold text-white mb-2">{{ statistics.records.fastestBookCompletion.days }} <span
+            <div class="text-3xl font-bold text-white mb-2">{{ statistics.records.fastestBookCompletion.days }} <span
                 class="text-lg font-normal text-base-content/60">days</span></div>
             <div class="text-sm font-medium truncate">{{ statistics.records.fastestBookCompletion.bookTitle }}</div>
           </div>
