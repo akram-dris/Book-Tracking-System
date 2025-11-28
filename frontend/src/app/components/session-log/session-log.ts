@@ -268,13 +268,13 @@ export class SessionLogComponent implements OnInit {
             } else {
               this.isLoading = false;
               console.error('Error updating reading session', result.errors);
-              alert('Failed to update reading session. Please try again.');
+              this.notificationService.showError('Failed to update reading session');
             }
           },
           error: (err) => {
             this.isLoading = false;
             console.error('Error updating reading session', err);
-            alert('Failed to update reading session. Please try again.');
+            this.notificationService.showError('Failed to update reading session');
           }
         });
       } else {
@@ -296,16 +296,16 @@ export class SessionLogComponent implements OnInit {
             } else {
               this.isLoading = false;
               console.error('Error logging reading session', result.errors);
-              alert('Failed to log reading session. Please try again.');
+              this.notificationService.showError('Failed to log reading session');
             }
           },
           error: (err) => {
             this.isLoading = false;
             console.error('Error logging reading session', err);
             if (err.status === 409) {
-              alert('A reading session for this book on this date already exists.');
+              this.notificationService.showError('A reading session for this book on this date already exists');
             } else {
-              alert('Failed to log reading session. Please try again.');
+              this.notificationService.showError('Failed to log reading session');
             }
           }
         });

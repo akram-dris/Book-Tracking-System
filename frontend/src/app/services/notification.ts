@@ -1,34 +1,53 @@
-import { Injectable } from '@angular/core';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { Injectable, signal } from '@angular/core';
+
+export interface Toast {
+    id: number;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+    title?: string;
+    duration?: number;
+}
 
 @Injectable({
     providedIn: 'root'
 })
 export class NotificationService {
-    private readonly defaultDuration = 4000;
+    private toasts = signal<Toast[]>([]);
+    readonly toasts$ = this.toasts.asReadonly();
+    private counter = 0;
 
-    constructor(private snackBar: MatSnackBar) { }
-
-    showSuccess(message: string, action: string = 'OK'): void {
-        this.show(message, action, {
-            duration: this.defaultDuration,
-            panelClass: ['success-snackbar'],
-            horizontalPosition: 'right',
-            verticalPosition: 'bottom'
-        });
+    showSuccess(message: string, title: string = 'Success'): void {
+        this.add({ message, type: 'success', title });
     }
 
-    showError(message: string, action: string = 'Dismiss'): void {
-        this.show(message, action, {
-            duration: 5000,
-            panelClass: ['error-snackbar'],
-            horizontalPosition: 'right',
-            verticalPosition: 'bottom'
-        });
+    showError(message: string, title: string = 'Error'): void {
+        this.add({ message, type: 'error', title });
     }
 
-    private show(message: string, action: string, config: MatSnackBarConfig): void {
-        this.snackBar.open(message, action, config);
+    showInfo(message: string, title: string = 'Info'): void {
+        this.add({ message, type: 'info', title });
+    }
+
+    showWarning(message: string, title: string = 'Warning'): void {
+        this.add({ message, type: 'warning', title });
+    }
+
+    remove(id: number): void {
+        this.toasts.update(current => current.filter(t => t.id !== id));
+    }
+
+    private add(toast: Omit<Toast, 'id'>): void {
+        const id = this.counter++;
+        const newToast = { ...toast, id, duration: toast.duration || 5000 };
+
+        this.toasts.update(current => [...current, newToast]);
+
+        if (newToast.duration > 0) {
+            setTimeout(() => {
+                this.remove(id);
+            }, newToast.duration);
+        }
     }
 }
+
 

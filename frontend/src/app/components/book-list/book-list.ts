@@ -28,6 +28,7 @@ type ViewMode = 'grid' | 'list';
 
 import { MatDialog } from '@angular/material/dialog';
 import { BookFormComponent } from '../book-form/book-form';
+import { NotificationService } from '../../services/notification';
 
 @Component({
   selector: 'app-book-list',
@@ -99,7 +100,8 @@ export class BookListComponent implements OnInit {
     private readingStatusService: ReadingStatusService,
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -358,10 +360,17 @@ export class BookListComponent implements OnInit {
       this.bookService.deleteBook(id).subscribe({
         next: (response) => {
           if (response.isSuccess) {
+            this.notificationService.showSuccess('Book deleted successfully');
             this.loadBooks();
+          } else {
+            console.error('Error deleting book', response.errors);
+            this.notificationService.showError('Failed to delete book');
           }
         },
-        error: (error) => console.error('Error deleting book', error)
+        error: (error) => {
+          console.error('Error deleting book', error);
+          this.notificationService.showError('Failed to delete book');
+        }
       });
     }
   }

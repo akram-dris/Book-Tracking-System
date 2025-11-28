@@ -3,6 +3,7 @@ import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from './components/layout/sidebar/sidebar';
 import { HeaderComponent } from './components/layout/header/header';
 import { BreadcrumbComponent } from './components/layout/breadcrumb/breadcrumb';
+import { ToastContainerComponent } from './components/shared/toast/toast-container/toast-container';
 import { trigger, transition, style, animate, query } from '@angular/animations';
 
 @Component({
@@ -12,7 +13,8 @@ import { trigger, transition, style, animate, query } from '@angular/animations'
     RouterModule,
     SidebarComponent,
     HeaderComponent,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    ToastContainerComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
