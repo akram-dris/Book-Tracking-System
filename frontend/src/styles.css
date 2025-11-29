@@ -193,6 +193,17 @@ h6 {
   color: var(--fallback-pc, oklch(var(--pc) / 1));
 }
 
+/* Placeholder Image Styling */
+/* Darken placeholder images in dark mode for better visual consistency */
+[data-theme="dark"] img[src*="placeholder"] {
+  filter: brightness(0.4) contrast(1.1);
+  transition: filter 0.2s ease;
+}
+
+[data-theme="dark"] img[src*="placeholder"]:hover {
+  filter: brightness(0.5) contrast(1.1);
+}
+
 /* ============================================
    COMPONENT OVERRIDES
    ============================================ */
