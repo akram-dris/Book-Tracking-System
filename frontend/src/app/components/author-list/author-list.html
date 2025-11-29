@@ -9,9 +9,8 @@
         <ng-icon name="heroMagnifyingGlass" class="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40"
           size="1.2rem"></ng-icon>
         <input type="text" placeholder="Search authors..."
-          class="input input-sm w-full pl-10 rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-0 text-base-content font-medium h-10"
-          [(ngModel)]="searchQuery" (input)="onSearchChange()"
-          style="background-color: oklch(var(--b1)); color: oklch(var(--bc));" />
+          class="input input-sm w-full pl-10 rounded-full !bg-transparent !border-none !shadow-none !outline-none focus:!ring-0 text-base-content font-medium h-10 placeholder:text-base-content/50"
+          [(ngModel)]="searchQuery" (input)="onSearchChange()" style="color: oklch(var(--bc));" />
         @if (searchQuery) {
         <button
           class="absolute right-3 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle text-white/50 hover:text-white hover:bg-white/10"
