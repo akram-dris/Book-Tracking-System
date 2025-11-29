@@ -14,52 +14,40 @@
         <!-- Status Filter -->
         <select
           class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
-          [(ngModel)]="currentFilters.status" (ngModelChange)="onFilterChange()"
-          style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">
-          <option [ngValue]="undefined" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">All
-            Statuses</option>
+          [(ngModel)]="currentFilters.status" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Statuses</option>
           @for (status of statusOptions; track status.value) {
-          <option [ngValue]="status.value" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">{{
-            status.label }}</option>
+          <option [ngValue]="status.value">{{ status.label }}</option>
           }
         </select>
 
         <!-- Author Filter -->
         <select
           class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
-          [(ngModel)]="currentFilters.authorId" (ngModelChange)="onFilterChange()"
-          style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">
-          <option [ngValue]="undefined" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">All Authors
-          </option>
+          [(ngModel)]="currentFilters.authorId" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Authors</option>
           @for (author of authors; track author.id) {
-          <option [ngValue]="author.id" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">{{
-            author.name }}</option>
+          <option [ngValue]="author.id">{{ author.name }}</option>
           }
         </select>
 
         <!-- Tag Filter -->
         <select
           class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
-          [(ngModel)]="currentFilters.tagId" (ngModelChange)="onFilterChange()"
-          style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">
-          <option [ngValue]="undefined" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">All Tags
-          </option>
+          [(ngModel)]="currentFilters.tagId" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Tags</option>
           @for (tag of tags; track tag.id) {
-          <option [ngValue]="tag.id" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">{{ tag.name }}
-          </option>
+          <option [ngValue]="tag.id">{{ tag.name }}</option>
           }
         </select>
 
         <!-- Rating Filter -->
         <select
           class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
-          [(ngModel)]="currentFilters.rating" (ngModelChange)="onFilterChange()"
-          style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">
-          <option [ngValue]="undefined" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">All Ratings
-          </option>
+          [(ngModel)]="currentFilters.rating" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Ratings</option>
           @for (rating of ratingOptions; track rating.value) {
-          <option [ngValue]="rating.value" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">{{
-            rating.label }}</option>
+          <option [ngValue]="rating.value">{{ rating.label }}</option>
           }
         </select>
       </div>

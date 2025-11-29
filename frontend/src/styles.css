@@ -277,35 +277,90 @@ h6 {
   }
 }
 
-/* Select Dropdown Options - Force Opaque Background */
+/* Select Dropdown Options - 100% Opaque, No Transparency */
 select {
-  background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+  background-color: oklch(var(--b1)) !important;
+  color: oklch(var(--bc)) !important;
+  /* Add shadow to create visual separation from content behind */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
+/* Force completely opaque backgrounds for dropdown options */
 select option {
-  background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
-  color: var(--fallback-bc, oklch(var(--bc) / 1)) !important;
-  padding: 0.5rem !important;
+  background-color: rgb(from oklch(var(--b1)) r g b) !important;
+  background: rgb(from oklch(var(--b1)) r g b) !important;
+  color: oklch(var(--bc)) !important;
+  padding: 0.625rem 0.75rem !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  min-height: 2.5rem !important;
+  opacity: 1 !important;
 }
 
+/* Light theme specific - ensure solid white background */
+[data-theme="light"] select option {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] select {
+  background-color: #ffffff !important;
+}
+
+/* Hover state for better visual feedback */
 select option:hover {
-  background-color: var(--fallback-b2, oklch(var(--b2) / 1)) !important;
+  background-color: rgb(from oklch(var(--p) / 0.2) r g b) !important;
+  color: oklch(var(--bc)) !important;
+  opacity: 1 !important;
 }
 
+[data-theme="light"] select option:hover {
+  background-color: #ede9fe !important;
+  background: #ede9fe !important;
+  color: #1e293b !important;
+}
+
+/* Selected/Checked state with primary color highlight */
 select option:checked,
 select option:focus {
-  background-color: var(--fallback-b2, oklch(var(--b2) / 1)) !important;
-  color: var(--fallback-bc, oklch(var(--bc) / 1)) !important;
+  background-color: rgb(from oklch(var(--p) / 0.25) r g b) !important;
+  background: rgb(from oklch(var(--p) / 0.25) r g b) !important;
+  color: oklch(var(--bc)) !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
 }
 
-/* Specific for DaisyUI select elements */
-.select option {
-  background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
-  color: var(--fallback-bc, oklch(var(--bc) / 1)) !important;
+[data-theme="light"] select option:checked,
+[data-theme="light"] select option:focus {
+  background-color: #c4b5fd !important;
+  background: #c4b5fd !important;
+  color: #1e293b !important;
 }
 
-.select option:checked {
-  background-color: var(--fallback-b2, oklch(var(--b2) / 1)) !important;
+/* Dark mode - ensure solid dark background */
+[data-theme="dark"] select {
+  background-color: #1e293b !important;
+}
+
+[data-theme="dark"] select option {
+  background-color: #1e293b !important;
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] select option:hover {
+  background-color: #334155 !important;
+  background: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] select option:checked,
+[data-theme="dark"] select option:focus {
+  background-color: #475569 !important;
+  background: #475569 !important;
+  color: #e2e8f0 !important;
 }
 
 /* ============================================
