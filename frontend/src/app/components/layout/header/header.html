@@ -137,11 +137,11 @@
       <app-streak-indicator></app-streak-indicator>
 
       <!-- Theme Toggle -->
-      <button (click)="toggleTheme()"
-        class="btn btn-ghost btn-circle btn-sm hover:bg-primary/10 hover:text-primary hover:scale-110 
-               transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border-2 border-transparent hover:border-primary/20"
+      <button (click)="toggleTheme()" class="btn btn-ghost btn-circle btn-sm hover:bg-primary/10 hover:text-primary hover:scale-110 
+               transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border-2 border-transparent hover:border-primary/20
+               flex items-center justify-center text-base-content"
         [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
-        <ng-icon [name]="isDarkMode ? 'heroSun' : 'heroMoon'" size="1.25rem"></ng-icon>
+        <ng-icon [name]="isDarkMode ? 'heroSun' : 'heroMoon'" size="1.25rem" class="shrink-0"></ng-icon>
       </button>
     </div>
   </div>

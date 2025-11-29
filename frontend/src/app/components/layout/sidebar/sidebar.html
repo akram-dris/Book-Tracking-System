@@ -72,17 +72,19 @@
   <!-- Toggle Button (Footer) -->
   <div class="p-2 shrink-0">
     <button (click)="onToggle()"
-      class="btn btn-ghost w-full hover:bg-base-content/5 border border-transparent hover:border-base-content/10 transition-all duration-300 group relative overflow-hidden"
-      [class.btn-circle]="isCollapsed()" [class.h-9]="!isCollapsed()" [class.min-h-0]="!isCollapsed()"
-      [class.rounded-xl]="!isCollapsed()">
+      class="btn btn-ghost w-full hover:bg-base-content/5 border border-transparent hover:border-base-content/10 transition-all duration-300 group relative overflow-hidden flex items-center"
+      [class.btn-circle]="isCollapsed()" [class.justify-center]="isCollapsed()" [class.h-9]="!isCollapsed()"
+      [class.min-h-0]="!isCollapsed()" [class.rounded-xl]="!isCollapsed()">
 
       <!-- Icon -->
       <ng-icon [name]="isCollapsed() ? 'heroBars3' : 'heroBars3BottomLeft'" size="1.1rem"
-        class="transition-transform duration-500 group-hover:scale-110" [class.rotate-180]="!isCollapsed()"></ng-icon>
+        class="transition-transform duration-500 group-hover:scale-110 text-base-content shrink-0"
+        [class.rotate-180]="!isCollapsed()"></ng-icon>
 
       <!-- Text -->
-      <span class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300 origin-left"
-        [class.w-0]="isCollapsed()" [class.opacity-0]="isCollapsed()" [class.ml-0]="isCollapsed()">
+      <span class="text-sm font-medium whitespace-nowrap transition-all duration-300 origin-left"
+        [class.w-0]="isCollapsed()" [class.opacity-0]="isCollapsed()" [class.ml-3]="!isCollapsed()"
+        [class.ml-0]="isCollapsed()">
         Collapse
       </span>
     </button>

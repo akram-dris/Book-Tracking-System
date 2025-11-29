@@ -8,6 +8,7 @@ import {
   heroTag,
   heroCalendarDays,
   heroBars3,
+  heroBars3BottomLeft,
   heroChartBarSquare,
   heroChartBar,
   heroSparkles
@@ -35,6 +36,7 @@ interface NavItem {
       heroTag,
       heroCalendarDays,
       heroBars3,
+      heroBars3BottomLeft,
       heroChartBarSquare,
       heroChartBar,
       heroSparkles
