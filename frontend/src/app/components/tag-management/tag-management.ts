@@ -6,20 +6,22 @@ import { GetTag } from '../../models/get-tag.model';
 import { CreateTag } from '../../models/create-tag.model';
 import { UpdateTag } from '../../models/update-tag.model';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroStar, heroArrowsUpDown, heroPlus, heroPencilSquare, heroTrash, heroXMark, heroTag, heroCheckCircle } from '@ng-icons/heroicons/outline';
+import { heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle } from '@ng-icons/heroicons/outline';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 import { PaginationParams } from '../../models/result';
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, NgIconComponent, InfiniteScrollDirective],
+  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, NgIconComponent, MatIconModule, MatButtonModule, InfiniteScrollDirective],
   templateUrl: './tag-management.html',
   styleUrls: ['./tag-management.css'],
-  viewProviders: [provideIcons({ heroStar, heroArrowsUpDown, heroPlus, heroPencilSquare, heroTrash, heroXMark, heroTag, heroCheckCircle })]
+  viewProviders: [provideIcons({ heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle })]
 })
 export class TagManagementComponent implements OnInit {
   @ViewChild('tagModal') tagModal!: TemplateRef<any>;

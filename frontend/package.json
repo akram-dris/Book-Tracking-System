@@ -35,6 +35,7 @@
     "@angular/router": "^20.3.0",
     "@angular/ssr": "^20.3.7",
     "@ng-icons/core": "^32.2.0",
+    "@ng-icons/feather-icons": "^33.0.0",
     "@ng-icons/heroicons": "^32.2.0",
     "@ng-select/ng-select": "^20.7.0",
     "@tailwindcss/postcss": "^4.1.16",
