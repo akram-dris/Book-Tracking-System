@@ -328,3 +328,19 @@ select option:focus {
   backdrop-filter: blur(8px);
   background-color: rgba(0, 0, 0, 0.6) !important;
 }
+
+/* Enforce Cursor Pointer on Interactive Elements */
+button,
+.btn,
+select,
+.select,
+.join-item,
+[type="button"],
+[type="submit"],
+[type="reset"],
+.dropdown label,
+.dropdown summary,
+.menu li>a,
+.menu li>button {
+  cursor: pointer !important;
+}
