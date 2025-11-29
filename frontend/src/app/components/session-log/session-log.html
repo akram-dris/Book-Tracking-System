@@ -7,7 +7,7 @@
     </div>
 
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+    <div class="px-5 py-3 border-b border-white/5 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3">
         <div class="p-2 rounded-xl bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--p),0.3)]">
           <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
@@ -24,14 +24,14 @@
     </div>
 
     <!-- Form Content - Grid Layout -->
-    <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-hidden p-6">
+    <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-hidden p-4">
       <div class="grid grid-cols-12 gap-6 h-full">
 
         <!-- Left Column: Progress & Stats (4 cols) -->
         <div class="col-span-4 flex flex-col gap-2 h-full overflow-hidden">
           <!-- Progress Card -->
           <div
-            class="glass-panel rounded-2xl p-5 border border-white/10 shadow-lg bg-black/20 relative overflow-hidden group shrink-0">
+            class="glass-panel rounded-2xl p-4 border border-white/10 shadow-lg bg-black/20 relative overflow-hidden group shrink-0">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
                 <div class="p-1.5 rounded-lg bg-primary/20 text-primary">
@@ -89,7 +89,7 @@
 
           <!-- Daily Goals Card -->
           @if (readingGoal) {
-          <div class="glass-panel rounded-2xl p-5 border border-white/10 shadow-lg bg-black/20 flex-1 flex flex-col">
+          <div class="glass-panel rounded-2xl p-4 border border-white/10 shadow-lg bg-black/20 flex-1 flex flex-col">
 
             <div class="space-y-3">
               <!-- Goals List -->
@@ -169,7 +169,7 @@
         <!-- Right Column: Inputs (8 cols) -->
         <div class="col-span-8 flex flex-col h-full">
           <div
-            class="glass-panel rounded-2xl p-6 border border-white/10 shadow-xl backdrop-blur-xl bg-black/40 h-full flex flex-col">
+            class="glass-panel rounded-2xl p-4 border border-white/10 shadow-xl backdrop-blur-xl bg-black/40 h-full flex flex-col">
 
             <div class="grid grid-cols-2 gap-6 mb-6">
               <!-- Date Input -->
@@ -185,7 +185,7 @@
                   <mat-form-field appearance="fill" class="w-full glass-date-field large-field"
                     subscriptSizing="dynamic">
                     <input matInput [matDatepicker]="picker" formControlName="date" [max]="maxDate" required
-                      class="!pl-9 !text-base">
+                      class="!pl-9 !text-sm !h-10">
                     <mat-datepicker-toggle matIconSuffix [for]="picker"
                       class="text-base-content/60 hover:text-primary transition-colors"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
@@ -204,7 +204,7 @@
                     <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
                   </div>
                   <input type="number" formControlName="pagesRead" placeholder="e.g. 25"
-                    class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-[48px] text-base-content placeholder:text-base-content/30 font-bold text-lg"
+                    class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-10 text-base-content placeholder:text-base-content/30 font-bold text-base"
                     [class.input-error]="sessionForm.get('pagesRead')?.invalid && sessionForm.get('pagesRead')?.touched" />
                 </div>
               </div>
@@ -216,7 +216,7 @@
                 <span class="label-text font-bold text-base-content/80 text-sm">Notes / Summary</span>
               </label>
               <textarea formControlName="summary" placeholder="What did you read about? Any thoughts or reflections..."
-                class="textarea textarea-bordered w-full flex-1 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl text-base-content placeholder:text-base-content/30 resize-none leading-relaxed p-4 text-base"></textarea>
+                class="textarea textarea-bordered w-full flex-1 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl text-base-content placeholder:text-base-content/30 resize-none leading-relaxed p-3 text-sm"></textarea>
             </div>
 
             <!-- Action Buttons -->

@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NotificationService } from '../../services/notification';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight } from '@ng-icons/heroicons/outline';
+import { heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight, heroMinus, heroPlus } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-plan-and-goal-modal',
@@ -18,7 +18,7 @@ import { heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight } 
   imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, NgIconComponent],
   templateUrl: './plan-and-goal-modal.html',
   styleUrls: ['./plan-and-goal-modal.css'],
-  viewProviders: [provideIcons({ heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight })]
+  viewProviders: [provideIcons({ heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight, heroMinus, heroPlus })]
 })
 export class PlanAndGoalModalComponent implements OnInit {
   bookId = input<number | null>(null);
@@ -40,9 +40,9 @@ export class PlanAndGoalModalComponent implements OnInit {
   ) {
     this.planAndGoalForm = this.fb.group({
       targetStartDate: [this.formatDate(new Date()), Validators.required],
-      lowGoal: [null, [Validators.required, Validators.min(1)]],
-      mediumGoal: [null, [Validators.required, Validators.min(1)]],
-      highGoal: [null, [Validators.required, Validators.min(1)]]
+      lowGoal: [1, [Validators.required, Validators.min(1)]],
+      mediumGoal: [2, [Validators.required, Validators.min(1)]],
+      highGoal: [3, [Validators.required, Validators.min(1)]]
     }, { validators: this.goalHierarchyValidator });
   }
 
@@ -79,6 +79,16 @@ export class PlanAndGoalModalComponent implements OnInit {
       return { mediumNotLessThanHigh: true };
     }
     return null;
+  }
+
+  adjustGoal(controlName: string, amount: number): void {
+    const control = this.planAndGoalForm.get(controlName);
+    if (control) {
+      const currentValue = control.value || 0;
+      const newValue = Math.max(1, currentValue + amount);
+      control.setValue(newValue);
+      control.markAsTouched();
+    }
   }
 
   private formatDate(date: Date): string {

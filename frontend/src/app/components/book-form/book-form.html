@@ -7,7 +7,7 @@
     </div>
 
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+    <div class="px-5 py-3 border-b border-white/5 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3">
         <div class="p-2 rounded-xl bg-primary/10 text-primary">
           <ng-icon [name]="isEditMode ? 'heroPencil' : 'heroPlus'" size="1.25rem"></ng-icon>
@@ -27,7 +27,7 @@
 
       <!-- Left Column: Cover Image (Fixed Width) -->
       <div
-        class="w-full md:w-64 p-6 border-b md:border-b-0 md:border-r border-white/5 flex flex-col gap-4 shrink-0 overflow-y-auto md:overflow-visible">
+        class="w-full md:w-56 p-4 border-b md:border-b-0 md:border-r border-white/5 flex flex-col gap-4 shrink-0 overflow-y-auto md:overflow-visible">
         <div class="form-control w-full">
           <!-- Book Cover Label Removed -->
 
@@ -80,7 +80,7 @@
       <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
 
         <!-- Inputs Section (Fixed/Shrinkable) -->
-        <div class="p-6 pb-0 space-y-5 shrink-0">
+        <div class="p-4 pb-0 space-y-4 shrink-0">
 
           <!-- Title Input -->
           <div class="form-control w-full">
@@ -89,7 +89,7 @@
                 <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
               </div>
               <input type="text" formControlName="title" placeholder="Book Title"
-                class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-12 text-base-content placeholder:text-base-content/30"
+                class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-10 text-sm text-base-content placeholder:text-base-content/30"
                 [class.input-error]="bookForm.get('title')?.invalid && bookForm.get('title')?.touched" />
             </div>
             <!-- Error Space -->
@@ -110,7 +110,7 @@
                   <ng-icon name="heroUser" size="1.25rem"></ng-icon>
                 </div>
                 <mat-select formControlName="authorId" placeholder="Select Author"
-                  class="glass-select w-full pl-10 bg-base-200/30 border border-white/10 rounded-xl h-12 flex items-center px-3 focus:border-primary/50 transition-all duration-300 text-base">
+                  class="glass-select w-full pl-10 bg-base-200/30 border border-white/10 rounded-xl h-10 flex items-center px-3 focus:border-primary/50 transition-all duration-300 text-sm">
                   @for (author of authors; track author.id) {
                   <mat-option [value]="author.id" class="!bg-transparent hover:!bg-white/5 !min-h-[48px] !h-[48px]">
                     <div class="flex items-center gap-3">
@@ -145,7 +145,7 @@
                   <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
                 </div>
                 <input type="number" formControlName="totalPages" placeholder="Total Pages"
-                  class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-12 text-base-content placeholder:text-base-content/30"
+                  class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-10 text-sm text-base-content placeholder:text-base-content/30"
                   [class.input-error]="bookForm.get('totalPages')?.invalid && bookForm.get('totalPages')?.touched" />
               </div>
               <!-- Error Space -->
@@ -160,7 +160,7 @@
         </div>
 
         <!-- Tags Section (Fixed Height) -->
-        <div class="h-60 min-h-0 p-6 pt-2 flex flex-col shrink-0">
+        <div class="h-48 min-h-0 p-4 pt-2 flex flex-col shrink-0">
           <div
             class="bg-base-200/20 border border-white/5 rounded-xl p-3 h-full flex flex-row gap-3 min-h-0 overflow-hidden">
 

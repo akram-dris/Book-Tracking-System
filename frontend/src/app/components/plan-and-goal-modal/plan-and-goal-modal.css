@@ -36,6 +36,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 /* Modal Backdrop Blur */
@@ -48,4 +49,37 @@ input[type=number] {
 .input:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(var(--p), 0.2);
+}
+
+/* Blob Animations */
+@keyframes float-slow {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(10px, 10px);
+    }
+}
+
+@keyframes float-slower {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-10px, 5px);
+    }
+}
+
+.animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-slower {
+    animation: float-slower 12s ease-in-out infinite;
 }
