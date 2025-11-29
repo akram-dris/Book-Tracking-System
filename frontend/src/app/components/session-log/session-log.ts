@@ -10,7 +10,7 @@ import { UpdateReadingSession } from '../../models/update-reading-session.model'
 import { GetReadingGoal } from '../../models/get-reading-goal.model';
 import { GetReadingSession } from '../../models/get-reading-session.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText, heroTrophy } from '@ng-icons/heroicons/outline';
+import { heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText, heroTrophy, heroMinus, heroPlus } from '@ng-icons/heroicons/outline';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,7 +24,7 @@ import { NotificationService } from '../../services/notification';
   imports: [CommonModule, ReactiveFormsModule, NgIconComponent, MatDatepickerModule, MatInputModule, MatFormFieldModule, MatButtonModule],
   templateUrl: './session-log.html',
   styleUrls: ['./session-log.css'],
-  viewProviders: [provideIcons({ heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText, heroTrophy })]
+  viewProviders: [provideIcons({ heroCheckCircle, heroArrowLeft, heroCalendar, heroBookOpen, heroDocumentText, heroTrophy, heroMinus, heroPlus })]
 })
 export class SessionLogComponent implements OnInit {
   bookId: number | null = null;
@@ -194,6 +194,27 @@ export class SessionLogComponent implements OnInit {
       day = '0' + day;
 
     return [year, month, day].join('-');
+  }
+
+  adjustPages(delta: number): void {
+    const currentValue = this.sessionForm.get('pagesRead')?.value || 0;
+    const newValue = Math.max(1, currentValue + delta);
+
+    // Get max pages allowed from validator
+    if (this.totalPages) {
+      let basePagesRead = this.totalReadPages;
+      if (this.existingSession) {
+        basePagesRead -= this.existingSession.pagesRead;
+      }
+      const maxPages = this.totalPages - basePagesRead;
+
+      // Only update if within valid range
+      if (newValue <= maxPages) {
+        this.sessionForm.patchValue({ pagesRead: newValue });
+      }
+    } else {
+      this.sessionForm.patchValue({ pagesRead: newValue });
+    }
   }
 
   getGoalLevelClass(goalLevel: 'low' | 'medium' | 'high'): string {

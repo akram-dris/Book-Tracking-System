@@ -179,11 +179,10 @@
                 </label>
                 <div class="relative group">
                   <div
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40 group-focus-within:text-primary transition-colors">
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40 group-focus-within:text-primary transition-colors z-10">
                     <ng-icon name="heroCalendar" size="1.25rem"></ng-icon>
                   </div>
-                  <mat-form-field appearance="fill" class="w-full glass-date-field large-field"
-                    subscriptSizing="dynamic">
+                  <mat-form-field appearance="fill" class="w-full glass-date-field" subscriptSizing="dynamic">
                     <input matInput [matDatepicker]="picker" formControlName="date" [max]="maxDate" required
                       class="!pl-9 !text-sm !h-10">
                     <mat-datepicker-toggle matIconSuffix [for]="picker"
@@ -193,19 +192,28 @@
                 </div>
               </div>
 
-              <!-- Pages Read Input -->
+              <!-- Pages Read Counter -->
               <div class="form-control w-full">
                 <label class="label px-0 pt-0 mb-1.5">
                   <span class="label-text font-bold text-base-content/80 text-sm">Pages Read Today</span>
                 </label>
-                <div class="relative group">
-                  <div
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40 group-focus-within:text-primary transition-colors">
-                    <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+                <div
+                  class="relative overflow-hidden bg-base-200/30 rounded-xl p-2 border border-white/5 hover:border-primary/30 transition-all duration-300 group hover:bg-base-200/50 h-14">
+                  <div class="h-full">
+                    <div class="flex items-center justify-center gap-3 bg-black/20 rounded-lg p-1.5 h-full">
+                      <button type="button" (click)="adjustPages(-1)"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 text-white transition-all active:scale-95">
+                        <ng-icon name="heroMinus" size="1rem"></ng-icon>
+                      </button>
+                      <input type="number" formControlName="pagesRead"
+                        class="input input-ghost w-16 text-center font-black text-xl p-0 h-auto focus:bg-transparent focus:text-primary placeholder:text-base-content/20 appearance-none text-white"
+                        min="1">
+                      <button type="button" (click)="adjustPages(1)"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 text-white transition-all active:scale-95">
+                        <ng-icon name="heroPlus" size="1rem"></ng-icon>
+                      </button>
+                    </div>
                   </div>
-                  <input type="number" formControlName="pagesRead" placeholder="e.g. 25"
-                    class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-10 text-base-content placeholder:text-base-content/30 font-bold text-base"
-                    [class.input-error]="sessionForm.get('pagesRead')?.invalid && sessionForm.get('pagesRead')?.touched" />
                 </div>
               </div>
             </div>

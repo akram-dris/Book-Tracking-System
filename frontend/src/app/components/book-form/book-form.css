@@ -15,18 +15,42 @@
 /* Material Select Customization for Glass Theme */
 ::ng-deep .mat-mdc-select-trigger {
   color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
 }
 
 ::ng-deep .mat-mdc-select-arrow {
   color: rgba(255, 255, 255, 0.5) !important;
+  margin-top: 0 !important;
 }
 
 ::ng-deep .mat-mdc-select-value {
   color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: normal !important;
 }
 
 ::ng-deep .mat-mdc-select-placeholder {
   color: rgba(255, 255, 255, 0.3) !important;
+  line-height: normal !important;
+}
+
+::ng-deep .mat-mdc-select-value-text {
+  display: flex !important;
+  align-items: center !important;
+  line-height: normal !important;
+}
+
+/* Glass Select Specific Styling */
+::ng-deep .glass-select .mat-mdc-select-trigger {
+  padding-left: 2.5rem !important;
+  height: 2.5rem !important;
+}
+
+::ng-deep .glass-select .mdc-line-ripple {
+  display: none !important;
 }
 
 /* Dropdown Panel */
