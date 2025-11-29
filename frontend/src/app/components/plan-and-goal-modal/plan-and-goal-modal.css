@@ -51,6 +51,113 @@ input[type=number] {
     box-shadow: 0 0 0 2px rgba(var(--p), 0.2);
 }
 
+/* Datepicker Customization for Glass Theme */
+::ng-deep .cdk-overlay-container {
+    z-index: 10000 !important;
+}
+
+::ng-deep .mat-datepicker-content-container {
+    z-index: 10001 !important;
+}
+
+/* Reset backdrop for datepicker to prevent double blur */
+::ng-deep .cdk-overlay-backdrop.mat-overlay-transparent-backdrop,
+::ng-deep .cdk-overlay-backdrop.mat-datepicker-backdrop {
+    backdrop-filter: none !important;
+    background-color: transparent !important;
+    display: block !important;
+    /* Keep it present but invisible so clicks close it */
+}
+
+::ng-deep .mat-datepicker-content {
+    background-color: #1a1a1a !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+::ng-deep .mat-calendar-body-label {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .mat-calendar-table-header th {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+::ng-deep .mat-calendar-body-cell-content {
+    color: white !important;
+    border-radius: 50% !important;
+}
+
+::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+::ng-deep .mat-calendar-body-selected {
+    background-color: oklch(var(--p)) !important;
+    color: white !important;
+}
+
+::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: oklch(var(--p)) !important;
+}
+
+::ng-deep .mat-calendar-arrow {
+    fill: white !important;
+}
+
+::ng-deep .mat-calendar-period-button {
+    color: white !important;
+}
+
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+    color: white !important;
+}
+
+/* Glass Date Field Specifics */
+.glass-date-field ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 0.75rem !important;
+    /* rounded-xl */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s ease;
+    height: 56px !important;
+    /* h-14 */
+    display: flex !important;
+    align-items: center !important;
+}
+
+.glass-date-field ::ng-deep .mat-mdc-text-field-wrapper:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.glass-date-field ::ng-deep .mat-mdc-form-field-focus-overlay {
+    background-color: transparent !important;
+}
+
+.glass-date-field ::ng-deep .mat-mdc-input-element {
+    color: white !important;
+    font-weight: 500;
+    line-height: normal !important;
+}
+
+.glass-date-field ::ng-deep .mat-mdc-form-field-flex {
+    align-items: center !important;
+    height: 100% !important;
+}
+
+.glass-date-field ::ng-deep .mat-mdc-form-field-infix {
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Hide underline */
+::ng-deep .mdc-line-ripple {
+    display: none !important;
+}
+
 /* Blob Animations */
 @keyframes float-slow {
 

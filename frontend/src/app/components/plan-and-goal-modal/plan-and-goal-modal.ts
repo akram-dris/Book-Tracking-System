@@ -8,6 +8,7 @@ import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NotificationService } from '../../services/notification';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight, heroMinus, heroPlus } from '@ng-icons/heroicons/outline';
@@ -15,7 +16,7 @@ import { heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight, h
 @Component({
   selector: 'app-plan-and-goal-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, NgIconComponent],
   templateUrl: './plan-and-goal-modal.html',
   styleUrls: ['./plan-and-goal-modal.css'],
   viewProviders: [provideIcons({ heroCalendar, heroTrophy, heroCheckCircle, heroXMark, heroArrowRight, heroMinus, heroPlus })]
@@ -39,7 +40,7 @@ export class PlanAndGoalModalComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.planAndGoalForm = this.fb.group({
-      targetStartDate: [this.formatDate(new Date()), Validators.required],
+      targetStartDate: [new Date(), Validators.required],
       lowGoal: [1, [Validators.required, Validators.min(1)]],
       mediumGoal: [2, [Validators.required, Validators.min(1)]],
       highGoal: [3, [Validators.required, Validators.min(1)]]
@@ -48,7 +49,7 @@ export class PlanAndGoalModalComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.initialStartedReadingDate()) {
-      this.planAndGoalForm.patchValue({ targetStartDate: this.formatDate(this.initialStartedReadingDate()!) });
+      this.planAndGoalForm.patchValue({ targetStartDate: this.initialStartedReadingDate()! });
     }
     if (this.initialReadingGoal()) {
       this.planAndGoalForm.patchValue(this.initialReadingGoal()!);
