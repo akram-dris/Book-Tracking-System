@@ -26,5 +26,12 @@ namespace BookTrackingSystem.Controllers
             var result = await _heatmapService.GetHeatmapDataAsync(year);
             return Ok(result);
         }
+
+        [HttpGet("years")]
+        public async Task<ActionResult<Result<YearRange>>> GetAvailableYears()
+        {
+            var result = await _heatmapService.GetAvailableYearsAsync();
+            return Ok(result);
+        }
     }
 }

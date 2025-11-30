@@ -2,37 +2,41 @@
   <!-- Sticky Header Section -->
   <div class="mb-8 sticky top-4 z-30">
     <div
-      class="glass-panel rounded-full p-2 pr-4 border border-white/10 shadow-lg flex flex-col md:flex-row gap-3 items-center max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
+      class="glass-panel rounded-full p-2 px-6 border border-white/10 shadow-lg flex justify-center items-center max-w-fit mx-auto backdrop-blur-xl bg-black/40">
 
       <!-- Year Navigation -->
-      <div class="flex items-center gap-2 px-2 flex-1 justify-center md:justify-start">
-        <button
-          class="btn btn-circle btn-sm btn-ghost hover:bg-white/10 text-white/70 hover:text-white transition-all duration-300"
-          (click)="previousYear()" [disabled]="loading">
-          <ng-icon name="heroChevronLeft" size="1.25rem"></ng-icon>
-        </button>
+      <div class="flex items-center justify-center">
+        <div class="relative">
+          <button (click)="toggleYearDropdown()"
+            class="flex items-center gap-2 px-6 py-2 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 cursor-pointer transition-all duration-300">
+            <ng-icon name="heroCalendarDays" size="1.25rem" class="text-primary"></ng-icon>
+            <span class="text-xl font-bold text-white tracking-tight">{{ currentYear }}</span>
+            <ng-icon name="heroChevronDown" size="0.875rem" class="text-white/60"
+              [class.rotate-180]="isYearDropdownOpen"></ng-icon>
+          </button>
 
-        <div class="flex items-center gap-2 px-4 py-1 rounded-full bg-white/5 border border-white/5">
-          <ng-icon name="heroCalendarDays" size="1.25rem" class="text-primary"></ng-icon>
-          <span class="text-xl font-bold text-white tracking-tight">{{ currentYear }}</span>
-        </div>
+          <!-- Year Dropdown -->
+          @if (isYearDropdownOpen) {
+          <!-- Backdrop -->
+          <div class="fixed inset-0 z-40" (click)="isYearDropdownOpen = false"></div>
 
-        <button
-          class="btn btn-circle btn-sm btn-ghost hover:bg-white/10 text-white/70 hover:text-white transition-all duration-300"
-          (click)="nextYear()" [disabled]="loading">
-          <ng-icon name="heroChevronRight" size="1.25rem"></ng-icon>
-        </button>
-      </div>
-
-      <!-- Streak Info -->
-      <div
-        class="flex items-center gap-3 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/20 to-secondary/20 border border-accent/20">
-        <div class="p-1.5 rounded-full bg-accent/20 text-accent">
-          <ng-icon name="heroFire" size="1.25rem"></ng-icon>
-        </div>
-        <div class="flex flex-col leading-none">
-          <span class="text-lg font-bold text-white">{{ currentStreak }}</span>
-          <span class="text-[10px] uppercase tracking-wider font-bold text-white/60">Day Streak</span>
+          <div
+            class="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 glass-panel bg-black/80 rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+            style="min-width: 200px; max-height: 300px; overflow-y: auto;">
+            <div class="p-2">
+              @for (year of years.slice().reverse(); track year) {
+              <button (click)="selectYear(year)"
+                class="w-full text-left px-4 py-2 rounded-xl hover:bg-white/10 transition-colors duration-200 text-white"
+                [class.bg-primary/20]="year === currentYear" [class.font-bold]="year === currentYear">
+                {{ year }}
+                @if (year === currentYear) {
+                <ng-icon name="heroCheck" size="1rem" class="float-right text-primary"></ng-icon>
+                }
+              </button>
+              }
+            </div>
+          </div>
+          }
         </div>
       </div>
     </div>
@@ -41,7 +45,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Stats Section -->
     @if (!loading) {
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" @fadeIn>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" @fadeIn>
       <!-- Total Pages Card -->
       <div
         class="group relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-4 hover:bg-base-200/60 transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
@@ -101,26 +105,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Longest Streak Card -->
-      <div
-        class="group relative overflow-hidden rounded-2xl bg-base-200/40 backdrop-blur-md border border-white/5 p-4 hover:bg-base-200/60 transition-all duration-500 hover:shadow-xl hover:shadow-warning/10 hover:-translate-y-1">
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-warning/10 via-warning/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        </div>
-        <div class="relative z-10">
-          <div class="flex items-center gap-3 mb-3">
-            <div
-              class="p-2 rounded-xl bg-warning/10 text-warning group-hover:scale-110 transition-transform duration-300">
-              <ng-icon name="heroTrophy" size="1.25rem"></ng-icon>
-            </div>
-            <div class="text-xs font-bold text-base-content/60 uppercase tracking-wider">Best Streak</div>
-          </div>
-          <div class="text-3xl font-black text-base-content group-hover:text-warning transition-colors duration-300">
-            {{ longestStreak }}
-          </div>
-        </div>
-      </div>
     </div>
     }
 
@@ -128,8 +112,8 @@
     @if (loading) {
     <div class="animate-pulse">
       <!-- Stats Cards Skeleton -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        @for (i of [1,2,3,4]; track i) {
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        @for (i of [1,2,3]; track i) {
         <div class="bg-base-200/40 rounded-2xl p-6 h-32 border border-white/5">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-8 h-8 rounded-xl bg-base-300/50"></div>
