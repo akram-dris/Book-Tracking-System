@@ -1,30 +1,45 @@
+
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl, FormsModule } from '@angular/forms';
 import * as common from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { TagService } from '../../services/tag';
+import { BookService } from '../../services/book';
+import { ReadingStatusService } from '../../services/reading-status';
 import { GetTag } from '../../models/get-tag.model';
+import { GetBook } from '../../models/get-book.model';
 import { CreateTag } from '../../models/create-tag.model';
 import { UpdateTag } from '../../models/update-tag.model';
+import { ReadingStatus } from '../../models/enums/reading-status.enum';
+import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle } from '@ng-icons/heroicons/outline';
+import { heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle, heroBookOpen } from '@ng-icons/heroicons/outline';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 import { PaginationParams } from '../../models/result';
+
+interface BookWithProgress extends GetBook {
+  progressPercentage?: number;
+  statusName?: string;
+  statusBadgeClass?: string;
+}
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, NgIconComponent, MatIconModule, MatButtonModule, InfiniteScrollDirective],
+  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, RouterModule, NgIconComponent, MatIconModule, MatButtonModule, InfiniteScrollDirective],
   templateUrl: './tag-management.html',
   styleUrls: ['./tag-management.css'],
-  viewProviders: [provideIcons({ heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle })]
+  viewProviders: [provideIcons({ heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle, heroBookOpen })]
 })
 export class TagManagementComponent implements OnInit {
   @ViewChild('tagModal') tagModal!: TemplateRef<any>;
+  @ViewChild('tagDetailsModal') tagDetailsModal!: TemplateRef<any>;
+
   tagForm: FormGroup;
   tags: GetTag[] = [];
   displayedTags: GetTag[] = [];
@@ -37,6 +52,19 @@ export class TagManagementComponent implements OnInit {
   pageSize: number = 20;
   hasMorePages: boolean = true;
   isLoadingMore: boolean = false;
+
+  // Tag Details Modal
+  selectedTag: GetTag | null = null;
+  tagBooks: BookWithProgress[] = [];
+  isLoadingTagBooks: boolean = false;
+  tagBooksPage: number = 1;
+  tagBooksHasMore: boolean = true;
+
+  // Expose ReadingStatus enum to template
+  ReadingStatus = ReadingStatus;
+
+  // Add rootUrl for image paths
+  rootUrl: string = environment.rootUrl;
 
   sortOptions = [
     { value: 'name-asc', label: 'Name (A-Z)' },
@@ -52,6 +80,8 @@ export class TagManagementComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private tagService: TagService,
+    private bookService: BookService,
+    private readingStatusService: ReadingStatusService,
     private dialog: MatDialog,
     private notificationService: NotificationService
   ) {
@@ -266,6 +296,7 @@ export class TagManagementComponent implements OnInit {
       }
     });
   }
+
 
   getRatingColorClass(rating: number | undefined): string {
     if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
