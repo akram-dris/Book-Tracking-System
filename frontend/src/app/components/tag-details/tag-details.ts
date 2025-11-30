@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TagService } from '../../services/tag';
 import { BookService } from '../../services/book';
@@ -15,6 +15,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { FormsModule } from '@angular/forms';
 import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown, heroTag } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
@@ -29,7 +30,7 @@ interface BookWithStatus extends GetBook {
 @Component({
   selector: 'app-tag-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, FormsModule],
+  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, MatIconModule, FormsModule],
   templateUrl: './tag-details.html',
   styleUrls: ['./tag-details.css'],
   viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown, heroTag })]
@@ -220,6 +221,41 @@ export class TagDetailsComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  openEditModal(): void {
+    if (!this.tag) return;
+    // Navigate to tags page and trigger edit (we'll need to implement this in tag-management)
+    this.router.navigate(['/tags'], { queryParams: { edit: this.tag.id } });
+  }
+
+  confirmDelete(): void {
+    if (!this.tag) return;
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Tag',
+        message: `Are you sure you want to delete "${this.tag.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      },
+      panelClass: 'glass-modal',
+      backdropClass: 'glass-modal-backdrop'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && this.tag) {
+        this.tagService.deleteTag(this.tag.id).subscribe(deleteResult => {
+          if (deleteResult.isSuccess) {
+            this.notificationService.showSuccess('Tag deleted successfully');
+            this.router.navigate(['/tags']);
+          } else {
+            console.error('Error deleting tag:', deleteResult.errors);
+            this.notificationService.showError('Failed to delete tag');
+          }
+        });
+      }
+    });
   }
 
   getRatingColorClass(rating: number | undefined): string {

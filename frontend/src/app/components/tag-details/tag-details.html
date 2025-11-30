@@ -43,6 +43,19 @@
                 </select>
                 <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 text-xs">▼</div>
             </div>
+            <!-- Action Buttons -->
+            <div class="flex gap-2">
+                <button mat-icon-button (click)="openEditModal()"
+                    class="!w-10 !h-10 !min-w-0 !p-0 !flex !items-center !justify-center !bg-gradient-to-br !from-white/10 !to-white/5 !backdrop-blur-xl !border !border-white/20 hover:!border-primary/50 hover:!from-primary/20 hover:!to-primary/10 !shadow-lg hover:!shadow-primary/30 !transition-all !duration-300 hover:!scale-110 !rounded-xl"
+                    title="Edit Tag">
+                    <mat-icon class="!text-base-content hover:!text-primary !text-[20px] !transition-colors !duration-300">edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="confirmDelete()"
+                    class="!w-10 !h-10 !min-w-0 !p-0 !flex !items-center !justify-center !bg-gradient-to-br !from-white/10 !to-white/5 !backdrop-blur-xl !border !border-white/20 hover:!border-error/50 hover:!from-error/20 hover:!to-error/10 !shadow-lg hover:!shadow-error/30 !transition-all !duration-300 hover:!scale-110 !rounded-xl"
+                    title="Delete Tag">
+                    <mat-icon class="!text-base-content hover:!text-error !text-[20px] !transition-colors !duration-300">delete</mat-icon>
+                </button>
+            </div>
         </div>
     </div>
 
