@@ -297,9 +297,6 @@ export class TagManagementComponent implements OnInit {
     });
   }
 
-      });
-    });
-  }
 
   getRatingColorClass(rating: number | undefined): string {
     if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
