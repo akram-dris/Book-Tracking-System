@@ -231,73 +231,7 @@
       <!-- Books Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-2">
         @for (book of displayedBooks; track book.id) {
-        <div
-          class="group relative aspect-[2/3] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
-          [routerLink]="['/books', book.id]">
-
-          <!-- Book Cover -->
-          <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'" alt="{{ book.title }}"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-
-          <!-- Cinematic Gradient Overlay -->
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-base-300/90 via-base-300/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          </div>
-
-          <!-- Status Dot (Top Right) -->
-          <div class="absolute top-3 right-3 z-30 tooltip tooltip-left" [attr.data-tip]="book.statusName">
-            <div class="flex items-center h-5">
-              <div
-                class="w-3 h-3 rounded-full shadow-lg transition-all duration-300 ring-2 ring-base-content/10 backdrop-blur-sm"
-                [ngClass]="{
-                'bg-white/50': book.status === ReadingStatus.NotReading,
-                'bg-info shadow-[0_0_10px_rgba(var(--in),0.8)]': book.status === ReadingStatus.Planning,
-                'bg-warning shadow-[0_0_10px_rgba(var(--wa),0.8)] animate-pulse': book.status === ReadingStatus.CurrentlyReading,
-                'bg-success shadow-[0_0_10px_rgba(var(--su),0.8)]': book.status === ReadingStatus.Completed,
-                'bg-secondary shadow-[0_0_10px_rgba(var(--s),0.8)]': book.status === ReadingStatus.Summarized
-              }"></div>
-            </div>
-          </div>
-
-          <!-- Rating Badge (Top Left) -->
-          @if (book.rating) {
-          <div class="absolute top-3 left-3 z-20">
-            <div class="flex items-center gap-0.5 transition-all duration-300 hover:scale-110">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-              @if (book.rating && star <= (book.rating + 0.5)) { <span class="text-xl leading-none"
-                [class]="book.rating >= 4 ? 'text-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : (book.rating >= 2 ? 'text-slate-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]' : 'text-orange-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]')">
-                ★
-                </span>
-                }
-                }
-            </div>
-          </div>
-          }
-
-          <!-- Content (Bottom) -->
-          <div
-            class="absolute inset-x-0 bottom-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-            <h3
-              class="text-white font-heading font-bold text-lg leading-tight mb-1 line-clamp-2 drop-shadow-md group-hover:text-primary-content transition-colors">
-              {{ book.title }}
-            </h3>
-            <p class="text-white/70 text-sm font-medium line-clamp-1 mb-3">
-              {{ author.name }}
-            </p>
-
-            <!-- Progress Bar (Only if reading) -->
-            @if (book.status === ReadingStatus.CurrentlyReading && book.progressPercentage !== undefined) {
-            <div class="w-full bg-white/20 rounded-full h-1.5 overflow-hidden backdrop-blur-sm mb-2">
-              <div
-                class="bg-gradient-to-r from-primary to-secondary h-full rounded-full shadow-[0_0_10px_rgba(var(--p),0.5)]"
-                [style.width.%]="book.progressPercentage">
-              </div>
-            </div>
-            <div class="text-xs text-white/80 font-medium text-right">{{ book.progressPercentage | number:'1.2-2' }}%
-            </div>
-            }
-          </div>
-        </div>
+        <app-book-card [book]="book" [progress]="book.progressPercentage"></app-book-card>
         }
       </div>
       }

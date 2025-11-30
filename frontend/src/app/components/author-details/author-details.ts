@@ -19,6 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { AuthorFormComponent } from '../author-form/author-form';
+import { BookCardComponent } from '../shared/book-card/book-card';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
@@ -29,7 +30,7 @@ interface BookWithStatus extends GetBook {
 
 @Component({
   selector: 'app-author-details',
-  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, FormsModule],
+  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, FormsModule, BookCardComponent],
   templateUrl: './author-details.html',
   styleUrls: ['./author-details.css'],
   viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown })]

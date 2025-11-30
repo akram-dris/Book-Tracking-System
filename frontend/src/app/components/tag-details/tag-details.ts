@@ -19,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
+import { BookCardComponent } from '../shared/book-card/book-card';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
@@ -30,7 +31,7 @@ interface BookWithStatus extends GetBook {
 @Component({
   selector: 'app-tag-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, MatIconModule, FormsModule],
+  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, MatIconModule, FormsModule, BookCardComponent],
   templateUrl: './tag-details.html',
   styleUrls: ['./tag-details.css'],
   viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown, heroTag })]
@@ -256,25 +257,5 @@ export class TagDetailsComponent implements OnInit {
         });
       }
     });
-  }
-
-  getRatingColorClass(rating: number | undefined): string {
-    if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-
-    const roundedRating = Math.floor(rating);
-
-    if (roundedRating >= 4) return 'bg-gradient-to-t from-amber-500/90 via-amber-400/60 to-transparent'; // Gold (4-5)
-    if (roundedRating >= 2) return 'bg-gradient-to-t from-slate-500/90 via-slate-400/60 to-transparent'; // Silver (2-3)
-    return 'bg-gradient-to-t from-orange-700/90 via-orange-600/60 to-transparent'; // Bronze (1)
-  }
-
-  getRatingBorderClass(rating: number | undefined): string {
-    if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
-
-    const roundedRating = Math.floor(rating);
-
-    if (roundedRating >= 4) return 'hover:shadow-amber-500/40 hover:border-amber-400'; // Gold
-    if (roundedRating >= 2) return 'hover:shadow-slate-500/40 hover:border-slate-400'; // Silver
-    return 'hover:shadow-orange-700/40 hover:border-orange-600'; // Bronze
   }
 }
