@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { StatisticService } from '../../services/statistic';
 import { Statistics, StatisticsFilter } from '../../models/statistics.model';
+import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -12,7 +14,7 @@ import {
   heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
   heroCalendarDays, heroAdjustmentsHorizontal, heroCheckCircle,
   heroXCircle, heroFunnel, heroChartBarSquare, heroSquares2x2,
-  heroUserGroup, heroChevronDown, heroXMark
+  heroUserGroup, heroChevronDown, heroXMark, heroStar
 } from '@ng-icons/heroicons/outline';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,6 +24,8 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 // Register Chart.js components
 Chart.register(...registerables);
+
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-statistics',
@@ -35,7 +39,8 @@ Chart.register(...registerables);
     MatNativeDateModule,
     MatNativeDateModule,
     MatInputModule,
-    NgxSkeletonLoaderModule
+    NgxSkeletonLoaderModule,
+    EmptyStateComponent
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
@@ -45,8 +50,26 @@ Chart.register(...registerables);
     heroClock, heroTrophy, heroCalendar, heroFlag, heroSun,
     heroCalendarDays, heroAdjustmentsHorizontal, heroCheckCircle,
     heroXCircle, heroFunnel, heroChartBarSquare, heroSquares2x2,
-    heroUserGroup, heroChevronDown, heroXMark
-  })]
+    heroUserGroup, heroChevronDown, heroXMark, heroStar
+  })],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('staggerFade', [
+      transition(':enter', [
+        query('div', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(50, [
+            animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class StatisticsComponent implements OnInit, OnDestroy {
   startDate: Date | null = null;
@@ -234,8 +257,13 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
   constructor(
     private statisticService: StatisticService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) { }
+
+  navigateToBooks(): void {
+    this.router.navigate(['/books']);
+  }
 
   ngOnInit(): void {
     // Set default date range to last year
@@ -309,12 +337,13 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     };
   }
 
-  onFilterChange(filterType: 'day' | 'week' | 'month' | 'year' | 'custom'): void {
-    console.log('🎯 Filter changed to:', filterType);
-    this.selectedFilter = filterType;
-    this.showCustomDateInputs = filterType === 'custom';
+  onFilterChange(filterType: string): void {
+    const type = filterType as 'day' | 'week' | 'month' | 'year' | 'custom';
+    console.log('🎯 Filter changed to:', type);
+    this.selectedFilter = type;
+    this.showCustomDateInputs = type === 'custom';
 
-    if (filterType !== 'custom') {
+    if (type !== 'custom') {
       // Reset dates
       const today = new Date();
       const oneYearAgo = new Date();

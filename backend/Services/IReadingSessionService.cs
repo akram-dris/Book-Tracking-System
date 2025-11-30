@@ -10,5 +10,6 @@ namespace BookTrackingSystem.Services
         Task<Result<ReadingSessionDto>> AddReadingSessionAsync(CreateReadingSessionDto readingSessionDto);
         Task<Result<ReadingSessionDto>> UpdateReadingSessionAsync(int id, UpdateReadingSessionDto readingSessionDto);
         Task<Result> DeleteReadingSessionAsync(int id);
+        Task<Result<bool>> HasAnySessionsAsync();
     }
 }

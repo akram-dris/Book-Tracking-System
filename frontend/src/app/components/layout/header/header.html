@@ -1,5 +1,4 @@
-<header
-  class="sticky top-0 z-[100] bg-base-100 border-b border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300 h-16">
+<header class="glass-float sticky top-4 z-[100] mx-4 rounded-2xl h-16 mb-6">
   <div class="flex items-center justify-between gap-4 px-6 h-full">
     <!-- Left: Search -->
     <div class="flex-1 max-w-xl">
@@ -10,7 +9,7 @@
         </div>
         <input #searchInput type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchInput($event)"
           (focus)="onSearchFocus()" (click)="onSearchFocus()" (keydown)="onSearchKeydown($event)"
-          (keydown.enter)="onSearchSubmit()" placeholder="Search books, authors, tags..." class="w-full pl-11 pr-4 py-2.5 bg-base-200/50 border border-transparent rounded-full
+          (keydown.enter)="onSearchSubmit()" placeholder="Search books, authors, tags..." class="w-full pl-11 pr-4 py-2.5 bg-base-200/50 border border-transparent rounded-xl
                  text-sm font-medium text-base-content placeholder:text-base-content/40
                  focus:bg-base-100 focus:border-primary/30 focus:ring-4 focus:ring-primary/10 focus:outline-none
                  hover:bg-base-200 hover:border-base-300
@@ -26,13 +25,13 @@
         <!-- Search Dropdown -->
         @if (showDropdown && searchResults) {
         <div #dropdown
-          class="absolute top-full left-0 right-0 mt-2 bg-base-100 rounded-lg shadow-xl border border-base-300 overflow-hidden z-[1000] max-h-96 overflow-y-auto">
+          class="absolute top-full left-0 right-0 mt-2 bg-base-100/95 backdrop-blur-xl border border-base-content/10 shadow-2xl rounded-2xl overflow-hidden z-[1000] max-h-96 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
 
           <!-- Books Section -->
           @if (searchResults.books.length > 0) {
           <div>
             <div
-              class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between">
+              class="px-4 py-2 bg-base-200/80 backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between">
               <span>Books</span>
               <span class="badge badge-sm badge-primary">{{searchResults.books.length}}</span>
             </div>
@@ -40,8 +39,8 @@
               @for (book of searchResults.books; track book.id; let i = $index) {
               <li>
                 <button (click)="navigateToBook(book.id!)"
-                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('book', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200')">
-                  <div class="w-8 h-10 bg-base-300 rounded overflow-hidden flex-shrink-0">
+                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('book', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200/50')">
+                  <div class="w-8 h-10 bg-base-300 rounded overflow-hidden flex-shrink-0 shadow-sm">
                     @if (book.imageUrl) {
                     <img [src]="rootUrl + book.imageUrl" class="w-full h-full object-cover" alt="Cover">
                     } @else {
@@ -65,7 +64,7 @@
           @if (searchResults.authors.length > 0) {
           <div>
             <div
-              class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-300">
+              class="px-4 py-2 bg-base-200/80 backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-content/5">
               <span>Authors</span>
               <span class="badge badge-sm badge-secondary">{{searchResults.authors.length}}</span>
             </div>
@@ -73,8 +72,8 @@
               @for (author of searchResults.authors; track author.id; let i = $index) {
               <li>
                 <button (click)="navigateToAuthor(author.id)"
-                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('author', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200')">
-                  <div class="w-8 h-8 rounded-full bg-base-300 overflow-hidden flex-shrink-0">
+                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('author', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200/50')">
+                  <div class="w-8 h-8 rounded-full bg-base-300 overflow-hidden flex-shrink-0 shadow-sm">
                     @if (author.imageUrl) {
                     <img [src]="rootUrl + author.imageUrl" class="w-full h-full object-cover" alt="Avatar">
                     } @else {
@@ -95,7 +94,7 @@
           @if (searchResults.tags.length > 0) {
           <div>
             <div
-              class="px-4 py-2 bg-base-200 text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-300">
+              class="px-4 py-2 bg-base-200/80 backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-base-content/70 flex justify-between border-t border-base-content/5">
               <span>Tags</span>
               <span class="badge badge-sm badge-accent">{{searchResults.tags.length}}</span>
             </div>
@@ -103,8 +102,9 @@
               @for (tag of searchResults.tags; track tag.id; let i = $index) {
               <li>
                 <button (click)="navigateToTag(tag.id)"
-                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('tag', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200')">
-                  <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+                  [class]="'w-full text-left px-4 py-3 transition-colors flex items-center gap-3 ' + (selectedIndex === getResultIndex('tag', i) ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-base-200/50')">
+                  <div
+                    class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center text-accent flex-shrink-0 shadow-sm">
                     <ng-icon name="heroTag" size="1rem"></ng-icon>
                   </div>
                   <div class="font-medium text-sm">{{tag.name}}</div>
@@ -132,16 +132,16 @@
     </div>
 
     <!-- Right: Actions -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3">
       <!-- Streak Indicator -->
       <app-streak-indicator></app-streak-indicator>
 
       <!-- Theme Toggle -->
-      <button (click)="toggleTheme()"
-        class="btn btn-ghost btn-circle btn-sm hover:bg-primary/10 hover:text-primary hover:scale-110 
-               transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border-2 border-transparent hover:border-primary/20"
+      <button (click)="toggleTheme()" class="btn btn-ghost btn-circle btn-sm hover:bg-primary/10 hover:text-primary hover:scale-110 
+               transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border-2 border-transparent hover:border-primary/20
+               flex items-center justify-center text-base-content"
         [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
-        <ng-icon [name]="isDarkMode ? 'heroSun' : 'heroMoon'" size="1.25rem"></ng-icon>
+        <ng-icon [name]="isDarkMode ? 'heroSun' : 'heroMoon'" size="1.25rem" class="shrink-0"></ng-icon>
       </button>
     </div>
   </div>

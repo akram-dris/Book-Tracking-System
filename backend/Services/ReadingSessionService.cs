@@ -210,5 +210,18 @@ namespace BookTrackingSystem.Services
                 throw new InvalidOperationException($"Total pages read cannot exceed book total pages ({book.TotalPages}). Remaining pages: {book.TotalPages - otherSessionsTotal}.");
             }
         }
+
+        public async Task<Result<bool>> HasAnySessionsAsync()
+        {
+            try
+            {
+                var hasSessions = await _readingSessionRepository.HasAnySessionsAsync();
+                return Result<bool>.Success(hasSessions);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure($"An error occurred while checking for sessions: {ex.Message}");
+            }
+        }
     }
 }

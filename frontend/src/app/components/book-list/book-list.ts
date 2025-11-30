@@ -5,7 +5,7 @@ import { BookService } from '../../services/book';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReadingSessionService } from '../../services/reading-session';
 import { ReadingStatusService } from '../../services/reading-status';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
 import { environment } from 'src/environments/environment';
@@ -25,6 +25,11 @@ interface BookWithProgress extends GetBook {
 
 type SortOption = 'title' | 'dateAdded' | 'progress' | 'author' | 'rating';
 type ViewMode = 'grid' | 'list';
+
+import { MatDialog } from '@angular/material/dialog';
+import { BookFormComponent } from '../book-form/book-form';
+import { NotificationService } from '../../services/notification';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-book-list',
@@ -90,14 +95,14 @@ export class BookListComponent implements OnInit {
   };
 
 
-
-  // ... imports
-
   constructor(
     private bookService: BookService,
     private readingSessionService: ReadingSessionService,
     private readingStatusService: ReadingStatusService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -123,47 +128,62 @@ export class BookListComponent implements OnInit {
       this.selectedTagId = tagId;
     }
 
-    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
-      if (!statusResult.isSuccess || !statusResult.data) {
-        console.error('Error loading statuses:', statusResult.errors);
-        this.isLoading = false;
-        return;
-      }
-
-      const statuses = statusResult.data;
-      const statusMap = new Map(statuses.map(s => [s.value, s]));
-
-      this.bookService.getBooksPaginated(
-        this.currentPage,
-        this.pageSize,
-        this.currentSearch || null,
-        this.selectedTagId,
-        this.currentStatusFilter,
-        this.sortBy,
-        this.currentAuthorId,
-        this.currentRating
-      ).pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(result => {
-          if (result.isSuccess && result.data) {
-            this.books = result.data.items.map(book => {
-              const statusInfo = statusMap.get(book.status);
-              return {
-                ...book,
-                statusName: statusInfo?.displayName || 'Unknown',
-                statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
-              };
-            });
-            this.displayedBooks = this.books;
-
-            this.hasMorePages = result.data.hasNextPage;
-            this.loadBookStats();
-            this.loadProgressForBooks(this.books);
-          } else {
-            console.error('Error loading books:', result.errors);
-          }
+    this.readingStatusService.getAllStatuses().subscribe({
+      next: (statusResult) => {
+        if (!statusResult.isSuccess || !statusResult.data) {
+          console.error('Error loading statuses:', statusResult.errors);
           this.isLoading = false;
           this.cdr.markForCheck();
-        });
+          return;
+        }
+
+        const statuses = statusResult.data;
+        const statusMap = new Map(statuses.map(s => [s.value, s]));
+
+        this.bookService.getBooksPaginated(
+          this.currentPage,
+          this.pageSize,
+          this.currentSearch || null,
+          this.selectedTagId,
+          this.currentStatusFilter,
+          this.sortBy,
+          this.currentAuthorId,
+          this.currentRating
+        ).pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (result) => {
+              if (result.isSuccess && result.data) {
+                this.books = result.data.items.map(book => {
+                  const statusInfo = statusMap.get(book.status);
+                  return {
+                    ...book,
+                    statusName: statusInfo?.displayName || 'Unknown',
+                    statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+                  };
+                });
+                this.displayedBooks = this.books;
+
+                this.hasMorePages = result.data.hasNextPage;
+                this.loadBookStats();
+                this.loadProgressForBooks(this.books);
+              } else {
+                console.error('Error loading books:', result.errors);
+              }
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              console.error('Error loading books:', err);
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            }
+          });
+      },
+      error: (err) => {
+        console.error('Error loading statuses:', err);
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -204,54 +224,69 @@ export class BookListComponent implements OnInit {
     this.isLoadingMore = true;
     this.currentPage++;
 
-    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
-      if (!statusResult.isSuccess || !statusResult.data) {
-        console.error('Error loading statuses:', statusResult.errors);
-        this.isLoadingMore = false;
-        return;
-      }
-
-      const statuses = statusResult.data;
-      const statusMap = new Map(statuses.map(s => [s.value, s]));
-
-      console.log('LoadMore - Parameters:', {
-        page: this.currentPage,
-        pageSize: this.pageSize,
-        search: this.currentSearch,
-        tagId: this.selectedTagId,
-        statusFilter: this.currentStatusFilter,
-        sort: this.sortBy
-      });
-
-      this.bookService.getBooksPaginated(
-        this.currentPage,
-        this.pageSize,
-        this.currentSearch || null,
-        this.selectedTagId,
-        this.currentStatusFilter,
-        this.sortBy,
-        this.currentAuthorId,
-        this.currentRating
-      ).subscribe(result => {
-        if (result.isSuccess && result.data) {
-          const newBooks = result.data.items.map(book => {
-            const statusInfo = statusMap.get(book.status);
-            return {
-              ...book,
-              statusName: statusInfo?.displayName || 'Unknown',
-              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
-            };
-          });
-
-          this.books = [...this.books, ...newBooks];
-          this.displayedBooks = this.books;
-          this.hasMorePages = result.data.hasNextPage;
-
-          this.loadProgressForBooks(newBooks);
+    this.readingStatusService.getAllStatuses().subscribe({
+      next: (statusResult) => {
+        if (!statusResult.isSuccess || !statusResult.data) {
+          console.error('Error loading statuses:', statusResult.errors);
+          this.isLoadingMore = false;
+          this.cdr.markForCheck();
+          return;
         }
+
+        const statuses = statusResult.data;
+        const statusMap = new Map(statuses.map(s => [s.value, s]));
+
+        console.log('LoadMore - Parameters:', {
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          search: this.currentSearch,
+          tagId: this.selectedTagId,
+          statusFilter: this.currentStatusFilter,
+          sort: this.sortBy
+        });
+
+        this.bookService.getBooksPaginated(
+          this.currentPage,
+          this.pageSize,
+          this.currentSearch || null,
+          this.selectedTagId,
+          this.currentStatusFilter,
+          this.sortBy,
+          this.currentAuthorId,
+          this.currentRating
+        ).subscribe({
+          next: (result) => {
+            if (result.isSuccess && result.data) {
+              const newBooks = result.data.items.map(book => {
+                const statusInfo = statusMap.get(book.status);
+                return {
+                  ...book,
+                  statusName: statusInfo?.displayName || 'Unknown',
+                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+                };
+              });
+
+              this.books = [...this.books, ...newBooks];
+              this.displayedBooks = this.books;
+              this.hasMorePages = result.data.hasNextPage;
+
+              this.loadProgressForBooks(newBooks);
+            }
+            this.isLoadingMore = false;
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            console.error('Error loading more books:', err);
+            this.isLoadingMore = false;
+            this.cdr.markForCheck();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error loading statuses for loadMore:', err);
         this.isLoadingMore = false;
         this.cdr.markForCheck();
-      });
+      }
     });
   }
 
@@ -283,10 +318,12 @@ export class BookListComponent implements OnInit {
               console.error(`Error fetching reading sessions for book ${book.id}:`, result.errors);
               book.progressPercentage = 0;
             }
+            this.cdr.markForCheck();
           },
           error: err => {
             console.error(`Error fetching reading sessions for book ${book.id}:`, err);
             book.progressPercentage = 0;
+            this.cdr.markForCheck();
           }
         });
       } else {
@@ -322,54 +359,92 @@ export class BookListComponent implements OnInit {
   getRatingColorClass(rating: number | undefined): string {
     if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-gradient-to-t from-amber-600/90 via-amber-500/60 to-transparent'; // Gold/Masterpiece
-      case 4: return 'bg-gradient-to-t from-emerald-600/90 via-emerald-500/60 to-transparent'; // Emerald/Great
-      case 3: return 'bg-gradient-to-t from-cyan-600/90 via-cyan-500/60 to-transparent'; // Cyan/Good
-      case 2: return 'bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-transparent'; // Orange/Fair
-      case 1: return 'bg-gradient-to-t from-rose-600/90 via-rose-500/60 to-transparent'; // Rose/Poor
-      default: return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-    }
+    if (roundedRating >= 4) return 'bg-gradient-to-t from-amber-500/90 via-amber-400/60 to-transparent'; // Gold (4-5)
+    if (roundedRating >= 2) return 'bg-gradient-to-t from-slate-500/90 via-slate-400/60 to-transparent'; // Silver (2-3)
+    return 'bg-gradient-to-t from-orange-700/90 via-orange-600/60 to-transparent'; // Bronze (1)
   }
 
   getRatingBorderClass(rating: number | undefined): string {
     if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'hover:shadow-amber-500/40 hover:border-amber-400';
-      case 4: return 'hover:shadow-emerald-500/40 hover:border-emerald-400';
-      case 3: return 'hover:shadow-cyan-500/40 hover:border-cyan-400';
-      case 2: return 'hover:shadow-orange-500/40 hover:border-orange-400';
-      case 1: return 'hover:shadow-rose-500/40 hover:border-rose-400';
-      default: return 'hover:shadow-primary/20 hover:border-primary';
-    }
+    if (roundedRating >= 4) return 'hover:shadow-amber-500/40 hover:border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'hover:shadow-slate-500/40 hover:border-slate-400'; // Silver
+    return 'hover:shadow-orange-700/40 hover:border-orange-600'; // Bronze
   }
 
   getRatingBadgeClass(rating: number | undefined): string {
     if (!rating) return '';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-amber-500 border-amber-400';
-      case 4: return 'bg-emerald-500 border-emerald-400';
-      case 3: return 'bg-cyan-500 border-cyan-400';
-      case 2: return 'bg-orange-500 border-orange-400';
-      case 1: return 'bg-rose-500 border-rose-400';
-      default: return 'bg-gray-500 border-gray-400';
-    }
+    if (roundedRating >= 4) return 'bg-amber-500 border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'bg-slate-500 border-slate-400'; // Silver
+    return 'bg-orange-700 border-orange-600'; // Bronze
   }
 
   deleteBook(id: number): void {
-    this.bookService.deleteBook(id).subscribe(result => {
-      if (result.isSuccess) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Book',
+        message: 'Are you sure you want to delete this book? This action cannot be undone.',
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      },
+      panelClass: 'glass-modal',
+      backdropClass: 'glass-modal-backdrop'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.bookService.deleteBook(id).subscribe({
+          next: (response) => {
+            if (response.isSuccess) {
+              this.notificationService.showSuccess('Book deleted successfully');
+              this.loadBooks();
+            } else {
+              console.error('Error deleting book', response.errors);
+              this.notificationService.showError('Failed to delete book');
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting book', error);
+            this.notificationService.showError('Failed to delete book');
+          }
+        });
+      }
+    });
+  }
+
+  openAddBookModal(): void {
+    const dialogRef = this.dialog.open(BookFormComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'glass-modal',
+      data: { bookId: null }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
         this.loadBooks();
-      } else {
-        console.error('Error deleting book:', result.errors);
+      }
+    });
+  }
+
+  openEditBookModal(bookId: number): void {
+    const dialogRef = this.dialog.open(BookFormComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'glass-modal',
+      data: { bookId: bookId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadBooks();
       }
     });
   }

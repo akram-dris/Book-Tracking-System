@@ -2,23 +2,7 @@
     display: block;
 }
 
-.card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.stat {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.stat:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
+/* Card and Stat styles are handled by Tailwind utility classes in the HTML */
 
 canvas {
     max-height: 400px !important;
@@ -257,6 +241,7 @@ canvas {
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -266,4 +251,3 @@ canvas {
 ::ng-deep .mat-datepicker-content {
     animation: slideInDown 0.3s ease-out;
 }
-

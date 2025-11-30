@@ -1,175 +1,163 @@
-<div class="bg-base-100">
-  <!-- Back Button -->
-  <div class="mb-6">
-    <button mat-button type="button" (click)="onCancel()"
-      class="!flex !items-center gap-2 rounded-xl border-2 border-transparent hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-primary/10">
-      <ng-icon name="heroArrowLeft" size="1.25rem"></ng-icon>
-      <span class="font-medium">Back</span>
-    </button>
-  </div>
+<!-- Session Log Modal -->
+<div class="p-0 overflow-hidden rounded-3xl bg-transparent h-full flex flex-col w-full">
+  <div class="glass-panel relative bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 flex flex-col h-full">
+    <!-- Decorative Header Gradient -->
+    <div
+      class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50 z-10">
+    </div>
 
-  <div class="container mx-auto max-w-7xl pb-6">
-    <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+    <!-- Header -->
+    <div class="px-5 py-3 border-b border-white/5 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="p-2 rounded-xl bg-primary/10 text-primary shadow-[0_0_15px_rgba(var(--p),0.3)]">
+          <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-white tracking-tight">Log Reading Session</h2>
+          <p class="text-xs text-base-content/60">Track your progress</p>
+        </div>
+      </div>
+      <button (click)="onCancel()"
+        class="btn btn-circle btn-ghost btn-sm text-base-content/50 hover:text-white hover:bg-white/10 transition-colors">
+        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+      </button>
+    </div>
 
-      <!-- Main Content Area -->
-      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Form Content - Grid Layout -->
+    <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="flex-1 overflow-hidden p-4">
+      <div class="grid grid-cols-12 gap-6 h-full">
 
-        <!-- Left Column: Progress & Goals -->
-        <div class="xl:col-span-2 flex flex-col gap-6">
-
-          <!-- Single Progress Card -->
+        <!-- Left Column: Progress & Stats (4 cols) -->
+        <div class="col-span-4 flex flex-col gap-2 h-full overflow-hidden">
+          <!-- Progress Card -->
           <div
-            class="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-4 border-2 border-primary/20 shadow-lg">
-            <div class="flex items-center justify-between mb-2">
+            class="glass-panel rounded-2xl p-4 border border-white/10 shadow-lg bg-black/20 relative overflow-hidden group shrink-0">
+            <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
-                <span class="text-lg">📚</span>
-                <h4 class="font-bold text-sm text-base-content">Reading Progress</h4>
+                <div class="p-1.5 rounded-lg bg-primary/20 text-primary">
+                  <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
+                </div>
+                <h3 class="font-bold text-base text-white">Progress</h3>
               </div>
-              <div class="text-right flex items-center gap-2">
-                <div class="text-2xl font-bold text-primary">
+              <div class="text-right">
+                <div class="text-2xl font-bold text-white tracking-tight">
                   {{ totalPages && totalPages > 0 ? ((currentPage + currentPagesRead) / totalPages * 100 |
                   number:'1.0-0') : progress | number:'1.0-0' }}%
                 </div>
-                @if (currentPagesRead > 0) {
-                <div class="text-sm font-semibold text-success">
-                  (+{{ totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100 | number:'1.0-1') : 0 }}%)
-                </div>
-                }
               </div>
             </div>
 
-            <!-- Single Progress Bar with Two Segments -->
-            <div class="relative w-full bg-base-300 rounded-full h-4 overflow-hidden border border-base-300">
-              <!-- Current Progress (Blue) -->
+            <!-- Progress Bar -->
+            <div
+              class="relative w-full bg-base-300/30 rounded-full h-3 overflow-hidden border border-white/5 mb-4 shadow-inner">
               <div
-                class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
+                class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-700 ease-out shadow-[0_0_15px_rgba(var(--p),0.5)]"
                 [style.width.%]="progress">
               </div>
-              <!-- New Pages Added (Green) -->
-              <div class="absolute top-0 h-full bg-gradient-to-r from-success to-accent transition-all duration-500"
+              <div
+                class="absolute top-0 h-full bg-gradient-to-r from-success/80 to-success transition-all duration-700 ease-out shadow-[0_0_15px_rgba(var(--su),0.5)]"
                 [style.left.%]="progress"
                 [style.width.%]="totalPages && totalPages > 0 ? (currentPagesRead / totalPages * 100) : 0">
+                <div
+                  class="w-full h-full opacity-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9InAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBMODAgMEgwIEwwIDQwWiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3ApIi8+PC9zdmc+')]">
+                </div>
               </div>
             </div>
 
-            <!-- Stats Row -->
-            <div class="grid grid-cols-3 gap-2 mt-2 text-xs">
-              <div class="bg-base-100 rounded-lg p-2 text-center border border-base-300">
-                <div class="text-primary font-bold">{{ currentPage }}</div>
-                <div class="text-base-content/50">Current</div>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-base-200/30 rounded-xl p-2 border border-white/5 text-center">
+                <div class="text-lg font-bold text-white mb-0.5">{{ currentPage }}</div>
+                <div class="text-[10px] font-medium text-base-content/50 uppercase tracking-wider">Start</div>
               </div>
-              <div class="bg-base-100 rounded-lg p-2 text-center border border-success/30"
-                [class.border-base-300]="currentPagesRead === 0">
-                <div class="font-bold" [class.text-success]="currentPagesRead > 0">
+              <div
+                class="bg-base-200/30 rounded-xl p-2 border border-white/5 text-center transition-colors duration-300"
+                [class.bg-success/10]="currentPagesRead > 0" [class.border-success/30]="currentPagesRead > 0">
+                <div class="text-lg font-bold mb-0.5 transition-colors duration-300"
+                  [class.text-success]="currentPagesRead > 0" [class.text-white]="currentPagesRead === 0">
                   {{ currentPage + currentPagesRead }}
                 </div>
-                <div class="text-base-content/50">After</div>
+                <div class="text-[10px] font-medium text-base-content/50 uppercase tracking-wider">End</div>
               </div>
-              <div class="bg-base-100 rounded-lg p-2 text-center border border-base-300">
-                <div class="text-secondary font-bold">{{ totalPages! - (currentPage + currentPagesRead) }}</div>
-                <div class="text-base-content/50">Remaining</div>
+              <div class="bg-base-200/30 rounded-xl p-2 border border-white/5 text-center">
+                <div class="text-lg font-bold text-base-content/70 mb-0.5">{{ totalPages! - (currentPage +
+                  currentPagesRead) }}</div>
+                <div class="text-[10px] font-medium text-base-content/50 uppercase tracking-wider">Left</div>
               </div>
             </div>
           </div>
 
-          <!-- Daily Goals Section - Compact -->
+          <!-- Daily Goals Card -->
           @if (readingGoal) {
-          <div class="bg-base-200 rounded-xl p-4 border-2 border-base-300">
-            <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
-              <span class="text-lg">🎯</span>
-              <span class="text-base-content">Daily Goals</span>
-            </h4>
+          <div class="glass-panel rounded-2xl p-4 border border-white/10 shadow-lg bg-black/20 flex-1 flex flex-col">
 
-            <div class="flex flex-col gap-3">
-              <!-- Low Goal -->
-              <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
-                [class.border-accent]="currentPagesRead >= readingGoal.lowGoal"
-                [class.bg-accent/5]="currentPagesRead >= readingGoal.lowGoal">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                  <span class="text-base flex-shrink-0">🌱</span>
-                  <div class="flex-1 min-w-0">
-                    <div class="text-xs font-bold text-accent">
-                      Low
+            <div class="space-y-3">
+              <!-- Goals List -->
+              <div
+                class="bg-base-200/30 rounded-xl p-2.5 border border-white/5 flex items-center justify-between transition-all duration-300"
+                [class.bg-accent/10]="currentPagesRead >= readingGoal.lowGoal"
+                [class.border-accent/30]="currentPagesRead >= readingGoal.lowGoal">
+                <div class="flex items-center gap-3 w-full">
+                  <div class="w-1.5 h-8 rounded-full bg-accent shrink-0"></div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                      <div class="text-[10px] font-bold text-accent uppercase tracking-wider">Low Goal</div>
+                      <div class="text-white font-bold text-sm">{{ readingGoal.lowGoal }} p</div>
                     </div>
-                    <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
-                      <div class="h-full rounded-full transition-all duration-500"
-                        [class.bg-accent]="currentPagesRead >= readingGoal.lowGoal"
-                        [class.bg-base-content/20]="currentPagesRead < readingGoal.lowGoal"
+                    <div class="w-full bg-base-300/30 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full bg-accent rounded-full transition-all duration-500"
                         [style.width.%]="(currentPagesRead / readingGoal.lowGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.lowGoal * 100)">
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="flex items-center gap-1 ml-2">
-                  <div class="text-right">
-                    <div class="text-sm font-bold text-accent">
-                      {{ readingGoal.lowGoal }}
-                    </div>
-                  </div>
                   @if (currentPagesRead >= readingGoal.lowGoal) {
-                  <ng-icon name="heroCheckCircle" size="1rem" class="text-accent"></ng-icon>
+                  <ng-icon name="heroCheckCircle" size="1.25rem" class="text-accent ml-2"></ng-icon>
                   }
                 </div>
               </div>
 
-              <!-- Medium Goal -->
-              <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
-                [class.border-info]="currentPagesRead >= readingGoal.mediumGoal"
-                [class.bg-info/5]="currentPagesRead >= readingGoal.mediumGoal">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                  <span class="text-base flex-shrink-0">🔥</span>
-                  <div class="flex-1 min-w-0">
-                    <div class="text-xs font-bold text-info">
-                      Medium
+              <div
+                class="bg-base-200/30 rounded-xl p-2.5 border border-white/5 flex items-center justify-between transition-all duration-300"
+                [class.bg-info/10]="currentPagesRead >= readingGoal.mediumGoal"
+                [class.border-info/30]="currentPagesRead >= readingGoal.mediumGoal">
+                <div class="flex items-center gap-3 w-full">
+                  <div class="w-1.5 h-8 rounded-full bg-info shrink-0"></div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                      <div class="text-[10px] font-bold text-info uppercase tracking-wider">Medium Goal</div>
+                      <div class="text-white font-bold text-sm">{{ readingGoal.mediumGoal }} p</div>
                     </div>
-                    <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
-                      <div class="h-full rounded-full transition-all duration-500"
-                        [class.bg-info]="currentPagesRead >= readingGoal.mediumGoal"
-                        [class.bg-base-content/20]="currentPagesRead < readingGoal.mediumGoal"
+                    <div class="w-full bg-base-300/30 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full bg-info rounded-full transition-all duration-500"
                         [style.width.%]="(currentPagesRead / readingGoal.mediumGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.mediumGoal * 100)">
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="flex items-center gap-1 ml-2">
-                  <div class="text-right">
-                    <div class="text-sm font-bold text-info">
-                      {{ readingGoal.mediumGoal }}
-                    </div>
-                  </div>
                   @if (currentPagesRead >= readingGoal.mediumGoal) {
-                  <ng-icon name="heroCheckCircle" size="1rem" class="text-info"></ng-icon>
+                  <ng-icon name="heroCheckCircle" size="1.25rem" class="text-info ml-2"></ng-icon>
                   }
                 </div>
               </div>
 
-              <!-- High Goal -->
-              <div class="bg-base-100 rounded-lg p-2 flex items-center justify-between border border-base-300"
-                [class.border-error]="currentPagesRead >= readingGoal.highGoal"
-                [class.bg-error/5]="currentPagesRead >= readingGoal.highGoal">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                  <span class="text-base flex-shrink-0">🚀</span>
-                  <div class="flex-1 min-w-0">
-                    <div class="text-xs font-bold text-error">
-                      High
+              <div
+                class="bg-base-200/30 rounded-xl p-2.5 border border-white/5 flex items-center justify-between transition-all duration-300"
+                [class.bg-error/10]="currentPagesRead >= readingGoal.highGoal"
+                [class.border-error/30]="currentPagesRead >= readingGoal.highGoal">
+                <div class="flex items-center gap-3 w-full">
+                  <div class="w-1.5 h-8 rounded-full bg-error shrink-0"></div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                      <div class="text-[10px] font-bold text-error uppercase tracking-wider">High Goal</div>
+                      <div class="text-white font-bold text-sm">{{ readingGoal.highGoal }} p</div>
                     </div>
-                    <div class="w-full bg-base-300 rounded-full h-1.5 overflow-hidden">
-                      <div class="h-full rounded-full transition-all duration-500"
-                        [class.bg-error]="currentPagesRead >= readingGoal.highGoal"
-                        [class.bg-base-content/20]="currentPagesRead < readingGoal.highGoal"
+                    <div class="w-full bg-base-300/30 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full bg-error rounded-full transition-all duration-500"
                         [style.width.%]="(currentPagesRead / readingGoal.highGoal * 100) > 100 ? 100 : (currentPagesRead / readingGoal.highGoal * 100)">
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="flex items-center gap-1 ml-2">
-                  <div class="text-right">
-                    <div class="text-sm font-bold text-error">
-                      {{ readingGoal.highGoal }}
-                    </div>
-                  </div>
                   @if (currentPagesRead >= readingGoal.highGoal) {
-                  <ng-icon name="heroCheckCircle" size="1rem" class="text-error"></ng-icon>
+                  <ng-icon name="heroCheckCircle" size="1.25rem" class="text-error ml-2"></ng-icon>
                   }
                 </div>
               </div>
@@ -178,93 +166,83 @@
           }
         </div>
 
-        <!-- Right Column: Form Inputs -->
-        <div class="flex flex-col gap-4">
-          <!-- Date Input -->
-          <div class="form-control">
-            <label class="label py-0 pb-1">
-              <span class="label-text text-xs font-semibold flex items-center gap-1">
-                <ng-icon name="heroCalendar" size="0.875rem" class="text-primary"></ng-icon>
-                Date <span class="text-error">*</span>
-              </span>
-            </label>
-            <!-- Date -->
-            <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-              <mat-label>Date</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="date" [max]="maxDate" required>
-              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-              @if (sessionForm.get('date')?.hasError('required')) {
-              <mat-error>
-                Date is required
-              </mat-error>
-              }
-              @if (sessionForm.get('date')?.hasError('matDatepickerMax')) {
-              <mat-error>
-                Date cannot be in the future
-              </mat-error>
-              }
-            </mat-form-field>
-          </div>
+        <!-- Right Column: Inputs (8 cols) -->
+        <div class="col-span-8 flex flex-col h-full">
+          <div
+            class="glass-panel rounded-2xl p-4 border border-white/10 shadow-xl backdrop-blur-xl bg-black/40 h-full flex flex-col">
 
-          <!-- Pages Read Input -->
-          <div class="form-control">
-            <label class="label py-0 pb-1">
-              <span class="label-text text-xs font-semibold flex items-center gap-1">
-                <ng-icon name="heroBookOpen" size="0.875rem" class="text-primary"></ng-icon>
-                Pages Read Today <span class="text-error">*</span>
-              </span>
-            </label>
-            <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-              <mat-label>Pages Read</mat-label>
-              <input matInput type="number" formControlName="pagesRead" placeholder="e.g., 25" min="1" required>
-              @if (sessionForm.get('pagesRead')?.hasError('required')) {
-              <mat-error>
-                Pages read is required
-              </mat-error>
-              }
-              @if (sessionForm.get('pagesRead')?.hasError('min')) {
-              <mat-error>
-                Must read at least 1 page
-              </mat-error>
-              }
-              @if (sessionForm.get('pagesRead')?.hasError('max')) {
-              <mat-error>
-                Cannot exceed remaining pages
-              </mat-error>
-              }
-            </mat-form-field>
-          </div>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+              <!-- Date Input -->
+              <div class="form-control w-full">
+                <label class="label px-0 pt-0 mb-1.5">
+                  <span class="label-text font-bold text-base-content/80 text-sm">Date</span>
+                </label>
+                <div class="relative group">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40 group-focus-within:text-primary transition-colors z-10">
+                    <ng-icon name="heroCalendar" size="1.25rem"></ng-icon>
+                  </div>
+                  <mat-form-field appearance="fill" class="w-full glass-date-field" subscriptSizing="dynamic">
+                    <input matInput [matDatepicker]="picker" formControlName="date" [max]="maxDate" required
+                      class="!pl-9 !text-sm !h-10">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"
+                      class="text-base-content/60 hover:text-primary transition-colors"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
 
-          <!-- Notes/Summary -->
-          <div class="form-control flex-1">
-            <label class="label py-0 pb-1">
-              <span class="label-text text-xs font-semibold flex items-center gap-1">
-                <ng-icon name="heroDocumentText" size="0.875rem" class="text-primary"></ng-icon>
-                Notes / Summary
-              </span>
-            </label>
-            <textarea formControlName="summary"
-              class="textarea textarea-bordered textarea-sm w-full h-32 border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none"
-              placeholder="What did you read about? Any thoughts or reflections..."></textarea>
-          </div>
+              <!-- Pages Read Counter -->
+              <div class="form-control w-full">
+                <label class="label px-0 pt-0 mb-1.5">
+                  <span class="label-text font-bold text-base-content/80 text-sm">Pages Read Today</span>
+                </label>
+                <div
+                  class="relative overflow-hidden bg-base-200/30 rounded-xl p-2 border border-white/5 hover:border-primary/30 transition-all duration-300 group hover:bg-base-200/50 h-14">
+                  <div class="h-full">
+                    <div class="flex items-center justify-center gap-3 bg-black/20 rounded-lg p-1.5 h-full">
+                      <button type="button" (click)="adjustPages(-1)"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 text-white transition-all active:scale-95">
+                        <ng-icon name="heroMinus" size="1rem"></ng-icon>
+                      </button>
+                      <input type="number" formControlName="pagesRead"
+                        class="input input-ghost w-16 text-center font-black text-xl p-0 h-auto focus:bg-transparent focus:text-primary placeholder:text-base-content/20 appearance-none text-white"
+                        min="1">
+                      <button type="button" (click)="adjustPages(1)"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 text-white transition-all active:scale-95">
+                        <ng-icon name="heroPlus" size="1rem"></ng-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          <!-- Action Buttons -->
-          <div class="flex items-center justify-end gap-3">
-            <button mat-button type="button" class="hover:bg-base-300 hover:scale-105 transition-all duration-200"
-              (click)="onCancel()">
-              Cancel
-            </button>
-            <button mat-raised-button color="primary" type="submit" class="px-8 gap-2"
-              [disabled]="sessionForm.invalid || isLoading">
-              @if (isLoading) {
-              <span class="loading loading-spinner loading-sm"></span>
-              }
-              @if (!isLoading) {
-              <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
-              }
-              <span>{{ existingSession ? 'Update Session' : 'Save Session' }}</span>
-            </button>
+            <!-- Notes/Summary -->
+            <div class="form-control w-full flex-1 flex flex-col min-h-0">
+              <label class="label px-0 pt-0 mb-1.5">
+                <span class="label-text font-bold text-base-content/80 text-sm">Notes / Summary</span>
+              </label>
+              <textarea formControlName="summary" placeholder="What did you read about? Any thoughts or reflections..."
+                class="textarea textarea-bordered w-full flex-1 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl text-base-content placeholder:text-base-content/30 resize-none leading-relaxed p-3 text-sm"></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 pt-6 mt-auto">
+              <button type="button" (click)="onCancel()"
+                class="btn btn-ghost hover:bg-white/5 text-base-content/70 hover:text-white rounded-xl px-6 h-10 text-sm">
+                Cancel
+              </button>
+              <button type="submit" [disabled]="sessionForm.invalid || isLoading"
+                class="btn btn-primary text-white rounded-xl px-8 h-10 text-sm shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:shadow-none">
+                @if (isLoading) {
+                <span class="loading loading-spinner loading-xs"></span>
+                } @else {
+                <ng-icon name="heroCheckCircle" size="1.25rem" class="mr-2"></ng-icon>
+                }
+                {{ existingSession ? 'Update Session' : 'Save Session' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@
 
         <!-- Status Filter -->
         <select
-          class="select select-sm select-bordered rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
           [(ngModel)]="currentFilters.status" (ngModelChange)="onFilterChange()">
           <option [ngValue]="undefined">All Statuses</option>
           @for (status of statusOptions; track status.value) {
@@ -23,7 +23,7 @@
 
         <!-- Author Filter -->
         <select
-          class="select select-sm select-bordered rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
           [(ngModel)]="currentFilters.authorId" (ngModelChange)="onFilterChange()">
           <option [ngValue]="undefined">All Authors</option>
           @for (author of authors; track author.id) {
@@ -33,7 +33,7 @@
 
         <!-- Tag Filter -->
         <select
-          class="select select-sm select-bordered rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
           [(ngModel)]="currentFilters.tagId" (ngModelChange)="onFilterChange()">
           <option [ngValue]="undefined">All Tags</option>
           @for (tag of tags; track tag.id) {
@@ -43,7 +43,7 @@
 
         <!-- Rating Filter -->
         <select
-          class="select select-sm select-bordered rounded-full bg-base-100/80 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
           [(ngModel)]="currentFilters.rating" (ngModelChange)="onFilterChange()">
           <option [ngValue]="undefined">All Ratings</option>
           @for (rating of ratingOptions; track rating.value) {

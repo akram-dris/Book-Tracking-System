@@ -1,137 +1,165 @@
-<div class="container mx-auto p-6">
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-4xl font-bold flex items-center gap-3 mb-2">
-            <ng-icon name="heroSparkles" class="text-warning" size="2.5rem"></ng-icon>
-            Recommended for You
-        </h1>
-        <p class="text-base-content/70">Books from your top-rated authors and tags</p>
+<div class="min-h-screen pb-24 relative" @fadeIn>
+    <!-- Sticky Header Section -->
+    <div class="mb-8 sticky top-4 z-30">
+        <div
+            class="glass-panel rounded-full p-3 pr-6 border border-white/10 shadow-lg flex items-center justify-between max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
+            <div class="flex items-center gap-4">
+                <div class="p-2 rounded-full bg-warning/10 text-warning">
+                    <ng-icon name="heroSparkles" size="1.5rem"></ng-icon>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white tracking-tight">Recommended for You</h1>
+                    <p class="text-xs text-base-content/60 font-medium">Curated based on your reading history</p>
+                </div>
+            </div>
+
+            <div
+                class="hidden sm:flex items-center gap-2 text-xs font-bold text-base-content/40 uppercase tracking-wider">
+                <ng-icon name="heroBookOpen" size="1rem"></ng-icon>
+                <span>Personalized Picks</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Skeleton Loading State -->
-    @if (loading) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
-        @for (i of [1,2,3,4,5,6,7,8]; track i) {
-        <div class="card bg-base-200 shadow-xl h-[400px]">
-            <div class="px-4 pt-4 h-64 w-full">
-                <div class="rounded-lg h-full w-full bg-base-300"></div>
-            </div>
-            <div class="card-body px-4 py-4">
-                <div class="h-6 w-3/4 bg-base-300 rounded mb-2"></div>
-                <div class="h-4 w-1/2 bg-base-300 rounded mb-4"></div>
-                <div class="h-6 w-24 bg-base-300 rounded-full mb-2"></div>
-                <div class="flex gap-1 mb-2">
-                    <div class="h-4 w-16 bg-base-300 rounded-full"></div>
-                    <div class="h-4 w-16 bg-base-300 rounded-full"></div>
-                </div>
-                <div class="flex justify-between items-center mt-auto">
-                    <div class="h-4 w-16 bg-base-300 rounded"></div>
-                    <div class="flex gap-1">
-                        <div class="h-4 w-12 bg-base-300 rounded"></div>
-                        <div class="h-4 w-12 bg-base-300 rounded"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Skeleton Loading State -->
+        @if (loading) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-pulse">
+            @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <div class="rounded-2xl bg-base-200/40 h-[420px] border border-white/5 overflow-hidden">
+                <div class="h-64 bg-base-300/50 w-full"></div>
+                <div class="p-5 space-y-3">
+                    <div class="h-4 w-3/4 bg-base-300/50 rounded"></div>
+                    <div class="h-3 w-1/2 bg-base-300/50 rounded"></div>
+                    <div class="flex gap-2 pt-2">
+                        <div class="h-6 w-20 bg-base-300/50 rounded-full"></div>
+                        <div class="h-6 w-16 bg-base-300/50 rounded-full"></div>
                     </div>
                 </div>
             </div>
+            }
         </div>
         }
-    </div>
-    }
 
-    <!-- Error State -->
-    @if (error) {
-    <div class="alert alert-error">
-        <span>{{ error }}</span>
-    </div>
-    }
+        <!-- Error State -->
+        @if (error) {
+        <div class="alert alert-error bg-error/10 border-error/20 text-error backdrop-blur-md">
+            <ng-icon name="heroSparkles" size="1.5rem"></ng-icon>
+            <span>{{ error }}</span>
+        </div>
+        }
 
-    <!-- Empty State -->
-    @if (!loading && !error && recommendations.length === 0) {
-    <div class="text-center py-20">
-        <ng-icon name="heroBookOpen" size="4rem" class="text-base-content/30"></ng-icon>
-        <p class="text-xl text-base-content/50 mt-4">No recommendations yet</p>
-        <p class="text-sm text-base-content/40">Rate some books to get personalized recommendations!</p>
-    </div>
-    }
-
-    <!-- Recommendations Grid -->
-    @if (!loading && recommendations.length > 0) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        @for (rec of recommendations; track rec.bookId) {
-        <div class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1"
-            (click)="navigateToBook(rec.bookId)">
-
-            <!-- Book Cover -->
-            <figure class="px-4 pt-4 h-64 w-full">
-                @if (rec.imageUrl) {
-                <img [src]="rootUrl + rec.imageUrl" [alt]="rec.bookTitle"
-                    class="rounded-lg h-full w-full object-cover shadow-sm" (error)="rec.imageUrl = null" />
-                }
-
-                @if (!rec.imageUrl) {
+        <!-- Empty State -->
+        @if (!loading && !error && recommendations.length === 0) {
+        <div class="flex flex-col items-center justify-center py-32 text-center">
+            <div class="relative mb-6 group">
                 <div
-                    class="rounded-lg h-full w-full bg-base-300/50 flex flex-col items-center justify-center text-base-content/20 p-4 text-center border-2 border-dashed border-base-300">
-                    <ng-icon name="heroBookOpen" size="3rem" class="mb-2"></ng-icon>
-                    <span class="text-xs font-medium uppercase tracking-wider">No Cover</span>
+                    class="absolute inset-0 bg-primary/20 blur-3xl rounded-full group-hover:bg-primary/30 transition-all duration-500">
                 </div>
-                }
-            </figure>
+                <ng-icon name="heroBookOpen" size="5rem"
+                    class="text-base-content/20 relative z-10 group-hover:scale-110 transition-transform duration-500"></ng-icon>
+            </div>
+            <h3 class="text-2xl font-bold text-base-content mb-2">No recommendations yet</h3>
+            <p class="text-base-content/50 max-w-md mx-auto">
+                Start rating your read books to help us understand your taste and generate personalized recommendations!
+            </p>
+        </div>
+        }
 
-            <!-- Card Body -->
-            <div class="card-body px-4 py-4">
-                <h3 class="card-title text-base line-clamp-2" [title]="rec.bookTitle">
-                    {{ rec.bookTitle }}
-                </h3>
+        <!-- Recommendations Grid -->
+        @if (!loading && recommendations.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" @staggerFade>
+            @for (rec of recommendations; track rec.bookId) {
+            <div class="group relative flex flex-col h-full bg-base-200/30 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-500 cursor-pointer"
+                (click)="navigateToBook(rec.bookId)">
 
-                <p class="text-sm text-base-content/70 mb-2">{{ rec.authorName }}</p>
-
-                <!-- Recommendation Reason -->
-                <div class="badge badge-sm gap-1 mb-2">
-                    <ng-icon name="heroSparkles" class="text-warning" size="0.875rem"></ng-icon>
-                    <span class="text-xs">{{ rec.recommendationReason }}</span>
+                <!-- Hover Glow Effect -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                 </div>
 
-                <!-- Tags -->
-                @if (rec.tags.length > 0) {
-                <div class="flex flex-wrap gap-1 mb-2">
-                    @for (tag of rec.tags.slice(0, 3); track tag) {
-                    <span class="badge badge-ghost badge-xs">
-                        {{ tag }}
-                    </span>
+                <!-- Book Cover -->
+                <div class="relative aspect-[2/3] overflow-hidden">
+                    @if (rec.imageUrl) {
+                    <img [src]="rootUrl + rec.imageUrl" [alt]="rec.bookTitle"
+                        class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                        (error)="rec.imageUrl = null" />
+                    } @else {
+                    <div
+                        class="w-full h-full bg-base-300/30 flex flex-col items-center justify-center text-base-content/20 p-6 text-center group-hover:bg-base-300/50 transition-colors duration-500">
+                        <ng-icon name="heroBookOpen" size="3rem" class="mb-3 opacity-50"></ng-icon>
+                        <span class="text-xs font-bold uppercase tracking-widest opacity-50">No Cover</span>
+                    </div>
                     }
-                </div>
-                }
 
-                <!-- Stats -->
-                <div class="flex justify-between items-center mt-auto">
-                    <span class="text-xs text-base-content/60">{{ rec.totalPages }} pages</span>
-                    <div class="flex gap-1">
-                        @if (rec.authorAverageRating) {
-                        <span class="badge badge-xs" [ngClass]="{
-                                'badge-warning': rec.authorAverageRating >= 4.5,
-                                'badge-success': rec.authorAverageRating >= 4.0 && rec.authorAverageRating < 4.5,
-                                'badge-info': rec.authorAverageRating >= 3.0 && rec.authorAverageRating < 4.0,
-                                'badge-accent': rec.authorAverageRating >= 2.0 && rec.authorAverageRating < 3.0,
-                                'badge-error': rec.authorAverageRating < 2.0
+                    <!-- Overlay Gradient -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-transparent opacity-60">
+                    </div>
+
+                    <!-- Match Score Badge (Simulated based on rating) -->
+                    <div class="absolute top-3 right-3">
+                        <div class="badge border-none shadow-lg backdrop-blur-md font-bold gap-1" [ngClass]="{
+                                'bg-success/90 text-success-content': (rec.authorAverageRating || 0) >= 4.5,
+                                'bg-info/90 text-info-content': (rec.authorAverageRating || 0) >= 4.0 && (rec.authorAverageRating || 0) < 4.5,
+                                'bg-base-100/90 text-base-content': (rec.authorAverageRating || 0) < 4.0
                             }">
-                            {{ rec.authorAverageRating | number:'1.1-1' }}⭐
+                            <ng-icon name="heroSparkles" size="0.75rem"></ng-icon>
+                            <span>{{ (rec.authorAverageRating || 0) >= 4.0 ? 'Top Match' : 'Recommended' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Content -->
+                <div class="p-4 flex flex-col flex-grow relative">
+                    <!-- Reason Badge -->
+                    <div class="mb-3">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-warning/10 text-warning border border-warning/20">
+                            <ng-icon name="heroSparkles" size="0.75rem"></ng-icon>
+                            {{ rec.recommendationReason }}
                         </span>
-                        }
-                        @if (rec.tagAverageRating) {
-                        <span class="badge badge-xs" [ngClass]="{
-                                'badge-warning': rec.tagAverageRating >= 4.5,
-                                'badge-success': rec.tagAverageRating >= 4.0 && rec.tagAverageRating < 4.5,
-                                'badge-info': rec.tagAverageRating >= 3.0 && rec.tagAverageRating < 4.0,
-                                'badge-accent': rec.tagAverageRating >= 2.0 && rec.tagAverageRating < 3.0,
-                                'badge-error': rec.tagAverageRating < 2.0
-                            }">
-                            {{ rec.tagAverageRating | number:'1.1-1' }}⭐
+                    </div>
+
+                    <h3
+                        class="text-base font-bold text-base-content leading-tight mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                        {{ rec.bookTitle }}
+                    </h3>
+                    <p class="text-sm text-base-content/60 font-medium mb-4">{{ rec.authorName }}</p>
+
+                    <!-- Tags -->
+                    @if (rec.tags.length > 0) {
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        @for (tag of rec.tags.slice(0, 3); track tag) {
+                        <span
+                            class="px-2 py-0.5 rounded-md bg-base-content/5 text-base-content/60 text-xs font-medium border border-base-content/5">
+                            {{ tag }}
                         </span>
                         }
                     </div>
+                    }
+
+                    <!-- Footer Stats -->
+                    <div
+                        class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-xs font-medium text-base-content/50">
+                        <div class="flex items-center gap-1.5">
+                            <ng-icon name="heroBookOpen" size="0.875rem"></ng-icon>
+                            <span>{{ rec.totalPages }} pages</span>
+                        </div>
+
+                        <div class="flex gap-2">
+                            @if (rec.authorAverageRating) {
+                            <div class="flex items-center gap-1 text-warning">
+                                <ng-icon name="heroStar" size="0.875rem" class="fill-current"></ng-icon>
+                                <span>{{ rec.authorAverageRating | number:'1.1-1' }}</span>
+                            </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
+            }
         </div>
         }
     </div>
-    }
 </div>

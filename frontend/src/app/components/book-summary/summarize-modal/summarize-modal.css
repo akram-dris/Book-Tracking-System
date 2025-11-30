@@ -1,0 +1,41 @@
+/* Glass Panel Styles */
+.glass-panel {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Input Autofill Fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #1f2937 inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Remove default Material form field spacing */
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+    padding: 0 !important;
+    min-height: unset !important;
+    border-top: none !important;
+}
+
+/* Modal Backdrop Blur */
+::ng-deep .cdk-overlay-backdrop {
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Custom Input Focus Ring */
+.input:focus,
+.textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--p), 0.2);
+}

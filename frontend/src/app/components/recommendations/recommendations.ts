@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { heroStar, heroBookOpen, heroSparkles } from '@ng-icons/heroicons/outline';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 
 @Component({
   selector: 'app-recommendations',
@@ -14,7 +15,25 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
   imports: [CommonModule, NgIconComponent, NgxSkeletonLoaderModule],
   templateUrl: './recommendations.html',
   styleUrl: './recommendations.css',
-  providers: [provideIcons({ heroStar, heroBookOpen, heroSparkles })]
+  providers: [provideIcons({ heroStar, heroBookOpen, heroSparkles })],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('staggerFade', [
+      transition(':enter', [
+        query('div', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(100, [
+            animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class RecommendationsComponent implements OnInit {
   recommendations: Recommendation[] = [];

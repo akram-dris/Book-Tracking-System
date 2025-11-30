@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthorService } from '../../services/author';
 import { BookService } from '../../services/book';
 import { ReadingStatusService } from '../../services/reading-status';
+import { ReadingSessionService } from '../../services/reading-session';
 import { GetAuthor } from '../../models/get-author.model';
 import { GetBook } from '../../models/get-book.model';
 import { ReadingStatus } from '../../models/enums/reading-status.enum';
@@ -12,20 +13,24 @@ import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { FormsModule } from '@angular/forms';
-import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
+import { heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown, heroCalendar } from '@ng-icons/heroicons/outline';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
+import { AuthorFormComponent } from '../author-form/author-form';
+import { BookCardComponent } from '../shared/book-card/book-card';
 
 interface BookWithStatus extends GetBook {
   statusBadgeClass?: string;
   statusDisplayName?: string;
+  progressPercentage?: number;
+  statusName?: string;
 }
 
 @Component({
   selector: 'app-author-details',
-  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, FormsModule],
+  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, FormsModule, BookCardComponent],
   templateUrl: './author-details.html',
   styleUrls: ['./author-details.css'],
   viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown })]
@@ -42,6 +47,7 @@ export class AuthorDetailsComponent implements OnInit {
   booksCompleted = 0;
   booksReading = 0;
   totalPagesRead = 0;
+  completionRate = 0;
 
   // UI state
   bioExpanded = false;
@@ -62,12 +68,14 @@ export class AuthorDetailsComponent implements OnInit {
     private authorService: AuthorService,
     private bookService: BookService,
     private readingStatusService: ReadingStatusService,
+    private readingSessionService: ReadingSessionService,
     private location: Location,
     private dialog: MatDialog,
     private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
+    console.log('AuthorDetailsComponent initialized');
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadAuthorData(+id);
@@ -76,6 +84,7 @@ export class AuthorDetailsComponent implements OnInit {
 
   loadAuthorData(id: number): void {
     this.isLoading = true;
+    console.log('Loading author data for id:', id);
     this.authorService.getAuthor(id).subscribe({
       next: (result) => {
         if (result.isSuccess && result.data) {
@@ -115,12 +124,14 @@ export class AuthorDetailsComponent implements OnInit {
                 return {
                   ...book,
                   statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost',
-                  statusDisplayName: statusInfo?.displayName || 'Unknown'
+                  statusDisplayName: statusInfo?.displayName || 'Unknown',
+                  statusName: statusInfo?.displayName || 'Unknown'
                 };
               });
 
             this.sortBooks();
             this.calculateStatistics();
+            this.loadProgressForBooks(this.authorBooks);
           } else {
             console.error('Error loading author books:', bookResult.errors);
           }
@@ -168,10 +179,15 @@ export class AuthorDetailsComponent implements OnInit {
 
   calculateStatistics(): void {
     this.totalBooks = this.authorBooks.length;
+
+    // Count completed and reading books
     this.booksCompleted = this.authorBooks.filter(book =>
       book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized
     ).length;
     this.booksReading = this.authorBooks.filter(book => book.status === ReadingStatus.CurrentlyReading).length;
+
+    // Calculate completion rate
+    this.completionRate = this.totalBooks > 0 ? (this.booksCompleted / this.totalBooks) * 100 : 0;
 
     // Calculate total pages read from completed and summarized books
     this.totalPagesRead = this.authorBooks.reduce((total, book) => {
@@ -186,7 +202,32 @@ export class AuthorDetailsComponent implements OnInit {
     this.bioExpanded = !this.bioExpanded;
   }
 
-  deleteAuthor(): void {
+  navigateToAddBook(): void {
+    if (this.author) {
+      this.router.navigate(['/books/new'], { queryParams: { authorId: this.author.id } });
+    }
+  }
+
+  openEditModal(): void {
+    if (this.author) {
+      const dialogRef = this.dialog.open(AuthorFormComponent, {
+        data: { authorId: this.author.id },
+        width: '900px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        panelClass: 'glass-modal',
+        backdropClass: 'glass-modal-backdrop'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.loadAuthorData(this.author!.id);
+        }
+      });
+    }
+  }
+
+  confirmDelete(): void {
     if (!this.author) return;
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -195,7 +236,9 @@ export class AuthorDetailsComponent implements OnInit {
         message: 'Are you sure you want to delete this author? This will also remove all their books.',
         confirmText: 'Delete',
         confirmColor: 'warn'
-      }
+      },
+      panelClass: 'glass-modal',
+      backdropClass: 'glass-modal-backdrop'
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -213,68 +256,54 @@ export class AuthorDetailsComponent implements OnInit {
     });
   }
 
+  private loadProgressForBooks(books: BookWithStatus[]): void {
+    books.forEach(book => {
+      if (book.id && book.totalPages && book.totalPages > 0) {
+        this.readingSessionService.getReadingSessionsForBook(book.id).subscribe({
+          next: result => {
+            if (result.isSuccess && result.data) {
+              const sessions = result.data;
+              const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
+              book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
+            } else {
+              console.error(`Error fetching reading sessions for book ${book.id}:`, result.errors);
+              book.progressPercentage = 0;
+            }
+          },
+          error: err => {
+            console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+            book.progressPercentage = 0;
+          }
+        });
+      } else {
+        book.progressPercentage = 0;
+      }
+    });
+  }
+
   goBack(): void {
     this.location.back();
   }
 
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = '/assets/placeholder-book.png';
+  }
+
   getStatusClass(book: BookWithStatus): string {
-    if (book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) return 'badge-success text-white';
-    if (book.status === ReadingStatus.CurrentlyReading) return 'badge-info text-white';
-    return 'badge-ghost';
+    return book.statusBadgeClass || 'badge-ghost';
   }
 
   getStatusText(book: BookWithStatus): string {
     return book.statusDisplayName || 'Unknown';
   }
 
-  onImageError(event: Event): void {
-    console.error('Failed to load author image. URL:', this.rootUrl + this.author?.imageUrl);
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-  }
-
-  getRatingColorClass(rating: number | undefined): string {
-    if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-
-    const roundedRating = Math.round(rating);
-
-    switch (roundedRating) {
-      case 5: return 'bg-gradient-to-t from-amber-600/90 via-amber-500/60 to-transparent';
-      case 4: return 'bg-gradient-to-t from-emerald-600/90 via-emerald-500/60 to-transparent';
-      case 3: return 'bg-gradient-to-t from-cyan-600/90 via-cyan-500/60 to-transparent';
-      case 2: return 'bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-transparent';
-      case 1: return 'bg-gradient-to-t from-rose-600/90 via-rose-500/60 to-transparent';
-      default: return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-    }
-  }
-
-  getRatingBorderClass(rating: number | undefined): string {
-    if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
-
-    const roundedRating = Math.round(rating);
-
-    switch (roundedRating) {
-      case 5: return 'hover:shadow-amber-500/40 hover:border-amber-400';
-      case 4: return 'hover:shadow-emerald-500/40 hover:border-emerald-400';
-      case 3: return 'hover:shadow-cyan-500/40 hover:border-cyan-400';
-      case 2: return 'hover:shadow-orange-500/40 hover:border-orange-400';
-      case 1: return 'hover:shadow-rose-500/40 hover:border-rose-400';
-      default: return 'hover:shadow-primary/20 hover:border-primary';
-    }
-  }
-
-  getRatingBadgeClass(rating: number | undefined): string {
-    if (!rating) return '';
-
-    const roundedRating = Math.round(rating);
-
-    switch (roundedRating) {
-      case 5: return 'bg-amber-500 border-amber-400';
-      case 4: return 'bg-emerald-500 border-emerald-400';
-      case 3: return 'bg-cyan-500 border-cyan-400';
-      case 2: return 'bg-orange-500 border-orange-400';
-      case 1: return 'bg-rose-500 border-rose-400';
-      default: return 'bg-gray-500 border-gray-400';
+  getRatingBadgeClass(rating: number): string {
+    if (rating >= 4) {
+      return 'bg-amber-500/90';
+    } else if (rating >= 2) {
+      return 'bg-slate-400/90';
+    } else {
+      return 'bg-orange-500/90';
     }
   }
 }

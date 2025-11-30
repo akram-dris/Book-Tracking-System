@@ -71,5 +71,24 @@ namespace BookTrackingSystem.Repository
         {
             return await _context.ReadingSessions.ToListAsync();
         }
+
+        public async Task<ReadingSession?> GetOldestSessionAsync()
+        {
+            return await _context.ReadingSessions
+                                 .OrderBy(rs => rs.Date)
+                                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<ReadingSession?> GetNewestSessionAsync()
+        {
+            return await _context.ReadingSessions
+                                 .OrderByDescending(rs => rs.Date)
+                                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> HasAnySessionsAsync()
+        {
+            return await _context.ReadingSessions.AnyAsync();
+        }
     }
 }

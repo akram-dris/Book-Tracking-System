@@ -5,6 +5,7 @@ using BookTrackingSystem.Models;
 using BookTrackingSystem.Repository;
 using BookTrackingSystem.Models.Common;
 using BookTrackingSystem.Models.Pagination;
+using BookTrackingSystem.Models.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -160,7 +161,16 @@ namespace BookTrackingSystem.Services
                     Name = tag.Name,
                     AverageRating = tag.BookTagAssignments != null && tag.BookTagAssignments.Any(bta => bta.Book?.Rating != null)
                         ? tag.BookTagAssignments.Where(bta => bta.Book?.Rating != null).Average(bta => bta.Book!.Rating!.Value)
-                        : null
+                        : null,
+                    TotalBooks = tag.BookTagAssignments?.Count ?? 0,
+                    CompletedBooks = tag.BookTagAssignments?.Count(bta => bta.Book?.Status == ReadingStatus.Completed) ?? 0,
+                    ReadingBooks = tag.BookTagAssignments?.Count(bta => bta.Book?.Status == ReadingStatus.CurrentlyReading) ?? 0,
+                    PreviewImageUrls = tag.BookTagAssignments?
+                        .Where(bta => !string.IsNullOrEmpty(bta.Book?.ImageUrl))
+                        .OrderByDescending(bta => bta.Book?.Rating)
+                        .Select(bta => bta.Book!.ImageUrl!)
+                        .Take(3)
+                        .ToList() ?? new List<string>()
                 }).ToList();
 
                 var result = new PaginatedResult<TagDto>
@@ -180,4 +190,3 @@ namespace BookTrackingSystem.Services
         }
     }
 }
-

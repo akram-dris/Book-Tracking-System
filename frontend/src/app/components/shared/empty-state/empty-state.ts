@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { NgIconComponent } from '@ng-icons/core';
 
 @Component({
@@ -12,5 +12,11 @@ export class EmptyStateComponent {
   icon = input<string>('heroBookOpen');
   title = input<string>('No items found');
   description = input<string>('');
-  actionText = input<string>('');
+  subDescription = input<string>('');
+  actionLabel = input<string>('');
+  secondaryActionLabel = input<string>('');
+  image = input<string>('');
+
+  action = output<void>();
+  secondaryAction = output<void>();
 }

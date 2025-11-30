@@ -1,27 +1,47 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl, FormsModule } from '@angular/forms';
 import * as common from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { TagService } from '../../services/tag';
+import { BookService } from '../../services/book';
+import { ReadingStatusService } from '../../services/reading-status';
 import { GetTag } from '../../models/get-tag.model';
+import { GetBook } from '../../models/get-book.model';
 import { CreateTag } from '../../models/create-tag.model';
 import { UpdateTag } from '../../models/update-tag.model';
+import { ReadingStatus } from '../../models/enums/reading-status.enum';
+import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { heroStar, heroArrowsUpDown } from '@ng-icons/heroicons/outline';
+import { heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle, heroBookOpen } from '@ng-icons/heroicons/outline';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll';
 import { PaginationParams } from '../../models/result';
+
+interface BookWithProgress extends GetBook {
+  progressPercentage?: number;
+  statusName?: string;
+  statusBadgeClass?: string;
+}
+
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, NgIconComponent, InfiniteScrollDirective],
+  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, RouterModule, NgIconComponent, MatIconModule, MatButtonModule, InfiniteScrollDirective, EmptyStateComponent],
   templateUrl: './tag-management.html',
   styleUrls: ['./tag-management.css'],
-  viewProviders: [provideIcons({ heroStar, heroArrowsUpDown })]
+  viewProviders: [provideIcons({ heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle, heroBookOpen })]
 })
 export class TagManagementComponent implements OnInit {
+  @ViewChild('tagModal') tagModal!: TemplateRef<any>;
+  @ViewChild('tagDetailsModal') tagDetailsModal!: TemplateRef<any>;
+
   tagForm: FormGroup;
   tags: GetTag[] = [];
   displayedTags: GetTag[] = [];
@@ -34,6 +54,19 @@ export class TagManagementComponent implements OnInit {
   pageSize: number = 20;
   hasMorePages: boolean = true;
   isLoadingMore: boolean = false;
+
+  // Tag Details Modal
+  selectedTag: GetTag | null = null;
+  tagBooks: BookWithProgress[] = [];
+  isLoadingTagBooks: boolean = false;
+  tagBooksPage: number = 1;
+  tagBooksHasMore: boolean = true;
+
+  // Expose ReadingStatus enum to template
+  ReadingStatus = ReadingStatus;
+
+  // Add rootUrl for image paths
+  rootUrl: string = environment.rootUrl;
 
   sortOptions = [
     { value: 'name-asc', label: 'Name (A-Z)' },
@@ -49,6 +82,8 @@ export class TagManagementComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private tagService: TagService,
+    private bookService: BookService,
+    private readingStatusService: ReadingStatusService,
     private dialog: MatDialog,
     private notificationService: NotificationService
   ) {
@@ -149,6 +184,16 @@ export class TagManagementComponent implements OnInit {
     });
   }
 
+  openAddTagModal(): void {
+    this.isEditingTag = false;
+    this.editingTagId = null;
+    this.tagForm.reset();
+    this.dialog.open(this.tagModal, {
+      width: '400px',
+      panelClass: 'glass-modal'
+    });
+  }
+
   onSubmit(): void {
     if (this.tagForm.valid) {
       this.isLoading = true;
@@ -161,6 +206,7 @@ export class TagManagementComponent implements OnInit {
               this.isEditingTag = false;
               this.editingTagId = null;
               this.loadTags();
+              this.dialog.closeAll();
               this.notificationService.showSuccess('Tag updated successfully');
             } else {
               console.error('Error updating tag', result.errors);
@@ -182,6 +228,7 @@ export class TagManagementComponent implements OnInit {
               this.tagForm.reset();
               this.loadTags();
               this.loadTagUsageCounts();
+              this.dialog.closeAll();
               this.notificationService.showSuccess('Tag added successfully');
             } else {
               console.error('Error creating tag', result.errors);
@@ -203,6 +250,15 @@ export class TagManagementComponent implements OnInit {
     this.isEditingTag = true;
     this.editingTagId = tag.id;
     this.tagForm.patchValue({ name: tag.name });
+    this.dialog.open(this.tagModal, {
+      width: '400px',
+      panelClass: 'glass-modal'
+    });
+  }
+
+  closeModal(): void {
+    this.dialog.closeAll();
+    this.cancelEdit();
   }
 
   cancelEdit(): void {
@@ -243,48 +299,34 @@ export class TagManagementComponent implements OnInit {
     });
   }
 
+
   getRatingColorClass(rating: number | undefined): string {
     if (!rating) return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-gradient-to-t from-amber-600/90 via-amber-500/60 to-transparent';
-      case 4: return 'bg-gradient-to-t from-emerald-600/90 via-emerald-500/60 to-transparent';
-      case 3: return 'bg-gradient-to-t from-cyan-600/90 via-cyan-500/60 to-transparent';
-      case 2: return 'bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-transparent';
-      case 1: return 'bg-gradient-to-t from-rose-600/90 via-rose-500/60 to-transparent';
-      default: return 'bg-gradient-to-t from-primary/80 via-primary/40 to-transparent';
-    }
+    if (roundedRating >= 4) return 'bg-gradient-to-t from-amber-500/90 via-amber-400/60 to-transparent'; // Gold (4-5)
+    if (roundedRating >= 2) return 'bg-gradient-to-t from-slate-500/90 via-slate-400/60 to-transparent'; // Silver (2-3)
+    return 'bg-gradient-to-t from-orange-700/90 via-orange-600/60 to-transparent'; // Bronze (1)
   }
 
   getRatingBorderClass(rating: number | undefined): string {
-    if (!rating) return 'hover:border-primary hover:bg-primary/10 hover:shadow-primary/20';
+    if (!rating) return 'hover:shadow-primary/20 hover:border-primary';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-amber-500/20';
-      case 4: return 'hover:border-emerald-400 hover:bg-emerald-500/10 hover:shadow-emerald-500/20';
-      case 3: return 'hover:border-cyan-400 hover:bg-cyan-500/10 hover:shadow-cyan-500/20';
-      case 2: return 'hover:border-orange-400 hover:bg-orange-500/10 hover:shadow-orange-500/20';
-      case 1: return 'hover:border-rose-400 hover:bg-rose-500/10 hover:shadow-rose-500/20';
-      default: return 'hover:border-primary hover:bg-primary/10 hover:shadow-primary/20';
-    }
+    if (roundedRating >= 4) return 'hover:shadow-amber-500/40 hover:border-amber-400'; // Gold
+    if (roundedRating >= 2) return 'hover:shadow-slate-500/40 hover:border-slate-400'; // Silver
+    return 'hover:shadow-orange-700/40 hover:border-orange-600'; // Bronze
   }
 
   getRatingBadgeClass(rating: number | undefined): string {
     if (!rating) return '';
 
-    const roundedRating = Math.round(rating);
+    const roundedRating = Math.floor(rating);
 
-    switch (roundedRating) {
-      case 5: return 'bg-amber-500 border-amber-400';
-      case 4: return 'bg-emerald-500 border-emerald-400';
-      case 3: return 'bg-cyan-500 border-cyan-400';
-      case 2: return 'bg-orange-500 border-orange-400';
-      case 1: return 'bg-rose-500 border-rose-400';
-      default: return 'bg-gray-500 border-gray-400';
-    }
+    if (roundedRating >= 4) return 'text-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'; // Gold
+    if (roundedRating >= 2) return 'text-slate-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_0_8px_rgba(203,213,225,0.6)]'; // Silver
+    return 'text-orange-700 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_0_8px_rgba(194,65,12,0.6)]'; // Bronze
   }
 }

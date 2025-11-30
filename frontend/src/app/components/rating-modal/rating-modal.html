@@ -3,47 +3,61 @@
     <div class="modal-container" [class.active]="isAnimatingIn">
         <!-- Close button -->
         <button class="close-button" (click)="onCancel()" type="button" aria-label="Close">
-            <ng-icon name="heroXMark" size="24"></ng-icon>
+            <ng-icon name="heroXMark" size="20"></ng-icon>
         </button>
 
-        <!-- Book cover -->
-        <div class="book-cover-wrapper">
-            @if (bookCover()) {
-            <img [src]="rootUrl + bookCover" [alt]="bookTitle()" class="book-cover">
-            } @else {
-            <div class="book-cover-placeholder">
-                <ng-icon name="heroStar" size="48"></ng-icon>
+        <!-- Horizontal layout: Book cover + Rating content -->
+        <div class="modal-content">
+            <!-- Left: Book cover -->
+            <div class="book-cover-section">
+                @if (bookCover()) {
+                <img [src]="rootUrl + bookCover" [alt]="bookTitle()" class="book-cover">
+                } @else {
+                <div class="book-cover-placeholder">
+                    <ng-icon name="heroStar" size="32"></ng-icon>
+                </div>
+                }
             </div>
-            }
-        </div>
 
-        <!-- Book title -->
-        <h2 class="book-title">{{ bookTitle() }}</h2>
+            <!-- Right: Rating section -->
+            <div class="rating-section">
+                <!-- Book title at top -->
+                <h2 class="book-title">{{ bookTitle() }}</h2>
 
-        <!-- Heading -->
-        <div class="heading-wrapper">
-            <ng-icon name="heroStar" size="20" class="heading-icon"></ng-icon>
-            <h3 class="heading">Rate this book</h3>
-        </div>
+                <!-- Custom Star rating component -->
+                <div class="rating-wrapper">
+                    <div class="custom-rating">
+                        @for (star of stars; track $index) {
+                        <button type="button" class="star-button" (click)="setRating($index + 1)"
+                            (mouseenter)="hoverRating = $index + 1" (mouseleave)="hoverRating = 0"
+                            [class.filled]="(hoverRating || selectedRating || 0) >= $index + 1"
+                            [class.hovered]="hoverRating === $index + 1">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="star-icon">
+                                <path
+                                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                        </button>
+                        }
+                    </div>
+                </div>
 
-        <!-- Star rating component -->
-        <p-rating [(ngModel)]="selectedRating" [stars]="5" (ngModelChange)="onRatingChange($event)">
-        </p-rating>
+                <!-- Rating text -->
+                <p class="rating-text" [class.selected]="selectedRating !== null">
+                    {{ ratingText }}
+                </p>
 
-        <!-- Rating text -->
-        <p class="rating-text" [class.selected]="selectedRating !== null">
-            {{ ratingText }}
-        </p>
-
-        <!-- Action buttons -->
-        <div class="button-group">
-            <button class="btn btn-primary" [disabled]="!canSave" [class.pulse]="canSave" (click)="onSave()"
-                type="button">
-                Confirm Rating
-            </button>
-            <button class="btn btn-ghost" (click)="onCancel()" type="button">
-                Cancel
-            </button>
+                <!-- Action buttons (horizontal) -->
+                <div class="button-group">
+                    <button class="btn btn-primary" [disabled]="!canSave" [class.pulse]="canSave" (click)="onSave()"
+                        type="button">
+                        <ng-icon name="heroCheckCircle" size="20"></ng-icon>
+                        <span>Confirm</span>
+                    </button>
+                    <button class="btn btn-ghost" (click)="onCancel()" type="button">
+                        Cancel
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

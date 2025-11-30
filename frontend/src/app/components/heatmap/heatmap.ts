@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
@@ -13,7 +14,11 @@ import {
   heroBookOpen,
   heroChartBarSquare,
   heroTrophy,
-  heroSparkles
+  heroSparkles,
+  heroMinus,
+  heroPlus,
+  heroChevronDown,
+  heroCheck
 } from '@ng-icons/heroicons/outline';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
@@ -39,10 +44,12 @@ interface LegendItem {
   range: string;
 }
 
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, NgxSkeletonLoaderModule],
+  imports: [CommonModule, FormsModule, NgIconComponent, NgxSkeletonLoaderModule, EmptyStateComponent],
   viewProviders: [provideIcons({
     heroChevronLeft,
     heroChevronRight,
@@ -52,7 +59,11 @@ interface LegendItem {
     heroBookOpen,
     heroChartBarSquare,
     heroTrophy,
-    heroSparkles
+    heroSparkles,
+    heroMinus,
+    heroPlus,
+    heroChevronDown,
+    heroCheck
   })],
   templateUrl: './heatmap.html',
   styleUrl: './heatmap.css',
@@ -86,6 +97,7 @@ export class HeatmapComponent implements OnInit {
   currentStreak: number = 0;
   longestStreak: number = 0;
   hoveredMonth: number | null = null;
+  isYearDropdownOpen: boolean = false;
   legendItems: LegendItem[] = [
     { label: 'No activity', className: 'day-0', range: '0 pages' },
     { label: 'Light', className: 'day-low', range: '1-15 pages' },
@@ -93,12 +105,17 @@ export class HeatmapComponent implements OnInit {
     { label: 'High', className: 'day-high', range: '50+ pages' }
   ];
 
-  constructor(private heatmapService: HeatmapService) {
-    this.generateYears();
-  }
+  constructor(
+    private heatmapService: HeatmapService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    this.loadHeatmapData();
+    this.loadAvailableYears();
+  }
+
+  navigateToBooks(): void {
+    this.router.navigate(['/books']);
   }
 
   setHoveredMonth(index: number): void {
@@ -109,11 +126,44 @@ export class HeatmapComponent implements OnInit {
     this.hoveredMonth = null;
   }
 
-  generateYears(): void {
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear - 5; i <= currentYear; i++) {
+  loadAvailableYears(): void {
+    this.heatmapService.getAvailableYears().subscribe({
+      next: (result) => {
+        if (result.isSuccess && result.data) {
+          const { minYear, maxYear } = result.data;
+          this.generateYearsFromRange(minYear, maxYear);
+          this.loadHeatmapData();
+        } else {
+          // Fallback to default range if backend doesn't return years
+          const currentYear = new Date().getFullYear();
+          this.generateYearsFromRange(currentYear - 5, currentYear);
+          this.loadHeatmapData();
+        }
+      },
+      error: () => {
+        // Fallback to default range on error
+        const currentYear = new Date().getFullYear();
+        this.generateYearsFromRange(currentYear - 5, currentYear);
+        this.loadHeatmapData();
+      }
+    });
+  }
+
+  generateYearsFromRange(minYear: number, maxYear: number): void {
+    this.years = [];
+    for (let i = minYear; i <= maxYear; i++) {
       this.years.push(i);
     }
+  }
+
+  toggleYearDropdown(): void {
+    this.isYearDropdownOpen = !this.isYearDropdownOpen;
+  }
+
+  selectYear(year: number): void {
+    this.currentYear = year;
+    this.isYearDropdownOpen = false;
+    this.loadHeatmapData();
   }
 
   loadHeatmapData(): void {
@@ -196,19 +246,6 @@ export class HeatmapComponent implements OnInit {
     }
 
     this.currentStreak = current;
-  }
-
-  previousYear(): void {
-    this.currentYear--;
-    this.loadHeatmapData();
-  }
-
-  nextYear(): void {
-    const currentYear = new Date().getFullYear();
-    if (this.currentYear < currentYear) {
-      this.currentYear++;
-      this.loadHeatmapData();
-    }
   }
 
   generateCalendarGrid(): void {

@@ -15,4 +15,8 @@ export class HeatmapService {
   getHeatmapData(year: number): Observable<Result<{ [key: string]: number }>> {
     return this.http.get<Result<{ [key: string]: number }>>(`${this.apiUrl}/${year}`);
   }
+
+  getAvailableYears(): Observable<Result<{ minYear: number; maxYear: number }>> {
+    return this.http.get<Result<{ minYear: number; maxYear: number }>>(`${this.apiUrl}/years`);
+  }
 }
