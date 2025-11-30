@@ -163,7 +163,7 @@ namespace BookTrackingSystem.Services
                         ? tag.BookTagAssignments.Where(bta => bta.Book?.Rating != null).Average(bta => bta.Book!.Rating!.Value)
                         : null,
                     TotalBooks = tag.BookTagAssignments?.Count ?? 0,
-                    CompletedBooks = tag.BookTagAssignments?.Count(bta => bta.Book?.Status == ReadingStatus.Completed) ?? 0,
+                    CompletedBooks = tag.BookTagAssignments?.Count(bta => bta.Book?.Status == ReadingStatus.Completed || bta.Book?.Status == ReadingStatus.Summarized) ?? 0,
                     ReadingBooks = tag.BookTagAssignments?.Count(bta => bta.Book?.Status == ReadingStatus.CurrentlyReading) ?? 0,
                     PreviewImageUrls = tag.BookTagAssignments?
                         .Where(bta => !string.IsNullOrEmpty(bta.Book?.ImageUrl))
