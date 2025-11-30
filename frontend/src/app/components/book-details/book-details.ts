@@ -43,7 +43,8 @@ import {
   heroCheckCircle,
   heroTag,
   heroXMark,
-  heroStar
+  heroStar,
+  heroArrowRight
 } from '@ng-icons/heroicons/outline';
 
 type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
@@ -81,7 +82,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
       heroCheckCircle,
       heroTag,
       heroXMark,
-      heroStar
+      heroStar,
+      heroArrowRight
     })
   ]
 })

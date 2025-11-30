@@ -416,9 +416,108 @@
       }
 
       <!-- Other tabs placeholder for now -->
-      @if (activeTab === 'notes' || activeTab === 'statistics') {
-      <div class="text-center py-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <p class="text-lg text-base-content/60">Content coming soon...</p>
+      @if (activeTab === 'notes') {
+      <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+
+        <!-- Session Notes Section -->
+        <div class="glass-panel p-6 rounded-2xl">
+          <h3 class="text-xl font-bold font-heading flex items-center gap-2 mb-6">
+            <ng-icon name="heroClipboardDocumentList" size="1.5rem" class="text-secondary"></ng-icon>
+            Session Notes
+          </h3>
+
+          @if (getSessionsWithNotes().length > 0) {
+          <div class="grid gap-4">
+            @for (session of getSessionsWithNotes(); track session.id) {
+            <div
+              class="card bg-base-100/30 border border-base-content/5 hover:bg-base-100/50 transition-colors cursor-pointer"
+              (click)="openNoteDetailModal(session)">
+              <div class="card-body p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="badge badge-secondary badge-outline text-xs">
+                      {{ session.date | date:'mediumDate' }}
+                    </span>
+                    <span class="text-xs text-base-content/60">
+                      Pages {{ calculatePageRange(session).start }} - {{ calculatePageRange(session).end }}
+                    </span>
+                  </div>
+                  <ng-icon name="heroArrowRight" size="1rem" class="text-base-content/40"></ng-icon>
+                </div>
+                <p class="line-clamp-2 text-sm text-base-content/80">{{ session.summary }}</p>
+              </div>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="text-center py-8 text-base-content/40 italic">
+            No session notes found. Add notes when logging reading sessions.
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      @if (activeTab === 'statistics') {
+      <div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Progress Stat -->
+          <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+            <div class="radial-progress text-primary mb-3" [style.--value]="progress" style="--size:4rem;">
+              {{ progress | number:'1.0-0' }}%
+            </div>
+            <div class="text-sm font-medium text-base-content/70">Completion</div>
+            <div class="text-xs text-base-content/50 mt-1">
+              {{ currentPage }} / {{ book?.totalPages || '?' }} pages
+            </div>
+          </div>
+
+          <!-- Reading Speed (Average) -->
+          <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mb-3 text-secondary">
+              <ng-icon name="heroChartBar" size="2rem"></ng-icon>
+            </div>
+            <div class="text-2xl font-bold font-heading">
+              {{ readingSessions.length > 0 ? (currentPage / readingSessions.length | number:'1.0-1') : 0 }}
+            </div>
+            <div class="text-sm font-medium text-base-content/70">Avg. Pages / Session</div>
+          </div>
+
+          <!-- Total Sessions -->
+          <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-3 text-accent">
+              <ng-icon name="heroCalendar" size="2rem"></ng-icon>
+            </div>
+            <div class="text-2xl font-bold font-heading">{{ readingSessions.length }}</div>
+            <div class="text-sm font-medium text-base-content/70">Total Sessions</div>
+          </div>
+        </div>
+
+        <!-- Reading Goal Status -->
+        @if (readingGoal) {
+        <div class="glass-panel p-6 rounded-2xl">
+          <h3 class="text-lg font-bold font-heading mb-4 flex items-center gap-2">
+            <ng-icon name="heroCheckCircle" size="1.25rem" class="text-success"></ng-icon>
+            Reading Goal
+          </h3>
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-green-500">Low Goal</span>
+              <span class="font-bold">{{ readingGoal.lowGoal }} pages</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-blue-500">Medium Goal</span>
+              <span class="font-bold">{{ readingGoal.mediumGoal }} pages</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-red-500">High Goal</span>
+              <span class="font-bold">{{ readingGoal.highGoal }} pages</span>
+            </div>
+          </div>
+        </div>
+        }
       </div>
       }
     </div>
@@ -448,4 +547,40 @@
   [existingSummary]="book?.summary || null" [startedDate]="book?.startedReadingDate"
   [completedDate]="book?.completedDate" (saved)="handleSummarySaved($event)" (close)="closeSummarizeModal()">
 </app-summarize-modal>
+}
+
+<!-- Note Detail Modal -->
+@if (isNoteDetailModalOpen && selectedSession) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+  (click)="closeNoteDetailModal()">
+  <div class="glass-panel w-full max-w-lg p-6 rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200"
+    (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold font-heading">Session Note</h3>
+      <button (click)="closeNoteDetailModal()" class="btn btn-circle btn-ghost btn-sm">
+        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-3 mb-4 text-sm text-base-content/60">
+      <div class="flex items-center gap-1">
+        <ng-icon name="heroCalendar" size="1rem"></ng-icon>
+        <span>{{ selectedSession.date | date:'mediumDate' }}</span>
+      </div>
+      <div class="w-1 h-1 rounded-full bg-base-content/30"></div>
+      <div>
+        Pages {{ getSelectedSessionPageRange()?.start }} - {{ getSelectedSessionPageRange()?.end }}
+      </div>
+    </div>
+
+    <div class="prose prose-invert max-w-none max-h-[60vh] overflow-y-auto custom-scrollbar">
+      <p class="whitespace-pre-wrap">{{ selectedSession.summary }}</p>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button class="btn btn-primary" (click)="closeNoteDetailModal()">Close</button>
+    </div>
+  </div>
+</div>
 }
