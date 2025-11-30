@@ -268,7 +268,8 @@ export class BookFormComponent implements OnInit {
   onSubmit(): void {
     if (this.bookForm.valid) {
       this.isLoading = true;
-      const bookData = this.bookForm.value;
+      // Use getRawValue() to include disabled fields (like totalPages when book is being read)
+      const bookData = this.bookForm.getRawValue();
       if (this.selectedFile) {
         bookData.imageFile = this.selectedFile;
       }
@@ -297,7 +298,7 @@ export class BookFormComponent implements OnInit {
             }
           },
           error: (err) => {
-            console.error(err);
+            console.error('Error updating book:', err);
             this.notificationService.showError('Failed to update book');
           }
         });
@@ -330,7 +331,7 @@ export class BookFormComponent implements OnInit {
             }
           },
           error: (err) => {
-            console.error(err);
+            console.error('Error adding book:', err);
             this.notificationService.showError('Failed to add book');
           }
         });
