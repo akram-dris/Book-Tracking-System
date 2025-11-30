@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/tag-management/tag-management').then(m => m.TagManagementComponent)
     },
     {
+        path: 'tags/:id',
+        loadComponent: () => import('./components/tag-details/tag-details').then(m => m.TagDetailsComponent)
+    },
+    {
         path: 'heatmap',
         loadComponent: () => import('./components/heatmap/heatmap').then(m => m.HeatmapComponent)
     },
