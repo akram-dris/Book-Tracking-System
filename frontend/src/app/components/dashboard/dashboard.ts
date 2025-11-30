@@ -32,10 +32,12 @@ interface BookWithStatus extends GetBook {
   statusDisplayName?: string;
 }
 
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, RouterModule, BaseChartDirective, MatButtonModule],
+  imports: [CommonModule, NgIconComponent, RouterModule, BaseChartDirective, MatButtonModule, EmptyStateComponent],
   viewProviders: [provideIcons({
     heroBookOpen, heroFire, heroChartBar, heroPlus, heroClock,
     heroTrophy, heroArrowTrendingUp, heroSparkles, heroCalendar,

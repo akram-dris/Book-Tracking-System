@@ -130,13 +130,8 @@
         </div>
 
         @if (displayedBooks.length === 0) {
-        <div class="text-center py-20">
-            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-white/5 flex items-center justify-center">
-                <ng-icon name="heroBookOpen" size="3rem" class="text-white/20"></ng-icon>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">No books found</h3>
-            <p class="text-base-content/60">This tag doesn't have any books yet.</p>
-        </div>
+        <app-empty-state icon="heroBookOpen" title="No books found" description="This tag doesn't have any books yet.">
+        </app-empty-state>
         }
         }
     </div>

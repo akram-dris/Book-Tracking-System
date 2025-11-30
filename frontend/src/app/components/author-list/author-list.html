@@ -1,5 +1,6 @@
 <div class="min-h-screen pb-24">
-  <!-- Modern Search & Sort Toolbar -->
+  <!-- Modern Search & Sort Toolbar - Only show if there are authors or search is active -->
+  @if (authors.length > 0 || searchQuery) {
   <div class="mb-8 sticky top-4 z-30">
     <div
       class="glass-panel rounded-full p-2 pr-4 border border-white/10 shadow-lg flex flex-col md:flex-row gap-3 items-center max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
@@ -39,6 +40,7 @@
       </div>
     </div>
   </div>
+  }
 
 
 
@@ -51,8 +53,8 @@
   </div>
   }
 
-  <!-- Authors Grid -->
-  @if (!isLoading && filteredAuthors.length > 0) {
+  <!-- Authors Grid - Only show if NOT loading and has authors -->
+  @else if (filteredAuthors.length > 0) {
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-7xl mx-auto px-4"
     appInfiniteScroll (scrolled)="loadMore()">
     @for (author of filteredAuthors; track author.id) {
@@ -108,12 +110,23 @@
   </div>
   }
 
-  <!-- Empty State -->
-  @if (!isLoading && filteredAuthors.length === 0) {
+  <!-- Empty State - Only show if NOT loading and NO authors -->
+  @else {
+  @if (!searchQuery && authors.length === 0) {
+  <div class="flex flex-col items-center justify-center min-h-[60vh]">
+    <app-empty-state icon="heroUsers" title="Start Your Author Collection"
+      description="Your author list is waiting to be started."
+      subDescription="Add your first author to begin organizing your library." actionLabel="Add Author"
+      (action)="openAddAuthorModal()">
+    </app-empty-state>
+  </div>
+  } @else {
   <app-empty-state icon="heroUsers" title="No authors found"
-    description="Try adjusting your search or add a new author to your library." actionLabel="Add Author"
+    description="We couldn't find any authors matching your criteria."
+    subDescription="Try a different search term or add a new author to your collection." actionLabel="Add Author"
     (action)="openAddAuthorModal()">
   </app-empty-state>
+  }
   }
 
   <!-- Infinite Scroll Sentinel -->

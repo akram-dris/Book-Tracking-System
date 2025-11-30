@@ -28,10 +28,12 @@ interface BookWithStatus extends GetBook {
   statusName?: string;
 }
 
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 @Component({
   selector: 'app-tag-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, MatIconModule, FormsModule, BookCardComponent],
+  imports: [CommonModule, RouterModule, NgIconComponent, MatButtonModule, MatIconModule, FormsModule, BookCardComponent, EmptyStateComponent],
   templateUrl: './tag-details.html',
   styleUrls: ['./tag-details.css'],
   viewProviders: [provideIcons({ heroArrowLeft, heroBookOpen, heroPencilSquare, heroTrash, heroCheckCircle, heroDocumentText, heroPlus, heroStar, heroArrowsUpDown, heroTag })]

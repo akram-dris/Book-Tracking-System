@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
@@ -24,6 +25,8 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 // Register Chart.js components
 Chart.register(...registerables);
 
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 @Component({
   selector: 'app-statistics',
   imports: [
@@ -36,7 +39,8 @@ Chart.register(...registerables);
     MatNativeDateModule,
     MatNativeDateModule,
     MatInputModule,
-    NgxSkeletonLoaderModule
+    NgxSkeletonLoaderModule,
+    EmptyStateComponent
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
@@ -253,8 +257,13 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
   constructor(
     private statisticService: StatisticService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) { }
+
+  navigateToBooks(): void {
+    this.router.navigate(['/books']);
+  }
 
   ngOnInit(): void {
     // Set default date range to last year

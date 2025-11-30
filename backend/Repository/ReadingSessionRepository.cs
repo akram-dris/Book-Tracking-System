@@ -85,5 +85,10 @@ namespace BookTrackingSystem.Repository
                                  .OrderByDescending(rs => rs.Date)
                                  .FirstOrDefaultAsync();
         }
+
+        public async Task<bool> HasAnySessionsAsync()
+        {
+            return await _context.ReadingSessions.AnyAsync();
+        }
     }
 }

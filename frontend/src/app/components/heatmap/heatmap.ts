@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
@@ -43,10 +44,12 @@ interface LegendItem {
   range: string;
 }
 
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, NgxSkeletonLoaderModule],
+  imports: [CommonModule, FormsModule, NgIconComponent, NgxSkeletonLoaderModule, EmptyStateComponent],
   viewProviders: [provideIcons({
     heroChevronLeft,
     heroChevronRight,
@@ -102,10 +105,17 @@ export class HeatmapComponent implements OnInit {
     { label: 'High', className: 'day-high', range: '50+ pages' }
   ];
 
-  constructor(private heatmapService: HeatmapService) { }
+  constructor(
+    private heatmapService: HeatmapService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadAvailableYears();
+  }
+
+  navigateToBooks(): void {
+    this.router.navigate(['/books']);
   }
 
   setHoveredMonth(index: number): void {

@@ -2,6 +2,8 @@
   <!-- Header -->
 
 
+  <!-- Statistics, Filters, and Controls - Only show if there are books -->
+  @if (bookStats.total > 0) {
   <!-- Statistics -->
   <app-book-stats [stats]="bookStats"></app-book-stats>
 
@@ -42,6 +44,7 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Loading State (Skeleton) -->
   @if (isLoading) {
@@ -64,15 +67,26 @@
   }
   }
 
-  <!-- Empty State -->
+  <!-- Empty State - Only show if NOT loading -->
   @else if (displayedBooks.length === 0) {
+  @if (bookStats.total === 0) {
+  <div class="flex flex-col items-center justify-center min-h-[60vh]">
+    <app-empty-state [icon]="'heroBookOpen'" [title]="'Start Your Library'"
+      [description]="'Your book collection is waiting to be started.'"
+      [subDescription]="'Add your first book to begin tracking your reading journey.'" [actionLabel]="'Add Book'"
+      (action)="openAddBookModal()">
+    </app-empty-state>
+  </div>
+  } @else {
   <app-empty-state [icon]="'heroBookOpen'" [title]="'No books found'"
-    [description]="'Try adjusting your filters or add a new book to your library!'" [actionLabel]="'Add Book'"
-    (action)="openAddBookModal()">
+    [description]="'Your library is looking a bit empty.'"
+    [subDescription]="'Try adjusting your filters or add a new book to start tracking your reading journey.'"
+    [actionLabel]="'Add Book'" (action)="openAddBookModal()">
   </app-empty-state>
   }
+  }
 
-  <!-- Books Grid -->
+  <!-- Books Grid - Only show if NOT loading and has books -->
   @else {
   <!-- Grid View -->
   @if (viewMode === 'grid') {

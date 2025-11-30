@@ -1,28 +1,12 @@
 <div class="min-h-screen p-3">
   <div class="space-y-3 max-w-7xl mx-auto">
 
-    <!-- Welcome Section (Animated) -->
-    <div class="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-3 mb-1.5">
-        <h1
-          class="text-2xl md:text-3xl font-heading font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-          Welcome back!
-        </h1>
-
-        <button mat-raised-button color="primary" (click)="navigateToBooks()"
-          class="!rounded-xl !px-5 !py-2 !text-sm shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:scale-105">
-          <span class="flex items-center gap-2">
-            <ng-icon name="heroBookOpen" size="1.2rem"></ng-icon>
-            <span>My Library</span>
-          </span>
-        </button>
-      </div>
-      <p class="text-base text-base-content/70">Your reading journey continues.</p>
-    </div>
-
     <!-- Loading State (Skeleton) -->
     @if (loading) {
     <div class="space-y-5">
+      <!-- Welcome Skeleton -->
+      <div class="h-10 w-48 bg-base-200/50 rounded-xl animate-pulse mb-6"></div>
+
       <!-- Stats Cards Skeleton -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @for (i of [1,2,3,4]; track i) {
@@ -43,8 +27,28 @@
     </div>
     }
 
+    <!-- Main Dashboard Content - Only show if there are books -->
+    @if (!loading && getTotalBooks() > 0) {
+    <!-- Welcome Section (Animated) -->
+    <div class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-3 mb-1.5">
+        <h1
+          class="text-2xl md:text-3xl font-heading font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          Welcome back!
+        </h1>
+
+        <button mat-raised-button color="primary" (click)="navigateToBooks()"
+          class="!rounded-xl !px-5 !py-2 !text-sm shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:scale-105">
+          <span class="flex items-center gap-2">
+            <ng-icon name="heroBookOpen" size="1.2rem"></ng-icon>
+            <span>My Library</span>
+          </span>
+        </button>
+      </div>
+      <p class="text-base text-base-content/70">Your reading journey continues.</p>
+    </div>
+
     <!-- Stats Cards -->
-    @if (!loading && stats) {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" @staggerCards>
 
       <!-- Total Books -->
@@ -129,7 +133,6 @@
         </div>
       </div>
     </div>
-    }
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
@@ -138,7 +141,7 @@
       <div class="lg:col-span-2 space-y-3">
 
         <!-- Reading Progress Charts -->
-        @if (!loading && readingProgressChart) {
+        @if (readingProgressChart) {
         <div class="glass-panel rounded-3xl p-4 transition-all duration-300 hover:shadow-2xl" @fadeInUp>
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-heading font-bold flex items-center gap-2">
@@ -204,7 +207,7 @@
         }
 
         <!-- Currently Reading Books -->
-        @if (!loading && currentlyReading.length > 0) {
+        @if (currentlyReading.length > 0) {
         <div class="glass-panel rounded-3xl p-4" @fadeInUp>
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-lg font-heading font-bold flex items-center gap-2">
@@ -257,18 +260,12 @@
         }
 
         <!-- Empty State for Currently Reading -->
-        @if (!loading && currentlyReading.length === 0) {
-        <div class="glass-panel rounded-3xl p-8 text-center" @fadeInUp>
-          <div class="w-20 h-20 rounded-full bg-base-200/50 flex items-center justify-center mx-auto mb-4">
-            <ng-icon name="heroBookOpen" class="text-4xl text-base-content/20"></ng-icon>
-          </div>
-          <h3 class="text-xl font-bold mb-2">No books in progress</h3>
-          <p class="text-sm text-base-content/60 mb-4 max-w-md mx-auto">Your reading list is clear. Why not start a new
-            adventure today?</p>
-          <button mat-raised-button color="primary" (click)="navigateToBooks()"
-            class="!rounded-xl !px-6 !py-1.5 !text-sm">
-            Browse Library
-          </button>
+        @if (currentlyReading.length === 0) {
+        <div class="glass-panel rounded-3xl p-4 flex flex-col items-center justify-center min-h-[300px]" @fadeInUp>
+          <app-empty-state icon="heroBookOpen" title="No books in progress"
+            description="Your reading list is clear. Why not start a new adventure today?" actionLabel="Browse Library"
+            (action)="navigateToBooks()">
+          </app-empty-state>
         </div>
         }
       </div>
@@ -277,7 +274,7 @@
       <div class="space-y-3">
 
         <!-- Streak Card -->
-        @if (!loading && streakData) {
+        @if (streakData) {
         <div class="glass-panel rounded-3xl p-4 relative overflow-hidden group" @fadeInUp>
           <!-- Background Glow -->
           <div
@@ -309,7 +306,7 @@
         }
 
         <!-- Recent Books -->
-        @if (!loading && recentBooks.length > 0) {
+        @if (recentBooks.length > 0) {
         <div class="glass-panel rounded-3xl p-4" @fadeInUp>
           <h2 class="text-lg font-heading font-bold mb-3 flex items-center gap-2">
             <div class="p-1.5 rounded-xl bg-secondary/10 text-secondary">
@@ -346,5 +343,18 @@
         }
       </div>
     </div>
+    }
+
+    <!-- Empty State - Only show if not loading and no books -->
+    @if (!loading && getTotalBooks() === 0) {
+    <div class="flex flex-col items-center justify-center min-h-[80vh] animate-in fade-in zoom-in duration-500">
+      <app-empty-state icon="heroBookOpen" title="Welcome to BookTrack"
+        description="Your personal library is waiting to be built."
+        subDescription="Start by adding your first book to track your reading journey, stats, and streaks."
+        actionLabel="Add Your First Book" (action)="navigateToAddBook()">
+      </app-empty-state>
+    </div>
+    }
+
   </div>
 </div>

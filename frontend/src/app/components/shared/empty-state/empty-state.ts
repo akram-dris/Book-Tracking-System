@@ -12,6 +12,11 @@ export class EmptyStateComponent {
   icon = input<string>('heroBookOpen');
   title = input<string>('No items found');
   description = input<string>('');
+  subDescription = input<string>('');
   actionLabel = input<string>('');
+  secondaryActionLabel = input<string>('');
+  image = input<string>('');
+
   action = output<void>();
+  secondaryAction = output<void>();
 }

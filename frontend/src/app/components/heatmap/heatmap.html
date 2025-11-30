@@ -238,5 +238,12 @@
         }
       </div>
     </div>
+    <!-- Empty State -->
+    @if (!loading && totalPages === 0) {
+    <app-empty-state icon="heroFire" title="No reading activity yet"
+      description="Start reading books to see your heatmap and streaks light up!" actionLabel="Go to Library"
+      (action)="navigateToBooks()">
+    </app-empty-state>
+    }
   </div>
 </div>

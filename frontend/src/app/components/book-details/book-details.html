@@ -405,12 +405,10 @@
           }
         </div>
         } @else {
-        <div class="text-center py-12">
-          <div class="w-20 h-20 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ng-icon name="heroClipboardDocumentList" size="2.5rem" class="text-base-content/30"></ng-icon>
-          </div>
-          <p class="text-lg font-medium text-base-content/60">No sessions logged yet</p>
-        </div>
+        <app-empty-state icon="heroClipboardDocumentList" title="No sessions logged yet"
+          description="Track your reading progress by logging your sessions." actionLabel="Log Session"
+          (action)="openAddSessionModal()">
+        </app-empty-state>
         }
       </div>
       }
@@ -451,9 +449,9 @@
             }
           </div>
           } @else {
-          <div class="text-center py-8 text-base-content/40 italic">
-            No session notes found. Add notes when logging reading sessions.
-          </div>
+          <app-empty-state icon="heroDocumentText" title="No session notes found"
+            description="Add notes when logging reading sessions to keep track of your thoughts.">
+          </app-empty-state>
           }
         </div>
       </div>

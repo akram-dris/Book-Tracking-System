@@ -24,7 +24,9 @@
     <ul class="space-y-1.5">
       @for (item of navItems; track item.path) {
       <li>
-        <a [routerLink]="item.path" routerLinkActive="active-nav-item" #rla="routerLinkActive"
+        <a [routerLink]="item.disabled ? null : item.path" (click)="handleItemClick(item, $event)"
+          [class.cursor-not-allowed]="item.disabled" [class.opacity-40]="item.disabled"
+          routerLinkActive="active-nav-item" #rla="routerLinkActive"
           [routerLinkActiveOptions]="{ exact: item.exactMatch ?? false }"
           class="flex items-center h-9 rounded-xl transition-all duration-300 group hover:bg-base-content/5 relative"
           [class.justify-center]="isCollapsed()" [class.px-3]="!isCollapsed()">
@@ -51,7 +53,7 @@
           @if (isCollapsed()) {
           <div
             class="absolute left-full ml-4 px-3 py-1.5 bg-base-content/90 backdrop-blur text-base-100 text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-[-10px] group-hover:translate-x-0 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
-            {{ item.label }}
+            {{ item.label }} @if(item.disabled) { (Empty) }
             <!-- Arrow -->
             <div
               class="absolute top-1/2 right-full -translate-y-1/2 border-4 border-transparent border-r-base-content/90">

@@ -61,5 +61,12 @@ namespace BookTrackingSystem.Controllers
             var result = await _readingSessionService.DeleteReadingSessionAsync(id);
             return Ok(result);
         }
+
+        [HttpGet("any")]
+        public async Task<ActionResult<Result<bool>>> HasAnySessions()
+        {
+            var result = await _readingSessionService.HasAnySessionsAsync();
+            return Ok(result);
+        }
     }
 }

@@ -128,47 +128,62 @@ export class BookListComponent implements OnInit {
       this.selectedTagId = tagId;
     }
 
-    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
-      if (!statusResult.isSuccess || !statusResult.data) {
-        console.error('Error loading statuses:', statusResult.errors);
-        this.isLoading = false;
-        return;
-      }
-
-      const statuses = statusResult.data;
-      const statusMap = new Map(statuses.map(s => [s.value, s]));
-
-      this.bookService.getBooksPaginated(
-        this.currentPage,
-        this.pageSize,
-        this.currentSearch || null,
-        this.selectedTagId,
-        this.currentStatusFilter,
-        this.sortBy,
-        this.currentAuthorId,
-        this.currentRating
-      ).pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(result => {
-          if (result.isSuccess && result.data) {
-            this.books = result.data.items.map(book => {
-              const statusInfo = statusMap.get(book.status);
-              return {
-                ...book,
-                statusName: statusInfo?.displayName || 'Unknown',
-                statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
-              };
-            });
-            this.displayedBooks = this.books;
-
-            this.hasMorePages = result.data.hasNextPage;
-            this.loadBookStats();
-            this.loadProgressForBooks(this.books);
-          } else {
-            console.error('Error loading books:', result.errors);
-          }
+    this.readingStatusService.getAllStatuses().subscribe({
+      next: (statusResult) => {
+        if (!statusResult.isSuccess || !statusResult.data) {
+          console.error('Error loading statuses:', statusResult.errors);
           this.isLoading = false;
           this.cdr.markForCheck();
-        });
+          return;
+        }
+
+        const statuses = statusResult.data;
+        const statusMap = new Map(statuses.map(s => [s.value, s]));
+
+        this.bookService.getBooksPaginated(
+          this.currentPage,
+          this.pageSize,
+          this.currentSearch || null,
+          this.selectedTagId,
+          this.currentStatusFilter,
+          this.sortBy,
+          this.currentAuthorId,
+          this.currentRating
+        ).pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (result) => {
+              if (result.isSuccess && result.data) {
+                this.books = result.data.items.map(book => {
+                  const statusInfo = statusMap.get(book.status);
+                  return {
+                    ...book,
+                    statusName: statusInfo?.displayName || 'Unknown',
+                    statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+                  };
+                });
+                this.displayedBooks = this.books;
+
+                this.hasMorePages = result.data.hasNextPage;
+                this.loadBookStats();
+                this.loadProgressForBooks(this.books);
+              } else {
+                console.error('Error loading books:', result.errors);
+              }
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              console.error('Error loading books:', err);
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            }
+          });
+      },
+      error: (err) => {
+        console.error('Error loading statuses:', err);
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -209,54 +224,69 @@ export class BookListComponent implements OnInit {
     this.isLoadingMore = true;
     this.currentPage++;
 
-    this.readingStatusService.getAllStatuses().subscribe(statusResult => {
-      if (!statusResult.isSuccess || !statusResult.data) {
-        console.error('Error loading statuses:', statusResult.errors);
-        this.isLoadingMore = false;
-        return;
-      }
-
-      const statuses = statusResult.data;
-      const statusMap = new Map(statuses.map(s => [s.value, s]));
-
-      console.log('LoadMore - Parameters:', {
-        page: this.currentPage,
-        pageSize: this.pageSize,
-        search: this.currentSearch,
-        tagId: this.selectedTagId,
-        statusFilter: this.currentStatusFilter,
-        sort: this.sortBy
-      });
-
-      this.bookService.getBooksPaginated(
-        this.currentPage,
-        this.pageSize,
-        this.currentSearch || null,
-        this.selectedTagId,
-        this.currentStatusFilter,
-        this.sortBy,
-        this.currentAuthorId,
-        this.currentRating
-      ).subscribe(result => {
-        if (result.isSuccess && result.data) {
-          const newBooks = result.data.items.map(book => {
-            const statusInfo = statusMap.get(book.status);
-            return {
-              ...book,
-              statusName: statusInfo?.displayName || 'Unknown',
-              statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
-            };
-          });
-
-          this.books = [...this.books, ...newBooks];
-          this.displayedBooks = this.books;
-          this.hasMorePages = result.data.hasNextPage;
-
-          this.loadProgressForBooks(newBooks);
+    this.readingStatusService.getAllStatuses().subscribe({
+      next: (statusResult) => {
+        if (!statusResult.isSuccess || !statusResult.data) {
+          console.error('Error loading statuses:', statusResult.errors);
+          this.isLoadingMore = false;
+          this.cdr.markForCheck();
+          return;
         }
+
+        const statuses = statusResult.data;
+        const statusMap = new Map(statuses.map(s => [s.value, s]));
+
+        console.log('LoadMore - Parameters:', {
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          search: this.currentSearch,
+          tagId: this.selectedTagId,
+          statusFilter: this.currentStatusFilter,
+          sort: this.sortBy
+        });
+
+        this.bookService.getBooksPaginated(
+          this.currentPage,
+          this.pageSize,
+          this.currentSearch || null,
+          this.selectedTagId,
+          this.currentStatusFilter,
+          this.sortBy,
+          this.currentAuthorId,
+          this.currentRating
+        ).subscribe({
+          next: (result) => {
+            if (result.isSuccess && result.data) {
+              const newBooks = result.data.items.map(book => {
+                const statusInfo = statusMap.get(book.status);
+                return {
+                  ...book,
+                  statusName: statusInfo?.displayName || 'Unknown',
+                  statusBadgeClass: statusInfo?.badgeClass || 'badge-ghost'
+                };
+              });
+
+              this.books = [...this.books, ...newBooks];
+              this.displayedBooks = this.books;
+              this.hasMorePages = result.data.hasNextPage;
+
+              this.loadProgressForBooks(newBooks);
+            }
+            this.isLoadingMore = false;
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            console.error('Error loading more books:', err);
+            this.isLoadingMore = false;
+            this.cdr.markForCheck();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error loading statuses for loadMore:', err);
         this.isLoadingMore = false;
         this.cdr.markForCheck();
-      });
+      }
     });
   }
 

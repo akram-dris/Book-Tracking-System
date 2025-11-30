@@ -5,7 +5,8 @@
     <div class="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] rounded-full bg-secondary/10 blur-[100px]"></div>
   </div>
 
-  <!-- Header Section -->
+  <!-- Header Section - Only show if there are tags -->
+  @if (tags.length > 0) {
   <div class="mb-8 sticky top-4 z-30 px-4">
     <div
       class="glass-panel rounded-full p-2 pr-4 border border-white/10 shadow-lg flex flex-col md:flex-row gap-3 items-center max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
@@ -36,6 +37,7 @@
       </div>
     </div>
   </div>
+  }
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Loading Skeleton -->
@@ -67,31 +69,18 @@
     </div>
     }
 
-    <!-- Empty State -->
-    @if (tags.length === 0 && !isLoading) {
-    <div class="text-center py-20">
-      <div
-        class="w-32 h-32 mx-auto mb-8 rounded-3xl glass-panel backdrop-blur-xl border-2 border-white/10 flex items-center justify-center shadow-2xl relative overflow-hidden group">
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        </div>
-        <div class="relative">
-          <ng-icon name="heroTag" size="4rem"
-            class="text-white/30 group-hover:text-primary/60 group-hover:scale-110 transition-all duration-500"></ng-icon>
-        </div>
-      </div>
-      <h3 class="text-3xl font-bold text-white mb-3 font-heading">No tags yet</h3>
-      <p class="text-base-content/60 max-w-md mx-auto mb-8 text-lg">Create tags to organize your library by genre,
-        mood, or topic.</p>
-      <button (click)="openAddTagModal()"
-        class="btn btn-primary btn-lg rounded-full gap-2 shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all">
-        <ng-icon name="heroPlus" size="1.5rem"></ng-icon>
-        Create Your First Tag
-      </button>
+    <!-- Empty State - Only show if NOT loading and NO tags -->
+    @else if (tags.length === 0) {
+    <div class="flex flex-col items-center justify-center min-h-[60vh]">
+      <app-empty-state icon="heroTag" title="No tags yet"
+        description="Create tags to organize your library by genre, mood, or topic." actionLabel="Create Your First Tag"
+        (action)="openAddTagModal()">
+      </app-empty-state>
     </div>
     }
 
-    <!-- Tags Grid -->
+    <!-- Tags Grid - Only show if NOT loading and has tags -->
+    @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr" appInfiniteScroll
       (scrolled)="loadMore()">
       @for (tag of displayedTags; track tag.id) {
@@ -173,6 +162,7 @@
       </div>
       }
     </div>
+    }
 
     <!-- Loading Spinner -->
     @if (isLoadingMore) {

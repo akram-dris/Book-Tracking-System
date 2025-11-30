@@ -106,6 +106,7 @@ namespace BookTrackingSystem.Services
                 var totalBooks = books.Count;
 
                 var authorBookCounts = books
+                    .Where(b => b.Author != null)
                     .GroupBy(b => new { b.AuthorId, AuthorName = b.Author!.Name })
                     .Select(g => new AuthorBookCountDto
                     {
@@ -133,7 +134,7 @@ namespace BookTrackingSystem.Services
 
                 // Calculate author ratings
                 var authorRatings = books
-                    .Where(b => b.Rating.HasValue)
+                    .Where(b => b.Rating.HasValue && b.Author != null)
                     .GroupBy(b => new { b.AuthorId, AuthorName = b.Author!.Name })
                     .Select(g => new AuthorBookCountDto
                     {
@@ -187,7 +188,8 @@ namespace BookTrackingSystem.Services
                 var bookTagAssignments = await _context.BookTagAssignments
                     .Include(bta => bta.Book)
                     .Include(bta => bta.BookTag)
-                    .Where(bta => (bta.Book!.Status == ReadingStatus.Completed || bta.Book!.Status == ReadingStatus.Summarized) &&
+                    .Where(bta => bta.Book != null && // Ensure Book is not null
+                                  (bta.Book!.Status == ReadingStatus.Completed || bta.Book!.Status == ReadingStatus.Summarized) &&
                                   bta.Book.CompletedDate.HasValue && bta.Book.CompletedDate.Value >= startDate && bta.Book.CompletedDate.Value <= endDate)
                     .ToListAsync();
 
@@ -202,6 +204,7 @@ namespace BookTrackingSystem.Services
                 var totalBooks = bookTagAssignments.Select(bta => bta.BookId).Distinct().Count();
 
                 var tagBookCounts = bookTagAssignments
+                    .Where(bta => bta.BookTag != null)
                     .GroupBy(bta => new { bta.TagId, TagName = bta.BookTag!.Name })
                     .Select(g => new TagBookCountDto
                     {
@@ -215,7 +218,7 @@ namespace BookTrackingSystem.Services
                 var tagPageCounts = sessions
                     .Where(s => s.Book != null && s.Book.BookTagAssignments != null &&
                                (s.Book.Status == ReadingStatus.Completed || s.Book.Status == ReadingStatus.Summarized))
-                    .SelectMany(s => s.Book!.BookTagAssignments!.Select(bta => new { bta.TagId, bta.BookTag!.Name, s.PagesRead }))
+                    .SelectMany(s => s.Book!.BookTagAssignments!.Where(bta => bta.BookTag != null).Select(bta => new { bta.TagId, bta.BookTag!.Name, s.PagesRead }))
                     .GroupBy(x => new { x.TagId, x.Name })
                     .Select(g => new TagPagesDto
                     {
@@ -230,7 +233,7 @@ namespace BookTrackingSystem.Services
 
                 // Calculate tag ratings
                 var tagRatings = bookTagAssignments
-                    .Where(bta => bta.Book!.Rating.HasValue)
+                    .Where(bta => bta.Book != null && bta.Book!.Rating.HasValue && bta.BookTag != null)
                     .GroupBy(bta => new { bta.TagId, TagName = bta.BookTag!.Name })
                     .Select(g => new TagBookCountDto
                     {
@@ -244,7 +247,7 @@ namespace BookTrackingSystem.Services
                     .ToList();
 
                 var allTaggedBookRatings = bookTagAssignments
-                    .Where(bta => bta.Book!.Rating.HasValue)
+                    .Where(bta => bta.Book != null && bta.Book!.Rating.HasValue)
                     .Select(bta => (double)bta.Book!.Rating!.Value);
                 var averageTagRating = allTaggedBookRatings.Any() 
                     ? Math.Round(allTaggedBookRatings.Average(), 2) 
@@ -254,7 +257,7 @@ namespace BookTrackingSystem.Services
                 foreach (var tagCount in tagBookCounts)
                 {
                     var tagBooks = bookTagAssignments
-                        .Where(bta => bta.TagId == tagCount.TagId && bta.Book!.Rating.HasValue)
+                        .Where(bta => bta.TagId == tagCount.TagId && bta.Book != null && bta.Book!.Rating.HasValue)
                         .Select(bta => bta.Book!.Rating!.Value);
                     tagCount.AverageRating = tagBooks.Any() 
                         ? Math.Round(tagBooks.Average(), 2) 
@@ -516,9 +519,10 @@ namespace BookTrackingSystem.Services
                     : 0;
 
                 var currentGoalsProgress = goals
-                    .Where(g => g.Book!.Status == ReadingStatus.CurrentlyReading || 
-                               g.Book!.Status == ReadingStatus.Completed ||
-                               g.Book!.Status == ReadingStatus.Summarized)
+                    .Where(g => g.Book != null && // Ensure Book is not null
+                               (g.Book!.Status == ReadingStatus.CurrentlyReading || 
+                                g.Book!.Status == ReadingStatus.Completed ||
+                                g.Book!.Status == ReadingStatus.Summarized))
                     .Select(g =>
                     {
                         var currentPages = g.Book!.ReadingSessions?.Sum(s => s.PagesRead) ?? 0;

@@ -29,6 +29,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 // import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
 import { NotificationService } from '../../services/notification';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   heroArrowLeft,
@@ -64,7 +65,8 @@ type TabType = 'overview' | 'notes' | 'sessions' | 'statistics';
     RatingModule,
     QuillModule,
     NgIconComponent,
-    MatButtonModule
+    MatButtonModule,
+    EmptyStateComponent
   ],
   templateUrl: './book-details.html',
   styleUrls: ['./book-details.css'],

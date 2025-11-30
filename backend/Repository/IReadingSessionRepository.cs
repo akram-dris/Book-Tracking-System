@@ -14,5 +14,6 @@ namespace BookTrackingSystem.Repository
         Task<IEnumerable<ReadingSession>> GetAllReadingSessionsAsync();
         Task<ReadingSession?> GetOldestSessionAsync();
         Task<ReadingSession?> GetNewestSessionAsync();
+        Task<bool> HasAnySessionsAsync();
     }
 }

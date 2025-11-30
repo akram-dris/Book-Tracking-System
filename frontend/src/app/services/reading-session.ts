@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { GetReadingSession } from '../models/get-reading-session.model';
 import { CreateReadingSession } from '../models/create-reading-session.model';
@@ -12,6 +13,10 @@ import { Result } from '../models/result';
 })
 export class ReadingSessionService {
   private apiUrl = `${environment.apiUrl}/readingsessions`;
+
+  // Subject to notify when sessions are added or deleted
+  private sessionChangedSubject = new Subject<void>();
+  public sessionChanged$ = this.sessionChangedSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -25,7 +30,14 @@ export class ReadingSessionService {
   }
 
   addReadingSession(readingSession: CreateReadingSession): Observable<Result<GetReadingSession>> {
-    return this.http.post<Result<GetReadingSession>>(this.apiUrl, readingSession);
+    return this.http.post<Result<GetReadingSession>>(this.apiUrl, readingSession).pipe(
+      tap(result => {
+        if (result.isSuccess) {
+          // Notify that a session was added
+          this.sessionChangedSubject.next();
+        }
+      })
+    );
   }
 
   updateReadingSession(id: number, readingSession: UpdateReadingSession): Observable<Result<any>> {
@@ -34,6 +46,17 @@ export class ReadingSessionService {
 
   deleteReadingSession(id: number): Observable<Result<any>> {
     console.log(`Deleting reading session with ID: ${id}`);
-    return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`);
+    return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`).pipe(
+      tap(result => {
+        if (result.isSuccess) {
+          // Notify that a session was deleted
+          this.sessionChangedSubject.next();
+        }
+      })
+    );
+  }
+
+  hasAnySessions(): Observable<Result<boolean>> {
+    return this.http.get<Result<boolean>>(`${this.apiUrl}/any`);
   }
 }

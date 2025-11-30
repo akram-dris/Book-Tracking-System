@@ -28,10 +28,12 @@ interface BookWithProgress extends GetBook {
   statusBadgeClass?: string;
 }
 
+import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, RouterModule, NgIconComponent, MatIconModule, MatButtonModule, InfiniteScrollDirective],
+  imports: [common.CommonModule, ReactiveFormsModule, FormsModule, RouterModule, NgIconComponent, MatIconModule, MatButtonModule, InfiniteScrollDirective, EmptyStateComponent],
   templateUrl: './tag-management.html',
   styleUrls: ['./tag-management.css'],
   viewProviders: [provideIcons({ heroStar, heroArrowsUpDown, heroPlus, heroXMark, heroTag, heroCheckCircle, heroBookOpen })]
