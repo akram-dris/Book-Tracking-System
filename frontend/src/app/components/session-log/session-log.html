@@ -205,9 +205,10 @@
                         class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 text-white transition-all active:scale-95">
                         <ng-icon name="heroMinus" size="1rem"></ng-icon>
                       </button>
-                      <input type="number" formControlName="pagesRead"
+                      <input type="number" formControlName="pagesRead" (input)="onPagesReadInput($event)"
+                        (keypress)="onKeyPress($event)"
                         class="input input-ghost w-16 text-center font-black text-xl p-0 h-auto focus:bg-transparent focus:text-primary placeholder:text-base-content/20 appearance-none text-white"
-                        min="1">
+                        min="1" step="1">
                       <button type="button" (click)="adjustPages(1)"
                         class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 text-white transition-all active:scale-95">
                         <ng-icon name="heroPlus" size="1rem"></ng-icon>
@@ -215,6 +216,31 @@
                     </div>
                   </div>
                 </div>
+                <!-- Validation Error Messages -->
+                @if (sessionForm.get('pagesRead')?.invalid && sessionForm.get('pagesRead')?.touched) {
+                <div class="mt-2 min-h-[1.25rem]">
+                  @if (sessionForm.get('pagesRead')?.errors?.['required']) {
+                  <span class="text-xs text-error block animate-in fade-in slide-in-from-top-1 duration-200">
+                    Pages read is required
+                  </span>
+                  }
+                  @if (sessionForm.get('pagesRead')?.errors?.['min']) {
+                  <span class="text-xs text-error block animate-in fade-in slide-in-from-top-1 duration-200">
+                    Must read at least 1 page
+                  </span>
+                  }
+                  @if (sessionForm.get('pagesRead')?.errors?.['max']) {
+                  <span class="text-xs text-error block animate-in fade-in slide-in-from-top-1 duration-200">
+                    Cannot exceed {{ totalPages! - currentPage }} pages remaining
+                  </span>
+                  }
+                  @if (sessionForm.get('pagesRead')?.errors?.['notInteger']) {
+                  <span class="text-xs text-error block animate-in fade-in slide-in-from-top-1 duration-200">
+                    Pages must be a whole number
+                  </span>
+                  }
+                </div>
+                }
               </div>
             </div>
 
