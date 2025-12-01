@@ -14,5 +14,6 @@ namespace BookTrackingSystem.Services
         Task<Result<AuthorDto>> UpdateAuthorAsync(int id, UpdateAuthorDto authorDto);
         Task<Result> DeleteAuthorAsync(int id);
         Task<Result<PaginatedResult<AuthorDto>>> GetAuthorsPaginatedAsync(PaginationParams paginationParams);
+        Task<Result<int>> GetAuthorBookCountAsync(int id);
     }
 }

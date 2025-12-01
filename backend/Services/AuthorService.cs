@@ -267,5 +267,17 @@ namespace BookTrackingSystem.Services
                 return Result<PaginatedResult<AuthorDto>>.Failure($"An error occurred while retrieving authors: {ex.Message}");
             }
         }
+        public async Task<Result<int>> GetAuthorBookCountAsync(int id)
+        {
+            try
+            {
+                var count = await _authorRepository.GetAuthorBookCountAsync(id);
+                return Result<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"An error occurred while retrieving author book count: {ex.Message}");
+            }
+        }
     }
 }
