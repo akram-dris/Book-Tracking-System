@@ -6,8 +6,7 @@ import { Injectable } from '@angular/core';
 export class ToastNotificationService {
 
   success(message: string, title?: string): void {
-    // TODO: Implement ng-toast integration when types are available
-
+    // Placeholder for toast notification
   }
 
   error(message: string, title?: string): void {

@@ -25,7 +25,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 // Register Chart.js components
 Chart.register(...registerables);
 
-import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 
 @Component({
   selector: 'app-statistics',
@@ -39,8 +39,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state';
     MatNativeDateModule,
     MatNativeDateModule,
     MatInputModule,
-    NgxSkeletonLoaderModule,
-    EmptyStateComponent
+    NgxSkeletonLoaderModule
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
