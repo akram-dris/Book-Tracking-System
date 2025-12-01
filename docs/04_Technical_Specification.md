@@ -14,7 +14,31 @@
 
 ## **1. System Architecture**
 
-The system follows a **3-tier architecture**:
+The system follows a **3-tier containerized architecture**:
+
+### **Container Architecture (Docker)**
+
+The application is deployed using Docker Compose with three separate containers:
+
+1. **Frontend Container (Nginx + Angular)**
+    - Multi-stage Docker build
+    - Stage 1: Node.js for building Angular app
+    - Stage 2: Nginx alpine for serving static files
+    - Port: 80
+    
+2. **Backend Container (ASP.NET Core)**
+    - Multi-stage Docker build
+    - Stage 1: .NET SDK for building the application
+    - Stage 2: .NET Runtime for running the application
+    - Auto-applies database migrations on startup with retry logic
+    - Port: 5000 (mapped from internal 8080)
+    
+3. **Database Container (PostgreSQL)**
+    - Official PostgreSQL 15 alpine image
+    - Persistent volume for data storage
+    - Port: 5432
+
+### **Application Tiers**
 
 1. **Presentation Layer (Frontend – Angular)**
     
@@ -234,13 +258,71 @@ The system follows a **3-tier architecture**:
 
 ---
 
+---
+
 ## **9. Deployment & Environment**
 
-- PostgreSQL: Production and staging databases
-    
-- ASP.NET Core backend: API hosted on IIS, Docker, or Kestrel
-    
-- Angular frontend: Deployed on same domain or separate host
-    
-- Environment variables for connection strings, JWT secrets, and app configuration
-    
+### **Containerized Deployment (Recommended)**
+
+The application is fully containerized using Docker for easy deployment and consistency across environments.
+
+**Architecture:**
+- **3 Docker Containers**:
+  1. **Frontend Container**: Nginx serving the Angular production build
+  2. **Backend Container**: ASP.NET Core 10 runtime with automatic migrations
+  3. **Database Container**: PostgreSQL 15
+
+**Deployment Steps:**
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Book-Tracking-System
+
+# Start all services
+docker compose up -d
+
+# Access the application
+# Frontend: http://localhost
+# Backend API: http://localhost:5000
+# Swagger: http://localhost:5000
+```
+
+**Docker Compose Configuration:**
+- Frontend exposed on port **80**
+- Backend exposed on port **5000**
+- Database exposed on port **5432**
+- Persistent volume for database data
+- Automatic database migrations on backend startup
+- Health checks and restart policies
+
+**Environment Variables:**
+- `DB_CONNECTION_STRING`: PostgreSQL connection string
+- `ASPNETCORE_URLS`: Backend listening URL
+- Database credentials configured in `docker-compose.yml`
+
+### **Traditional Deployment**
+
+**Backend:**
+- ASP.NET Core backend: Hosted on IIS, Docker, or Kestrel
+- Requires .NET 10 SDK/Runtime
+- Environment variables for connection strings and configuration
+
+**Frontend:**
+- Angular frontend: Compiled and served via Nginx, IIS, or any static file server
+- Production build: `npm run build --configuration production`
+- Outputs to `dist/frontend/browser`
+
+**Database:**
+- PostgreSQL 15+: Production and staging databases
+- Connection managed via Entity Framework Core
+- Migrations applied automatically in Docker or manually via `dotnet ef database update`
+
+**Configuration Files:**
+- `backend/.env`: Backend environment variables
+- `frontend/src/environments/`: Angular environment configuration
+- `docker-compose.yml`: Container orchestration
+- `backend/Dockerfile`: Backend image definition
+- `frontend/Dockerfile`: Frontend multi-stage build
+- `frontend/nginx.conf`: Nginx server configuration
+
