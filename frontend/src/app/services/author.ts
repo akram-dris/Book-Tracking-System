@@ -68,4 +68,8 @@ export class AuthorService {
   deleteAuthor(id: number): Observable<Result<any>> {
     return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`);
   }
+
+  getAuthorBookCount(id: number): Observable<Result<number>> {
+    return this.http.get<Result<number>>(`${this.apiUrl}/${id}/book-count`);
+  }
 }

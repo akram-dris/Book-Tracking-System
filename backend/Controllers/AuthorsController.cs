@@ -77,5 +77,12 @@ namespace BookTrackingSystem.Controllers
             var result = await _authorService.DeleteAuthorAsync(id);
             return Ok(result);
         }
+
+        [HttpGet("{id}/book-count")]
+        public async Task<ActionResult<Result<int>>> GetAuthorBookCount(int id)
+        {
+            var result = await _authorService.GetAuthorBookCountAsync(id);
+            return Ok(result);
+        }
     }
 }

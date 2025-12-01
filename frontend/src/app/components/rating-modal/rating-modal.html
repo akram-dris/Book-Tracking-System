@@ -11,7 +11,7 @@
             <!-- Left: Book cover -->
             <div class="book-cover-section">
                 @if (bookCover()) {
-                <img [src]="rootUrl + bookCover" [alt]="bookTitle()" class="book-cover">
+                <img [src]="rootUrl + bookCover()" [alt]="bookTitle()" class="book-cover">
                 } @else {
                 <div class="book-cover-placeholder">
                     <ng-icon name="heroStar" size="32"></ng-icon>

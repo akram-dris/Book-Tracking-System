@@ -51,10 +51,19 @@ export class SessionLogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { bookId: number }
   ) {
     this.sessionForm = this.fb.group({
-      pagesRead: [null, [Validators.required, Validators.min(1)]],
+      pagesRead: [null, [Validators.required, Validators.min(1), this.integerValidator]],
       date: [new Date(), Validators.required],
       summary: ['']
     });
+  }
+
+  // Custom validator to ensure integer values only
+  integerValidator(control: any) {
+    const value = control.value;
+    if (value !== null && value !== undefined && !Number.isInteger(value)) {
+      return { notInteger: true };
+    }
+    return null;
   }
 
   ngOnInit(): void {
@@ -127,26 +136,20 @@ export class SessionLogComponent implements OnInit {
 
     // Subscribe to pagesRead changes
     this.sessionForm.get('pagesRead')?.valueChanges.subscribe(value => {
-      this.currentPagesRead = value || 0;
+      this.currentPagesRead = Number(value) || 0;
     });
   }
 
   updatePagesReadValidator(): void {
     if (this.totalPages) {
-      // Calculate remaining pages based on total read pages excluding current session if editing
-      let basePagesRead = this.totalReadPages;
-      if (this.existingSession) {
-        basePagesRead -= this.existingSession.pagesRead;
-      }
-
-      const remainingPages = this.totalPages - basePagesRead;
-      // The max pages allowed is the remaining pages (which implicitly allows the current session's pages if editing)
-      const maxPages = remainingPages;
+      // Calculate remaining pages (LEFT) - currentPage already accounts for existing sessions
+      const maxPages = this.totalPages - this.currentPage;
 
       this.sessionForm.get('pagesRead')?.setValidators([
         Validators.required,
         Validators.min(1),
-        Validators.max(maxPages)
+        Validators.max(maxPages),
+        this.integerValidator
       ]);
       this.sessionForm.get('pagesRead')?.updateValueAndValidity({ emitEvent: false });
     }
@@ -165,7 +168,7 @@ export class SessionLogComponent implements OnInit {
         pagesRead: this.existingSession.pagesRead,
         summary: this.existingSession.summary || ''
       }, { emitEvent: false });
-      this.currentPagesRead = this.existingSession.pagesRead;
+      this.currentPagesRead = Number(this.existingSession.pagesRead);
       // If editing, currentPage should be total pages read MINUS the pages from this session
       // so that the UI shows "Current: X" (before this session) and "After: X + NewValue"
       this.currentPage = this.totalReadPages - this.existingSession.pagesRead;
@@ -200,13 +203,9 @@ export class SessionLogComponent implements OnInit {
     const currentValue = this.sessionForm.get('pagesRead')?.value || 0;
     const newValue = Math.max(1, currentValue + delta);
 
-    // Get max pages allowed from validator
+    // Get max pages allowed (remaining pages / LEFT)
     if (this.totalPages) {
-      let basePagesRead = this.totalReadPages;
-      if (this.existingSession) {
-        basePagesRead -= this.existingSession.pagesRead;
-      }
-      const maxPages = this.totalPages - basePagesRead;
+      const maxPages = this.totalPages - this.currentPage;
 
       // Only update if within valid range
       if (newValue <= maxPages) {
@@ -215,6 +214,47 @@ export class SessionLogComponent implements OnInit {
     } else {
       this.sessionForm.patchValue({ pagesRead: newValue });
     }
+  }
+
+  onPagesReadInput(event: any): void {
+    const input = event.target;
+    let value = parseFloat(input.value);
+
+    if (isNaN(value) || value === null || value === undefined) {
+      this.currentPagesRead = 0;
+      return;
+    }
+
+    // Ensure it's an integer first
+    if (!Number.isInteger(value)) {
+      value = Math.floor(value);
+    }
+
+    // Calculate max allowed based on remaining pages (LEFT)
+    if (this.totalPages) {
+      const maxPages = this.totalPages - this.currentPage;
+
+      // Cap the value if it exceeds max
+      if (value > maxPages) {
+        value = maxPages;
+        input.value = value;
+        this.sessionForm.patchValue({ pagesRead: value });
+      }
+    }
+
+    // Update currentPagesRead immediately for real-time UI updates
+    this.currentPagesRead = value;
+  }
+
+  // Prevent non-integer input (letters, decimals, special characters)
+  onKeyPress(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    // Allow only digits (0-9)
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
   }
 
   getGoalLevelClass(goalLevel: 'low' | 'medium' | 'high'): string {

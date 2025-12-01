@@ -16,5 +16,6 @@ namespace BookTrackingSystem.Services
         Task<Result> DeleteTagAsync(int id);
         Task<Result<Dictionary<int, int>>> GetTagUsageCountsAsync();
         Task<Result<PaginatedResult<TagDto>>> GetTagsPaginatedAsync(PaginationParams paginationParams);
+        Task<Result<int>> GetTagBookCountAsync(int id);
     }
 }

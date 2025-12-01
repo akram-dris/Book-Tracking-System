@@ -168,10 +168,30 @@ export class AuthorListComponent implements OnInit {
   }
 
   deleteAuthor(id: number): void {
+    this.authorService.getAuthorBookCount(id).subscribe({
+      next: (countResult) => {
+        if (countResult.isSuccess) {
+          const count = countResult.data ?? 0;
+          const message = count > 0
+            ? `WARNING: This author is associated with ${count} book${count === 1 ? '' : 's'}. Deleting this author will PERMANENTLY DELETE these books as well. This action cannot be undone. Are you sure?`
+            : 'Are you sure you want to delete this author?';
+
+          this.showDeleteDialog(id, message);
+        } else {
+          this.showDeleteDialog(id, 'Are you sure you want to delete this author? This will also remove all their books.');
+        }
+      },
+      error: () => {
+        this.showDeleteDialog(id, 'Are you sure you want to delete this author? This will also remove all their books.');
+      }
+    });
+  }
+
+  private showDeleteDialog(id: number, message: string): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete Author',
-        message: 'Are you sure you want to delete this author? This will also remove all their books.',
+        message: message,
         confirmText: 'Delete',
         confirmColor: 'warn'
       },

@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-author-form',
@@ -31,9 +32,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatCardModule
+    MatCardModule,
+    MatTooltipModule
   ],
-  viewProviders: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil, heroArrowLeft })],
+  providers: [provideIcons({ heroXMark, heroPhoto, heroUser, heroDocumentText, heroPlus, heroPencil, heroArrowLeft })],
   templateUrl: './author-form.html',
   styleUrls: ['./author-form.css']
 })

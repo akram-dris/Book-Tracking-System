@@ -51,4 +51,8 @@ export class TagService {
   deleteTag(id: number): Observable<Result<any>> {
     return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`);
   }
+
+  getTagBookCount(id: number): Observable<Result<number>> {
+    return this.http.get<Result<number>>(`${this.apiUrl}/${id}/book-count`);
+  }
 }
