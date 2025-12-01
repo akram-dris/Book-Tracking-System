@@ -80,5 +80,12 @@ namespace BookTrackingSystem.Controllers
             var result = await _tagService.GetTagUsageCountsAsync();
             return Ok(result);
         }
+
+        [HttpGet("{id}/book-count")]
+        public async Task<ActionResult<Result<int>>> GetTagBookCount(int id)
+        {
+            var result = await _tagService.GetTagBookCountAsync(id);
+            return Ok(result);
+        }
     }
 }
