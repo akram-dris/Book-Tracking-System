@@ -50,12 +50,61 @@ namespace BookTrackingSystem.Repository
 
         public async Task DeleteAsync(int id)
         {
-            var tag = await _context.BookTags.FindAsync(id);
-            if (tag != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.BookTags.Remove(tag);
+                // 1. Find all books associated with this tag
+                var bookIds = await _context.BookTagAssignments
+                    .Where(bta => bta.TagId == id)
+                    .Select(bta => bta.BookId)
+                    .ToListAsync();
+
+                // 2. Remove all BookTagAssignments for this tag explicitly
+                // This is needed to avoid FK constraints before we delete the tag or books
+                var assignments = await _context.BookTagAssignments
+                    .Where(bta => bta.TagId == id)
+                    .ToListAsync();
+                
+                if (assignments.Any())
+                {
+                    _context.BookTagAssignments.RemoveRange(assignments);
+                }
+
+                // 3. Delete the associated books
+                if (bookIds.Any())
+                {
+                    var books = await _context.Books
+                        .Where(b => bookIds.Contains(b.Id))
+                        .ToListAsync();
+                    
+                    if (books.Any())
+                    {
+                        _context.Books.RemoveRange(books);
+                    }
+                }
+
+                // 4. Remove the tag itself
+                var tag = await _context.BookTags.FindAsync(id);
+                if (tag != null)
+                {
+                    _context.BookTags.Remove(tag);
+                }
+
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<int> GetTagBookCountAsync(int tagId)
+        {
+            return await _context.BookTagAssignments
+                .Where(bta => bta.TagId == tagId)
+                .CountAsync();
         }
 
         public async Task<Dictionary<int, int>> GetTagUsageCountsAsync()

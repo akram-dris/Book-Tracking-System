@@ -235,10 +235,32 @@ export class TagDetailsComponent implements OnInit {
   confirmDelete(): void {
     if (!this.tag) return;
 
+    this.tagService.getTagBookCount(this.tag.id).subscribe({
+      next: (countResult) => {
+        if (countResult.isSuccess) {
+          const count = countResult.data ?? 0;
+          const message = count > 0
+            ? `WARNING: This tag is associated with ${count} book${count === 1 ? '' : 's'}. Deleting this tag will PERMANENTLY DELETE these books as well. Are you sure you want to delete "${this.tag!.name}"?`
+            : `Are you sure you want to delete "${this.tag!.name}"? This action cannot be undone.`;
+
+          this.showDeleteDialog(message);
+        } else {
+          // Fallback if count fetch fails
+          this.showDeleteDialog(`Are you sure you want to delete "${this.tag!.name}"? This action cannot be undone.`);
+        }
+      },
+      error: () => {
+        // Fallback if count fetch fails
+        this.showDeleteDialog(`Are you sure you want to delete "${this.tag!.name}"? This action cannot be undone.`);
+      }
+    });
+  }
+
+  private showDeleteDialog(message: string): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete Tag',
-        message: `Are you sure you want to delete "${this.tag.name}"? This action cannot be undone.`,
+        message: message,
         confirmText: 'Delete',
         confirmColor: 'warn'
       },

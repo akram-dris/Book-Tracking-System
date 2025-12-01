@@ -41,12 +41,41 @@ namespace BookTrackingSystem.Repository
 
         public async Task DeleteAuthorAsync(int id)
         {
-            var author = await _context.Authors.FindAsync(id);
-            if (author != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.Authors.Remove(author);
+                // 1. Find all books by this author
+                var books = await _context.Books
+                    .Where(b => b.AuthorId == id)
+                    .ToListAsync();
+
+                // 2. Delete all books
+                if (books.Any())
+                {
+                    _context.Books.RemoveRange(books);
+                }
+
+                // 3. Delete the author
+                var author = await _context.Authors.FindAsync(id);
+                if (author != null)
+                {
+                    _context.Authors.Remove(author);
+                }
+
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<int> GetAuthorBookCountAsync(int authorId)
+        {
+            return await _context.Books
+                .CountAsync(b => b.AuthorId == authorId);
         }
 
         public async Task<PaginatedResult<Author>> GetAuthorsPaginatedAsync(PaginationParams paginationParams)

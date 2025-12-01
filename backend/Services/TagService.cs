@@ -188,5 +188,17 @@ namespace BookTrackingSystem.Services
                 return Result<PaginatedResult<TagDto>>.Failure($"An error occurred while retrieving tags: {ex.Message}");
             }
         }
+        public async Task<Result<int>> GetTagBookCountAsync(int id)
+        {
+            try
+            {
+                var count = await _tagRepository.GetTagBookCountAsync(id);
+                return Result<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"An error occurred while retrieving tag book count: {ex.Message}");
+            }
+        }
     }
 }

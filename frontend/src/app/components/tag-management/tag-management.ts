@@ -268,10 +268,62 @@ export class TagManagementComponent implements OnInit {
   }
 
   deleteTag(id: number): void {
+    this.tagService.getTagBookCount(id).subscribe({
+      next: (countResult) => {
+        if (countResult.isSuccess) {
+          const count = countResult.data ?? 0;
+          const message = count > 0
+            ? `WARNING: This tag is associated with ${count} book${count === 1 ? '' : 's'}. Deleting this tag will PERMANENTLY DELETE these books as well. This action cannot be undone. Are you sure?`
+            : 'Are you sure you want to delete this tag?';
+
+          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            data: {
+              title: 'Delete Tag',
+              message: message,
+              confirmText: 'Delete',
+              confirmColor: 'warn'
+            }
+          });
+
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              this.tagService.deleteTag(id).subscribe({
+                next: (deleteResult) => {
+                  if (deleteResult.isSuccess) {
+                    this.loadTags();
+                    this.loadTagUsageCounts();
+                    this.notificationService.showSuccess('Tag deleted successfully');
+                  } else {
+                    console.error('Error deleting tag', deleteResult.errors);
+                    this.notificationService.showError('Failed to delete tag');
+                  }
+                },
+                error: (err) => {
+                  console.error('Error deleting tag', err);
+                  this.notificationService.showError('Failed to delete tag');
+                }
+              });
+            }
+          });
+        } else {
+          console.error('Error getting tag book count', countResult.errors);
+          // Fallback to generic message if count fetch fails
+          this.showDeleteConfirmation(id, 'Are you sure you want to delete this tag?');
+        }
+      },
+      error: (err) => {
+        console.error('Error getting tag book count', err);
+        // Fallback to generic message if count fetch fails
+        this.showDeleteConfirmation(id, 'Are you sure you want to delete this tag?');
+      }
+    });
+  }
+
+  private showDeleteConfirmation(id: number, message: string): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete Tag',
-        message: 'Are you sure you want to delete this tag?',
+        message: message,
         confirmText: 'Delete',
         confirmColor: 'warn'
       }
