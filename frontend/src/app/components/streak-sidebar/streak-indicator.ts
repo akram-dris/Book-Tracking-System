@@ -52,13 +52,13 @@ export class StreakIndicatorComponent implements OnInit {
             this.animationTrigger++;
           }
         } else {
-          console.error('Error fetching streak data', result.errors);
+
         }
         this.loading = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Error fetching streak data', err);
+
         this.loading = false;
         this.cdr.markForCheck();
       },

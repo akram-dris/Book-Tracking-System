@@ -255,14 +255,14 @@ export class Dashboard implements OnInit {
               this.stats = result.data;
               this.prepareCharts();
             } else {
-              console.error('Error loading stats', result.errors);
+
             }
             resolve();
             this.cdr.markForCheck();
             this.cdr.markForCheck();
           },
           error: (err) => {
-            console.error('Error loading stats', err);
+
             resolve();
             this.cdr.markForCheck();
             this.cdr.markForCheck();
@@ -280,14 +280,14 @@ export class Dashboard implements OnInit {
             if (result.isSuccess && result.data) {
               this.streakData = result.data;
             } else {
-              console.error('Error loading streak', result.errors);
+
             }
             resolve();
             this.cdr.markForCheck();
             this.cdr.markForCheck();
           },
           error: (err) => {
-            console.error('Error loading streak', err);
+
             resolve();
             this.cdr.markForCheck();
             this.cdr.markForCheck();
@@ -303,7 +303,7 @@ export class Dashboard implements OnInit {
         .subscribe({
           next: (statusResult) => {
             if (!statusResult.isSuccess || !statusResult.data) {
-              console.error('Error loading status info', statusResult.errors);
+
               resolve();
               this.cdr.markForCheck();
               return;
@@ -342,20 +342,20 @@ export class Dashboard implements OnInit {
                       this.cdr.markForCheck();
                     }
                   } else {
-                    console.error('Error loading books', bookResult.errors);
+
                     resolve();
                     this.cdr.markForCheck();
                   }
                 },
                 error: (err) => {
-                  console.error('Error loading books', err);
+
                   resolve();
                   this.cdr.markForCheck();
                 }
               });
           },
           error: (err) => {
-            console.error('Error loading status info', err);
+
             resolve();
             this.cdr.markForCheck();
           }
@@ -381,7 +381,7 @@ export class Dashboard implements OnInit {
                 const progress = book.totalPages > 0 ? Math.round((currentPage / book.totalPages) * 100) : 0;
                 this.bookProgress.set(book.id, progress);
               } else {
-                console.error(`Error loading sessions for book ${book.id}`, result.errors);
+
                 this.bookProgress.set(book.id, 0);
               }
             });
@@ -389,7 +389,7 @@ export class Dashboard implements OnInit {
             this.cdr.markForCheck();
           },
           error: (err) => {
-            console.error('Error loading book progress', err);
+
             resolve();
             this.cdr.markForCheck();
           }

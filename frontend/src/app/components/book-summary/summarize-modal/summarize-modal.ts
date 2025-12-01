@@ -77,13 +77,13 @@ export class SummarizeModalComponent implements OnInit {
                         this.saved.emit(summaryText);
                         this.close.emit();
                     } else {
-                        console.error('Error saving summary:', result.errors);
+
                         this.notificationService.showError('Failed to save summary');
                     }
                 },
                 error: (err) => {
                     this.isLoading = false;
-                    console.error('Error saving summary:', err);
+
                     this.notificationService.showError('An error occurred while saving');
                 }
             });

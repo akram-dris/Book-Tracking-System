@@ -59,13 +59,13 @@ export class RecommendationsComponent implements OnInit {
         if (result.isSuccess && result.data) {
           this.recommendations = result.data;
         } else {
-          console.error('Error loading recommendations:', result.errors);
+
           this.error = 'Failed to load recommendations';
         }
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading recommendations:', err);
+
         this.error = 'Failed to load recommendations';
         this.loading = false;
       }

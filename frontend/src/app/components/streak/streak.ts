@@ -44,7 +44,7 @@ export class StreakComponent implements OnInit {
         if (result.isSuccess && result.data) {
           return result.data;
         }
-        console.error('Error loading streak data:', result.errors);
+
         return null;
       })
     );

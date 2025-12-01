@@ -177,12 +177,12 @@ export class HeatmapComponent implements OnInit {
           this.generateCalendarGrid();
           this.loading = false;
         } else {
-          console.error('Error fetching heatmap data', result.errors);
+
           this.loading = false;
         }
       },
       error: (err) => {
-        console.error('Error fetching heatmap data', err);
+
         this.loading = false;
       },
     });

@@ -80,12 +80,12 @@ export class AuthorFormComponent implements OnInit {
               this.imagePreviewUrl = environment.rootUrl + result.data.imageUrl;
             }
           } else {
-            console.error('Error loading author:', result.errors);
+
             this.notificationService.showError('Failed to load author details');
           }
         },
         error: (err) => {
-          console.error('Error loading author:', err);
+
           this.notificationService.showError('Failed to load author details');
         }
       });
@@ -130,13 +130,13 @@ export class AuthorFormComponent implements OnInit {
                 this.location.back();
               }
             } else {
-              console.error('Error updating author:', result.errors);
+
               this.notificationService.showError('Failed to update author');
             }
             this.isLoading = false;
           },
           error: (err) => {
-            console.error('Error updating author:', err);
+
             this.notificationService.showError('Failed to update author');
             this.isLoading = false;
           }
@@ -152,13 +152,13 @@ export class AuthorFormComponent implements OnInit {
                 this.router.navigate(['/authors']);
               }
             } else {
-              console.error('Error adding author:', result.errors);
+
               this.notificationService.showError('Failed to add author');
             }
             this.isLoading = false;
           },
           error: (err) => {
-            console.error('Error adding author:', err);
+
             this.notificationService.showError('Failed to add author');
             this.isLoading = false;
           }

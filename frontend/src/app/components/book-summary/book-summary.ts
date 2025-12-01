@@ -57,7 +57,7 @@ export class BookSummaryComponent implements OnInit {
 
           // Guard: If book is completed but has no rating, redirect to details
           if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && !book.rating) {
-            console.log('Book has no rating, redirecting to details page');
+
             this.router.navigate(['/books', id]);
             return;
           }
@@ -69,11 +69,11 @@ export class BookSummaryComponent implements OnInit {
             this.summaryForm.patchValue({ summary: book.summary });
           }
         } else {
-          console.error('Error loading book:', result.errors);
+
         }
       },
       error: (err) => {
-        console.error('Error loading book:', err);
+
       }
     });
   }
@@ -105,11 +105,11 @@ export class BookSummaryComponent implements OnInit {
             this.book!.status = ReadingStatus.Summarized;
             this.isEditMode = false;
           } else {
-            console.error('Error saving summary:', result.errors);
+
           }
         },
         error: (err) => {
-          console.error('Error saving summary:', err);
+
         }
       });
     }

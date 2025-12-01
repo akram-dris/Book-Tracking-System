@@ -178,7 +178,7 @@ export class BookDetailsComponent implements OnInit {
 
   refreshBookData(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    console.log('BookDetailsComponent refreshBookData - Route ID:', id);
+
     if (id) {
       this.isLoading = true;
       this.bookService.getBook(+id).pipe(takeUntilDestroyed(this.destroyRef))
@@ -190,7 +190,7 @@ export class BookDetailsComponent implements OnInit {
               if (this.book.summary) {
                 this.summaryForm.patchValue({ summary: this.book.summary });
               }
-              console.log('BookDetailsComponent refreshBookData - book loaded:', this.book);
+
 
               // Initialize temporary rating if book has no rating
               if ((this.book.status === ReadingStatus.Completed || this.book.status === ReadingStatus.Summarized) && !this.book.rating) {
@@ -204,22 +204,22 @@ export class BookDetailsComponent implements OnInit {
                     if (sessionResult.isSuccess && sessionResult.data) {
                       this.readingSessions = sessionResult.data;
                       this.calculateProgress(); // Calculate progress after sessions are loaded
-                      console.log('BookDetailsComponent refreshBookData - readingSessions loaded:', this.readingSessions);
+
                     } else {
                       // Handle specific error cases if needed, or just log
                       if (sessionResult.errors && sessionResult.errors.some(e => e.includes('404'))) {
-                        console.log('BookDetailsComponent refreshBookData - No reading sessions found for bookId:', id);
+
                         this.readingSessions = [];
                         this.calculateProgress();
                       } else {
-                        console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', sessionResult.errors);
+
                         this.readingSessions = [];
                         this.calculateProgress();
                       }
                     }
                   },
                   error: err => {
-                    console.error('BookDetailsComponent refreshBookData - Error fetching reading sessions:', err);
+
                     this.readingSessions = [];
                     this.calculateProgress();
                   }
@@ -230,30 +230,30 @@ export class BookDetailsComponent implements OnInit {
                   next: goalResult => {
                     if (goalResult.isSuccess && goalResult.data) {
                       this.readingGoal = goalResult.data;
-                      console.log('BookDetailsComponent refreshBookData - readingGoal loaded:', this.readingGoal);
+
                     } else {
                       if (goalResult.errors && goalResult.errors.some(e => e.includes('404'))) {
-                        console.log('BookDetailsComponent refreshBookData - No reading goal found for bookId:', id);
+
                         this.readingGoal = null;
                       } else {
-                        console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', goalResult.errors);
+
                         this.readingGoal = null;
                       }
                     }
                   },
                   error: err => {
-                    console.error('BookDetailsComponent refreshBookData - Error fetching reading goal:', err);
+
                     this.readingGoal = null;
                   }
                 });
             } else {
-              console.error('Error loading book:', result.errors);
+
               this.notificationService.showError('Failed to load book details');
             }
             this.isLoading = false;
           },
           error: (err) => {
-            console.error('Error loading book:', err);
+
             this.isLoading = false;
           }
         });
@@ -291,9 +291,9 @@ export class BookDetailsComponent implements OnInit {
   }
 
   saveSummary(): void {
-    console.log('saveSummary called');
-    console.log('summaryForm valid:', this.summaryForm.valid);
-    console.log('book exists:', !!this.book);
+
+
+
     if (this.summaryForm.valid && this.book) {
       const summaryText = this.summaryForm.get('summary')?.value;
       const startedDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : undefined;
@@ -307,10 +307,10 @@ export class BookDetailsComponent implements OnInit {
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.Summarized, startedDate, new Date(), summaryText).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(result => {
           if (result.isSuccess) {
-            console.log('BookDetailsComponent saveSummary - Book summary updated');
+
             this.notificationService.showSuccess(`Book '${this.book!.title}' is now Summarized`);
           } else {
-            console.error('Error updating book summary:', result.errors);
+
             this.notificationService.showError('Failed to update book summary');
           }
         });
@@ -323,7 +323,7 @@ export class BookDetailsComponent implements OnInit {
   }
 
   startReading(): void {
-    console.log('BookDetailsComponent startReading - book:', this.book);
+
     if (this.book) {
       // Update UI optimistically
       this.book.status = ReadingStatus.CurrentlyReading;
@@ -332,11 +332,11 @@ export class BookDetailsComponent implements OnInit {
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, new Date()).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(result => {
           if (result.isSuccess) {
-            console.log('BookDetailsComponent startReading - Book status updated to CurrentlyReading, navigating to set-goal');
+
             this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
             this.router.navigate(['/books', this.book!.id, 'set-goal']);
           } else {
-            console.error('Error updating book status:', result.errors);
+
             this.notificationService.showError('Failed to start reading');
           }
         });
@@ -344,21 +344,21 @@ export class BookDetailsComponent implements OnInit {
   }
 
   openPlanAndGoalModal(): void {
-    console.log('BookDetailsComponent openPlanAndGoalModal - currentBookId:', this.currentBookId);
+
     if (this.currentBookId) {
       this.isPlanAndGoalModalOpen = true;
     } else {
-      console.error('BookDetailsComponent openPlanAndGoalModal - Cannot open Plan and Goal modal: currentBookId is null/undefined.');
+
     }
   }
 
   closePlanAndGoalModal(): void {
-    console.log('BookDetailsComponent closePlanAndGoalModal');
+
     this.isPlanAndGoalModalOpen = false;
   }
 
   handlePlanAndGoalSaved(): void {
-    console.log('BookDetailsComponent handlePlanAndGoalSaved - Plan and Goal saved, refreshing data for bookId:', this.book?.id);
+
 
     // Update book status optimistically for immediate UI feedback
     if (this.book) {
@@ -370,7 +370,7 @@ export class BookDetailsComponent implements OnInit {
   }
 
   openAddSessionModal(): void {
-    console.log('BookDetailsComponent openAddSessionModal - Opening session log modal for bookId:', this.currentBookId);
+
     const dialogRef = this.dialog.open(SessionLogComponent, {
       width: '95vw',
       maxWidth: '1400px',
@@ -383,14 +383,14 @@ export class BookDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Session log modal closed with success. Reloading data...');
+
         this.refreshBookData();
       }
     });
   }
 
   startReadingFromPlanning(): void {
-    console.log('BookDetailsComponent startReadingFromPlanning - book:', this.book);
+
     if (this.book) {
       const startDate = this.book.startedReadingDate ? new Date(this.book.startedReadingDate) : new Date();
 
@@ -401,11 +401,11 @@ export class BookDetailsComponent implements OnInit {
       this.bookService.updateBookStatus(this.book.id, ReadingStatus.CurrentlyReading, startDate).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(result => {
           if (result.isSuccess) {
-            console.log('BookDetailsComponent startReadingFromPlanning - Book status updated to CurrentlyReading with date:', startDate);
+
             this.notificationService.showSuccess(`Book '${this.book!.title}' is now Currently Reading`);
             // No navigation needed, stay on the same page
           } else {
-            console.error('Error updating book status:', result.errors);
+
             this.notificationService.showError('Failed to start reading');
           }
         });
@@ -413,7 +413,7 @@ export class BookDetailsComponent implements OnInit {
   }
 
   markAsCompleted(): void {
-    console.log('BookDetailsComponent markAsCompleted - book:', this.book);
+
     if (this.book) {
       // Open rating modal instead of immediately marking as completed
       this.isRatingModalOpen = true;
@@ -430,7 +430,7 @@ export class BookDetailsComponent implements OnInit {
   }
 
   saveRating(rating: number): void {
-    console.log('BookDetailsComponent saveRating - rating:', rating);
+
     if (this.book) {
       // Save rating to book object
       this.book.rating = rating;
@@ -457,10 +457,10 @@ export class BookDetailsComponent implements OnInit {
       ).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(result => {
           if (result.isSuccess) {
-            console.log('BookDetailsComponent saveRating - Book status updated to Completed with rating');
+
             this.notificationService.showSuccess(`Book '${this.book!.title}' is now Completed with ${rating} stars!`);
           } else {
-            console.error('Error updating book status:', result.errors);
+
             this.notificationService.showError('Failed to save rating');
           }
         });
@@ -513,7 +513,7 @@ export class BookDetailsComponent implements OnInit {
       this.currentPage = 0;
       this.progress = 0;
     }
-    console.log('BookDetailsComponent calculateProgress - currentPage:', this.currentPage, 'progress:', this.progress);
+
   }
 
   getGoalClass(pagesRead: number): string {
@@ -531,21 +531,21 @@ export class BookDetailsComponent implements OnInit {
   }
 
   handleReadingLogDeleted(): void {
-    console.log('BookDetailsComponent handleReadingLogDeleted - Reading session deleted, refreshing book data.');
+
     this.refreshBookData(); // Refresh all book-related data
   }
 
   openReadingLogModal(): void {
-    console.log('BookDetailsComponent openReadingLogModal - currentBookId:', this.currentBookId);
+
     if (this.currentBookId) {
       this.isReadingLogModalOpen = true;
     } else {
-      console.error('BookDetailsComponent openReadingLogModal - Cannot open Reading Log modal: currentBookId is null/undefined.');
+
     }
   }
 
   closeReadingLogModal(): void {
-    console.log('BookDetailsComponent closeReadingLogModal');
+
     this.isReadingLogModalOpen = false;
   }
 
@@ -570,7 +570,7 @@ export class BookDetailsComponent implements OnInit {
                 this.notificationService.showSuccess(`"${this.book!.title}" deleted successfully`);
                 this.router.navigate(['/books']);
               } else {
-                console.error('Error deleting book:', result.errors);
+
                 this.notificationService.showError('Failed to delete book');
               }
             });
@@ -639,10 +639,10 @@ export class BookDetailsComponent implements OnInit {
           if (result.isSuccess) {
             this.book!.summary = summaryText;
             this.isEditingNotes = false;
-            console.log('Book notes updated successfully');
+
             this.notificationService.showSuccess('Notes saved successfully');
           } else {
-            console.error('Error updating book notes:', result.errors);
+
             this.notificationService.showError('Failed to save notes');
           }
         });

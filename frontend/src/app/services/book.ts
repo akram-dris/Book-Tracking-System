@@ -119,7 +119,7 @@ export class BookService {
     if (rating !== undefined && rating !== null) {
       body.rating = rating;
     }
-    console.log('BookService updateBookStatus payload:', JSON.stringify(body, null, 2));
+
     return this.http.put<Result<any>>(`${this.apiUrl}/${bookId}/status`, body);
   }
 

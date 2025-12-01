@@ -117,12 +117,12 @@ export class TagManagementComponent implements OnInit {
           this.displayedTags = result.data.items;
           this.hasMorePages = result.data.items.length === this.pageSize;
         } else {
-          console.error('Error loading tags', result.errors);
+
         }
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error loading tags', err);
+
         this.isLoading = false;
       }
     });
@@ -148,12 +148,12 @@ export class TagManagementComponent implements OnInit {
           this.displayedTags = [...this.displayedTags, ...newTags];
           this.hasMorePages = newTags.length === this.pageSize;
         } else {
-          console.error('Error loading more tags', result.errors);
+
         }
         this.isLoadingMore = false;
       },
       error: (err) => {
-        console.error('Error loading more tags', err);
+
         this.isLoadingMore = false;
       }
     });
@@ -175,11 +175,11 @@ export class TagManagementComponent implements OnInit {
           this.tagUsageCounts = result.data;
           this.sortTags();
         } else {
-          console.error('Error loading tag usage counts', result.errors);
+
         }
       },
       error: (err) => {
-        console.error('Error loading tag usage counts', err);
+
       }
     });
   }
@@ -209,13 +209,13 @@ export class TagManagementComponent implements OnInit {
               this.dialog.closeAll();
               this.notificationService.showSuccess('Tag updated successfully');
             } else {
-              console.error('Error updating tag', result.errors);
+
               this.notificationService.showError('Failed to update tag');
             }
             this.isLoading = false;
           },
           error: (err) => {
-            console.error('Error updating tag', err);
+
             this.isLoading = false;
             this.notificationService.showError('Failed to update tag');
           }
@@ -231,13 +231,13 @@ export class TagManagementComponent implements OnInit {
               this.dialog.closeAll();
               this.notificationService.showSuccess('Tag added successfully');
             } else {
-              console.error('Error creating tag', result.errors);
+
               this.notificationService.showError('Failed to create tag');
             }
             this.isLoading = false;
           },
           error: (err) => {
-            console.error('Error creating tag', err);
+
             this.isLoading = false;
             this.notificationService.showError('Failed to create tag');
           }
@@ -294,25 +294,25 @@ export class TagManagementComponent implements OnInit {
                     this.loadTagUsageCounts();
                     this.notificationService.showSuccess('Tag deleted successfully');
                   } else {
-                    console.error('Error deleting tag', deleteResult.errors);
+
                     this.notificationService.showError('Failed to delete tag');
                   }
                 },
                 error: (err) => {
-                  console.error('Error deleting tag', err);
+
                   this.notificationService.showError('Failed to delete tag');
                 }
               });
             }
           });
         } else {
-          console.error('Error getting tag book count', countResult.errors);
+
           // Fallback to generic message if count fetch fails
           this.showDeleteConfirmation(id, 'Are you sure you want to delete this tag?');
         }
       },
       error: (err) => {
-        console.error('Error getting tag book count', err);
+
         // Fallback to generic message if count fetch fails
         this.showDeleteConfirmation(id, 'Are you sure you want to delete this tag?');
       }
@@ -338,12 +338,12 @@ export class TagManagementComponent implements OnInit {
               this.loadTagUsageCounts();
               this.notificationService.showSuccess('Tag deleted successfully');
             } else {
-              console.error('Error deleting tag', deleteResult.errors);
+
               this.notificationService.showError('Failed to delete tag');
             }
           },
           error: (err) => {
-            console.error('Error deleting tag', err);
+
             this.notificationService.showError('Failed to delete tag');
           }
         });

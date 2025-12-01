@@ -108,13 +108,13 @@ export class AuthorListComponent implements OnInit {
             this.filteredAuthors = result.data.items;
             this.hasMorePages = result.data.hasNextPage;
           } else {
-            console.error('Error loading authors:', result.errors);
+
           }
           this.isLoading = false;
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.error('Error loading authors:', error);
+
           this.isLoading = false;
           this.cdr.markForCheck();
         }
@@ -147,7 +147,7 @@ export class AuthorListComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.error('Error loading more authors:', error);
+
           this.isLoadingMore = false;
           this.cdr.markForCheck();
         }
@@ -206,7 +206,7 @@ export class AuthorListComponent implements OnInit {
             this.notificationService.showSuccess('Author deleted successfully');
             this.loadAuthors();
           } else {
-            console.error('Error deleting author:', deleteResult.errors);
+
             this.notificationService.showError('Failed to delete author');
           }
         });
@@ -215,7 +215,7 @@ export class AuthorListComponent implements OnInit {
   }
 
   onImageError(event: Event, author: AuthorWithCount): void {
-    console.error('Failed to load image for author:', author.name, 'URL:', this.rootUrl + author.imageUrl);
+
     const img = event.target as HTMLImageElement;
     img.style.display = 'none';
   }
