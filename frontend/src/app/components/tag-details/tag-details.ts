@@ -139,7 +139,7 @@ export class TagDetailsComponent implements OnInit {
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Error loading tag books:', err);
+
           this.isLoading = false;
         }
       });
@@ -275,7 +275,7 @@ export class TagDetailsComponent implements OnInit {
             this.notificationService.showSuccess('Tag deleted successfully');
             this.router.navigate(['/tags']);
           } else {
-            console.error('Error deleting tag:', deleteResult.errors);
+
             this.notificationService.showError('Failed to delete tag');
           }
         });

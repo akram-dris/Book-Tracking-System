@@ -21,7 +21,7 @@ export class ReadingStatusService {
       this.statusCache$ = this.http.get<Result<ReadingStatusInfo[]>>(this.apiUrl).pipe(
         map(result => {
           if (result.isSuccess && result.data) {
-            console.log('🎨 STATUS COLORS FROM BACKEND:', result.data);
+
           }
           return result;
         }),

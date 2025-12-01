@@ -118,7 +118,7 @@ export class PlanAndGoalModalComponent implements OnInit {
         next: (statusResult) => {
           if (!statusResult.isSuccess) {
             this.isLoading = false;
-            console.error('Error updating book status/date', statusResult.errors);
+
             this.notificationService.showError('Failed to update book status');
             return;
           }
@@ -140,13 +140,13 @@ export class PlanAndGoalModalComponent implements OnInit {
                   this.saved.emit();
                   this.close.emit();
                 } else {
-                  console.error('Error updating reading goal', goalResult.errors);
+
                   this.notificationService.showError('Failed to update reading goal');
                 }
               },
               error: (err) => {
                 this.isLoading = false;
-                console.error('Error updating reading goal', err);
+
                 this.notificationService.showError('Failed to update reading goal');
               }
             });
@@ -159,13 +159,13 @@ export class PlanAndGoalModalComponent implements OnInit {
                   this.saved.emit();
                   this.close.emit();
                 } else {
-                  console.error('Error creating reading goal', goalResult.errors);
+
                   this.notificationService.showError('Failed to create reading goal');
                 }
               },
               error: (err) => {
                 this.isLoading = false;
-                console.error('Error creating reading goal', err);
+
                 this.notificationService.showError('Failed to create reading goal');
               }
             });
@@ -173,7 +173,7 @@ export class PlanAndGoalModalComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          console.error('Error updating book status/date', err);
+
           this.notificationService.showError('Failed to update book status');
         }
       });

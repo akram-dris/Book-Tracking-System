@@ -21,7 +21,7 @@ export class ReadingSessionService {
   constructor(private http: HttpClient) { }
 
   getReadingSessionsForBook(bookId: number): Observable<Result<GetReadingSession[]>> {
-    console.log(`Fetching reading sessions for bookId: ${bookId}`);
+
     return this.http.get<Result<GetReadingSession[]>>(`${this.apiUrl}/book/${bookId}`);
   }
 
@@ -45,7 +45,7 @@ export class ReadingSessionService {
   }
 
   deleteReadingSession(id: number): Observable<Result<any>> {
-    console.log(`Deleting reading session with ID: ${id}`);
+
     return this.http.delete<Result<any>>(`${this.apiUrl}/${id}`).pipe(
       tap(result => {
         if (result.isSuccess) {

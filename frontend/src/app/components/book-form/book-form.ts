@@ -128,7 +128,7 @@ export class BookFormComponent implements OnInit {
           this.bookForm.patchValue({ tagIds: tagIds });
         }
       } else if (this.isEditMode && !bookResult.isSuccess) {
-        console.error('Error loading book:', bookResult.errors);
+
         this.notificationService.showError('Failed to load book details');
       }
     });
@@ -227,7 +227,7 @@ export class BookFormComponent implements OnInit {
         this.croppedImage = reader.result;
       };
     } else {
-      console.error('Cropped image blob data is not available.');
+
     }
   }
 
@@ -237,7 +237,7 @@ export class BookFormComponent implements OnInit {
       this.selectedFile = this.base64ToFile(this.croppedImage, this.imageChangedEvent.target.files[0].name);
       this.showCropper = false;
     } else {
-      console.error('Cropped image is not available to save.');
+
     }
   }
 
@@ -293,12 +293,12 @@ export class BookFormComponent implements OnInit {
                 this.location.back();
               }
             } else {
-              console.error('Error assigning tags:', tagResult.errors);
+
               this.notificationService.showError('Book updated but failed to update tags');
             }
           },
           error: (err) => {
-            console.error('Error updating book:', err);
+
             this.notificationService.showError('Failed to update book');
           }
         });
@@ -321,7 +321,7 @@ export class BookFormComponent implements OnInit {
                 this.router.navigate(['/books']);
               }
             } else {
-              console.error('Error assigning tags:', tagResult.errors);
+
               this.notificationService.showError('Book added but failed to assign tags');
               if (this.dialogRef) {
                 this.dialogRef.close(true);
@@ -331,7 +331,7 @@ export class BookFormComponent implements OnInit {
             }
           },
           error: (err) => {
-            console.error('Error adding book:', err);
+
             this.notificationService.showError('Failed to add book');
           }
         });

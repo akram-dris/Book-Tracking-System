@@ -25,7 +25,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 // Register Chart.js components
 Chart.register(...registerables);
 
-import { EmptyStateComponent } from '../shared/empty-state/empty-state';
+
 
 @Component({
   selector: 'app-statistics',
@@ -39,8 +39,7 @@ import { EmptyStateComponent } from '../shared/empty-state/empty-state';
     MatNativeDateModule,
     MatNativeDateModule,
     MatInputModule,
-    NgxSkeletonLoaderModule,
-    EmptyStateComponent
+    NgxSkeletonLoaderModule
   ],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
@@ -305,14 +304,14 @@ export class StatisticsComponent implements OnInit, OnDestroy {
           this.loading = false;
           this.cdr.markForCheck(); // Trigger change detection with OnPush
         } else {
-          console.error('Error loading statistics:', result.errors);
+
           this.error = 'Failed to load statistics. Please try again later.';
           this.loading = false;
           this.cdr.markForCheck();
         }
       },
       error: (err) => {
-        console.error('Error loading statistics:', err);
+
         this.error = 'Failed to load statistics. Please try again later.';
         this.loading = false;
         this.cdr.markForCheck();
@@ -339,7 +338,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
 
   onFilterChange(filterType: string): void {
     const type = filterType as 'day' | 'week' | 'month' | 'year' | 'custom';
-    console.log('🎯 Filter changed to:', type);
+
     this.selectedFilter = type;
     this.showCustomDateInputs = type === 'custom';
 
@@ -379,7 +378,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   }
 
   resetFilter(): void {
-    console.log('🔄 Reset filter called');
+
     this.selectedFilter = 'year';
     this.showCustomDateInputs = false;
 
@@ -393,11 +392,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     this.customEndDate = '';
     this.customDateRange = '';
 
-    console.log('✅ Reset complete:', {
-      startDate: this.startDate,
-      endDate: this.endDate,
-      selectedFilter: this.selectedFilter
-    });
+
 
     this.loadStatistics();
   }

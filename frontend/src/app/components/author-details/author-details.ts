@@ -75,7 +75,7 @@ export class AuthorDetailsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('AuthorDetailsComponent initialized');
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadAuthorData(+id);
@@ -84,19 +84,19 @@ export class AuthorDetailsComponent implements OnInit {
 
   loadAuthorData(id: number): void {
     this.isLoading = true;
-    console.log('Loading author data for id:', id);
+
     this.authorService.getAuthor(id).subscribe({
       next: (result) => {
         if (result.isSuccess && result.data) {
           this.author = result.data;
           this.loadAuthorBooks(id);
         } else {
-          console.error('Error loading author:', result.errors);
+
           this.isLoading = false;
         }
       },
       error: (err) => {
-        console.error('Error loading author:', err);
+
         this.isLoading = false;
       }
     });
@@ -105,7 +105,7 @@ export class AuthorDetailsComponent implements OnInit {
   loadAuthorBooks(authorId: number): void {
     this.readingStatusService.getAllStatuses().subscribe(statusResult => {
       if (!statusResult.isSuccess || !statusResult.data) {
-        console.error('Error loading statuses:', statusResult.errors);
+
         this.isLoading = false;
         return;
       }
@@ -133,12 +133,12 @@ export class AuthorDetailsComponent implements OnInit {
             this.calculateStatistics();
             this.loadProgressForBooks(this.authorBooks);
           } else {
-            console.error('Error loading author books:', bookResult.errors);
+
           }
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Error loading author books:', err);
+
           this.isLoading = false;
         }
       });
@@ -268,7 +268,7 @@ export class AuthorDetailsComponent implements OnInit {
             this.notificationService.showSuccess('Author deleted successfully');
             this.router.navigate(['/authors']);
           } else {
-            console.error('Error deleting author:', deleteResult.errors);
+
             this.notificationService.showError('Failed to delete author');
           }
         });
@@ -286,12 +286,12 @@ export class AuthorDetailsComponent implements OnInit {
               const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
               book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
             } else {
-              console.error(`Error fetching reading sessions for book ${book.id}:`, result.errors);
+
               book.progressPercentage = 0;
             }
           },
           error: err => {
-            console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+
             book.progressPercentage = 0;
           }
         });

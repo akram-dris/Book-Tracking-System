@@ -118,19 +118,19 @@ export class SessionLogComponent implements OnInit {
                 this.checkForExistingSession(this.sessionForm.get('date')?.value);
                 this.updatePagesReadValidator();
               } else {
-                console.error('Error loading sessions:', sessionsResult.errors);
+
               }
             },
             error: (err) => {
-              console.error('Error loading sessions:', err);
+
             }
           });
         } else {
-          console.error('Error loading book:', bookResult.errors);
+
         }
       },
       error: (err) => {
-        console.error('Error loading book:', err);
+
       }
     });
 
@@ -328,13 +328,13 @@ export class SessionLogComponent implements OnInit {
               this.dialogRef.close(true);
             } else {
               this.isLoading = false;
-              console.error('Error updating reading session', result.errors);
+
               this.notificationService.showError('Failed to update reading session');
             }
           },
           error: (err) => {
             this.isLoading = false;
-            console.error('Error updating reading session', err);
+
             this.notificationService.showError('Failed to update reading session');
           }
         });
@@ -356,13 +356,13 @@ export class SessionLogComponent implements OnInit {
               this.dialogRef.close(true);
             } else {
               this.isLoading = false;
-              console.error('Error logging reading session', result.errors);
+
               this.notificationService.showError('Failed to log reading session');
             }
           },
           error: (err) => {
             this.isLoading = false;
-            console.error('Error logging reading session', err);
+
             if (err.status === 409) {
               this.notificationService.showError('A reading session for this book on this date already exists');
             } else {

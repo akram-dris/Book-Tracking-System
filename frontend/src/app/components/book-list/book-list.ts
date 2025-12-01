@@ -131,7 +131,7 @@ export class BookListComponent implements OnInit {
     this.readingStatusService.getAllStatuses().subscribe({
       next: (statusResult) => {
         if (!statusResult.isSuccess || !statusResult.data) {
-          console.error('Error loading statuses:', statusResult.errors);
+
           this.isLoading = false;
           this.cdr.markForCheck();
           return;
@@ -167,20 +167,20 @@ export class BookListComponent implements OnInit {
                 this.loadBookStats();
                 this.loadProgressForBooks(this.books);
               } else {
-                console.error('Error loading books:', result.errors);
+
               }
               this.isLoading = false;
               this.cdr.markForCheck();
             },
             error: (err) => {
-              console.error('Error loading books:', err);
+
               this.isLoading = false;
               this.cdr.markForCheck();
             }
           });
       },
       error: (err) => {
-        console.error('Error loading statuses:', err);
+
         this.isLoading = false;
         this.cdr.markForCheck();
       }
@@ -208,11 +208,11 @@ export class BookListComponent implements OnInit {
           };
           this.cdr.markForCheck();
         } else {
-          console.error('Error loading book stats:', result.errors);
+
         }
       },
       error: (err) => {
-        console.error('Error loading book stats:', err);
+
         this.cdr.markForCheck();
       }
     });
@@ -227,7 +227,7 @@ export class BookListComponent implements OnInit {
     this.readingStatusService.getAllStatuses().subscribe({
       next: (statusResult) => {
         if (!statusResult.isSuccess || !statusResult.data) {
-          console.error('Error loading statuses:', statusResult.errors);
+
           this.isLoadingMore = false;
           this.cdr.markForCheck();
           return;
@@ -236,14 +236,6 @@ export class BookListComponent implements OnInit {
         const statuses = statusResult.data;
         const statusMap = new Map(statuses.map(s => [s.value, s]));
 
-        console.log('LoadMore - Parameters:', {
-          page: this.currentPage,
-          pageSize: this.pageSize,
-          search: this.currentSearch,
-          tagId: this.selectedTagId,
-          statusFilter: this.currentStatusFilter,
-          sort: this.sortBy
-        });
 
         this.bookService.getBooksPaginated(
           this.currentPage,
@@ -276,14 +268,14 @@ export class BookListComponent implements OnInit {
             this.cdr.markForCheck();
           },
           error: (err) => {
-            console.error('Error loading more books:', err);
+
             this.isLoadingMore = false;
             this.cdr.markForCheck();
           }
         });
       },
       error: (err) => {
-        console.error('Error loading statuses for loadMore:', err);
+
         this.isLoadingMore = false;
         this.cdr.markForCheck();
       }
@@ -315,13 +307,13 @@ export class BookListComponent implements OnInit {
               const totalPagesRead = sessions.reduce((sum, session) => sum + session.pagesRead, 0);
               book.progressPercentage = (totalPagesRead / book.totalPages!) * 100;
             } else {
-              console.error(`Error fetching reading sessions for book ${book.id}:`, result.errors);
+
               book.progressPercentage = 0;
             }
             this.cdr.markForCheck();
           },
           error: err => {
-            console.error(`Error fetching reading sessions for book ${book.id}:`, err);
+
             book.progressPercentage = 0;
             this.cdr.markForCheck();
           }
@@ -333,7 +325,7 @@ export class BookListComponent implements OnInit {
   }
 
   onFiltersChanged(filters: BookFilters): void {
-    console.log('Filters changed:', filters);
+
 
     // Update filter state - if undefined or null, clear the filter
     this.currentStatusFilter = (filters.status !== undefined && filters.status !== null) ? filters.status : null;
@@ -406,12 +398,12 @@ export class BookListComponent implements OnInit {
               this.notificationService.showSuccess('Book deleted successfully');
               this.loadBooks();
             } else {
-              console.error('Error deleting book', response.errors);
+
               this.notificationService.showError('Failed to delete book');
             }
           },
           error: (error) => {
-            console.error('Error deleting book', error);
+
             this.notificationService.showError('Failed to delete book');
           }
         });

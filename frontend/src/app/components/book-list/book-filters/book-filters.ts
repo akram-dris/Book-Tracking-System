@@ -62,10 +62,10 @@ export class BookFiltersComponent implements OnInit {
         if (result.isSuccess && result.data) {
           this.authors = result.data;
         } else {
-          console.error('Error loading authors:', result.errors);
+
         }
       },
-      error: (err) => console.error('Error loading authors:', err)
+      error: (err) => { }
     });
   }
 
@@ -75,10 +75,10 @@ export class BookFiltersComponent implements OnInit {
         if (result.isSuccess && result.data) {
           this.tags = result.data;
         } else {
-          console.error('Error loading tags:', result.errors);
+
         }
       },
-      error: (err) => console.error('Error loading tags:', err)
+      error: (err) => { }
     });
   }
 

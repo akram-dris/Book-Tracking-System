@@ -71,15 +71,15 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Tracking System API v1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-    });
-}
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI(c =>
+//     {
+//         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Tracking System API v1");
+//         c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+//     });
+// }
 
 app.UseHttpsRedirection();
 
@@ -90,6 +90,49 @@ app.UseAuthorization();
 app.UseCors("AllowAll");
 
 app.MapControllers();
+
+// Apply database migrations automatically with retry
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<ApplicationDbContext>();
+
+    int retries = 10;
+    while (retries > 0)
+    {
+        try
+        {
+            logger.LogInformation("Attempting to migrate database...");
+            context.Database.Migrate();
+            logger.LogInformation("Database migration successful.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            retries--;
+            logger.LogWarning(ex, $"Migration failed. Retries remaining: {retries}. Waiting 5 seconds...");
+            System.Threading.Thread.Sleep(5000);
+        }
+    }
+}
+
+// Configure the HTTP request pipeline.
+// Enable Swagger in all environments for easier testing
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book Tracking System API v1");
+    c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+});
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseAuthorization();
+
+app.UseCors("AllowAll");
 
 app.Run();
 
