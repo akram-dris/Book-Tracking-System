@@ -1,0 +1,23 @@
+
+using System;
+
+namespace BookTrackingSystem.DTOs
+{
+    public class BookDto
+    {
+        public int Id { get; set; }
+        public int AuthorId { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public int TotalPages { get; set; }
+        public string? ImageUrl { get; set; }
+        public Models.Enums.ReadingStatus Status { get; set; }
+        public int? Rating { get; set; }
+        public DateTime? StartedReadingDate { get; set; }
+        public DateTime? CompletedDate { get; set; } // New property
+        public string? Summary { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public AuthorDto? Author { get; set; }
+        public ICollection<TagDto>? Tags { get; set; }
+    }
+}

@@ -1,0 +1,412 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/aspect-ratio";
+@plugin "tailwindcss-animate";
+
+/* DaisyUI Custom Theme Configuration - Luminous Glass */
+@theme {
+  --daisyui-themes: light, dark;
+}
+
+[data-theme="light"] {
+  /* Primary - Electric Violet / Bright Blue */
+  --p: 250 100% 65%;
+  --pf: 250 100% 55%;
+  --pc: 0 0% 100%;
+
+  /* Secondary - Hot Pink / Coral */
+  --s: 330 100% 65%;
+  --sf: 330 100% 55%;
+  --sc: 0 0% 100%;
+
+  /* Accent - Cyan / Teal */
+  --a: 180 100% 45%;
+  --af: 180 100% 35%;
+  --ac: 0 0% 100%;
+
+  /* Neutral - Slate */
+  --n: 220 15% 25%;
+  --nf: 220 15% 15%;
+  --nc: 0 0% 100%;
+
+  /* Base - Crisp White / Paper */
+  --b1: 0 0% 100%;
+  --b2: 210 40% 98%;
+  --b3: 210 40% 95%;
+  --bc: 220 15% 25%;
+
+  /* Functional Colors */
+  --in: 200 100% 60%;
+  /* Info - Sky Blue */
+  --su: 150 100% 45%;
+  /* Success - Emerald */
+  --wa: 35 100% 60%;
+  /* Warning - Amber */
+  --er: 0 100% 65%;
+  /* Error - Rose */
+}
+
+[data-theme="dark"] {
+  /* Primary - Electric Violet (Glow) */
+  --p: 250 100% 75%;
+  --pf: 250 100% 65%;
+  --pc: 250 20% 10%;
+
+  /* Secondary - Hot Pink (Glow) */
+  --s: 330 100% 75%;
+  --sf: 330 100% 65%;
+  --sc: 330 20% 10%;
+
+  /* Accent - Cyan (Glow) */
+  --a: 180 100% 55%;
+  --af: 180 100% 45%;
+  --ac: 180 20% 10%;
+
+  /* Neutral - Deep Slate */
+  --n: 220 20% 20%;
+  --nf: 220 20% 15%;
+  --nc: 220 20% 90%;
+
+  /* Base - Deep Midnight */
+  --b1: 230 25% 12%;
+  --b2: 230 25% 15%;
+  --b3: 230 25% 18%;
+  --bc: 230 20% 90%;
+
+  /* Functional Colors (Brighter for Dark Mode) */
+  --in: 200 100% 70%;
+  --su: 150 100% 55%;
+  --wa: 35 100% 70%;
+  --er: 0 100% 75%;
+}
+
+/* Design Tokens */
+@theme {
+  /* Typography */
+  --font-family-heading: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-family-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Glass Effects */
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --glass-blur: blur(12px);
+}
+
+/* Global Reset & Typography */
+body {
+  font-family: var(--font-family-body);
+  @apply antialiased selection:bg-primary/30 selection:text-primary-content;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+  @apply tracking-tight font-bold;
+}
+
+.font-heading {
+  font-family: var(--font-family-heading);
+}
+
+/* ============================================
+   LUMINOUS GLASS UTILITIES
+   ============================================ */
+
+/* Glass Panel */
+.glass-panel {
+  background-color: color-mix(in srgb, var(--fallback-b1, oklch(var(--b1) / 1)) 60%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--fallback-bc, oklch(var(--bc) / 1)) 5%, transparent);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .glass-panel {
+  background-color: color-mix(in srgb, var(--fallback-b1, oklch(var(--b1) / 1)) 40%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Floating Glass (Sidebar/Header) */
+.glass-float {
+  background-color: color-mix(in srgb, var(--fallback-b1, oklch(var(--b1) / 1)) 80%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid color-mix(in srgb, var(--fallback-bc, oklch(var(--bc) / 1)) 5%, transparent);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .glass-float {
+  background-color: color-mix(in srgb, var(--fallback-b1, oklch(var(--b1) / 1)) 60%, transparent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Glow Effects */
+.glow-primary {
+  box-shadow: 0 0 20px -5px hsl(var(--p) / 0.5);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 20px -5px hsl(var(--s) / 0.5);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px -5px hsl(var(--a) / 0.5);
+}
+
+/* Hover Lift & Shine */
+.hover-lift {
+  transition: all 0.3s ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 0 20px -5px color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 20%, transparent);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--fallback-bc, oklch(var(--bc) / 1)) 10%, transparent);
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 50%, transparent);
+}
+
+/* Selection */
+::selection {
+  background-color: color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 30%, transparent);
+  color: var(--fallback-pc, oklch(var(--pc) / 1));
+}
+
+/* Placeholder Image Styling */
+/* Darken placeholder images in dark mode for better visual consistency */
+[data-theme="dark"] img[src*="placeholder"] {
+  filter: brightness(0.4) contrast(1.1);
+  transition: filter 0.2s ease;
+}
+
+[data-theme="dark"] img[src*="placeholder"]:hover {
+  filter: brightness(0.5) contrast(1.1);
+}
+
+/* ============================================
+   COMPONENT OVERRIDES
+   ============================================ */
+
+/* Buttons */
+.btn {
+  font-family: var(--font-family-heading);
+  font-weight: 600;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  border: 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, var(--fallback-p, oklch(var(--p) / 1)), color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 80%, transparent));
+  color: white;
+  box-shadow: 0 4px 14px 0 color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 30%, transparent);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px 0 color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 50%, transparent);
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  background: linear-gradient(to right, var(--fallback-s, oklch(var(--s) / 1)), color-mix(in srgb, var(--fallback-s, oklch(var(--s) / 1)) 80%, transparent));
+  color: white;
+  box-shadow: 0 4px 14px 0 color-mix(in srgb, var(--fallback-s, oklch(var(--s) / 1)) 30%, transparent);
+}
+
+.btn-secondary:hover {
+  box-shadow: 0 6px 20px 0 color-mix(in srgb, var(--fallback-s, oklch(var(--s) / 1)) 50%, transparent);
+  transform: scale(1.05);
+}
+
+/* Cards */
+.card {
+  border-radius: 1rem;
+  border: 0;
+}
+
+/* Inputs */
+.input,
+.select,
+.textarea {
+  background-color: color-mix(in srgb, var(--fallback-b2, oklch(var(--b2) / 1)) 50%, transparent);
+  border-color: transparent;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  background-color: var(--fallback-b1, oklch(var(--b1) / 1));
+  border-color: var(--fallback-p, oklch(var(--p) / 1));
+  outline: 2px solid color-mix(in srgb, var(--fallback-p, oklch(var(--p) / 1)) 20%, transparent);
+  outline-offset: 2px;
+}
+
+/* Badges */
+.badge {
+  font-family: var(--font-family-heading);
+  font-weight: 500;
+  border: 0;
+}
+
+/* Angular Material Overrides */
+.mat-mdc-snack-bar-container {
+  &.success-snackbar {
+    --mdc-snackbar-container-color: hsl(var(--su));
+    --mdc-snackbar-supporting-text-color: white;
+  }
+
+  &.error-snackbar {
+    --mdc-snackbar-container-color: hsl(var(--er));
+    --mdc-snackbar-supporting-text-color: white;
+  }
+}
+
+/* Select Dropdown Options - 100% Opaque, No Transparency */
+select {
+  background-color: oklch(var(--b1)) !important;
+  color: oklch(var(--bc)) !important;
+  /* Add shadow to create visual separation from content behind */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Force completely opaque backgrounds for dropdown options */
+select option {
+  background-color: rgb(from oklch(var(--b1)) r g b) !important;
+  background: rgb(from oklch(var(--b1)) r g b) !important;
+  color: oklch(var(--bc)) !important;
+  padding: 0.625rem 0.75rem !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  min-height: 2.5rem !important;
+  opacity: 1 !important;
+}
+
+/* Light theme specific - ensure solid white background */
+[data-theme="light"] select option {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] select {
+  background-color: #ffffff !important;
+}
+
+/* Hover state for better visual feedback */
+select option:hover {
+  background-color: rgb(from oklch(var(--p) / 0.2) r g b) !important;
+  color: oklch(var(--bc)) !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] select option:hover {
+  background-color: #ede9fe !important;
+  background: #ede9fe !important;
+  color: #1e293b !important;
+}
+
+/* Selected/Checked state with primary color highlight */
+select option:checked,
+select option:focus {
+  background-color: rgb(from oklch(var(--p) / 0.25) r g b) !important;
+  background: rgb(from oklch(var(--p) / 0.25) r g b) !important;
+  color: oklch(var(--bc)) !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] select option:checked,
+[data-theme="light"] select option:focus {
+  background-color: #c4b5fd !important;
+  background: #c4b5fd !important;
+  color: #1e293b !important;
+}
+
+/* Dark mode - ensure solid dark background */
+[data-theme="dark"] select {
+  background-color: #1e293b !important;
+}
+
+[data-theme="dark"] select option {
+  background-color: #1e293b !important;
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] select option:hover {
+  background-color: #334155 !important;
+  background: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] select option:checked,
+[data-theme="dark"] select option:focus {
+  background-color: #475569 !important;
+  background: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+/* ============================================
+   GLOBAL MODAL STYLES
+   ============================================ */
+
+/* Glass Modal Panel - Overrides Angular Material Dialog */
+.glass-modal .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.glass-modal .mat-mdc-dialog-container {
+  padding: 0 !important;
+}
+
+/* Backdrop Blur for Glass Modals */
+.glass-modal-backdrop {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Enforce Cursor Pointer on Interactive Elements */
+button,
+.btn,
+select,
+.select,
+.join-item,
+[type="button"],
+[type="submit"],
+[type="reset"],
+.dropdown label,
+.dropdown summary,
+.menu li>a,
+.menu li>button {
+  cursor: pointer !important;
+}

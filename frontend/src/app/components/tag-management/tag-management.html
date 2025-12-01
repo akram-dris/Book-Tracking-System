@@ -1,0 +1,248 @@
+<div class="min-h-screen pb-24 relative">
+  <!-- Background Elements -->
+  <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+    <div class="absolute top-[30%] left-[20%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[100px]"></div>
+    <div class="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] rounded-full bg-secondary/10 blur-[100px]"></div>
+  </div>
+
+  <!-- Header Section - Only show if there are tags -->
+  @if (tags.length > 0) {
+  <div class="mb-8 sticky top-4 z-30 px-4">
+    <div
+      class="glass-panel rounded-full p-2 pr-4 border border-white/10 shadow-lg flex flex-col md:flex-row gap-3 items-center max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
+
+      <!-- Title & Count -->
+      <div class="flex items-center gap-3 px-4 py-1 flex-1 w-full md:w-auto">
+        <div class="p-2 rounded-full bg-primary/10 text-primary">
+          <ng-icon name="heroTag" size="1.25rem"></ng-icon>
+        </div>
+        <h1 class="text-xl font-bold text-white tracking-tight">Tags</h1>
+        <div class="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-white/80">
+          {{ tags.length }}
+        </div>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="relative w-full md:w-auto">
+        <ng-icon name="heroArrowsUpDown"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" size="1.1rem"></ng-icon>
+        <select
+          class="select select-sm pl-10 pr-8 rounded-full bg-white/5 border-white/10 focus:border-primary focus:bg-white/10 focus:ring-0 text-white font-medium h-10 w-full md:w-48 transition-all duration-300 appearance-none cursor-pointer hover:bg-white/10"
+          [(ngModel)]="sortBy" (change)="onSortChange()">
+          @for (option of sortOptions; track option.value) {
+          <option [value]="option.value" class="bg-[#1a1a1a] text-white">{{ option.label }}</option>
+          }
+        </select>
+        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/50 text-xs">▼</div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Loading Skeleton -->
+    @if (isLoading) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+      <div class="aspect-square">
+        <div class="h-full glass-panel rounded-2xl p-5 animate-pulse">
+          <div class="h-full flex flex-col justify-between">
+            <!-- Top -->
+            <div class="flex items-start gap-3">
+              <div class="w-1.5 h-8 bg-white/10 rounded-full"></div>
+              <div class="flex-1 space-y-2">
+                <div class="h-6 bg-white/10 rounded-lg w-3/4"></div>
+                <div class="h-6 bg-white/10 rounded-lg w-1/2"></div>
+              </div>
+            </div>
+            <!-- Middle spacer -->
+            <div class="flex-1"></div>
+            <!-- Bottom -->
+            <div class="space-y-3">
+              <div class="h-16 bg-white/10 rounded-xl mx-auto w-32"></div>
+              <div class="h-6 bg-white/10 rounded-lg w-24 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Empty State - Only show if NOT loading and NO tags -->
+    @else if (tags.length === 0) {
+    <div class="flex flex-col items-center justify-center min-h-[60vh]">
+      <app-empty-state icon="heroTag" title="No tags yet"
+        description="Create tags to organize your library by genre, mood, or topic." actionLabel="Create Your First Tag"
+        (action)="openAddTagModal()">
+      </app-empty-state>
+    </div>
+    }
+
+    <!-- Tags Grid - Only show if NOT loading and has tags -->
+    @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr" appInfiniteScroll
+      (scrolled)="loadMore()">
+      @for (tag of displayedTags; track tag.id) {
+      <div class="aspect-square">
+        <div
+          class="h-full group relative glass-panel rounded-2xl transition-all duration-300 hover:bg-white/5 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 cursor-pointer overflow-hidden border-2 border-transparent"
+          [ngClass]="getRatingBorderClass(tag.averageRating)" [routerLink]="['/tags', tag.id]">
+
+          <!-- Color Glow Overlay -->
+          <div class="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-300"
+            [ngClass]="getRatingColorClass(tag.averageRating)">
+          </div>
+
+          <!-- Gradient Overlay -->
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-base-300/90 via-base-300/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none">
+          </div>
+
+          <!-- Content - Fixed Layout with Flex -->
+          <div class="relative z-10 h-full flex flex-col justify-between p-5">
+            <!-- Top: Tag Name & Status -->
+            <div class="space-y-2">
+              <div class="flex items-start gap-3">
+                <div
+                  class="w-1.5 h-8 rounded-full bg-gradient-to-b from-primary to-secondary shadow-[0_0_10px_rgba(var(--p),0.5)] flex-shrink-0">
+                </div>
+                <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors line-clamp-2 flex-1">
+                  {{ tag.name }}
+                </h3>
+              </div>
+
+              @if (tag.readingBooks > 0) {
+              <div
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 border border-primary/20 backdrop-blur-md">
+                <span class="relative flex h-2 w-2">
+                  <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                <span class="text-xs font-medium text-primary-content">Reading {{ tag.readingBooks }}</span>
+              </div>
+              }
+            </div>
+
+            <!-- Middle: Spacer -->
+            <div class="flex-1"></div>
+
+            <!-- Bottom: Stats & Progress -->
+            <div class="space-y-3">
+              <!-- Progress Bar -->
+              @if (tag.totalBooks > 0) {
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs font-medium text-base-content/60">
+                  <span>Progress</span>
+                  <span>{{ tag.completedBooks }}/{{ tag.totalBooks }}</span>
+                </div>
+                <progress class="progress progress-primary w-full h-1.5 bg-white/10" [value]="tag.completedBooks"
+                  [max]="tag.totalBooks"></progress>
+              </div>
+              }
+
+              <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                <!-- Book Count -->
+                <div class="text-xs font-medium text-base-content/60">
+                  {{ tag.totalBooks }} books
+                </div>
+
+                <!-- Rating Stars -->
+                @if (tag.averageRating) {
+                <div class="flex items-center gap-0.5">
+                  <span class="text-sm font-bold text-warning">{{ tag.averageRating | number:'1.1-1' }}</span>
+                  <span class="text-sm text-warning">★</span>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Loading Spinner -->
+    @if (isLoadingMore) {
+    <div class="flex justify-center py-8">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+    }
+  </div>
+
+  <!-- Floating Action Button -->
+  <button (click)="openAddTagModal()"
+    class="fixed bottom-8 right-8 z-50 w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#6366f1] to-[#a855f7] text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all duration-300 group border border-white/10 backdrop-blur-md">
+    <ng-icon name="heroPlus" size="2rem" class="group-hover:rotate-90 transition-transform duration-300"></ng-icon>
+  </button>
+</div>
+
+<!-- Add/Edit Tag Modal -->
+<ng-template #tagModal>
+  <div class="p-0 overflow-hidden rounded-3xl bg-transparent">
+    <div class="glass-panel relative bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 p-6 md:p-8">
+      <!-- Decorative Header Gradient -->
+      <div
+        class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50">
+      </div>
+
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-xl bg-primary/10 text-primary">
+            <ng-icon [name]="isEditingTag ? 'heroPencilSquare' : 'heroPlus'" size="1.5rem"></ng-icon>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white tracking-tight">{{ isEditingTag ? 'Edit Tag' : 'New Tag' }}</h2>
+            <p class="text-xs text-base-content/60">{{ isEditingTag ? 'Update tag details' : 'Create a new tag' }}</p>
+          </div>
+        </div>
+        <button (click)="closeModal()"
+          class="btn btn-circle btn-ghost btn-sm text-base-content/50 hover:text-white hover:bg-white/10">
+          <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="tagForm" (ngSubmit)="onSubmit()">
+        <div class="space-y-6">
+          <div class="form-control w-full">
+            <label class="label px-0">
+              <span class="label-text font-medium text-base-content/80">Tag Name</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
+                <ng-icon name="heroTag" size="1.25rem"></ng-icon>
+              </div>
+              <input type="text" formControlName="name"
+                class="input input-bordered w-full pl-10 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl h-12 text-base-content placeholder:text-base-content/30"
+                placeholder="e.g., Science Fiction" />
+            </div>
+            @if (tagForm.get('name')?.invalid && tagForm.get('name')?.touched) {
+            <label class="label px-0">
+              <span class="label-text-alt text-error">Tag name is required (max 50 chars)</span>
+            </label>
+            }
+          </div>
+
+          <div class="flex gap-3 pt-4 border-t border-white/5 mt-2">
+            <button type="button" (click)="closeModal()"
+              class="btn btn-ghost flex-1 hover:bg-white/5 text-base-content/70 hover:text-white rounded-xl">
+              Cancel
+            </button>
+            <button type="submit"
+              class="btn btn-primary flex-1 text-white rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:shadow-none"
+              [disabled]="tagForm.invalid || isLoading">
+              @if (isLoading) {
+              <span class="loading loading-spinner loading-sm"></span>
+              } @else {
+              <ng-icon name="heroCheckCircle" size="1.25rem"></ng-icon>
+              }
+              {{ isEditingTag ? 'Update Tag' : 'Create Tag' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>

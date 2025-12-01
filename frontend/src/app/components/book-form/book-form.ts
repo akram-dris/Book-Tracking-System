@@ -1,0 +1,349 @@
+import { Component, OnInit, Inject, Optional } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, FormControl, FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { BookService } from '../../services/book';
+import { AuthorService } from '../../services/author';
+import { TagService } from '../../services/tag';
+import { NotificationService } from '../../services/notification';
+import * as common from '@angular/common';
+import { environment } from '../../../environments/environment';
+import { switchMap, finalize } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { ImageCropperModule, ImageCroppedEvent } from 'ngx-image-cropper';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { NgxDropzoneModule } from 'ngx-dropzone';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft, heroCheckCircle, heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
+import { GetBook } from '../../models/get-book.model';
+import { CreateBook } from '../../models/create-book.model';
+import { UpdateBook } from '../../models/update-book.model';
+import { GetAuthor } from '../../models/get-author.model';
+import { GetTag } from '../../models/get-tag.model';
+
+@Component({
+  selector: 'app-book-form',
+  standalone: true,
+  imports: [ReactiveFormsModule, FormsModule, RouterModule, common.CommonModule, ImageCropperModule, NgSelectModule, NgxDropzoneModule, NgIconComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatIconModule, MatProgressSpinnerModule, MatAutocompleteModule, MatCardModule, MatDividerModule],
+  providers: [provideIcons({ heroXMark, heroPhoto, heroPlus, heroBookOpen, heroUser, heroDocumentText, heroTag, heroPencil, heroArrowLeft, heroCheckCircle, heroMagnifyingGlass })],
+  templateUrl: './book-form.html',
+  styleUrls: ['./book-form.css']
+})
+export class BookFormComponent implements OnInit {
+  bookForm: FormGroup;
+  isEditMode = false;
+  bookId: number | null = null;
+  authors: GetAuthor[] = [];
+  tags: GetTag[] = [];
+  tagSearchQuery = '';
+  selectedFile: File | null = null;
+  imagePreviewUrl: string | ArrayBuffer | null = null;
+  isLoading = false;
+
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  showCropper = false;
+
+  // For ng-select custom items
+  selectedTags: any[] = [];
+
+  // For Material chips
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
+  constructor(
+    private fb: FormBuilder,
+    private bookService: BookService,
+    private authorService: AuthorService,
+    private tagService: TagService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
+    private location: common.Location,
+    @Optional() public dialogRef: MatDialogRef<BookFormComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: { bookId: number }
+  ) {
+    this.bookForm = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(200)]],
+      authorId: [null, Validators.required],
+      totalPages: [null, [Validators.required, Validators.min(1), Validators.max(10000)]],
+      imageFile: [null],
+      tagIds: [[]]
+    });
+  }
+
+  ngOnInit(): void {
+    if (this.data && this.data.bookId) {
+      this.bookId = this.data.bookId;
+    } else {
+      this.bookId = this.route.snapshot.params['id'];
+    }
+    this.isEditMode = !!this.bookId;
+
+    const book$ = this.isEditMode ? this.bookService.getBook(this.bookId!) : of({ isSuccess: true, data: null } as any);
+
+    forkJoin({
+      authorsResult: this.authorService.getAuthors(),
+      tagsResult: this.tagService.getTags(),
+      bookResult: book$
+    }).subscribe(({ authorsResult, tagsResult, bookResult }) => {
+      if (authorsResult.isSuccess && authorsResult.data) {
+        this.authors = authorsResult.data;
+      }
+      if (tagsResult.isSuccess && tagsResult.data) {
+        this.tags = tagsResult.data;
+      }
+
+      if (this.isEditMode && bookResult.isSuccess && bookResult.data) {
+        const book = bookResult.data;
+        this.bookForm.patchValue({
+          title: book.title,
+          authorId: book.authorId,
+          totalPages: book.totalPages
+        });
+
+        // Disable totalPages field if reading has started
+        if (book.status === 2 || book.status === 3 || book.status === 4) { // CurrentlyReading, Completed, Summarized
+          this.bookForm.get('totalPages')?.disable();
+        }
+
+        if (book.imageUrl) {
+          this.imagePreviewUrl = environment.rootUrl + book.imageUrl;
+        }
+        if (book.tags) {
+          const tagIds = book.tags.map((t: GetTag) => t.id);
+          this.selectedTags = book.tags;
+          this.bookForm.patchValue({ tagIds: tagIds });
+        }
+      } else if (this.isEditMode && !bookResult.isSuccess) {
+
+        this.notificationService.showError('Failed to load book details');
+      }
+    });
+  }
+
+  onTagsChange(tags: GetTag[]) {
+    const tagIds = tags.map(t => t.id);
+    this.bookForm.patchValue({ tagIds: tagIds });
+  }
+
+  removeTag(tag: GetTag) {
+    this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
+    this.onTagsChange(this.selectedTags);
+  }
+
+  removeTagById(tagId: number) {
+    const currentTags = this.bookForm.get('tagIds')?.value || [];
+    const updatedTags = currentTags.filter((id: number) => id !== tagId);
+    this.bookForm.patchValue({ tagIds: updatedTags });
+  }
+
+  toggleTag(tagId: number) {
+    const currentTags = this.bookForm.get('tagIds')?.value || [];
+    const index = currentTags.indexOf(tagId);
+
+    if (index > -1) {
+      // Tag is already selected, remove it
+      currentTags.splice(index, 1);
+    } else {
+      // Tag is not selected, add it
+      currentTags.push(tagId);
+    }
+
+    this.bookForm.patchValue({ tagIds: [...currentTags] });
+  }
+
+  isTagSelected(tagId: number): boolean {
+    const currentTags = this.bookForm.get('tagIds')?.value || [];
+    return currentTags.includes(tagId);
+  }
+
+  get filteredTags(): GetTag[] {
+    if (!this.tagSearchQuery) {
+      return this.tags;
+    }
+    const query = this.tagSearchQuery.toLowerCase();
+    return this.tags.filter(tag => tag.name.toLowerCase().includes(query));
+  }
+
+  getTagName(tagId: number): string {
+    const tag = this.tags.find(t => t.id === tagId);
+    return tag?.name || '';
+  }
+
+  onAuthorChange(authorId: number | null) {
+    this.bookForm.patchValue({ authorId: authorId });
+  }
+
+  // Handle file drop - show preview directly
+  onFilesAdded(files: File[]) {
+    if (files.length > 0) {
+      this.selectedFile = files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+  getSelectedAuthorImage(authorId: number): string | null {
+    const author = this.authors.find(a => a.id === authorId);
+    return author?.imageUrl ? environment.rootUrl + author.imageUrl : null;
+  }
+
+  getRootUrl(): string {
+    return environment.rootUrl;
+  }
+
+  onFileRemoved() {
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
+    this.bookForm.patchValue({ imageFile: null });
+  }
+
+  onFileSelected(event: any): void {
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    if (event.blob) {
+      const reader = new FileReader();
+      reader.readAsDataURL(event.blob);
+      reader.onloadend = () => {
+        this.croppedImage = reader.result;
+      };
+    } else {
+
+    }
+  }
+
+  saveCroppedImage() {
+    if (this.croppedImage) {
+      this.imagePreviewUrl = this.croppedImage;
+      this.selectedFile = this.base64ToFile(this.croppedImage, this.imageChangedEvent.target.files[0].name);
+      this.showCropper = false;
+    } else {
+
+    }
+  }
+
+  cancelCropping() {
+    this.showCropper = false;
+    this.imageChangedEvent = null;
+  }
+
+  base64ToFile(data: any, filename: string): File {
+    const arr = data.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  removeImage(event: Event): void {
+    event.stopPropagation();
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
+    this.bookForm.patchValue({ imageFile: null });
+  }
+
+  onSubmit(): void {
+    if (this.bookForm.valid) {
+      this.isLoading = true;
+      // Use getRawValue() to include disabled fields (like totalPages when book is being read)
+      const bookData = this.bookForm.getRawValue();
+      if (this.selectedFile) {
+        bookData.imageFile = this.selectedFile;
+      }
+
+      if (this.isEditMode && this.bookId) {
+        this.bookService.updateBook(this.bookId, bookData as UpdateBook).pipe(
+          switchMap((result) => {
+            if (!result.isSuccess) {
+              throw new Error(result.errors ? result.errors.join(', ') : 'Failed to update book');
+            }
+            return this.bookService.assignTags(this.bookId!, bookData.tagIds);
+          }),
+          finalize(() => this.isLoading = false)
+        ).subscribe({
+          next: (tagResult) => {
+            if (tagResult.isSuccess) {
+              this.notificationService.showSuccess('Book updated successfully');
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.location.back();
+              }
+            } else {
+
+              this.notificationService.showError('Book updated but failed to update tags');
+            }
+          },
+          error: (err) => {
+
+            this.notificationService.showError('Failed to update book');
+          }
+        });
+      } else {
+        this.bookService.addBook(bookData as CreateBook).pipe(
+          switchMap((result) => {
+            if (result.isSuccess && result.data) {
+              return this.bookService.assignTags(result.data.id, bookData.tagIds);
+            }
+            throw new Error(result.errors ? result.errors.join(', ') : 'Failed to add book');
+          }),
+          finalize(() => this.isLoading = false)
+        ).subscribe({
+          next: (tagResult) => {
+            if (tagResult.isSuccess) {
+              this.notificationService.showSuccess('Book added successfully');
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.router.navigate(['/books']);
+              }
+            } else {
+
+              this.notificationService.showError('Book added but failed to assign tags');
+              if (this.dialogRef) {
+                this.dialogRef.close(true);
+              } else {
+                this.router.navigate(['/books']);
+              }
+            }
+          },
+          error: (err) => {
+
+            this.notificationService.showError('Failed to add book');
+          }
+        });
+      }
+    }
+  }
+
+  goBack(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    } else {
+      this.location.back();
+    }
+  }
+}

@@ -1,0 +1,147 @@
+<div class="min-h-screen pb-24">
+  <!-- Modern Search & Sort Toolbar - Only show if there are authors or search is active -->
+  @if (authors.length > 0 || searchQuery) {
+  <div class="mb-8 sticky top-4 z-30">
+    <div
+      class="glass-panel rounded-full p-2 pr-4 border border-white/10 shadow-lg flex flex-col md:flex-row gap-3 items-center max-w-4xl mx-auto backdrop-blur-xl bg-black/40">
+
+      <!-- Search -->
+      <div class="relative flex-1">
+        <ng-icon name="heroMagnifyingGlass" class="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40"
+          size="1.2rem"></ng-icon>
+        <input type="text" placeholder="Search authors..."
+          class="input input-sm w-full pl-10 rounded-full !bg-transparent !border-none !shadow-none !outline-none focus:!ring-0 text-base-content font-medium h-10 placeholder:text-base-content/50"
+          [(ngModel)]="searchQuery" (input)="onSearchChange()" style="color: oklch(var(--bc));" />
+        @if (searchQuery) {
+        <button
+          class="absolute right-3 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle text-white/50 hover:text-white hover:bg-white/10"
+          (click)="clearSearch()">
+          <ng-icon name="heroXMark" size="1rem"></ng-icon>
+        </button>
+        }
+      </div>
+
+      <!-- Divider -->
+      <div class="hidden md:block w-px h-6 bg-white/10"></div>
+
+      <!-- Sort -->
+      <div class="relative w-full md:w-auto min-w-[160px]">
+        <ng-icon name="heroArrowsUpDown" size="1.1rem"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none z-10"></ng-icon>
+        <select
+          class="select select-sm select-bordered w-full pl-10 rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-0 text-base-content font-medium h-10"
+          [(ngModel)]="sortBy" (change)="onSortChange()"
+          style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">
+          @for (option of sortOptions; track option.value) {
+          <option [value]="option.value" style="background-color: oklch(var(--b1)); color: oklch(var(--bc));">{{
+            option.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+  }
+
+
+
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-7xl mx-auto px-4">
+    @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
+    <div class="aspect-[3/4] rounded-2xl bg-base-200/50 animate-pulse"></div>
+    }
+  </div>
+  }
+
+  <!-- Authors Grid - Only show if NOT loading and has authors -->
+  @else if (filteredAuthors.length > 0) {
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-7xl mx-auto px-4"
+    appInfiniteScroll (scrolled)="loadMore()">
+    @for (author of filteredAuthors; track author.id) {
+    <div
+      class="group relative aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 border-transparent"
+      [ngClass]="getRatingBorderClass(author.averageRating)" [routerLink]="['/authors', author.id]">
+
+      <!-- Author Image -->
+      <img [src]="author.imageUrl ? (rootUrl + author.imageUrl) : '/assets/placeholder-author.png'" [alt]="author.name"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        (error)="onImageError($event, author)" />
+
+      <!-- Color Glow Overlay -->
+      <div class="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-300"
+        [ngClass]="getRatingColorClass(author.averageRating)">
+      </div>
+
+      <!-- Gradient Overlay -->
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-base-300/90 via-base-300/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300">
+      </div>
+
+      <!-- Content -->
+      <div
+        class="absolute inset-x-0 bottom-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+        <h3 class="text-white font-heading font-bold text-lg leading-tight mb-1 drop-shadow-md">
+          {{ author.name }}
+        </h3>
+        <div
+          class="flex items-center gap-2 text-white/70 text-xs font-medium mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
+          <span>{{ author.bookCount || 0 }} Books</span>
+        </div>
+      </div>
+
+      <!-- Rating Stars (Top Left) -->
+      @if (author.averageRating) {
+      <div class="absolute top-3 left-3 z-20 tooltip tooltip-right"
+        [attr.data-tip]="(author.averageRating | number:'1.1-1') + ' Average Rating'">
+        <div class="flex items-center gap-0.5 transition-all duration-300 hover:scale-110 group">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+          @if (author.averageRating && star <= author.averageRating) { <span
+            class="text-lg leading-none transition-all duration-300"
+            [class]="author.averageRating >= 4 ? 'text-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' : (author.averageRating >= 2 ? 'text-slate-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_0_8px_rgba(203,213,225,0.6)]' : 'text-orange-700 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_0_8px_rgba(194,65,12,0.6)]')">
+            ★
+            </span>
+            }
+            }
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Empty State - Only show if NOT loading and NO authors -->
+  @else {
+  @if (!searchQuery && authors.length === 0) {
+  <div class="flex flex-col items-center justify-center min-h-[60vh]">
+    <app-empty-state icon="heroUsers" title="Start Your Author Collection"
+      description="Your author list is waiting to be started."
+      subDescription="Add your first author to begin organizing your library." actionLabel="Add Author"
+      (action)="openAddAuthorModal()">
+    </app-empty-state>
+  </div>
+  } @else {
+  <app-empty-state icon="heroUsers" title="No authors found"
+    description="We couldn't find any authors matching your criteria."
+    subDescription="Try a different search term or add a new author to your collection." actionLabel="Add Author"
+    (action)="openAddAuthorModal()">
+  </app-empty-state>
+  }
+  }
+
+  <!-- Infinite Scroll Sentinel -->
+  <div class="h-4 w-full"></div>
+
+  <!-- Loading indicator for infinite scroll -->
+  @if (isLoadingMore) {
+  <div class="flex justify-center py-8">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+  }
+  <!-- Floating Action Button -->
+  <!-- Floating Action Button -->
+  <button (click)="openAddAuthorModal()"
+    class="fixed bottom-8 right-8 z-50 w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#6366f1] to-[#a855f7] text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all duration-300 group border border-white/10 backdrop-blur-md">
+    <ng-icon name="heroPlus" size="2rem" class="group-hover:rotate-90 transition-transform duration-300"></ng-icon>
+  </button>
+</div>

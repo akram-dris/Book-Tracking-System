@@ -1,0 +1,30 @@
+
+.card .badge {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.card:hover .badge {
+    opacity: 1;
+}
+
+.status-summarized {
+    background-color: #facc15; /* yellow-500 */
+}
+
+.card:hover .status-summarized {
+    background-color: #eab308; /* yellow-600 on hover */
+}
+
+/* Fix dropdown overflow */
+.card {
+    overflow: visible !important;
+}
+
+.card figure {
+    overflow: hidden;
+}
+
+.dropdown-content {
+    position: fixed !important;
+}

@@ -1,0 +1,54 @@
+<div
+  class="flex flex-col items-center justify-center py-16 px-4 text-center animate-in fade-in zoom-in-95 duration-500">
+  <!-- Icon/Image Container -->
+  <div class="relative mb-6 group">
+    <!-- Background Glow -->
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-transparent rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500">
+    </div>
+
+    <!-- Icon Circle -->
+    <div
+      class="relative w-24 h-24 rounded-3xl glass-panel border border-white/10 flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform duration-500">
+      @if (image()) {
+      <img [src]="image()" alt="Empty State" class="w-16 h-16 object-contain opacity-80" />
+      } @else {
+      <ng-icon [name]="icon()" size="3.5rem"
+        class="text-base-content/30 group-hover:text-primary/60 transition-colors duration-500"></ng-icon>
+      }
+    </div>
+  </div>
+
+  <!-- Text Content -->
+  <div class="max-w-md space-y-2 mb-8">
+    <h3 class="text-2xl font-bold font-heading text-base-content">{{ title() }}</h3>
+
+    @if (description()) {
+    <p class="text-base-content/60 text-lg leading-relaxed">{{ description() }}</p>
+    }
+
+    @if (subDescription()) {
+    <p class="text-base-content/40 text-sm">{{ subDescription() }}</p>
+    }
+  </div>
+
+  <!-- Actions -->
+  <div class="flex flex-col sm:flex-row items-center gap-3">
+    @if (actionLabel()) {
+    <button (click)="action.emit()"
+      class="btn btn-primary rounded-xl px-6 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300">
+      <ng-icon name="heroPlus" size="1.25rem"></ng-icon>
+      {{ actionLabel() }}
+    </button>
+    }
+
+    @if (secondaryActionLabel()) {
+    <button (click)="secondaryAction.emit()"
+      class="btn btn-ghost hover:bg-base-content/5 rounded-xl px-6 text-base-content/70 hover:text-base-content transition-all duration-300">
+      {{ secondaryActionLabel() }}
+    </button>
+    }
+  </div>
+
+  <ng-content></ng-content>
+</div>

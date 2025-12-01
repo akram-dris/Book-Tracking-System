@@ -1,0 +1,144 @@
+/* Glass Panel Styles */
+.glass-panel {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modal Backdrop Blur */
+::ng-deep .cdk-overlay-backdrop {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Quill Editor Styling for Glass Theme */
+::ng-deep .ql-toolbar {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem 1rem 0 0;
+  padding: 0.75rem !important;
+}
+
+::ng-deep .ql-toolbar button {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 4px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .ql-toolbar button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+::ng-deep .ql-toolbar .ql-picker-label {
+  padding: 2px 4px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .ql-container {
+  border: none !important;
+  font-family: inherit;
+  font-size: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .ql-editor {
+  flex: 1;
+  min-height: 300px;
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  padding: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+::ng-deep .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: normal;
+}
+
+/* Icon Colors */
+::ng-deep .ql-stroke {
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1.5 !important;
+}
+
+::ng-deep .ql-fill {
+  fill: rgba(255, 255, 255, 0.6);
+}
+
+/* Active State */
+::ng-deep .ql-toolbar button.ql-active {
+  background-color: rgba(var(--p), 0.2) !important;
+}
+
+::ng-deep .ql-toolbar button.ql-active .ql-stroke {
+  stroke: oklch(var(--p));
+}
+
+::ng-deep .ql-toolbar button.ql-active .ql-fill {
+  fill: oklch(var(--p));
+}
+
+/* Hover State */
+::ng-deep .ql-toolbar button:hover .ql-stroke {
+  stroke: white;
+}
+
+::ng-deep .ql-toolbar button:hover .ql-fill {
+  fill: white;
+}
+
+/* Read-only note display */
+.prose {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.prose p {
+  margin-bottom: 0.75rem;
+}
+
+.prose ul,
+.prose ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid oklch(var(--p));
+  padding-left: 1rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(var(--p), 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.prose code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-family: monospace;
+  color: oklch(var(--s));
+}
+
+.prose a {
+  color: oklch(var(--p));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  color: white;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}

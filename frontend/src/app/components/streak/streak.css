@@ -1,0 +1,13 @@
+/* Additional animations for celebration effects */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(var(--p) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(var(--p) / 0.6);
+  }
+}
+
+.card.bg-gradient-to-br {
+  animation: pulse-glow 3s ease-in-out infinite;
+}

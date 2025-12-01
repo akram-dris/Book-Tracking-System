@@ -1,0 +1,83 @@
+<div class="modal modal-open backdrop-blur-md bg-black/60 z-[1001]">
+    <div class="modal-box max-w-4xl p-0 overflow-hidden bg-transparent shadow-2xl rounded-3xl">
+        <!-- Glass Container -->
+        <div
+            class="glass-panel h-full w-full relative overflow-hidden bg-[#1a1a1a]/80 backdrop-blur-xl border border-white/10">
+            <!-- Decorative Header Gradient -->
+            <div
+                class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 opacity-50">
+            </div>
+
+            <!-- Header -->
+            <div class="p-6 md:p-8 pb-0 flex items-start justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-2xl bg-primary/10 text-primary">
+                        <ng-icon name="heroDocumentText" size="1.75rem"></ng-icon>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-2xl text-white tracking-tight">Summarize Journey</h3>
+                        <p class="text-sm text-base-content/60">Capture your thoughts on <span
+                                class="text-primary font-medium">{{
+                                bookTitle }}</span></p>
+                    </div>
+                </div>
+                <button (click)="onCancel()"
+                    class="btn btn-circle btn-ghost btn-sm text-base-content/50 hover:text-white hover:bg-white/10">
+                    <ng-icon name="heroXMark" size="1.5rem"></ng-icon>
+                </button>
+            </div>
+
+            <form [formGroup]="summaryForm" (ngSubmit)="onSubmit()" class="p-6 md:p-8 space-y-6">
+
+                <!-- Summary Textarea -->
+                <div class="form-control w-full">
+                    <label class="label px-0">
+                        <span class="label-text font-medium text-base-content/80">Your Summary</span>
+                    </label>
+                    <div class="relative group">
+                        <textarea formControlName="summary"
+                            class="textarea textarea-bordered w-full h-64 bg-base-200/30 border-white/10 focus:border-primary/50 focus:bg-base-200/50 transition-all duration-300 rounded-xl text-base text-base-content placeholder:text-base-content/30 resize-none leading-relaxed p-4"
+                            placeholder="Write your thoughts about this book... What did you learn? What were the key takeaways? Any memorable quotes or moments?"
+                            [class.textarea-error]="summaryForm.controls['summary'].invalid && summaryForm.controls['summary'].touched"></textarea>
+                    </div>
+                    @if (summaryForm.controls['summary'].invalid && summaryForm.controls['summary'].touched) {
+                    <label class="label px-0">
+                        <span class="label-text-alt text-error">
+                            @if (summaryForm.controls['summary'].hasError('required')) {
+                            Summary is required.
+                            }
+                            @if (summaryForm.controls['summary'].hasError('maxlength')) {
+                            Summary cannot exceed 10,000 characters.
+                            }
+                        </span>
+                    </label>
+                    }
+                    <label class="label px-0 justify-end">
+                        <span class="label-text-alt text-base-content/40">{{ summaryForm.get('summary')?.value?.length
+                            || 0 }}/10000</span>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-end gap-4 pt-4 mt-4 border-t border-white/5">
+                    <button type="button" (click)="onCancel()"
+                        class="btn btn-ghost hover:bg-white/5 text-base-content/70 hover:text-white rounded-xl px-6">
+                        Cancel
+                    </button>
+                    <button type="submit" [disabled]="summaryForm.invalid || isLoading"
+                        class="btn btn-primary text-white rounded-xl px-8 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:shadow-none gap-2">
+                        @if (isLoading) {
+                        <span class="loading loading-spinner loading-sm"></span>
+                        } @else {
+                        <span>Save Summary</span>
+                        <ng-icon name="heroCheck" size="1.25rem"></ng-icon>
+                        }
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop backdrop-blur-sm">
+        <button (click)="onCancel()">close</button>
+    </form>
+</div>

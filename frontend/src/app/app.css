@@ -1,0 +1,6 @@
+.add-button-fixed {
+  position: fixed !important;
+  bottom: 24px !important; /* Equivalent to Tailwind's bottom-6 (6 * 4px = 24px) */
+  right: 24px !important;  /* Equivalent to Tailwind's right-6 (6 * 4px = 24px) */
+  z-index: 1000 !important; /* A high z-index to ensure it's on top */
+}

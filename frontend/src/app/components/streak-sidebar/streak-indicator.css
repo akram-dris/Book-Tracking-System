@@ -1,0 +1,15 @@
+/* Minimal CSS - most styling is in Tailwind classes */
+
+/* Pulsing glow effect for active streaks */
+.bg-primary\/10 {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}

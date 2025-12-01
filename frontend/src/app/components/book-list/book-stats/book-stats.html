@@ -1,0 +1,55 @@
+<div class="flex flex-wrap items-center gap-3 mb-6 select-none">
+  <!-- Total -->
+  <div class="tooltip" data-tip="Total Books">
+    <div
+      class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 hover-lift transition-all duration-300 hover:bg-base-200/50 cursor-help">
+      <div class="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--p),0.6)]"></div>
+      <span class="text-lg font-bold text-base-content">{{ stats().total }}</span>
+    </div>
+  </div>
+
+  <!-- Not Reading -->
+  <div class="tooltip" data-tip="Not Reading">
+    <div
+      class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 hover-lift transition-all duration-300 hover:bg-base-200/50 cursor-help">
+      <div class="w-2.5 h-2.5 rounded-full bg-base-content/30"></div>
+      <span class="text-lg font-bold text-base-content">{{ stats().notReading }}</span>
+    </div>
+  </div>
+
+  <!-- Planning -->
+  <div class="tooltip" data-tip="Planning">
+    <div
+      class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 hover-lift transition-all duration-300 hover:bg-base-200/50 cursor-help">
+      <div class="w-2.5 h-2.5 rounded-full bg-info shadow-[0_0_8px_rgba(var(--in),0.6)]"></div>
+      <span class="text-lg font-bold text-base-content">{{ stats().planning }}</span>
+    </div>
+  </div>
+
+  <!-- Currently Reading -->
+  <div class="tooltip" data-tip="Currently Reading">
+    <div
+      class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 hover-lift transition-all duration-300 hover:bg-base-200/50 cursor-help">
+      <div class="w-2.5 h-2.5 rounded-full bg-warning shadow-[0_0_8px_rgba(var(--wa),0.6)] animate-pulse"></div>
+      <span class="text-lg font-bold text-base-content">{{ stats().currentlyReading }}</span>
+    </div>
+  </div>
+
+  <!-- Completed -->
+  <div class="tooltip" data-tip="Completed">
+    <div
+      class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 hover-lift transition-all duration-300 hover:bg-base-200/50 cursor-help">
+      <div class="w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_8px_rgba(var(--su),0.6)]"></div>
+      <span class="text-lg font-bold text-base-content">{{ stats().completed }}</span>
+    </div>
+  </div>
+
+  <!-- Summarized -->
+  <div class="tooltip" data-tip="Summarized">
+    <div
+      class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 hover-lift transition-all duration-300 hover:bg-base-200/50 cursor-help">
+      <div class="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--s),0.6)]"></div>
+      <span class="text-lg font-bold text-base-content">{{ stats().summarized }}</span>
+    </div>
+  </div>
+</div>

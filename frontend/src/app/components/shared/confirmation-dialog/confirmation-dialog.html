@@ -1,0 +1,30 @@
+<div class="bg-base-100 rounded-lg shadow-xl max-w-md w-full p-6">
+  <!-- Header -->
+  <div class="flex items-start gap-4 mb-4">
+    @if (data.icon) {
+      <div class="flex-shrink-0">
+        <ng-icon [name]="data.icon" size="2rem" class="text-warning"></ng-icon>
+      </div>
+    }
+    <div class="flex-1">
+      <h3 class="text-xl font-semibold mb-2">{{ data.title }}</h3>
+      <p class="text-base-content/70">{{ data.message }}</p>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-3 mt-6">
+    <app-button 
+      [variant]="'ghost'" 
+      (clicked)="cancel()"
+    >
+      {{ cancelText }}
+    </app-button>
+    <app-button 
+      [variant]="confirmVariant" 
+      (clicked)="confirm()"
+    >
+      {{ confirmText }}
+    </app-button>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="flex h-screen overflow-hidden bg-gradient-to-br from-base-100 via-base-200 to-base-300 relative">
+  <!-- Mesh Gradient Overlay -->
+  <div class="absolute inset-0 opacity-40 pointer-events-none overflow-hidden">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[100px] animate-pulse">
+    </div>
+    <div
+      class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[100px] animate-pulse"
+      style="animation-delay: 2s;"></div>
+    <div class="absolute top-[40%] left-[40%] w-[30%] h-[30%] rounded-full bg-accent/10 blur-[80px] animate-pulse"
+      style="animation-delay: 4s;"></div>
+  </div>
+  <!-- Sidebar -->
+  <app-sidebar [isCollapsed]="isSidebarCollapsed" (toggleCollapse)="toggleSidebar()"></app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Breadcrumb -->
+    <app-breadcrumb></app-breadcrumb>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-y-auto bg-base-100">
+      <div class="container mx-auto max-w-7xl p-6" [@routeAnimations]="prepareRoute(outlet)">
+        <!-- Router Outlet -->
+        <router-outlet #outlet="outlet"></router-outlet>
+      </div>
+    </main>
+  </div>
+  <!-- Global Toast Container -->
+  <app-toast-container></app-toast-container>
+</div>

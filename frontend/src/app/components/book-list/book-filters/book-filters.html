@@ -1,0 +1,64 @@
+<div class="mb-6">
+  <div class="bg-base-200/50 backdrop-blur-sm rounded-2xl p-4 border border-base-300/50 shadow-sm">
+    <div class="flex flex-col md:flex-row gap-4 items-center">
+
+      <!-- Icon Label -->
+      <div class="flex items-center gap-2 text-base-content/70 font-medium min-w-fit">
+        <ng-icon name="heroFunnel" size="1.25rem"></ng-icon>
+        <span>Filters</span>
+      </div>
+
+      <!-- Filters Container -->
+      <div class="flex flex-1 items-center gap-3 min-w-0">
+
+        <!-- Status Filter -->
+        <select
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          [(ngModel)]="currentFilters.status" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Statuses</option>
+          @for (status of statusOptions; track status.value) {
+          <option [ngValue]="status.value">{{ status.label }}</option>
+          }
+        </select>
+
+        <!-- Author Filter -->
+        <select
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          [(ngModel)]="currentFilters.authorId" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Authors</option>
+          @for (author of authors; track author.id) {
+          <option [ngValue]="author.id">{{ author.name }}</option>
+          }
+        </select>
+
+        <!-- Tag Filter -->
+        <select
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          [(ngModel)]="currentFilters.tagId" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Tags</option>
+          @for (tag of tags; track tag.id) {
+          <option [ngValue]="tag.id">{{ tag.name }}</option>
+          }
+        </select>
+
+        <!-- Rating Filter -->
+        <select
+          class="select select-sm select-bordered rounded-full bg-base-100 border-base-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all flex-1 w-full min-w-0"
+          [(ngModel)]="currentFilters.rating" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All Ratings</option>
+          @for (rating of ratingOptions; track rating.value) {
+          <option [ngValue]="rating.value">{{ rating.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Clear Button -->
+      @if (hasActiveFilters) {
+      <button (click)="clearFilters()"
+        class="btn btn-ghost btn-sm btn-circle text-error hover:bg-error/10 transition-colors" title="Clear Filters">
+        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+      </button>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+
+using AutoMapper;
+using BookTrackingSystem.DTOs;
+using BookTrackingSystem.Models;
+
+namespace BookTrackingSystem.Profiles
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<Book, BookDto>()
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.BookTagAssignments != null ? src.BookTagAssignments.Select(bta => bta.BookTag) : Enumerable.Empty<BookTag>()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.StartedReadingDate, opt => opt.MapFrom(src => src.StartedReadingDate))
+                .ForMember(dest => dest.CompletedDate, opt => opt.MapFrom(src => src.CompletedDate)) // New mapping
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating)) // Explicit mapping
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
+            CreateMap<Author, AuthorDto>()
+                .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books != null ? src.Books.Count : 0));
+            CreateMap<CreateBookDto, Book>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
+            CreateMap<UpdateBookDto, Book>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary));
+            CreateMap<CreateAuthorDto, Author>();
+            CreateMap<UpdateAuthorDto, Author>();
+            CreateMap<BookTag, TagDto>();
+            CreateMap<CreateTagDto, BookTag>();
+            CreateMap<UpdateTagDto, BookTag>();
+
+            // ReadingSession Mappings
+            CreateMap<ReadingSession, ReadingSessionDto>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary)); // New mapping
+            CreateMap<CreateReadingSessionDto, ReadingSession>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary)); // New mapping
+            CreateMap<UpdateReadingSessionDto, ReadingSession>()
+                .ForMember(dest => dest.Summary, opt => opt.MapFrom(src => src.Summary)); // New mapping
+
+            // ReadingGoal Mappings
+            CreateMap<ReadingGoal, ReadingGoalDto>();
+            CreateMap<CreateReadingGoalDto, ReadingGoal>();
+            CreateMap<UpdateReadingGoalDto, ReadingGoal>();
+        }
+    }
+}

@@ -1,0 +1,16 @@
+<button
+  type="button"
+  [ngClass]="buttonClasses"
+  [disabled]="disabled() || loading()"
+  (click)="handleClick($event)"
+>
+  @if (icon() && iconPosition() === 'left' && !loading()) {
+    <ng-icon [name]="icon()!" class="mr-2"></ng-icon>
+  }
+  
+  <ng-content></ng-content>
+  
+  @if (icon() && iconPosition() === 'right' && !loading()) {
+    <ng-icon [name]="icon()!" class="ml-2"></ng-icon>
+  }
+</button>

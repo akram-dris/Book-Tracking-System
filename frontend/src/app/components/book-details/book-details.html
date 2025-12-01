@@ -1,0 +1,584 @@
+<!-- Skeleton Loading State -->
+@if (isLoading) {
+<div class="min-h-screen p-6 pb-24">
+  <!-- Back Button Skeleton -->
+  <div class="mb-6">
+    <div class="h-10 w-24 bg-base-200/50 rounded-xl animate-pulse"></div>
+  </div>
+
+  <!-- Hero Skeleton -->
+  <div class="glass-panel rounded-3xl p-8 mb-8 animate-pulse">
+    <div class="flex flex-col md:flex-row gap-8">
+      <div class="w-full md:w-64 aspect-[2/3] bg-base-300 rounded-2xl"></div>
+      <div class="flex-1 space-y-4">
+        <div class="h-12 bg-base-300 rounded-xl w-3/4"></div>
+        <div class="h-6 bg-base-300 rounded-lg w-1/2"></div>
+        <div class="flex gap-2 mt-4">
+          <div class="h-8 w-24 bg-base-300 rounded-full"></div>
+          <div class="h-8 w-24 bg-base-300 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+@if (!isLoading && book) {
+<div class="min-h-screen pb-24 relative">
+  <!-- Immersive Background (Blurred Cover) -->
+  <div class="absolute inset-0 h-[500px] overflow-hidden -z-10 mask-gradient-b">
+    <div class="absolute inset-0 backdrop-blur-3xl z-10 transition-colors duration-500" [ngClass]="{
+           'bg-base-content/10': book.status === ReadingStatus.NotReading,
+           'bg-info/40': book.status === ReadingStatus.Planning,
+           'bg-warning/40': book.status === ReadingStatus.CurrentlyReading,
+           'bg-success/40': book.status === ReadingStatus.Completed,
+           'bg-secondary/40': book.status === ReadingStatus.Summarized
+         }"></div>
+    <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
+      class="w-full h-full object-cover opacity-50 blur-3xl scale-110" />
+  </div>
+
+  <div class="p-6 max-w-7xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-8">
+      <button mat-button (click)="goBack()"
+        class="!flex !items-center !justify-center !w-9 !h-9 !min-w-0 !p-0 !rounded-full !bg-black/40 !backdrop-blur-xl !border !border-white/10 hover:!bg-white/10 hover:!scale-110 !transition-all !duration-300 group text-white"
+        aria-label="Back to Library">
+        <ng-icon name="heroArrowLeft" size="1.1rem"
+          class="!text-white group-hover:!-translate-x-1 group-hover:!scale-110 !transition-all !duration-300 translate-y-[2px]"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12">
+
+      <!-- Left: Book Cover (Floating) -->
+      <div class="lg:col-span-4 xl:col-span-3">
+        <div class="relative group perspective-1000">
+          <div
+            class="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/20 transition-transform duration-500 group-hover:scale-[1.02] group-hover:-translate-y-2">
+            <img [src]="book.imageUrl ? (rootUrl + book.imageUrl) : '/assets/placeholder-book.png'"
+              alt="{{ book.title }}" class="w-full aspect-[2/3] object-cover" />
+
+            <!-- Star Rating Display (Bottom) for Completed Books with Rating -->
+            @if ((book.status === ReadingStatus.Completed || book.status === ReadingStatus.Summarized) && book.rating) {
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-base-300/80 to-transparent p-4">
+              <div class="flex items-center justify-center gap-1">
+                @for (star of [1,2,3,4,5]; track star) {
+                <ng-icon [name]="star <= book.rating ? 'heroStar' : 'heroStar'"
+                  [class.text-warning]="star <= book.rating" [class.text-white/20]="star > book.rating" size="1.25rem"
+                  [class.fill-warning]="star <= book.rating"></ng-icon>
+                }
+              </div>
+              <div class="text-white text-center text-sm font-bold mt-1">{{ book.rating }} / 5</div>
+            </div>
+            }
+          </div>
+
+          <!-- Reflection/Glow -->
+          <div
+            class="absolute -inset-4 bg-gradient-to-t from-primary/20 to-transparent blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-6 space-y-3">
+          @if (book.status === ReadingStatus.CurrentlyReading) {
+          <button (click)="openAddSessionModal()" mat-raised-button color="primary"
+            class="w-full !rounded-xl !py-6 !text-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]">
+            <div class="flex items-center justify-center gap-2 whitespace-nowrap">
+              <ng-icon name="heroPlus" size="1.5rem"></ng-icon>
+              <span>Log Session</span>
+            </div>
+          </button>
+          }
+          @if (book.status === ReadingStatus.NotReading) {
+          <button (click)="openPlanAndGoalModal()" mat-raised-button color="primary"
+            class="w-full !rounded-xl !py-6 !text-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]">
+            <div class="flex items-center justify-center gap-2 whitespace-nowrap">
+              <ng-icon name="heroPlus" size="1.5rem"></ng-icon>
+              <span>Start Planning</span>
+            </div>
+          </button>
+          }
+          @if (book.status === ReadingStatus.Planning) {
+          <div>
+            <button (click)="startReadingFromPlanning()" mat-raised-button color="primary"
+              class="w-full !rounded-xl !py-6 !text-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]">
+              <div class="flex items-center justify-center gap-2 whitespace-nowrap">
+                <ng-icon name="heroBookOpen" size="1.5rem"></ng-icon>
+                <span>Start Reading</span>
+              </div>
+            </button>
+            <p class="text-xs text-error mt-2 flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>Total pages ({{ book.totalPages }}) will be read-only after starting</span>
+            </p>
+          </div>
+          }
+          @if (book.status === ReadingStatus.Completed && !book.rating) {
+          <button (click)="isRatingModalOpen = true" mat-raised-button color="primary"
+            class="w-full !rounded-xl !py-6 !text-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]">
+            <div class="flex items-center justify-center gap-2 whitespace-nowrap">
+              <ng-icon name="heroStar" size="1.5rem"></ng-icon>
+              <span>Rate This Book</span>
+            </div>
+          </button>
+          }
+          @if (book.status === ReadingStatus.Completed && book.rating && (!book.summary || book.summary.trim().length
+          === 0)) {
+          <button (click)="openSummarizeModal()" mat-raised-button color="primary"
+            class="w-full !rounded-xl !py-6 !text-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]">
+            <div class="flex items-center justify-center gap-2 whitespace-nowrap">
+              <ng-icon name="heroPencil" size="1.5rem"></ng-icon>
+              <span>Add Summary</span>
+            </div>
+          </button>
+          }
+          @if (book.status === ReadingStatus.Summarized || (book.status === ReadingStatus.Completed && book.summary &&
+          book.summary.trim().length > 0)) {
+          <button (click)="openSummarizeModal()" mat-raised-button color="primary"
+            class="w-full !rounded-xl !py-6 !text-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02]">
+            <div class="flex items-center justify-center gap-2 whitespace-nowrap">
+              <ng-icon name="heroDocumentText" size="1.5rem"></ng-icon>
+              <span>View Summary</span>
+            </div>
+          </button>
+          }
+
+          <div class="flex gap-2">
+            <button (click)="openEditBookModal()" mat-stroked-button
+              class="flex-1 !rounded-xl !border-base-content/20 hover:!bg-base-content/10 hover:!border-base-content/30 !text-base-content">
+              <div class="flex items-center justify-center gap-2">
+                <ng-icon name="heroPencil" size="1.2rem"></ng-icon>
+                <span>Edit</span>
+              </div>
+            </button>
+            <button (click)="deleteBook()" mat-stroked-button color="warn"
+              class="flex-1 !rounded-xl !border-error/40 hover:!bg-error/10 hover:!border-error/60">
+              <div class="flex items-center justify-center gap-2">
+                <ng-icon name="heroTrash" size="1.2rem"></ng-icon>
+                <span>Delete</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Info & Stats -->
+      <div class="lg:col-span-8 xl:col-span-9 flex flex-col justify-center">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-base-content mb-2 leading-tight">
+          {{ book.title }}
+        </h1>
+        <h2 class="text-xl md:text-2xl text-base-content/60 font-medium mb-8 flex items-center gap-2">
+          <span>by</span>
+          <span class="text-primary">{{ book.author?.name }}</span>
+        </h2>
+
+        <!-- Tags & Meta -->
+        <div class="flex flex-wrap gap-3 mb-8">
+          <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium">
+            <ng-icon name="heroBookOpen" size="1.2rem" class="text-primary"></ng-icon>
+            <span>{{ book.totalPages }} Pages</span>
+          </div>
+          @for (tag of book.tags; track tag.id) {
+          <div
+            class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium hover:bg-primary/10 transition-colors cursor-pointer">
+            <ng-icon name="heroTag" size="1.1rem" class="text-secondary"></ng-icon>
+            <span>{{ tag.name }}</span>
+          </div>
+          }
+        </div>
+
+        <!-- Progress Card (Holographic) -->
+        @if (book.status === ReadingStatus.CurrentlyReading) {
+        <div
+          class="glass-panel p-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent relative overflow-hidden mb-8">
+          <div class="absolute top-0 right-0 p-4 opacity-10">
+            <ng-icon name="heroChartBar" size="8rem" class="text-primary"></ng-icon>
+          </div>
+
+          <div class="relative z-10">
+            <div class="flex justify-between items-end mb-4">
+              <div>
+                <p class="text-sm font-bold uppercase tracking-wider text-primary mb-1">Current Progress</p>
+                <div class="text-4xl font-heading font-bold">{{ progress | number:'1.2-2' }}%</div>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-bold">{{ currentPage }} <span class="text-base-content/40 text-lg">/ {{
+                    book.totalPages }}</span></div>
+                <p class="text-sm text-base-content/60">{{ book.totalPages! - currentPage }} pages left</p>
+              </div>
+            </div>
+
+            <div class="w-full bg-base-content/5 rounded-full h-3 overflow-hidden backdrop-blur-sm">
+              <div
+                class="bg-gradient-to-r from-primary to-secondary h-full rounded-full shadow-[0_0_15px_rgba(var(--p),0.6)] relative overflow-hidden"
+                [style.width.%]="progress">
+                <div class="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass-panel p-4 rounded-2xl text-center hover-lift">
+            <div class="text-2xl font-bold text-primary mb-1">{{ readingSessions.length }}</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-base-content/50">Sessions</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl text-center hover-lift">
+            <div class="text-2xl font-bold text-secondary">{{ currentPage }}</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-base-content/50">Pages Read</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl text-center hover-lift">
+            <div class="text-2xl font-bold text-accent">{{ progress | number:'1.2-2' }}%</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-base-content/50">Completed</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl text-center hover-lift">
+            <div class="text-2xl font-bold text-info">{{ book.rating || '-' }}</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-base-content/50">Rating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glass Tabs -->
+    <div class="glass-panel rounded-3xl p-2 mb-8 inline-flex gap-2 relative z-10">
+      <button class="px-6 py-3 rounded-2xl font-medium transition-all duration-300 flex items-center gap-2"
+        [class.bg-primary]="activeTab === 'overview'" [class.text-primary-content]="activeTab === 'overview'"
+        [class.shadow-lg]="activeTab === 'overview'" [class.shadow-primary/30]="activeTab === 'overview'"
+        [class.hover:bg-base-content/5]="activeTab !== 'overview'" (click)="switchTab('overview')">
+        <ng-icon name="heroBookOpen" size="1.25rem"></ng-icon>
+        Overview
+      </button>
+      <button class="px-6 py-3 rounded-2xl font-medium transition-all duration-300 flex items-center gap-2"
+        [class.bg-primary]="activeTab === 'sessions'" [class.text-primary-content]="activeTab === 'sessions'"
+        [class.shadow-lg]="activeTab === 'sessions'" [class.shadow-primary/30]="activeTab === 'sessions'"
+        [class.hover:bg-base-content/5]="activeTab !== 'sessions'" (click)="switchTab('sessions')">
+        <ng-icon name="heroClipboardDocumentList" size="1.25rem"></ng-icon>
+        Sessions
+      </button>
+      <button class="px-6 py-3 rounded-2xl font-medium transition-all duration-300 flex items-center gap-2"
+        [class.bg-primary]="activeTab === 'notes'" [class.text-primary-content]="activeTab === 'notes'"
+        [class.shadow-lg]="activeTab === 'notes'" [class.shadow-primary/30]="activeTab === 'notes'"
+        [class.hover:bg-base-content/5]="activeTab !== 'notes'" (click)="switchTab('notes')">
+        <ng-icon name="heroDocumentText" size="1.25rem"></ng-icon>
+        Notes
+      </button>
+      <button class="px-6 py-3 rounded-2xl font-medium transition-all duration-300 flex items-center gap-2"
+        [class.bg-primary]="activeTab === 'statistics'" [class.text-primary-content]="activeTab === 'statistics'"
+        [class.shadow-lg]="activeTab === 'statistics'" [class.shadow-primary/30]="activeTab === 'statistics'"
+        [class.hover:bg-base-content/5]="activeTab !== 'statistics'" (click)="switchTab('statistics')">
+        <ng-icon name="heroChartBar" size="1.25rem"></ng-icon>
+        Statistics
+      </button>
+    </div>
+
+    <!-- Tab Content Area -->
+    <div class="glass-panel rounded-3xl p-8 min-h-[400px]">
+      <!-- Overview Tab -->
+      @if (activeTab === 'overview') {
+      <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Details -->
+          <div>
+            <h3 class="text-2xl font-heading font-bold mb-6 flex items-center gap-3">
+              <div class="p-2 rounded-xl bg-primary/10 text-primary">
+                <ng-icon name="heroBookOpen" size="1.5rem"></ng-icon>
+              </div>
+              Book Details
+            </h3>
+            <div class="space-y-4">
+              <div class="glass-panel p-4 rounded-xl flex justify-between items-center">
+                <span class="text-base-content/60">Total Pages</span>
+                <span class="font-bold text-lg">{{ book.totalPages }}</span>
+              </div>
+              <div class="glass-panel p-4 rounded-xl flex justify-between items-center">
+                <span class="text-base-content/60">Started Reading</span>
+                <span class="font-bold">{{ book.startedReadingDate ? (book.startedReadingDate | date:'mediumDate') :
+                  'Not started' }}</span>
+              </div>
+              <div class="glass-panel p-4 rounded-xl flex justify-between items-center">
+                <span class="text-base-content/60">Completed</span>
+                <span class="font-bold">{{ book.completedDate ? (book.completedDate | date:'mediumDate') : 'In Progress'
+                  }}</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Rating Section -->
+          <div>
+            <h3 class="text-2xl font-heading font-bold mb-6 flex items-center gap-3">
+              <div class="p-2 rounded-xl bg-warning/10 text-warning">
+                <ng-icon name="heroStar" size="1.5rem"></ng-icon>
+              </div>
+              Rating & Review
+            </h3>
+
+            @if (book.rating) {
+            <div class="glass-panel p-6 rounded-2xl border border-warning/20 bg-warning/5 text-center">
+              <div class="text-6xl font-black text-warning mb-2">{{ book.rating }}</div>
+              <div class="flex justify-center gap-1 text-warning mb-4">
+                @for (star of [1,2,3,4,5]; track star) {
+                <ng-icon [name]="star <= book.rating ? 'heroStar' : 'heroStar'"
+                  [class.text-warning]="star <= book.rating" [class.text-base-content/10]="star > book.rating"
+                  size="1.5rem"></ng-icon>
+                }
+              </div>
+              <button (click)="isRatingModalOpen = true" mat-stroked-button color="primary">Edit Rating</button>
+            </div>
+            } @else {
+            <div class="glass-panel p-8 rounded-2xl text-center border-dashed border-2 border-base-content/10">
+              <p class="text-base-content/60">No rating yet. Complete the book to add a rating.</p>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Reading Goals Card -->
+        @if (readingGoal) {
+        <div class="mt-8">
+          <h3 class="text-2xl font-heading font-bold mb-6 flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-accent/10 text-accent">
+              <ng-icon name="heroCheckCircle" size="1.5rem"></ng-icon>
+            </div>
+            Reading Goals
+          </h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="glass-panel p-4 rounded-xl text-center hover-lift">
+              <div class="text-sm font-bold uppercase tracking-wider text-base-content/50 mb-2">Low Goal</div>
+              <div class="text-2xl font-bold text-accent">{{ readingGoal.lowGoal }}</div>
+              <div class="text-xs text-base-content/40 mt-1">pages/day</div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center hover-lift">
+              <div class="text-sm font-bold uppercase tracking-wider text-base-content/50 mb-2">Medium Goal</div>
+              <div class="text-2xl font-bold text-info">{{ readingGoal.mediumGoal }}</div>
+              <div class="text-xs text-base-content/40 mt-1">pages/day</div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center hover-lift">
+              <div class="text-sm font-bold uppercase tracking-wider text-base-content/50 mb-2">High Goal</div>
+              <div class="text-2xl font-bold text-error">{{ readingGoal.highGoal }}</div>
+              <div class="text-xs text-base-content/40 mt-1">pages/day</div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Sessions Tab -->
+      @if (activeTab === 'sessions') {
+      <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="flex justify-between items-center mb-8">
+          <h3 class="text-2xl font-heading font-bold">Reading Log</h3>
+          @if (book.status === ReadingStatus.CurrentlyReading) {
+          <button (click)="openAddSessionModal()" mat-raised-button color="primary" class="gap-2">
+            <ng-icon name="heroPlus" size="1.25rem"></ng-icon>
+            Add Session
+          </button>
+          }
+        </div>
+
+        @if (readingSessions.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (session of readingSessions; track session.id) {
+          <div class="glass-panel p-6 rounded-2xl hover-lift group cursor-pointer border border-base-content/5">
+            <div class="flex items-center gap-3 mb-4 text-base-content/60">
+              <ng-icon name="heroCalendar" size="1.25rem"></ng-icon>
+              <span class="font-medium">{{ session.date | date:'mediumDate' }}</span>
+            </div>
+            <div class="flex items-end gap-2 mb-2">
+              <span class="text-3xl font-bold text-primary">{{ session.pagesRead }}</span>
+              <span class="text-sm font-medium text-base-content/60 mb-1">pages read</span>
+            </div>
+            <div class="w-full bg-base-content/5 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-primary h-full rounded-full" style="width: 40%"></div>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <app-empty-state icon="heroClipboardDocumentList" title="No sessions logged yet"
+          description="Track your reading progress by logging your sessions." actionLabel="Log Session"
+          (action)="openAddSessionModal()">
+        </app-empty-state>
+        }
+      </div>
+      }
+
+      <!-- Other tabs placeholder for now -->
+      @if (activeTab === 'notes') {
+      <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+
+        <!-- Session Notes Section -->
+        <div class="glass-panel p-6 rounded-2xl">
+          <h3 class="text-xl font-bold font-heading flex items-center gap-2 mb-6">
+            <ng-icon name="heroClipboardDocumentList" size="1.5rem" class="text-secondary"></ng-icon>
+            Session Notes
+          </h3>
+
+          @if (getSessionsWithNotes().length > 0) {
+          <div class="grid gap-4">
+            @for (session of getSessionsWithNotes(); track session.id) {
+            <div
+              class="card bg-base-100/30 border border-base-content/5 hover:bg-base-100/50 transition-colors cursor-pointer"
+              (click)="openNoteDetailModal(session)">
+              <div class="card-body p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="badge badge-secondary badge-outline text-xs">
+                      {{ session.date | date:'mediumDate' }}
+                    </span>
+                    <span class="text-xs text-base-content/60">
+                      Pages {{ calculatePageRange(session).start }} - {{ calculatePageRange(session).end }}
+                    </span>
+                  </div>
+                  <ng-icon name="heroArrowRight" size="1rem" class="text-base-content/40"></ng-icon>
+                </div>
+                <p class="line-clamp-2 text-sm text-base-content/80">{{ session.summary }}</p>
+              </div>
+            </div>
+            }
+          </div>
+          } @else {
+          <app-empty-state icon="heroDocumentText" title="No session notes found"
+            description="Add notes when logging reading sessions to keep track of your thoughts.">
+          </app-empty-state>
+          }
+        </div>
+      </div>
+      }
+
+      @if (activeTab === 'statistics') {
+      <div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Progress Stat -->
+          <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+            <div class="radial-progress text-primary mb-3" [style.--value]="progress" style="--size:4rem;">
+              {{ progress | number:'1.0-0' }}%
+            </div>
+            <div class="text-sm font-medium text-base-content/70">Completion</div>
+            <div class="text-xs text-base-content/50 mt-1">
+              {{ currentPage }} / {{ book.totalPages || '?' }} pages
+            </div>
+          </div>
+
+          <!-- Reading Speed (Average) -->
+          <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mb-3 text-secondary">
+              <ng-icon name="heroChartBar" size="2rem"></ng-icon>
+            </div>
+            <div class="text-2xl font-bold font-heading">
+              {{ readingSessions.length > 0 ? (currentPage / readingSessions.length | number:'1.0-1') : 0 }}
+            </div>
+            <div class="text-sm font-medium text-base-content/70">Avg. Pages / Session</div>
+          </div>
+
+          <!-- Total Sessions -->
+          <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-3 text-accent">
+              <ng-icon name="heroCalendar" size="2rem"></ng-icon>
+            </div>
+            <div class="text-2xl font-bold font-heading">{{ readingSessions.length }}</div>
+            <div class="text-sm font-medium text-base-content/70">Total Sessions</div>
+          </div>
+        </div>
+
+        <!-- Reading Goal Status -->
+        @if (readingGoal) {
+        <div class="glass-panel p-6 rounded-2xl">
+          <h3 class="text-lg font-bold font-heading mb-4 flex items-center gap-2">
+            <ng-icon name="heroCheckCircle" size="1.25rem" class="text-success"></ng-icon>
+            Reading Goal
+          </h3>
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-green-500">Low Goal</span>
+              <span class="font-bold">{{ readingGoal.lowGoal }} pages</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-blue-500">Medium Goal</span>
+              <span class="font-bold">{{ readingGoal.mediumGoal }} pages</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-red-500">High Goal</span>
+              <span class="font-bold">{{ readingGoal.highGoal }} pages</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+  </div>
+</div>
+}
+
+<!-- Modals -->
+@if (isPlanAndGoalModalOpen) {
+<app-plan-and-goal-modal [bookId]="book?.id || null" [bookTitle]="book?.title || ''"
+  [initialStartedReadingDate]="book?.startedReadingDate" [initialReadingGoal]="readingGoal"
+  [totalPages]="book?.totalPages || null" (saved)="handlePlanAndGoalSaved()" (close)="closePlanAndGoalModal()">
+</app-plan-and-goal-modal>
+}
+
+@if (isReadingLogModalOpen) {
+<app-reading-log-modal [bookId]="currentBookId!" (close)="closeReadingLogModal()"></app-reading-log-modal>
+}
+
+<app-rating-modal [isOpen]="isRatingModalOpen" [bookTitle]="book?.title || ''" [bookCover]="book?.imageUrl"
+  [currentRating]="book?.rating || null" (save)="saveRating($event)" (cancel)="closeRatingModal()">
+</app-rating-modal>
+
+@if (isSummarizeModalOpen) {
+<app-summarize-modal [bookId]="book?.id || null" [bookTitle]="book?.title || ''"
+  [existingSummary]="book?.summary || null" [startedDate]="book?.startedReadingDate"
+  [completedDate]="book?.completedDate" (saved)="handleSummarySaved($event)" (close)="closeSummarizeModal()">
+</app-summarize-modal>
+}
+
+<!-- Note Detail Modal -->
+@if (isNoteDetailModalOpen && selectedSession) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+  (click)="closeNoteDetailModal()">
+  <div class="glass-panel w-full max-w-lg p-6 rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200"
+    (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold font-heading">Session Note</h3>
+      <button (click)="closeNoteDetailModal()" class="btn btn-circle btn-ghost btn-sm">
+        <ng-icon name="heroXMark" size="1.25rem"></ng-icon>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-3 mb-4 text-sm text-base-content/60">
+      <div class="flex items-center gap-1">
+        <ng-icon name="heroCalendar" size="1rem"></ng-icon>
+        <span>{{ selectedSession.date | date:'mediumDate' }}</span>
+      </div>
+      <div class="w-1 h-1 rounded-full bg-base-content/30"></div>
+      <div>
+        Pages {{ getSelectedSessionPageRange()?.start }} - {{ getSelectedSessionPageRange()?.end }}
+      </div>
+    </div>
+
+    <div class="prose prose-invert max-w-none max-h-[60vh] overflow-y-auto custom-scrollbar">
+      <p class="whitespace-pre-wrap">{{ selectedSession.summary }}</p>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button class="btn btn-primary" (click)="closeNoteDetailModal()">Close</button>
+    </div>
+  </div>
+</div>
+}

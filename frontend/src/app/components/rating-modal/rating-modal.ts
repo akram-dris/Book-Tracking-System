@@ -1,0 +1,92 @@
+import { Component, input, output, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { environment } from '../../../environments/environment';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { heroStar, heroXMark, heroCheckCircle } from '@ng-icons/heroicons/outline';
+
+@Component({
+  selector: 'app-rating-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule, NgIconComponent],
+  templateUrl: './rating-modal.html',
+  styleUrls: ['./rating-modal.css'],
+  viewProviders: [
+    provideIcons({
+      heroStar,
+      heroXMark,
+      heroCheckCircle
+    })
+  ]
+})
+export class RatingModalComponent implements OnInit {
+  isOpen = input(false);
+  bookTitle = input('');
+  bookCover = input<string | undefined>('');
+  currentRating = input<number | null>(null);
+
+  save = output<number>();
+  cancel = output<void>();
+
+  selectedRating: number | null = null;
+  hoverRating: number = 0;
+  stars: number[] = [1, 2, 3, 4, 5];
+  rootUrl = environment.rootUrl;
+  isAnimatingIn: boolean = false;
+
+  ngOnInit(): void {
+    this.selectedRating = this.currentRating();
+    if (this.isOpen()) {
+      setTimeout(() => this.isAnimatingIn = true, 10);
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.isOpen()) {
+      this.selectedRating = this.currentRating();
+      setTimeout(() => this.isAnimatingIn = true, 10);
+    } else {
+      this.isAnimatingIn = false;
+    }
+  }
+
+  setRating(rating: number): void {
+    this.selectedRating = rating;
+  }
+
+  onRatingChange(rating: number): void {
+    this.selectedRating = rating;
+  }
+
+  onSave(): void {
+    if (this.selectedRating !== null) {
+      this.save.emit(this.selectedRating);
+    }
+  }
+
+  onCancel(): void {
+    this.cancel.emit();
+  }
+
+  onBackdropClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.onCancel();
+    }
+  }
+
+  get canSave(): boolean {
+    return this.selectedRating !== null && this.selectedRating >= 1 && this.selectedRating <= 5;
+  }
+
+  get ratingText(): string {
+    if (!this.selectedRating) return 'Select your rating';
+    const ratingDescriptions = [
+      'Poor',
+      'Fair',
+      'Good',
+      'Very Good',
+      'Excellent'
+    ];
+    return `${ratingDescriptions[this.selectedRating - 1]} (${this.selectedRating}/5)`;
+  }
+}
